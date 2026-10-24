@@ -1,4 +1,17 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# Renewless mobile
+
+React Native + TypeScript mobile client for tracking subscriptions and renewals. Existing screens and API integration are an initial implementation; the product docs describe the target behavior. The backend is a separate project.
+
+## Product and design documents
+
+- [Final brand/theme specification](docs/theme.md): cool graphite, soft mint-lime, Raleway 400/500; approved 24 October 2026.
+- [Offline theme preview](docs/theme-preview.html): actual bundled fonts and logo.
+- [Final motion, Liquid Glass and Loop specification](docs/motion-and-mascot.md), with an [interactive browser study](docs/motion-preview.html). The study approximates native glass; no app data is changed.
+- [Logo and font assets](docs/brand/README.md): transparent 51 × 51 mark, vector master, larger export and font license. Native app icons are user-owned.
+- [Implementation scope and document precedence](docs/implementation-scope.md): first integration versus complete locked product; detailed milestones remain to be planned.
+- [Product flow](docs/product-flow.md), [screens](docs/product-screens.md), [feature list](docs/feature-list.md), [out of scope](docs/not-in-v1.md), [billing](docs/revenuecat.md).
+
+The brand is finalized for the next implementation phase. It has not yet been applied to runtime screens. The setup instructions below are for the React Native app.
 
 # Getting Started
 
