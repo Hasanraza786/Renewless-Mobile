@@ -21,7 +21,7 @@ import { upsertSubscription } from '../slices/subscriptions-slice';
 
 export function loadConnectors(): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({
@@ -36,7 +36,7 @@ export function loadConnectors(): AppThunk {
 
 export function saveConnector(email: string, onDone?: () => void): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({
@@ -51,7 +51,7 @@ export function saveConnector(email: string, onDone?: () => void): AppThunk {
 
 export function loadReview(connector_id: string): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({
@@ -69,7 +69,7 @@ export function loadReview(connector_id: string): AppThunk {
 
 function reviewAction(item_id: string, kind: 'add' | 'dismiss'): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token || getState().connectors.reviewBusyId) return;
     dispatch(setReviewBusyId(item_id));
     dispatch(setReviewActionError(''));

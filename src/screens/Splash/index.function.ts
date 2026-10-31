@@ -1,5 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { setSplashSeen } from '../../redux/slices/constant-slice';
+import { useAppDispatch } from '../../redux/store';
+import type { AuthStackParamList } from '../../types';
 
 export const BRAND_MOTION = {
   upper_delay: 120,
@@ -13,7 +17,7 @@ export const BRAND_MOTION = {
   total_duration: 2600,
 } as const;
 
-export default function useSplash(onComplete?: () => void) {
+export function useSplashReveal(onComplete?: () => void) {
   const [reduce_motion, setReduceMotion] = useState<boolean | null>(null);
   const upper_progress = useRef(new Animated.Value(0)).current;
   const lower_progress = useRef(new Animated.Value(0)).current;
@@ -72,4 +76,14 @@ export default function useSplash(onComplete?: () => void) {
   }, [reduce_motion, upper_progress, lower_progress, settle_progress, name_progress, tagline_progress]);
 
   return { upper_progress, lower_progress, settle_progress, name_progress, tagline_progress };
+}
+
+// First-launch only: once the reveal finishes, remember it and continue to Welcome.
+export default function useSplash(navigation: NativeStackScreenProps<AuthStackParamList, 'Splash'>['navigation']) {
+  const dispatch = useAppDispatch();
+  const onComplete = useCallback(() => {
+    dispatch(setSplashSeen());
+    navigation.replace('Welcome');
+  }, [dispatch, navigation]);
+  return useSplashReveal(onComplete);
 }

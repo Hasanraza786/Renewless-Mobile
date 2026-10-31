@@ -1,13 +1,14 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { Profile, SessionState } from '../../types';
+import type { ConstantState, Profile } from '../../types';
 
-const initial_state: SessionState = {
+const initial_state: ConstantState = {
   token: null,
   user: null,
+  splash_seen: false,
 };
 
-const sessionSlice = createSlice({
-  name: 'session',
+const constantSlice = createSlice({
+  name: 'constant',
   initialState: initial_state,
   reducers: {
     setSession(state, action: PayloadAction<{ token: string; user: Profile }>) {
@@ -21,9 +22,12 @@ const sessionSlice = createSlice({
       state.token = null;
       state.user = null;
     },
+    setSplashSeen(state) {
+      state.splash_seen = true;
+    },
   },
 });
 
-export const { setSession, setUser, clearSession } = sessionSlice.actions;
+export const { setSession, setUser, clearSession, setSplashSeen } = constantSlice.actions;
 
-export default sessionSlice.reducer;
+export default constantSlice.reducer;

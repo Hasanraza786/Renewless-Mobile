@@ -62,9 +62,10 @@ export type ReviewItem = {
   nextRenewal: string;
 };
 
-export type SessionState = {
+export type ConstantState = {
   token: string | null;
   user: Profile | null;
+  splash_seen: boolean;
 };
 
 export type AuthRequest =
@@ -122,7 +123,7 @@ export type ConnectorsState = {
 };
 
 export type RootState = {
-  session: SessionState;
+  constant: ConstantState;
   auth: AuthState;
   profile: ProfileState;
   dashboard: DashboardState;
@@ -132,6 +133,7 @@ export type RootState = {
 };
 
 export type AuthStackParamList = {
+  Splash: undefined;
   Welcome: undefined;
   ConnectInbox: undefined;
   InboxPermission: undefined;
@@ -170,7 +172,8 @@ export type TabParamList = {
 };
 
 export type AppStackParamList = {
-  Main: undefined;
+  AuthStack: undefined;
+  Tabs: undefined;
   Connectors: undefined;
   AddSubscription: undefined;
   SubscriptionDetail: { id: string };

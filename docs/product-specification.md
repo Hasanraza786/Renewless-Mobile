@@ -60,7 +60,7 @@ Current consolidated journey, 30 October 2026. Detailed screen owners and approv
 
 ### Entry, onboarding and account
 
-Splash restores/checks session: valid → Home; no valid session → Welcome. Transient offline failure must not silently log out a valid stored account. Returning users can choose Login. New users see value before app authentication:
+The animated Splash appears on the first launch only, then Welcome. Later launches restore the session behind the native launch background: valid → Home; no valid session → Welcome. Transient offline failure must not silently log out a valid stored account. Returning users can choose Login. New users see value before app authentication:
 
 Welcome → Connect inbox → Inbox permission → Discovering → Your subscriptions → Save your finds → authenticate → persist reviewed choices → Ready → Home.
 

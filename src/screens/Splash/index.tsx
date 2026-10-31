@@ -1,16 +1,18 @@
 import { Animated, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import logo_mark, { brand_mark_paths } from '../../assets/icons/logo_mark';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Icons from '../../components/Icons';
 import { FONTS, SIZES, colors } from '../../constants/theme';
 import useSplash from './index.function';
+import type { AuthStackParamList } from '../../types';
 import { styles } from './styles';
 
-type Props = { onComplete?: () => void };
+type Props = NativeStackScreenProps<AuthStackParamList, 'Splash'>;
 
-export default function Splash({ onComplete }: Props) {
-  const { upper_progress, lower_progress, settle_progress, name_progress, tagline_progress } = useSplash(onComplete);
+export default function Splash({ navigation }: Props) {
+  const { upper_progress, lower_progress, settle_progress, name_progress, tagline_progress } = useSplash(navigation);
   const revealStyle = (progress: Animated.Value) => ({
     opacity: progress,
     transform: [{ translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [SIZES.padding3, 0] }) }],

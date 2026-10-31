@@ -30,7 +30,7 @@ export const { setProfileUser, setProfileLoading, setProfileError, resetProfile 
   profileSlice.actions;
 
 export function selectUser(state: RootState) {
-  return state.profile.user ?? state.session.user;
+  return state.profile.user ?? state.constant.user;
 }
 
 export default profileSlice.reducer;

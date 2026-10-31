@@ -51,7 +51,7 @@
 ## Redux file naming
 
 - Action files use kebab-case `<feature>-action.ts`, e.g. `profile-action.ts` and `auth-action.ts`, under `src/redux/actions/`.
-- Slice files use kebab-case `<feature>-slice.ts`, e.g. `profile-slice.ts` and `session-slice.ts`, under `src/redux/slices/`. Keep `index.ts` as the barrel.
+- Slice files use kebab-case `<feature>-slice.ts`, e.g. `profile-slice.ts` and `constant-slice.ts`, under `src/redux/slices/`. Keep `index.ts` as the barrel.
 - Apply this convention to new Redux modules and update imports/exports when renaming. File naming does not change reducer names, persisted keys or exported symbols.
 
 ## React Native implementation rules — confirmed 31 October 2026
@@ -62,11 +62,17 @@
 - Onboarding is one native `Onboarding` host screen with a persistent fixed header/steps and shared footer region. Content panels change with directional slide/opacity transitions and Reduced Motion fallback. Existing approved states/back/recovery/auth/import semantics remain; the HTML inspection routes remain separate references. Auth screens stay separate and resume the owned onboarding intent. Never advance scan/import via animation or timers. Details: `docs/product-screens.md#native-navigation` and `docs/design-system.md#native-implementation-rules`.
 - This instruction records the native implementation approach and audits gaps; it does not authorize redesigning locked screens or claim the current native code already follows these rules. Update canonical owners during implementation and verify shared consumers, safe areas, keyboard and accessibility.
 
+## External reference projects — confirmed 1 November 2026
+
+- When the user points to another project as a reference, only read its code for patterns. Never write that project's name, path, repository, URL or other identifying details in any document, commit message, PR description, code comment or file in this repository. Refer to it only as "the coding reference project".
+- Do not copy its business logic, credentials, assets or dependencies wholesale; adopt patterns in Renewless's own conventions. Check `git grep` and the commit message for its name before every commit.
+
 ## Native frontend phase and coding reference — confirmed 31 October 2026
 
 - Current execution phase is section-by-section React Native frontend with backend-shaped **development mock data**, followed by user review of each section. This is separate from verified API/native-provider integration and from redesigning locked UX. A planning request does not itself authorize starting every implementation section.
 - Naming/code reference is a local read-only mobile reference project (location kept in the agent's local notes, not in the repository). Use its separation of screen rendering, functional hook, styles, API service, action and slice, while retaining Renewless TypeScript and its stricter theme/security rules. Do not copy business logic, credentials, dependencies or inconsistent legacy conventions wholesale.
 - Components/screens/types: PascalCase. Functions, handlers, setters and exported actions: camelCase (`onSubmit`, `getSubscriptions`, `setSelectedStatus`). Local/domain UI state: descriptive snake_case (`selected_statuses`, `scan_loading`, `form_data`), setters camelCase. Constants: UPPER_SNAKE_CASE. Keep library-required identifiers and external DTO keys exact; map DTOs once at the adapter boundary. Retain existing public symbols until deliberate migration. Redux filenames remain `<feature>-action.ts` and `<feature>-slice.ts`.
+- `src/screens/index.ts` is the screens barrel: every screen is exported there and navigation/App import screens only from it (`from '../screens'`), never from individual screen folders. Add each new screen to the barrel. Unit tests of a single screen may import that screen directly.
 - Screens use `index.tsx` for presentation, `index.function.ts` for nontrivial `use<Screen>` hook logic and existing `styles.ts` for styles; do not mass-rename existing files merely to copy the reference project's mixed singular/plural style filenames. Small presentational components need no empty functional file.
 - Put the shared development dataset/scenario configuration in `src/config/mock-data.ts` when implementation begins. Screens/components must not import fixtures directly. An explicitly selected development mock adapter implements the same typed service interfaces as the API adapter, through existing actions/slices. No production fallback from failed API to mocks, no fake provider/payment proof and no raw personal media in fixtures.
 - Backend-shaped mocks are provisional DTO contracts until verified against the separate backend. Stable IDs, exact money/currency, local dates/events, revisions/cursors, structured errors and cross-surface relationships must follow canonical docs. Mock mutations use an isolated in-memory repository; reset restores fixtures. Review pending/empty/error/retry and interactions as well as populated screens.

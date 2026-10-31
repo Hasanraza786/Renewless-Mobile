@@ -12,7 +12,7 @@ import { endSession } from '../endSession';
 import { runRequest, type AppThunk } from '../runRequest';
 import { authError, authLoading } from '../slices/auth-slice';
 import { setProfileUser } from '../slices/profile-slice';
-import { setSession } from '../slices/session-slice';
+import { setSession } from '../slices/constant-slice';
 
 export function login(email: string, password: string) {
   return runRequest({
@@ -81,7 +81,7 @@ export function changePassword(
   onDone?: () => void,
 ): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({
@@ -96,7 +96,7 @@ export function changePassword(
 
 export function logout(): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     dispatch(authLoading('logout')(true));
     if (token) {
       try {

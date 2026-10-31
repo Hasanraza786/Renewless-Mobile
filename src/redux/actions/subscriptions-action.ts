@@ -19,7 +19,7 @@ import {
 
 function loadOne(id: string, key: Extract<SubscriptionRequest, 'detail' | 'edit'>): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({
@@ -34,7 +34,7 @@ function loadOne(id: string, key: Extract<SubscriptionRequest, 'detail' | 'edit'
 
 export function loadSubscriptions(): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({
@@ -57,7 +57,7 @@ export function loadSubscriptionForEdit(id: string): AppThunk {
 
 export function saveSubscription(input: SubscriptionInput, onDone?: () => void): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({
@@ -77,7 +77,7 @@ export function saveSubscriptionEdits(
   onDone?: () => void,
 ): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({
@@ -93,7 +93,7 @@ export function saveSubscriptionEdits(
 
 export function removeSubscriptionById(id: string, onDone?: () => void): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({

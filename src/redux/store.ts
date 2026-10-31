@@ -5,16 +5,16 @@ import type { RootState } from '../types';
 import {
   authReducer,
   connectorsReducer,
+  constantReducer,
   dashboardReducer,
   notificationsReducer,
   profileReducer,
-  sessionReducer,
   subscriptionsReducer,
 } from './slices';
 import { redux_storage } from './storage';
 
 const root_reducer = combineReducers({
-  session: sessionReducer,
+  constant: constantReducer,
   auth: authReducer,
   profile: profileReducer,
   dashboard: dashboardReducer,
@@ -27,7 +27,7 @@ const persisted_reducer = persistReducer(
   {
     key: 'root',
     storage: redux_storage,
-    whitelist: ['session'],
+    whitelist: ['constant'],
   },
   root_reducer,
 );

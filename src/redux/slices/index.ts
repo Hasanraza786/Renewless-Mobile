@@ -1,4 +1,4 @@
-export { default as sessionReducer } from './session-slice';
+export { default as constantReducer } from './constant-slice';
 export { default as authReducer } from './auth-slice';
 export { default as profileReducer } from './profile-slice';
 export { default as dashboardReducer } from './dashboard-slice';

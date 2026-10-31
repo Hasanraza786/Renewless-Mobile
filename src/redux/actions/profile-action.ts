@@ -2,7 +2,7 @@ import { updateProfile as updateProfileRequest } from '../../api_services/auth';
 import type { Gender } from '../../types';
 import { runRequest, type AppThunk } from '../runRequest';
 import { setProfileError, setProfileLoading, setProfileUser } from '../slices/profile-slice';
-import { setSession } from '../slices/session-slice';
+import { setSession } from '../slices/constant-slice';
 
 export function updateProfile(
   input: {
@@ -15,7 +15,7 @@ export function updateProfile(
   onDone?: () => void,
 ): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({

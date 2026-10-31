@@ -8,7 +8,7 @@ import {
 
 export function loadDashboard(): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().session.token;
+    const token = getState().constant.token;
     if (!token) return;
     await dispatch(
       runRequest({
