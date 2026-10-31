@@ -2,7 +2,9 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
+        <!-- Native window uses the same background as the React theme. -->
+        <item name="android:windowBackground">@color/app_background</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
     </style>
 

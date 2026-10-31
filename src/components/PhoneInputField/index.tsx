@@ -59,11 +59,11 @@ export default function PhoneInputField({
       <CustomText
         text={
           <>
-            Phone number <CustomText text="*" weight={FONTS.regular} color={colors.accent} size={SIZES.field_label} />
+            Phone number <CustomText text="*" weight={FONTS.regular} color={colors.accent} size={SIZES.padding2} />
           </>
         }
         weight={FONTS.regular}
-        size={SIZES.field_label}
+        size={SIZES.padding2}
         line_height={SIZES.field_label_line}
         mb={SIZES.padding3}
       />
@@ -78,7 +78,7 @@ export default function PhoneInputField({
           withCloseButton
           onSelect={onSelect}
         />
-        <CustomText text="▾" weight={FONTS.regular} color={colors.text_secondary} size={SIZES.field_label} mr={SIZES.padding3} />
+        <CustomText text="▾" weight={FONTS.regular} color={colors.text_secondary} size={SIZES.padding2} mr={SIZES.padding3} />
         <TextInput
           value={phone}
           onChangeText={value => onChangePhone(value.replace(/\D/g, ''))}

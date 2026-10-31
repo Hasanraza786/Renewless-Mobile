@@ -21,7 +21,7 @@ export default function StateView({ status, message, onRetry }: Props) {
         text={message}
         weight={FONTS.regular}
         color={colors.text_secondary}
-        size={SIZES.body}
+        size={(SIZES.padding2 + SIZES.padding3 / 4)}
         line_height={SIZES.body_line}
       />
       {status === 'failed' && onRetry ? (

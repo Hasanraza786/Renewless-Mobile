@@ -38,7 +38,7 @@ export default function ProfileScreen({ navigation }: Props) {
   return (
     <Container>
       <View style={styles.main_view}>
-      <CustomText text="Profile" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
+      <CustomText text="Profile" size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
       {user ? (
         <View style={styles.card}>
           <Row label="Name" value={user.name} />
@@ -51,15 +51,15 @@ export default function ProfileScreen({ navigation }: Props) {
         </View>
       ) : null}
       <Pressable onPress={() => navigation.navigate('EditProfile')} style={styles.action}>
-        <CustomText text="Edit profile" color={COLORS.primary} size={SIZES.button}
+        <CustomText text="Edit profile" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)}
         line_height={SIZES.button_line} />
       </Pressable>
       <Pressable onPress={() => navigation.navigate('ChangePassword')} style={styles.action}>
-        <CustomText text="Change password" color={COLORS.primary} size={SIZES.button}
+        <CustomText text="Change password" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)}
         line_height={SIZES.button_line} />
       </Pressable>
       <Pressable onPress={onLogout} style={styles.action}>
-        <CustomText text="Log out" size={SIZES.button}
+        <CustomText text="Log out" size={(SIZES.padding2 + SIZES.padding3 / 4)}
         line_height={SIZES.button_line} />
       </Pressable>
       </View>
@@ -70,8 +70,8 @@ export default function ProfileScreen({ navigation }: Props) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.row}>
-      <CustomText text={label} color={COLORS.text_secondary} weight={FONTS.regular} size={SIZES.supporting} line_height={SIZES.supporting_line} />
-      <CustomText text={value} weight={FONTS.regular} size={SIZES.body} line_height={SIZES.body_line} mt={SIZES.padding3 / 2} />
+      <CustomText text={label} color={COLORS.text_secondary} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 8)} line_height={SIZES.supporting_line} />
+      <CustomText text={value} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mt={SIZES.padding3 / 2} />
     </View>
   );
 }

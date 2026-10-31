@@ -61,7 +61,7 @@ function MainTabs() {
         tabBarInactiveTintColor: colors.text_secondary,
         tabBarLabelStyle: {
           fontFamily: FONTS.regular,
-          fontSize: SIZES.tab_label,
+          fontSize: (SIZES.padding2 - SIZES.padding3 / 8),
           lineHeight: SIZES.tab_label_line,
         },
         tabBarStyle: {

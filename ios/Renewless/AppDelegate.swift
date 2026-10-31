@@ -39,6 +39,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 }
 
 class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
+  override func customize(_ rootView: RCTRootView) {
+    super.customize(rootView)
+    rootView.backgroundColor = UIColor(named: "AppBackground")
+  }
+
   override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
   }

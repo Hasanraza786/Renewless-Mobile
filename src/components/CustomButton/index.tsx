@@ -23,7 +23,7 @@ export default function CustomButton({ text, onPress, disabled }: Props) {
       <CustomText
         text={text}
         color={disabled ? COLORS.disabled_text : COLORS.on_accent}
-        size={SIZES.button}
+        size={(SIZES.padding2 + SIZES.padding3 / 4)}
         line_height={SIZES.button_line}
       />
     </Pressable>

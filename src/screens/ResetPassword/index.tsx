@@ -44,7 +44,7 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
             keyboardDismissMode="interactive"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.content}>
-            <CustomText text="Reset password" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
+            <CustomText text="Reset password" size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
             <InputField
               label="New password"
               value={password}
@@ -60,11 +60,11 @@ export default function ResetPasswordScreen({ navigation, route }: Props) {
               textContentType="newPassword"
             />
             {error ? (
-              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} />
+              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mb={SIZES.padding2} />
             ) : null}
             <CustomButton text="Save password" onPress={onSubmit} disabled={loading} />
             <Pressable accessibilityRole="link" hitSlop={SIZES.padding3} onPress={() => navigation.navigate('Login')} style={styles.link}>
-              <CustomText text="Log in" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
+              <CustomText text="Log in" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
             </Pressable>
           </ScrollView>
         </KeyboardAvoidingView>

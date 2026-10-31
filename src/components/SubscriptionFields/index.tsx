@@ -47,7 +47,7 @@ export default function SubscriptionFields({ value, onChange }: Props) {
         autoCapitalize="characters"
         maxLength={3}
       />
-      <CustomText text="Billing cycle" weight={FONTS.regular} size={SIZES.field_label} line_height={SIZES.field_label_line} mb={SIZES.padding3} />
+      <CustomText text="Billing cycle" weight={FONTS.regular} size={SIZES.padding2} line_height={SIZES.field_label_line} mb={SIZES.padding3} />
       <RowView align_items="stretch" gap={SIZES.padding3} style={{ flexWrap: 'wrap', marginBottom: SIZES.padding3 * 2 }}>
         {CYCLES.map(cycle => {
           const selected = value.cycle === cycle;
@@ -58,7 +58,7 @@ export default function SubscriptionFields({ value, onChange }: Props) {
               style={[styles.chip, selected && styles.chip_on]}>
               <CustomText
                 text={cycle}
-                size={SIZES.button}
+                size={(SIZES.padding2 + SIZES.padding3 / 4)}
                 line_height={SIZES.button_line}
                 weight={selected ? FONTS.regular : FONTS.medium}
                 color={selected ? colors.on_accent : colors.text}

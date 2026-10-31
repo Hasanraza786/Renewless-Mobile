@@ -61,9 +61,9 @@ export default function SubscriptionsScreen({ navigation }: Props) {
     <Container>
       <View style={styles.main_view}>
       <RowView gap={0} style={{ marginBottom: SIZES.padding2 }}>
-        <CustomText text="Subscriptions" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} style={common_styles.flex_1} />
+        <CustomText text="Subscriptions" size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} style={common_styles.flex_1} />
         <Pressable onPress={() => navigation.navigate('AddSubscription')}>
-          <CustomText text="Add" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
+          <CustomText text="Add" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
         </Pressable>
       </RowView>
       <TextInput
@@ -87,7 +87,7 @@ export default function SubscriptionsScreen({ navigation }: Props) {
               ]}>
               <CustomText
                 text={statusLabel(item)}
-                size={SIZES.button}
+                size={(SIZES.padding2 + SIZES.padding3 / 4)}
                 line_height={SIZES.button_line}
                 color={selected ? tone.text : COLORS.text_primary}
               />

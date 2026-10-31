@@ -49,7 +49,7 @@ function CustomText({
       color: color ?? COLORS.text_primary,
       fontFamily: weight ?? FONTS.medium,
       textAlign: align ?? 'left',
-      fontSize: size ?? SIZES.body,
+      fontSize: size ?? (SIZES.padding2 + SIZES.padding3 / 4),
       marginTop: mt ?? 0,
       marginBottom: mb ?? 0,
       marginLeft: ml ?? 0,

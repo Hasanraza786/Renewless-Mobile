@@ -50,13 +50,13 @@ export default function NotificationsScreen({ navigation }: Props) {
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
             <View style={styles.row}>
-              <CustomText text={item.name} size={SIZES.subscription_name} line_height={SIZES.subscription_name_line} />
-              <CustomText text={formatDate(item.date)} weight={FONTS.regular} size={SIZES.supporting} line_height={SIZES.supporting_line} mt={SIZES.padding2 / 2} />
+              <CustomText text={item.name} size={(SIZES.padding * 3 / 4)} line_height={SIZES.subscription_name_line} />
+              <CustomText text={formatDate(item.date)} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 8)} line_height={SIZES.supporting_line} mt={SIZES.padding2 / 2} />
               <CustomText
                 text={item.estimated ? 'Estimated' : 'Confirmed'}
                 weight={FONTS.regular}
                 color={COLORS.text_secondary}
-                size={SIZES.supporting}
+                size={(SIZES.padding2 + SIZES.padding3 / 8)}
                 line_height={SIZES.supporting_line}
                 mt={SIZES.padding3 / 2}
               />

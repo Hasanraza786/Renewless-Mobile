@@ -53,17 +53,17 @@ export default function OtpScreen({ navigation, route }: Props) {
             keyboardDismissMode="interactive"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.content}>
-            <CustomText text="Enter code" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
+            <CustomText text="Enter code" size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
             <CustomText
               text={`Enter the 6-digit code for ${email}.`}
               weight={FONTS.regular}
               color={COLORS.text_secondary}
-              size={SIZES.body}
+              size={(SIZES.padding2 + SIZES.padding3 / 4)}
               line_height={SIZES.body_line}
               mb={SIZES.padding3 * 2}
               mt={-SIZES.padding3}
             />
-            <CustomText text="6-digit code" weight={FONTS.regular} size={SIZES.field_label} line_height={SIZES.field_label_line} mb={SIZES.padding3} />
+            <CustomText text="6-digit code" weight={FONTS.regular} size={SIZES.padding2} line_height={SIZES.field_label_line} mb={SIZES.padding3} />
             <CodeField
               ref={ref}
               {...cell_props}
@@ -77,7 +77,7 @@ export default function OtpScreen({ navigation, route }: Props) {
                 <CustomText
                   key={index}
                   text={symbol || (isFocused ? <Cursor /> : null)}
-                  size={SIZES.screen_heading}
+                  size={(SIZES.padding + SIZES.padding3 / 4)}
                   align="center"
                   line_height={SIZES.screen_heading_line}
                   style={[styles.cell, isFocused && styles.cell_focused]}
@@ -86,13 +86,13 @@ export default function OtpScreen({ navigation, route }: Props) {
               )}
             />
             <Pressable accessibilityRole="link" hitSlop={SIZES.padding3} onPress={onResend} style={styles.link}>
-              <CustomText text="Resend code" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
+              <CustomText text="Resend code" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
             </Pressable>
             {resent ? (
-              <CustomText text={resent} color={COLORS.primary} size={SIZES.supporting} line_height={SIZES.supporting_line} mt={SIZES.padding3} align="center" />
+              <CustomText text={resent} color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 8)} line_height={SIZES.supporting_line} mt={SIZES.padding3} align="center" />
             ) : null}
             {error ? (
-              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} />
+              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mb={SIZES.padding2} />
             ) : null}
             <CustomButton
               text="Continue"

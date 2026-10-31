@@ -75,18 +75,6 @@ export const SIZES = {
   padding2: 12,
   padding3: 8,
 
-  wordmark: 26,
-  screen_heading: 22,
-  dashboard_number: 22,
-  section_heading: 17,
-  subscription_name: 15,
-  row_price: 16,
-  body: 14,
-  button: 14,
-  supporting: 13,
-  field_label: 12,
-  tab_label: 11,
-
   wordmark_line: 34,
   screen_heading_line: 28,
   section_line: 24,

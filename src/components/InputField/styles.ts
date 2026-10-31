@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     color: colors.text,
     fontFamily: fonts.regular,
-    fontSize: SIZES.body,
+    fontSize: (SIZES.padding2 + SIZES.padding3 / 4),
     height: SIZES.control_height,
     paddingHorizontal: SIZES.padding2 + 2,
     paddingVertical: 0,

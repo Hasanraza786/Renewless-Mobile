@@ -51,9 +51,9 @@ export default function ConnectorsScreen({ navigation }: Props) {
     <Container>
       <View style={styles.main_view}>
       <RowView gap={0} style={{ marginBottom: SIZES.padding2 }}>
-        <CustomText text="Connectors" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} style={common_styles.flex_1} />
+        <CustomText text="Connectors" size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} style={common_styles.flex_1} />
         <Pressable onPress={() => navigation.navigate('AddConnector')}>
-          <CustomText text="Add" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
+          <CustomText text="Add" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
         </Pressable>
       </RowView>
       {status === 'loading' ? <StateView status="loading" message="Loading accounts." /> : null}
@@ -71,12 +71,12 @@ export default function ConnectorsScreen({ navigation }: Props) {
                 navigation.navigate('Review', { connectorId: item.id, email: item.email })
               }
               style={styles.card}>
-              <CustomText text={item.email} size={SIZES.subscription_name} line_height={SIZES.subscription_name_line} />
+              <CustomText text={item.email} size={(SIZES.padding * 3 / 4)} line_height={SIZES.subscription_name_line} />
               <CustomText
                 text={item.status}
                 weight={FONTS.regular}
                 color={COLORS.text_secondary}
-                size={SIZES.supporting}
+                size={(SIZES.padding2 + SIZES.padding3 / 8)}
                 line_height={SIZES.supporting_line}
                 mt={SIZES.padding2 / 2}
                 transform="capitalize"
@@ -85,7 +85,7 @@ export default function ConnectorsScreen({ navigation }: Props) {
                 text={`Last sync ${syncLabel(item.lastSync)}`}
                 weight={FONTS.regular}
                 color={COLORS.text_secondary}
-                size={SIZES.supporting}
+                size={(SIZES.padding2 + SIZES.padding3 / 8)}
                 line_height={SIZES.supporting_line}
                 mt={SIZES.padding2 / 2}
                 transform="capitalize"

@@ -35,12 +35,12 @@ export default function ScanNoResultsScreen({ navigation }: Props) {
         <RowView align_items="flex-start" gap={SIZES.padding2} style={styles.hint}>
           <Icons name={hint_icon} icon_height={20} stroke={colors.accent} />
           <View style={{ flex: 1 }}>
-            <CustomText text="Using another email for payments?" size={SIZES.body} line_height={SIZES.body_line} />
+            <CustomText text="Using another email for payments?" size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} />
             <CustomText
               text="Your receipts may be in a different inbox. Try the Gmail account you use for subscriptions."
               weight={FONTS.regular}
               color={colors.text_secondary}
-              size={SIZES.supporting}
+              size={(SIZES.padding2 + SIZES.padding3 / 8)}
               line_height={SIZES.supporting_line}
               mt={SIZES.padding3 / 2}
             />
@@ -50,13 +50,13 @@ export default function ScanNoResultsScreen({ navigation }: Props) {
           text="You can still track any subscription by adding it yourself."
           weight={FONTS.regular}
           color={colors.text_secondary}
-          size={SIZES.supporting}
+          size={(SIZES.padding2 + SIZES.padding3 / 8)}
           line_height={SIZES.supporting_line}
         />
         <View style={styles.footer}>
           <CustomButton text="Try another Gmail account" onPress={() => navigation.navigate('ConnectInbox')} />
           <Pressable accessibilityRole="button" onPress={() => navigation.navigate('Signup')} style={styles.secondary}>
-            <CustomText text="Add a subscription manually" size={SIZES.button} line_height={SIZES.button_line} />
+            <CustomText text="Add a subscription manually" size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
           </Pressable>
         </View>
       </View>

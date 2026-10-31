@@ -32,7 +32,7 @@ export default function AddConnectorScreen({ navigation }: Props) {
         text="Renewless reads renewal mail from this inbox. Enter the Gmail address to connect."
         weight={FONTS.regular}
         color={COLORS.text_secondary}
-        size={SIZES.body}
+        size={(SIZES.padding2 + SIZES.padding3 / 4)}
         line_height={SIZES.body_line}
         mb={SIZES.padding3 * 2}
       />
@@ -43,7 +43,7 @@ export default function AddConnectorScreen({ navigation }: Props) {
         autoCapitalize="none"
         keyboardType="email-address"
       />
-      {error ? <CustomText text={error} weight={FONTS.regular} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} /> : null}
+      {error ? <CustomText text={error} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mb={SIZES.padding2} /> : null}
       <CustomButton text="Save" onPress={onSubmit} disabled={loading} />
       </View>
     </Container>

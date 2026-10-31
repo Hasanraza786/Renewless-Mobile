@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
   },
   search: {
     fontFamily: fonts.regular,
-    fontSize: SIZES.body,
+    fontSize: (SIZES.padding2 + SIZES.padding3 / 4),
     backgroundColor: colors.card,
     borderColor: colors.control_border,
     borderRadius: SIZES.padding2 + 2,

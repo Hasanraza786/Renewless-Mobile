@@ -53,7 +53,7 @@ export default function ChangePasswordScreen({ navigation }: Props) {
         onChangeText={setConfirm}
         secureTextEntry
       />
-      {error ? <CustomText text={error} weight={FONTS.regular} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} /> : null}
+      {error ? <CustomText text={error} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mb={SIZES.padding2} /> : null}
       <CustomButton text="Save" onPress={onSubmit} disabled={loading} />
       </View>
     </Container>

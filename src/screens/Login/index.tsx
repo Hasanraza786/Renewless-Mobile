@@ -34,7 +34,7 @@ export default function LoginScreen({ navigation }: Props) {
             keyboardDismissMode="interactive"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.content}>
-            <CustomText text="Log in" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
+            <CustomText text="Log in" size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
             <InputField
               label="Email"
               value={email}
@@ -56,10 +56,10 @@ export default function LoginScreen({ navigation }: Props) {
               hitSlop={SIZES.padding3}
               onPress={() => navigation.navigate('ForgotPassword')}
               style={styles.forgot}>
-              <CustomText text="Forgot password" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
+              <CustomText text="Forgot password" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
             </Pressable>
             {error ? (
-              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} />
+              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mb={SIZES.padding2} />
             ) : null}
             <CustomButton text="Log in" onPress={onSubmit} disabled={loading} />
             <CustomText
@@ -69,7 +69,7 @@ export default function LoginScreen({ navigation }: Props) {
                   <CustomText
                     text="Create an account"
                     color={COLORS.primary}
-                    size={SIZES.button}
+                    size={(SIZES.padding2 + SIZES.padding3 / 4)}
                     line_height={SIZES.button_line}
                     onPress={() => navigation.navigate('Signup')}
                   />
@@ -77,7 +77,7 @@ export default function LoginScreen({ navigation }: Props) {
               }
               weight={FONTS.regular}
               color={COLORS.text_secondary}
-              size={SIZES.body}
+              size={(SIZES.padding2 + SIZES.padding3 / 4)}
               line_height={SIZES.body_line}
               align="center"
               mt={SIZES.padding2 * 2}

@@ -62,7 +62,7 @@ export default function ReviewScreen({ navigation, route }: Props) {
         text={route.params.email}
         weight={FONTS.regular}
         color={COLORS.text_secondary}
-        size={SIZES.supporting}
+        size={(SIZES.padding2 + SIZES.padding3 / 8)}
         line_height={SIZES.supporting_line}
         mb={SIZES.padding2}
       />
@@ -72,33 +72,33 @@ export default function ReviewScreen({ navigation, route }: Props) {
       ) : null}
       {status === 'ready' ? (
         <ScrollView showsVerticalScrollIndicator={false}>
-          {error ? <CustomText text={error} weight={FONTS.regular} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} /> : null}
+          {error ? <CustomText text={error} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mb={SIZES.padding2} /> : null}
           {items.length === 0 ? (
             <StateView status="empty" message="Nothing is waiting for review." />
           ) : (
             items.map(item => (
               <View key={item.id} style={styles.card}>
-                <CustomText text={item.name} size={SIZES.subscription_name} line_height={SIZES.subscription_name_line} />
+                <CustomText text={item.name} size={(SIZES.padding * 3 / 4)} line_height={SIZES.subscription_name_line} />
                 <CustomText
                   text={formatMoney(item.price, item.currency)}
                   weight={FONTS.regular}
-                  size={SIZES.supporting}
+                  size={(SIZES.padding2 + SIZES.padding3 / 8)}
                   line_height={SIZES.supporting_line}
                   mt={SIZES.padding3}
                 />
                 <CustomText
                   text={formatDate(item.nextRenewal)}
                   weight={FONTS.regular}
-                  size={SIZES.supporting}
+                  size={(SIZES.padding2 + SIZES.padding3 / 8)}
                   line_height={SIZES.supporting_line}
                   mt={SIZES.padding3}
                 />
                 <RowView align_items="stretch" gap={SIZES.padding} mt={SIZES.padding2 + 2}>
                   <Pressable disabled={busy_id === item.id} onPress={() => act(item.id, 'add')}>
-                    <CustomText text="Add" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
+                    <CustomText text="Add" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
                   </Pressable>
                   <Pressable disabled={busy_id === item.id} onPress={() => act(item.id, 'dismiss')}>
-                    <CustomText text="Dismiss" size={SIZES.button} line_height={SIZES.button_line} />
+                    <CustomText text="Dismiss" size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
                   </Pressable>
                 </RowView>
               </View>
