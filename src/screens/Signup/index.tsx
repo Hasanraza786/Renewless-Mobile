@@ -63,7 +63,7 @@ export default function SignupScreen({ navigation }: Props) {
             keyboardDismissMode="interactive"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.content}>
-            <CustomText text="Sign up" size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
+            <CustomText text="Sign up" size={(SIZES.padding + SIZES.padding3 / 4)} mb={SIZES.padding3 * 2} />
             <InputField label="Name" value={name} onChangeText={setName} textContentType="name" />
             <InputField
               label="Email"
@@ -100,7 +100,7 @@ export default function SignupScreen({ navigation }: Props) {
               onChangeText={setDateOfBirth}
               placeholder="YYYY-MM-DD"
             />
-            <CustomText text="Gender (optional)" weight={FONTS.regular} size={SIZES.padding2} line_height={SIZES.field_label_line} mb={SIZES.padding3} />
+            <CustomText text="Gender (optional)" weight={FONTS.regular} size={SIZES.padding2} mb={SIZES.padding3} />
             <RowView align_items="stretch" gap={SIZES.padding3} style={{ marginBottom: SIZES.padding3 * 2 }}>
               {GENDERS.map(choice => {
                 const selected = gender === choice.value;
@@ -112,7 +112,6 @@ export default function SignupScreen({ navigation }: Props) {
                     <CustomText
                       text={choice.label}
                       size={(SIZES.padding2 + SIZES.padding3 / 4)}
-                      line_height={SIZES.button_line}
                       weight={selected ? FONTS.regular : FONTS.medium}
                       color={selected ? COLORS.on_accent : COLORS.text_primary}
                     />
@@ -121,7 +120,7 @@ export default function SignupScreen({ navigation }: Props) {
               })}
             </RowView>
             {error ? (
-              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mb={SIZES.padding2} />
+              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} mb={SIZES.padding2} />
             ) : null}
             <CustomButton text="Create account" onPress={onSubmit} disabled={loading} />
             <CustomText
@@ -132,7 +131,6 @@ export default function SignupScreen({ navigation }: Props) {
                     text="Log in"
                     color={COLORS.primary}
                     size={(SIZES.padding2 + SIZES.padding3 / 4)}
-                    line_height={SIZES.button_line}
                     onPress={() => navigation.navigate('Login')}
                   />
                 </>
@@ -140,7 +138,6 @@ export default function SignupScreen({ navigation }: Props) {
               weight={FONTS.regular}
               color={COLORS.text_secondary}
               size={(SIZES.padding2 + SIZES.padding3 / 4)}
-              line_height={SIZES.body_line}
               align="center"
               mt={SIZES.padding2 * 2}
             />

@@ -29,11 +29,10 @@ export default function SubscriptionCard({ item, onPress }: Props) {
       onPress={onPress}
       style={styles.card}>
       <RowView justify_content="space-between" gap={SIZES.padding2}>
-        <CustomText text={item.name} size={(SIZES.padding * 3 / 4)} line_height={SIZES.subscription_name_line} style={common_styles.flex_1} />
+        <CustomText text={item.name} size={(SIZES.padding * 3 / 4)} style={common_styles.flex_1} />
         <CustomText
           text={statusLabel(item.status)}
           size={SIZES.padding2}
-          line_height={SIZES.field_label_line}
           color={tone.text}
           style={[styles.badge, { backgroundColor: tone.background }]}
         />
@@ -43,7 +42,6 @@ export default function SubscriptionCard({ item, onPress }: Props) {
         weight={FONTS.regular}
         color={colors.text_secondary}
         size={(SIZES.padding2 + SIZES.padding3 / 8)}
-        line_height={SIZES.supporting_line}
         mt={SIZES.padding3}
       />
       <CustomText
@@ -51,16 +49,14 @@ export default function SubscriptionCard({ item, onPress }: Props) {
         weight={FONTS.regular}
         color={colors.text_secondary}
         size={(SIZES.padding2 + SIZES.padding3 / 8)}
-        line_height={SIZES.supporting_line}
         mt={SIZES.padding3}
       />
-      <CustomText text={formatMoney(item.price, item.currency)} size={(SIZES.padding3 * 2)} line_height={SIZES.row_price_line} mt={SIZES.padding / 2} />
+      <CustomText text={formatMoney(item.price, item.currency)} size={(SIZES.padding3 * 2)} mt={SIZES.padding / 2} />
       {item.note ? (
         <CustomText
           text={item.note}
           weight={FONTS.regular}
           size={(SIZES.padding2 + SIZES.padding3 / 4)}
-          line_height={SIZES.body_line}
           mt={SIZES.padding / 2}
         />
       ) : null}

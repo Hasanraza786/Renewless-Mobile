@@ -26,7 +26,7 @@ export default function InputField({
 
   return (
     <View style={styles.wrap}>
-      <CustomText text={label} weight={FONTS.regular} size={SIZES.padding2} line_height={SIZES.field_label_line} mb={SIZES.padding3} />
+      <CustomText text={label} weight={FONTS.regular} size={SIZES.padding2} mb={SIZES.padding3} />
       <TextInput
         value={value}
         onChangeText={onChangeText}
@@ -48,7 +48,6 @@ export default function InputField({
           color={colors.expired}
           weight={FONTS.regular}
           size={(SIZES.padding2 + SIZES.padding3 / 8)}
-          line_height={SIZES.supporting_line}
           mt={SIZES.padding2 / 2}
         />
       ) : null}

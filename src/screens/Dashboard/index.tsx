@@ -62,12 +62,12 @@ export default function DashboardScreen({ navigation }: Props) {
           style={styles.icon_button}>
           <Icons name={profile_icon} icon_height={SIZES.padding * 1.1} stroke={colors.accent} />
         </Pressable>
-        <CustomText text="Dashboard" size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} align="center" style={common_styles.flex_1} />
+        <CustomText text="Dashboard" size={(SIZES.padding + SIZES.padding3 / 4)} align="center" style={common_styles.flex_1} />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Notifications"
           hitSlop={SIZES.padding3}
-          onPress={() => navigation.navigate('Notifications')}
+          onPress={() => navigation.navigate('Alerts')}
           style={styles.icon_button}>
           <Icons name={notification_icon} icon_height={SIZES.padding * 1.1} stroke={colors.accent} />
         </Pressable>
@@ -84,7 +84,7 @@ export default function DashboardScreen({ navigation }: Props) {
             <Count label="This month's total" value={month} />
             <Count label="Expired" value={String(data.expired)} />
           </RowView>
-          <CustomText text="Next renewals" size={(SIZES.padding - SIZES.padding2 / 4)} line_height={SIZES.section_line} mt={SIZES.padding3} mb={SIZES.padding2} />
+          <CustomText text="Next renewals" size={(SIZES.padding - SIZES.padding2 / 4)} mt={SIZES.padding3} mb={SIZES.padding2} />
           {data.upcoming.length === 0 ? (
             <StateView status="empty" message="No upcoming renewals yet." />
           ) : (
@@ -106,13 +106,12 @@ export default function DashboardScreen({ navigation }: Props) {
 function Count({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.count}>
-      <CustomText text={value} size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} />
+      <CustomText text={value} size={(SIZES.padding + SIZES.padding3 / 4)} />
       <CustomText
         text={label}
         weight={FONTS.regular}
         color={COLORS.text_secondary}
         size={(SIZES.padding2 + SIZES.padding3 / 8)}
-        line_height={SIZES.supporting_line}
         mt={SIZES.padding2 / 2}
       />
     </View>

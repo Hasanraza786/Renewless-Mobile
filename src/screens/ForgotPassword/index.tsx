@@ -34,13 +34,12 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
             keyboardDismissMode="interactive"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.content}>
-            <CustomText text="Forgot password" size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
+            <CustomText text="Forgot password" size={(SIZES.padding + SIZES.padding3 / 4)} mb={SIZES.padding3 * 2} />
             <CustomText
               text="Enter the email on your account. We'll keep a code ready for the next step."
               weight={FONTS.regular}
               color={COLORS.text_secondary}
               size={(SIZES.padding2 + SIZES.padding3 / 4)}
-              line_height={SIZES.body_line}
               mb={SIZES.padding3 * 2}
               mt={-SIZES.padding3}
             />
@@ -54,11 +53,11 @@ export default function ForgotPasswordScreen({ navigation }: Props) {
               textContentType="emailAddress"
             />
             {error ? (
-              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mb={SIZES.padding2} />
+              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} mb={SIZES.padding2} />
             ) : null}
             <CustomButton text="Send code" onPress={onSubmit} disabled={loading} />
             <Pressable accessibilityRole="link" hitSlop={SIZES.padding3} onPress={() => navigation.navigate('Login')} style={styles.link}>
-              <CustomText text="Log in" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
+              <CustomText text="Log in" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
             </Pressable>
           </ScrollView>
         </KeyboardAvoidingView>

@@ -1,7 +1,8 @@
 import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeBottomTabNavigator } from '@react-navigation/bottom-tabs/unstable';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { FONTS, SIZES, colors } from '../constants/theme';
+import StateView from '../components/StateView';
+import { colors } from '../constants/theme';
 import { useAppSelector } from '../redux/store';
 import AddConnectorScreen from '../screens/AddConnector';
 import AddSubscriptionScreen from '../screens/AddSubscription';
@@ -33,7 +34,7 @@ import type { AppStackParamList, AuthStackParamList, TabParamList } from '../typ
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const AppStack = createNativeStackNavigator<AppStackParamList>();
-const Tabs = createBottomTabNavigator<TabParamList>();
+const Tabs = createNativeBottomTabNavigator<TabParamList>();
 
 const theme = {
   ...DefaultTheme,
@@ -52,6 +53,13 @@ const stack_options = {
   contentStyle: { backgroundColor: colors.background },
 } as const;
 
+// shortcut: dev-only placeholder until the F6 Calendar section is implemented; never ship it.
+function CalendarPlaceholder() {
+  return <StateView status="empty" message="Calendar is implemented in section F6." />;
+}
+
+const tab_icon = (source: number) => ({ type: 'image', source }) as const;
+
 function MainTabs() {
   return (
     <Tabs.Navigator
@@ -59,20 +67,12 @@ function MainTabs() {
         headerShown: false,
         tabBarActiveTintColor: colors.accent,
         tabBarInactiveTintColor: colors.text_secondary,
-        tabBarLabelStyle: {
-          fontFamily: FONTS.regular,
-          fontSize: (SIZES.padding2 - SIZES.padding3 / 8),
-          lineHeight: SIZES.tab_label_line,
-        },
-        tabBarStyle: {
-          backgroundColor: colors.card,
-          borderTopColor: colors.hairline,
-        },
       }}>
-      <Tabs.Screen name="Dashboard" component={DashboardScreen} />
-      <Tabs.Screen name="Subscriptions" component={SubscriptionsScreen} />
-      <Tabs.Screen name="Profile" component={ProfileScreen} />
-      <Tabs.Screen name="Connectors" component={ConnectorsScreen} />
+      <Tabs.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Home', tabBarIcon: tab_icon(require('../assets/images/tabs/tab_home.png')) }} />
+      <Tabs.Screen name="Subscriptions" component={SubscriptionsScreen} options={{ title: 'List', tabBarIcon: tab_icon(require('../assets/images/tabs/tab_list.png')) }} />
+      <Tabs.Screen name="Calendar" component={CalendarPlaceholder} options={{ title: 'Calendar', tabBarIcon: tab_icon(require('../assets/images/tabs/tab_calendar.png')) }} />
+      <Tabs.Screen name="Alerts" component={NotificationsScreen} options={{ title: 'Alerts', tabBarIcon: tab_icon(require('../assets/images/tabs/tab_alerts.png')) }} />
+      <Tabs.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile', tabBarIcon: tab_icon(require('../assets/images/tabs/tab_profile.png')) }} />
     </Tabs.Navigator>
   );
 }
@@ -102,7 +102,7 @@ function SignedInNavigator() {
   return (
     <AppStack.Navigator screenOptions={stack_options}>
       <AppStack.Screen name="Main" component={MainTabs} />
-      <AppStack.Screen name="Notifications" component={NotificationsScreen} />
+      <AppStack.Screen name="Connectors" component={ConnectorsScreen} />
       <AppStack.Screen name="AddSubscription" component={AddSubscriptionScreen} />
       <AppStack.Screen name="SubscriptionDetail" component={SubscriptionDetailScreen} />
       <AppStack.Screen name="EditSubscription" component={EditSubscriptionScreen} />

@@ -1,4 +1,5 @@
 import { Dimensions, Platform } from 'react-native';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const { width, height } = Dimensions.get('window');
 
@@ -75,16 +76,12 @@ export const SIZES = {
   padding2: 12,
   padding3: 8,
 
-  wordmark_line: 34,
-  screen_heading_line: 28,
-  section_line: 24,
-  subscription_name_line: 21,
-  row_price_line: 22,
-  body_line: 20,
-  button_line: 20,
-  supporting_line: 18,
-  field_label_line: 17,
-  tab_label_line: 16,
+  // font sizes: 766 = 844pt Studio iPhone frame minus RFValue's 78pt notch offset, so prototype sizes match exactly there
+  xs: RFValue(10, 766),
+  sm: RFValue(12, 766),
+  md: RFValue(14, 766),
+  lg: RFValue(16, 766),
+  h3: RFValue(22, 766),
 
   control_height: 44,
   button_height: 48,

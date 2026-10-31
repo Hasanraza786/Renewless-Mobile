@@ -64,7 +64,6 @@ export default function PhoneInputField({
         }
         weight={FONTS.regular}
         size={SIZES.padding2}
-        line_height={SIZES.field_label_line}
         mb={SIZES.padding3}
       />
       <RowView gap={0} style={[styles.row, focused && styles.row_focused]}>

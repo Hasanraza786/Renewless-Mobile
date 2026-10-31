@@ -5,8 +5,6 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import RowView from '../../components/RowView';
 import Container from '../../components/Container';
@@ -15,15 +13,12 @@ import CustomText from '../../components/CustomText';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { loadConnectors } from '../../redux/actions/connectors-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { AppStackParamList, TabParamList } from '../../types';
+import type { AppStackParamList } from '../../types';
 import { common_styles } from '../../utils/common_styles';
 import { formatDate } from '../../utils/dates';
 import { styles } from './styles';
 
-type Props = CompositeScreenProps<
-  BottomTabScreenProps<TabParamList, 'Connectors'>,
-  NativeStackScreenProps<AppStackParamList>
->;
+type Props = NativeStackScreenProps<AppStackParamList, 'Connectors'>;
 
 function syncLabel(value: string | null) {
   if (!value) return 'Not synced';
@@ -51,9 +46,9 @@ export default function ConnectorsScreen({ navigation }: Props) {
     <Container>
       <View style={styles.main_view}>
       <RowView gap={0} style={{ marginBottom: SIZES.padding2 }}>
-        <CustomText text="Connectors" size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} style={common_styles.flex_1} />
+        <CustomText text="Connectors" size={(SIZES.padding + SIZES.padding3 / 4)} style={common_styles.flex_1} />
         <Pressable onPress={() => navigation.navigate('AddConnector')}>
-          <CustomText text="Add" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
+          <CustomText text="Add" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
         </Pressable>
       </RowView>
       {status === 'loading' ? <StateView status="loading" message="Loading accounts." /> : null}
@@ -71,13 +66,12 @@ export default function ConnectorsScreen({ navigation }: Props) {
                 navigation.navigate('Review', { connectorId: item.id, email: item.email })
               }
               style={styles.card}>
-              <CustomText text={item.email} size={(SIZES.padding * 3 / 4)} line_height={SIZES.subscription_name_line} />
+              <CustomText text={item.email} size={(SIZES.padding * 3 / 4)} />
               <CustomText
                 text={item.status}
                 weight={FONTS.regular}
                 color={COLORS.text_secondary}
                 size={(SIZES.padding2 + SIZES.padding3 / 8)}
-                line_height={SIZES.supporting_line}
                 mt={SIZES.padding2 / 2}
                 transform="capitalize"
               />
@@ -86,7 +80,6 @@ export default function ConnectorsScreen({ navigation }: Props) {
                 weight={FONTS.regular}
                 color={COLORS.text_secondary}
                 size={(SIZES.padding2 + SIZES.padding3 / 8)}
-                line_height={SIZES.supporting_line}
                 mt={SIZES.padding2 / 2}
                 transform="capitalize"
               />

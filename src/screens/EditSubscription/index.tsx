@@ -87,7 +87,7 @@ export default function EditSubscriptionScreen({ navigation, route }: Props) {
         <ScrollView keyboardShouldPersistTaps="handled">
           <SubscriptionFields value={draft} onChange={setDraft} />
           {save_error ? (
-            <CustomText text={save_error} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mb={SIZES.padding2} />
+            <CustomText text={save_error} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} mb={SIZES.padding2} />
           ) : null}
           <CustomButton text="Save" onPress={onSave} disabled={saving} />
         </ScrollView>

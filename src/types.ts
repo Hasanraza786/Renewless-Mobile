@@ -164,13 +164,14 @@ export type AuthStackParamList = {
 export type TabParamList = {
   Dashboard: undefined;
   Subscriptions: undefined;
+  Calendar: undefined;
+  Alerts: undefined;
   Profile: undefined;
-  Connectors: undefined;
 };
 
 export type AppStackParamList = {
   Main: undefined;
-  Notifications: undefined;
+  Connectors: undefined;
   AddSubscription: undefined;
   SubscriptionDetail: { id: string };
   EditSubscription: { id: string };

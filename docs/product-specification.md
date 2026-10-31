@@ -353,7 +353,7 @@ Nothing in these dependencies authorizes redesigning locked screens, publishing,
 <a id="frontend-delivery-plan"></a>
 ## Section-by-section native frontend plan — confirmed 31 October 2026
 
-Immediate scope is the approved React Native frontend using development mock services, reviewed one section at a time. Build from current code and the NOMW coding reference, retain TypeScript, reuse existing components and apply theme-only sizes/colors. The [mock/naming contract](api-mobile-contract.md#frontend-mock-phase) owns data and code conventions. The M0–M8 plan above still owns real integration/release; the F-sections below are frontend delivery checkpoints, not replacements for those gates or new product scope.
+Immediate scope is the approved React Native frontend using development mock services, reviewed one section at a time. Build from current code and the coding reference project, retain TypeScript, reuse existing components and apply theme-only sizes/colors. The [mock/naming contract](api-mobile-contract.md#frontend-mock-phase) owns data and code conventions. The M0–M8 plan above still owns real integration/release; the F-sections below are frontend delivery checkpoints, not replacements for those gates or new product scope.
 
 | Order | Section and implementation scope | Mock coverage / acceptance |
 | --- | --- | --- |
@@ -377,4 +377,4 @@ Work one reviewable section at a time, with only prerequisites implemented befor
 
 ### Frontend delivery progress — Splash
 
-Implementation started with the user's explicitly requested Splash slice of F1, reusing the minimal F0 primitives. Native Splash, optional shared icon path reveal and themed OS launch backgrounds are implemented; frontend user acceptance is pending. F0 and the rest of F1 are not complete. No whole-section acceptance, real session validation, mock fixture repository or backend/provider integration is implied. Screen behavior and component/motion ownership remain in Product screens and Design system.
+Implementation started with the user's explicitly requested Splash slice of F1, reusing the minimal F0 primitives. Native Splash, optional shared icon path reveal and themed OS launch backgrounds are implemented and frontend-accepted by the user on 31 October 2026 (iOS verified; Android build/device parity unverified). F0 and the rest of F1 are not complete. No whole-section acceptance, real session validation, mock fixture repository or backend/provider integration is implied. Screen behavior and component/motion ownership remain in Product screens and Design system.

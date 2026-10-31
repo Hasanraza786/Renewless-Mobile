@@ -70,11 +70,10 @@ export default function SubscriptionDetailScreen({ navigation, route }: Props) {
       {status === 'failed' ? <StateView status="failed" message={error} onRetry={load} /> : null}
       {status === 'ready' && item && tone ? (
         <View style={styles.card}>
-          <CustomText text={item.name} size={(SIZES.padding + SIZES.padding3 / 4)} line_height={SIZES.screen_heading_line} />
+          <CustomText text={item.name} size={(SIZES.padding + SIZES.padding3 / 4)} />
           <CustomText
             text={statusLabel(item.status)}
             size={SIZES.padding2}
-            line_height={SIZES.field_label_line}
             color={tone.text}
             mt={SIZES.padding2}
             style={[styles.badge, { backgroundColor: tone.background }]}
@@ -82,14 +81,12 @@ export default function SubscriptionDetailScreen({ navigation, route }: Props) {
           <CustomText
             text={formatMoney(item.price, item.currency)}
             size={(SIZES.padding3 * 2)}
-            line_height={SIZES.row_price_line}
             mt={SIZES.padding2}
           />
           <CustomText
             text={`Cycle ${item.cycle}`}
             weight={FONTS.regular}
             size={(SIZES.padding2 + SIZES.padding3 / 8)}
-            line_height={SIZES.supporting_line}
             mt={SIZES.padding2}
             transform="capitalize"
           />
@@ -97,14 +94,12 @@ export default function SubscriptionDetailScreen({ navigation, route }: Props) {
             text={`Started ${formatDate(item.startDate)}`}
             weight={FONTS.regular}
             size={(SIZES.padding2 + SIZES.padding3 / 8)}
-            line_height={SIZES.supporting_line}
             mt={SIZES.padding2}
           />
           <CustomText
             text={`Renews ${renewal}`}
             weight={FONTS.regular}
             size={(SIZES.padding2 + SIZES.padding3 / 8)}
-            line_height={SIZES.supporting_line}
             mt={SIZES.padding2}
           />
           {item.note ? (
@@ -113,17 +108,16 @@ export default function SubscriptionDetailScreen({ navigation, route }: Props) {
               weight={FONTS.regular}
               color={COLORS.text_secondary}
               size={(SIZES.padding2 + SIZES.padding3 / 4)}
-              line_height={SIZES.body_line}
               mt={SIZES.padding2}
             />
           ) : null}
           <Pressable
             onPress={() => navigation.navigate('EditSubscription', { id: item.id })}
             style={styles.action}>
-            <CustomText text="Edit" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
+            <CustomText text="Edit" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
           </Pressable>
           <Pressable onPress={onDelete} style={styles.action}>
-            <CustomText text="Delete" color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
+            <CustomText text="Delete" color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
           </Pressable>
         </View>
       ) : null}

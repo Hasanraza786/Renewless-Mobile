@@ -35,13 +35,12 @@ export default function ScanInterruptedScreen({ navigation }: Props) {
         <RowView align_items="flex-start" gap={SIZES.padding2} style={styles.hint}>
           <Icons name={retry_icon} icon_height={20} stroke={colors.accent} />
           <View style={{ flex: 1 }}>
-            <CustomText text="A quick check before retrying" size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} />
+            <CustomText text="A quick check before retrying" size={(SIZES.padding2 + SIZES.padding3 / 4)} />
             <CustomText
               text="Check your internet connection. If Google asks, allow read-only Gmail access so we can complete your scan."
               weight={FONTS.regular}
               color={colors.text_secondary}
               size={(SIZES.padding2 + SIZES.padding3 / 8)}
-              line_height={SIZES.supporting_line}
               mt={SIZES.padding3 / 2}
             />
           </View>
@@ -51,12 +50,11 @@ export default function ScanInterruptedScreen({ navigation }: Props) {
           weight={FONTS.regular}
           color={colors.text_secondary}
           size={(SIZES.padding2 + SIZES.padding3 / 8)}
-          line_height={SIZES.supporting_line}
         />
         <View style={styles.footer}>
           <CustomButton text="Reconnect & try again" onPress={() => navigation.navigate('ConnectInbox')} />
           <Pressable accessibilityRole="button" onPress={() => navigation.navigate('Signup')} style={styles.secondary}>
-            <CustomText text="Add a subscription manually" size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.button_line} />
+            <CustomText text="Add a subscription manually" size={(SIZES.padding2 + SIZES.padding3 / 4)} />
           </Pressable>
         </View>
       </View>

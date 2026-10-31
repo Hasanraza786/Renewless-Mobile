@@ -58,14 +58,13 @@ export default function AddSubscriptionScreen({ navigation }: Props) {
       <Header title="Add subscription" onBack={() => navigation.goBack()} />
       <ScrollView keyboardShouldPersistTaps="handled">
         <SubscriptionFields value={draft} onChange={setDraft} />
-        {error ? <CustomText text={error} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} line_height={SIZES.body_line} mb={SIZES.padding2} /> : null}
+        {error ? <CustomText text={error} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} mb={SIZES.padding2} /> : null}
         <CustomButton text="Save" onPress={onSave} disabled={loading} />
         <View style={styles.cancel}>
           <CustomText
             text="Cancel"
             color={COLORS.text_secondary}
             size={(SIZES.padding2 + SIZES.padding3 / 4)}
-            line_height={SIZES.button_line}
             onPress={() => navigation.goBack()}
           />
         </View>
