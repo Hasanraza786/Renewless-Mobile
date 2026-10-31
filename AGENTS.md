@@ -2,7 +2,7 @@
 
 ## Current phase and document ownership
 
-- Current phase: the complete existing prototype was approved 31 October 2026. The canonical React Native implementation handoff/navigation/milestones are finalized; implement faithfully when requested. A docs-finalization task does not authorize general native/API changes, dependency installation or deployment.
+- Current phase: the complete existing prototype base was approved 31 October 2026; the user subsequently authorized shared typography (heading 22, subheading 16, body 12) plus the studio inspector. Typography is Pending reapproval across all 74 views; other design scopes remain locked. The canonical React Native implementation handoff/navigation/milestones are finalized; implement faithfully when requested. A docs-finalization task does not authorize general native/API changes, dependency installation or deployment.
 - Maintain exactly five canonical product documents: `docs/product-specification.md`, `docs/product-screens.md`, `docs/api-mobile-contract.md`, `docs/design-system.md`, `docs/billing.md`.
 - Root README is an index/setup guide. This AGENTS.md is working policy. Do not create separate Auth, Onboarding, Home, Calendar, Listing, per-screen, duplicate summary or dated override documents.
 - Product specification owns features/journey/scope/catalog; Product screens owns screen fields/actions/states/layout/approval; API/mobile contract owns shared backend data/operations/errors; Design system owns common visual/components/assets/motion; Billing owns Renewless Pro purchases/entitlements. Use links to owners instead of independent repeated specifications.

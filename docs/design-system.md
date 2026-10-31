@@ -41,17 +41,11 @@ One mutually exclusive status group per record: confirmed Expired/Cancelled, end
 
 | Role | Size | Line height | Weight |
 |---|---:|---:|---:|
-| Auth wordmark | 26 | 34 | 500 |
-| Screen heading | 22 | 28 | 500 |
-| Dashboard number | 22 | 28 | 500 |
-| Section heading | 17 | 24 | 500 |
-| Subscription name | 15 | 21 | 500 |
-| Row price | 16 | 22 | 500 |
-| Body | 14 | 20 | 400 |
-| Button | 14 | 20 | 500 |
-| Supporting text | 13 | 18 | 400 |
-| Field label / footnote | 12 | 17 | 400 |
-| Tab label | 11 | 16 | 400 |
+| Heading / display value | 22 | 28 | 500 |
+| Subheading / section title / subscription name | 16 | 22 | 500 |
+| Normal text / inputs / buttons / labels / supporting text | 12 | 18 | 400 body, 500 actions |
+
+The user requested this shared scale on 31 October 2026; the prototype implementation is Pending typography reapproval. It replaces the earlier eleven-role size table. The native client still contains the preceding value-preserving font-alias cleanup; adopt this new visual scale only after prototype review. No new native SIZES aliases are authorized.
 
 Sizes are logical units, not physical pixels. Allow system font scaling. Avoid clipped fixed-height text containers, negative letter spacing and oversized uppercase headings. Keep sufficient line height for descenders.
 
@@ -430,3 +424,10 @@ For the section-by-section mock frontend phase, preserve the existing component 
 The native Splash reuses `Icons` via optional `reveal` geometry/progress props. It draws the two canonical R paths in the 51-unit vector viewport; existing `name`/SvgXml consumers remain unchanged. Brand drawing uses Animated SVG dash offsets; settle/name/tagline use opacity/translation. Paths start at 120/490ms and draw for 700/760ms; wordmark/tagline start at 850/1150ms for 550ms. Total one-shot timeline is 2600ms, matching the prototype preview hold. Reduced Motion completes statically, preference changes are observed, unmount cancels, completion is emitted at most once.
 
 Splash adds no size tokens: mark = `SIZES.padding * 5`, horizontal inset/name gap = `SIZES.padding`, tagline gap = `SIZES.padding2`, reveal offset = `SIZES.padding3`. Wordmark font size is `SIZES.padding + SIZES.padding2 / 2` (26); tagline font size is `SIZES.padding2 + SIZES.padding3 / 8` (13). Existing `wordmark_line`/`body_line` remain for line heights. Custom letter spacing is removed. This is the user's accepted size-rule correction to the pending native implementation; the locked HTML prototype is not resized. `COLORS`/`colors` remain the app palette; Icons now uses its transparent token by default. `AppBackground.colorset`/named storyboard color and Android `app_background` are native resource mirrors of `COLORS.background` for pre-JS startup. Native resources cannot import JS constants; keep these mirrors synchronized whenever that canonical token is explicitly changed. Native launch is background-only: iOS UIWindow and React root view share the same named color, while Android 12+ replaces the system icon with a same-color launch_background drawable. This prevents the default icon from becoming a second visible brand splash; no native launch labels or additional marketing copy are introduced. Keep the React R/name/tagline animation unchanged. No dependencies were added for this animation.
+
+
+### Design Studio inspector and prototype typography
+
+`dist/studio-inspector.js` and `.css` provide the development-only inspection panel. Shared 22/16/12 sizing is scoped to textual HTML in phone previews through `data-studio-type`; status-bar chrome, vector artwork and pure icon glyphs retain their graphic styling. Roles prioritize heading/section/name semantics and normalize remaining legacy display/subheading/body text by its original computed size. Dynamic messages, dialogs and route renders receive the same roles. Computed family shows the CSS font stack; the bundled Raleway fonts remain the source.
+
+Double-click text for computed typography/color/layout and Copy CSS. Double-click inline SVG or an image for preview and export. Inline SVG exports resolve inherited colors/strokes; vector sources support SVG and rasterized transparent PNG at 1×/2×/4×. Raster sources support PNG without fabricated vectors. SVG script/event-handler nodes are stripped during serialization. Exports are local browser downloads with bounded raster dimensions; no server upload or stored edit. Previews/object URLs and stale selections are cleaned up. Inspect mode pauses phone actions; ordinary pointer actions use a short double-click detection delay, while keyboard activation stays immediate. This tool does not change record data, screen routes or native product UI.

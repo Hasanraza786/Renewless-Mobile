@@ -12,7 +12,7 @@ Only five canonical product documents:
 4. [Design system](docs/design-system.md) — theme, controls, motion, mascot, assets and provenance.
 5. [Billing](docs/billing.md) — free v1 access policy; deferred Phase 2 monetization drafts, retained RevenueCat/store plans and review assets.
 
-[AGENTS.md](AGENTS.md) is the project working policy, not a sixth product specification. Finalized screens are frozen: changes require scoped unlock confirmation. All 74 existing prototype inspection states, including Add/Edit trials, were approved 31 October 2026; native implementation is not yet complete. Every approved change updates all affected canonical documents in the same task.
+[AGENTS.md](AGENTS.md) is the project working policy, not a sixth product specification. Finalized screens are frozen: changes require scoped unlock confirmation. All 74 existing prototype base states, including Add/Edit trials, were approved 31 October 2026; the subsequently requested shared 22/16/12 typography is pending reapproval; native implementation is not yet complete. Every approved change updates all affected canonical documents in the same task.
 
 Start implementation from the [React Native blueprint](docs/api-mobile-contract.md#mobile-implementation), [native route/state mapping](docs/product-screens.md#native-navigation), [shared component map](docs/design-system.md#native-components) and [milestone/release plan](docs/product-specification.md#implementation-sequence). The existing native client has documented gaps; provider/backend verification and the account-deletion release-scope gap remain explicit. No sixth mobile implementation document is needed.
 
@@ -113,3 +113,9 @@ To learn more about React Native, take a look at the following resources:
 - [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
 - [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
 - [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+
+
+Design Studio: double-click text in a phone preview to inspect typography/color/layout in the right panel; double-click an icon for preview and SVG/PNG downloads. Use **Inspect** to pause phone actions while selecting controls. SVG export requires vector artwork; PNG supports 1×/2×/4×. Shared typography is under review; see the [lock register](docs/product-screens.md#screen-lock-register).
+
+
+The [public Design Studio](https://renewless-design-studio.web.app/#home) is hosted on Firebase project/site `renewless-design-studio`, first published 31 October 2026. Configuration lives in [firebase.json](prototypes/renewless-studio/firebase.json) and [.firebaserc](prototypes/renewless-studio/.firebaserc). Hosting exposes only `prototypes/renewless-studio/dist`, with revalidation for updated files. For an authorized update, run `firebase deploy --only hosting --project renewless-design-studio` from `prototypes/renewless-studio`. Hash routes such as `/#home` share the same static entry point. Credential files, native source and canonical docs are outside the public directory.

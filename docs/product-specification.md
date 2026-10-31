@@ -286,9 +286,13 @@ Approved sections render one **Final** view. Baseline/upgraded comparisons remai
 
 ### Finalized sections
 
-All 74 existing prototype inspection views are approved and locked, including Auth, onboarding, Home, Calendar, Listing, Alerts/settings, Profile/account/connected inbox, History, Payments, subscription Detail/platform views, Add/Edit with the complete trial extension, authenticated Gmail, Widgets and AI text/voice/image/PDF flows. The [screen lock register](product-screens.md#screen-lock-register) owns the exact inventory and approval scope. These are approved designs and states, not a claim that native integrations are implemented.
+All 74 existing prototype inspection views have an approved base. Shared typography (22/16/12) was subsequently authorized and is pending reapproval; other scopes remain locked, including Auth, onboarding, Home, Calendar, Listing, Alerts/settings, Profile/account/connected inbox, History, Payments, subscription Detail/platform views, Add/Edit with the complete trial extension, authenticated Gmail, Widgets and AI text/voice/image/PDF flows. The [screen lock register](product-screens.md#screen-lock-register) owns the exact inventory and approval scope. These are approved designs and states, not a claim that native integrations are implemented.
 
 List is full-width Search + right-side **Status filters**, no Sort by/external chips. Centered graphite dialog, multiple statuses, immediate OR/AND matching, global counts and one compact manual empty action. Shared single selects use the themed component; status selection is a separate multi-select dialog.
+
+The studio also supports double-click text inspection and icon preview/download from a right-side panel. Heading/subheading/body use the requested 22/16/12 scale. These are design-review tools and a pending typography scope, owned by [Design system](design-system.md#design-studio-inspector-and-prototype-typography) and the screen lock register; no mobile/backend feature is implied.
+
+Public review URL: [Renewless Design Studio](https://renewless-design-studio.web.app/#home), published to Firebase project/site `renewless-design-studio` with explicit user approval on 31 October 2026. Hosting publishes only `dist`; current release version is `f550667def1565ae`. The current typography scope remains pending review while shared publicly. The static deployment provides screen navigation, inspector and local asset downloads; it does not implement mobile authentication, Gmail/AI services or backend APIs.
 
 ### Local verification
 
