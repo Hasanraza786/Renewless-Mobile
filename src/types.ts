@@ -132,6 +132,28 @@ export type RootState = {
 };
 
 export type AuthStackParamList = {
+  Welcome: undefined;
+  ConnectInbox: undefined;
+  InboxPermission: undefined;
+  Discovering: undefined;
+  YourSubscriptions: undefined;
+  SaveYourFinds: {
+    count: number;
+    monthly: string;
+    saved_total: string;
+    next_name?: string;
+    next_when?: string;
+    next_amount?: string;
+  };
+  ReadyToGo: {
+    count: number;
+    monthly: string;
+    next_name?: string;
+    next_when?: string;
+    next_amount?: string;
+  };
+  ScanNoResults: undefined;
+  ScanInterrupted: undefined;
   Login: undefined;
   Signup: undefined;
   ForgotPassword: undefined;

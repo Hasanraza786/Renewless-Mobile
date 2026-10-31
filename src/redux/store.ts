@@ -11,9 +11,9 @@ import {
   sessionReducer,
   subscriptionsReducer,
 } from './slices';
-import { reduxStorage } from './storage';
+import { redux_storage } from './storage';
 
-const rootReducer = combineReducers({
+const root_reducer = combineReducers({
   session: sessionReducer,
   auth: authReducer,
   profile: profileReducer,
@@ -23,17 +23,17 @@ const rootReducer = combineReducers({
   connectors: connectorsReducer,
 });
 
-const persistedReducer = persistReducer(
+const persisted_reducer = persistReducer(
   {
     key: 'root',
-    storage: reduxStorage,
+    storage: redux_storage,
     whitelist: ['session'],
   },
-  rootReducer,
+  root_reducer,
 );
 
 const store = configureStore({
-  reducer: persistedReducer,
+  reducer: persisted_reducer,
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware({
       serializableCheck: {

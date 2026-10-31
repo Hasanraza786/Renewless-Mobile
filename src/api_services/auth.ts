@@ -42,13 +42,13 @@ export function resetPassword(email: string, password: string) {
 
 export function changePassword(
   token: string,
-  currentPassword: string,
+  current_password: string,
   password: string,
 ) {
   return request<{ ok: true }>('/auth/change-password', {
     method: 'POST',
     token,
-    body: { currentPassword, password },
+    body: { currentPassword: current_password, password },
   });
 }
 

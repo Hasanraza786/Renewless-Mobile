@@ -4,14 +4,19 @@ React Native + TypeScript mobile client for tracking subscriptions and renewals.
 
 ## Product and design documents
 
-- [Final brand/theme specification](docs/theme.md): cool graphite, soft mint-lime, Raleway 400/500; approved 24 October 2026.
-- [Offline theme preview](docs/theme-preview.html): actual bundled fonts and logo.
-- [Final motion, Liquid Glass and Loop specification](docs/motion-and-mascot.md), with an [interactive browser study](docs/motion-preview.html). The study approximates native glass; no app data is changed.
-- [Logo and font assets](docs/brand/README.md): transparent 51 × 51 mark, vector master, larger export and font license. Native app icons are user-owned.
-- [Implementation scope and document precedence](docs/implementation-scope.md): first integration versus complete locked product; detailed milestones remain to be planned.
-- [Product flow](docs/product-flow.md), [screens](docs/product-screens.md), [feature list](docs/feature-list.md), [out of scope](docs/not-in-v1.md), [billing](docs/revenuecat.md).
+Only five canonical product documents:
 
-The brand is finalized for the next implementation phase. It has not yet been applied to runtime screens. The setup instructions below are for the React Native app.
+1. [Product specification](docs/product-specification.md) — features, journey, scope, catalog and prototype operation.
+2. [Product screens](docs/product-screens.md) — all screen specifications, locked/pending register and change workflow.
+3. [API/mobile contract](docs/api-mobile-contract.md) — shared data, operations, validation and current implementation gaps.
+4. [Design system](docs/design-system.md) — theme, controls, motion, mascot, assets and provenance.
+5. [Billing](docs/billing.md) — free v1 access policy; deferred Phase 2 monetization drafts, retained RevenueCat/store plans and review assets.
+
+[AGENTS.md](AGENTS.md) is the project working policy, not a sixth product specification. Finalized screens are frozen: changes require scoped unlock confirmation. All 74 existing prototype inspection states, including Add/Edit trials, were approved 31 October 2026; native implementation is not yet complete. Every approved change updates all affected canonical documents in the same task.
+
+Start implementation from the [React Native blueprint](docs/api-mobile-contract.md#mobile-implementation), [native route/state mapping](docs/product-screens.md#native-navigation), [shared component map](docs/design-system.md#native-components) and [milestone/release plan](docs/product-specification.md#implementation-sequence). The existing native client has documented gaps; provider/backend verification and the account-deletion release-scope gap remain explicit. No sixth mobile implementation document is needed.
+
+The Final HTML prototype is under `prototypes/renewless-studio/dist/`. Setup below is for the initial React Native implementation; it does not imply complete design/API coverage.
 
 # Getting Started
 

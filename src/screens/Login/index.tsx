@@ -1,13 +1,16 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import AuthLayout, { AuthError, AuthPrompt } from '../../components/AuthLayout';
-import PrimaryButton from '../../components/PrimaryButton';
-import TextField from '../../components/TextField';
-import { colors } from '../../constants/colors';
-import { login } from '../../redux/actions/auth';
+import Container from '../../components/Container';
+import CustomButton from '../../components/CustomButton';
+import CustomText from '../../components/CustomText';
+import InputField from '../../components/InputField';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { login } from '../../redux/actions/auth-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList } from '../../types';
+import { common_styles } from '../../utils/common_styles';
+import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
@@ -23,55 +26,65 @@ export default function LoginScreen({ navigation }: Props) {
   }
 
   return (
-    <AuthLayout
-      title="Log in"
-      plain
-      logo
-      footer={
-        <AuthPrompt
-          label="Don’t have an account?"
-          link="Create an account"
-          onPress={() => navigation.navigate('Signup')}
-        />
-      }>
-      <TextField
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        autoCorrect={false}
-        keyboardType="email-address"
-        textContentType="emailAddress"
-      />
-      <TextField
-        label="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        textContentType="password"
-      />
-      <Pressable
-        accessibilityRole="link"
-        hitSlop={8}
-        onPress={() => navigation.navigate('ForgotPassword')}
-        style={styles.forgot}>
-        <Text style={styles.forgotText}>Forgot password</Text>
-      </Pressable>
-      <AuthError message={error} />
-      <PrimaryButton label="Log in" onPress={onSubmit} disabled={loading} />
-    </AuthLayout>
+    <Container is_auth>
+      <View style={styles.main_view}>
+        <KeyboardAvoidingView style={common_styles.flex_1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.content}>
+            <CustomText text="Log in" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
+            <InputField
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
+              textContentType="emailAddress"
+            />
+            <InputField
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              textContentType="password"
+            />
+            <Pressable
+              accessibilityRole="link"
+              hitSlop={SIZES.padding3}
+              onPress={() => navigation.navigate('ForgotPassword')}
+              style={styles.forgot}>
+              <CustomText text="Forgot password" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
+            </Pressable>
+            {error ? (
+              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} />
+            ) : null}
+            <CustomButton text="Log in" onPress={onSubmit} disabled={loading} />
+            <CustomText
+              text={
+                <>
+                  Don’t have an account?{' '}
+                  <CustomText
+                    text="Create an account"
+                    color={COLORS.primary}
+                    size={SIZES.button}
+                    line_height={SIZES.button_line}
+                    onPress={() => navigation.navigate('Signup')}
+                  />
+                </>
+              }
+              weight={FONTS.regular}
+              color={COLORS.text_secondary}
+              size={SIZES.body}
+              line_height={SIZES.body_line}
+              align="center"
+              mt={SIZES.padding2 * 2}
+            />
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  forgot: {
-    alignSelf: 'flex-end',
-    marginBottom: 16,
-    marginTop: -8,
-  },
-  forgotText: {
-    color: colors.mint,
-    fontSize: 14,
-    fontWeight: '600',
-  },
-});

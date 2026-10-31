@@ -1,17 +1,27 @@
 import { useCallback } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  View,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Screen from '../../components/Screen';
+import { notification_icon, profile_icon } from '../../assets/icons';
+import Icons from '../../components/Icons';
+import RowView from '../../components/RowView';
+import Container from '../../components/Container';
 import StateView from '../../components/StateView';
 import SubscriptionCard from '../../components/SubscriptionCard';
-import { colors } from '../../constants/colors';
-import { loadDashboard } from '../../redux/actions/dashboard';
+import CustomText from '../../components/CustomText';
+import { COLORS, FONTS, SIZES, colors } from '../../constants/theme';
+import { loadDashboard } from '../../redux/actions/dashboard-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, TabParamList } from '../../types';
+import { common_styles } from '../../utils/common_styles';
 import { formatMoney } from '../../utils/money';
+import { styles } from './styles';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, 'Dashboard'>,
@@ -41,39 +51,40 @@ export default function DashboardScreen({ navigation }: Props) {
       : formatMoney(0, 'USD');
 
   return (
-    <Screen>
-      <View style={styles.header}>
+    <Container>
+      <View style={styles.main_view}>
+      <RowView gap={0} style={{ marginBottom: SIZES.padding3 * 2 }}>
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Profile"
-          hitSlop={8}
+          hitSlop={SIZES.padding3}
           onPress={() => navigation.navigate('Profile')}
-          style={styles.iconButton}>
-          <ProfileIcon />
+          style={styles.icon_button}>
+          <Icons name={profile_icon} icon_height={SIZES.padding * 1.1} stroke={colors.accent} />
         </Pressable>
-        <Text style={styles.title}>Dashboard</Text>
+        <CustomText text="Dashboard" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} align="center" style={common_styles.flex_1} />
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Notifications"
-          hitSlop={8}
+          hitSlop={SIZES.padding3}
           onPress={() => navigation.navigate('Notifications')}
-          style={styles.iconButton}>
-          <NotificationIcon />
+          style={styles.icon_button}>
+          <Icons name={notification_icon} icon_height={SIZES.padding * 1.1} stroke={colors.accent} />
         </Pressable>
-      </View>
+      </RowView>
       {status === 'loading' ? <StateView status="loading" message="Loading your counts." /> : null}
       {status === 'failed' ? (
         <StateView status="failed" message={error} onRetry={load} />
       ) : null}
       {status === 'ready' && data ? (
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={styles.grid}>
+          <RowView align_items="stretch" gap={SIZES.padding2} style={{ flexWrap: 'wrap', marginBottom: SIZES.padding3 }}>
             <Count label="Active subscriptions" value={String(data.active)} />
             <Count label="Renewing in the next 7 days" value={String(data.renewingSoon)} />
             <Count label="This month's total" value={month} />
             <Count label="Expired" value={String(data.expired)} />
-          </View>
-          <Text style={styles.section}>Next renewals</Text>
+          </RowView>
+          <CustomText text="Next renewals" size={SIZES.section_heading} line_height={SIZES.section_line} mt={SIZES.padding3} mb={SIZES.padding2} />
           {data.upcoming.length === 0 ? (
             <StateView status="empty" message="No upcoming renewals yet." />
           ) : (
@@ -87,125 +98,23 @@ export default function DashboardScreen({ navigation }: Props) {
           )}
         </ScrollView>
       ) : null}
-    </Screen>
-  );
-}
-
-function ProfileIcon() {
-  return (
-    <View style={styles.profileIcon}>
-      <View style={styles.profileHead} />
-      <View style={styles.profileBody} />
-    </View>
-  );
-}
-
-function NotificationIcon() {
-  return (
-    <View style={styles.bell}>
-      <View style={styles.bellBody} />
-      <View style={styles.bellClapper} />
-    </View>
+      </View>
+    </Container>
   );
 }
 
 function Count({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.count}>
-      <Text style={styles.countValue}>{value}</Text>
-      <Text style={styles.countLabel}>{label}</Text>
+      <CustomText text={value} size={SIZES.dashboard_number} line_height={SIZES.screen_heading_line} />
+      <CustomText
+        text={label}
+        weight={FONTS.regular}
+        color={COLORS.text_secondary}
+        size={SIZES.supporting}
+        line_height={SIZES.supporting_line}
+        mt={SIZES.padding2 / 2}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 16,
-  },
-  title: {
-    color: colors.navy,
-    flex: 1,
-    fontSize: 20,
-    fontWeight: '700',
-    textAlign: 'center',
-  },
-  iconButton: {
-    alignItems: 'center',
-    height: 44,
-    justifyContent: 'center',
-    width: 44,
-  },
-  profileIcon: {
-    alignItems: 'center',
-    height: 22,
-    justifyContent: 'flex-end',
-    width: 22,
-  },
-  profileHead: {
-    backgroundColor: colors.mint,
-    borderRadius: 6,
-    height: 8,
-    width: 8,
-  },
-  profileBody: {
-    backgroundColor: colors.mint,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    height: 8,
-    marginTop: 2,
-    width: 14,
-  },
-  bell: {
-    alignItems: 'center',
-    height: 22,
-    justifyContent: 'flex-end',
-    width: 22,
-  },
-  bellBody: {
-    backgroundColor: colors.mint,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-    height: 12,
-    width: 14,
-  },
-  bellClapper: {
-    backgroundColor: colors.mint,
-    borderRadius: 2,
-    height: 3,
-    marginTop: 2,
-    width: 4,
-  },
-  grid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-    marginBottom: 8,
-  },
-  count: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 14,
-    width: '47%',
-  },
-  countValue: {
-    color: colors.navy,
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  countLabel: {
-    color: colors.muted,
-    fontSize: 13,
-    marginTop: 6,
-  },
-  section: {
-    color: colors.navy,
-    fontSize: 18,
-    fontWeight: '700',
-    marginBottom: 12,
-    marginTop: 8,
-  },
-});

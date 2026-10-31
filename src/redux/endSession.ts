@@ -1,13 +1,13 @@
 import type { UnknownAction } from '@reduxjs/toolkit';
 import type { ThunkAction } from '@reduxjs/toolkit';
 import type { RootState } from '../types';
-import { resetAuth } from './slices/authSlice';
-import { resetConnectors } from './slices/connectorsSlice';
-import { resetDashboard } from './slices/dashboardSlice';
-import { resetNotifications } from './slices/notificationsSlice';
-import { resetProfile } from './slices/profileSlice';
-import { clearSession } from './slices/sessionSlice';
-import { resetSubscriptions } from './slices/subscriptionsSlice';
+import { resetAuth } from './slices/auth-slice';
+import { resetConnectors } from './slices/connectors-slice';
+import { resetDashboard } from './slices/dashboard-slice';
+import { resetNotifications } from './slices/notifications-slice';
+import { resetProfile } from './slices/profile-slice';
+import { clearSession } from './slices/session-slice';
+import { resetSubscriptions } from './slices/subscriptions-slice';
 
 export function endSession(): ThunkAction<void, RootState, undefined, UnknownAction> {
   return dispatch => {

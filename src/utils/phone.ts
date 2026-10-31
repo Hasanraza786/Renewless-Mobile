@@ -237,8 +237,8 @@ const CALLING_CODES = [
   '7',
 ];
 
-export function joinPhone(dialCode: string, national: string) {
-  const code = dialCode.replace(/\D/g, '') || '1';
+export function joinPhone(dial_code: string, national: string) {
+  const code = dial_code.replace(/\D/g, '') || '1';
   const digits = national.replace(/\D/g, '');
   return `+${code}${digits}`;
 }
@@ -247,23 +247,23 @@ export function splitPhone(value: string) {
   const trimmed = value.trim();
   const digits = trimmed.replace(/\D/g, '');
   if (!trimmed.startsWith('+') || !digits) {
-    return { dialCode: '1', phone: digits };
+    return { dial_code: '1', phone: digits };
   }
-  const dialCode = CALLING_CODES.find(
+  const dial_code = CALLING_CODES.find(
     code => digits.startsWith(code) && digits.length > code.length,
   );
-  if (!dialCode) return { dialCode: '1', phone: digits };
-  return { dialCode, phone: digits.slice(dialCode.length) };
+  if (!dial_code) return { dial_code: '1', phone: digits };
+  return { dial_code, phone: digits.slice(dial_code.length) };
 }
 
 export function fullPhone(
-  user: { phone?: string | null; dialCode?: string | null } | null | undefined,
+  user: { phone?: string | null; dial_code?: string | null } | null | undefined,
 ) {
   const phone = (user?.phone || '').trim();
   if (!phone) return '';
   if (phone.startsWith('+')) return phone;
-  const dialCode = (user?.dialCode || '').replace(/\D/g, '');
+  const dial_code = (user?.dial_code || '').replace(/\D/g, '');
   const digits = phone.replace(/\D/g, '');
-  if (dialCode && digits) return `+${dialCode}${digits}`;
+  if (dial_code && digits) return `+${dial_code}${digits}`;
   return phone;
 }

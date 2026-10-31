@@ -1,16 +1,21 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ScrollView,
+  View,
+} from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import PrimaryButton from '../../components/PrimaryButton';
-import Screen from '../../components/Screen';
-import ScreenHeader from '../../components/ScreenHeader';
+import CustomButton from '../../components/CustomButton';
+import Container from '../../components/Container';
+import Header from '../../components/Header';
 import SubscriptionFields, {
   type SubscriptionDraft,
 } from '../../components/SubscriptionFields';
-import { colors } from '../../constants/colors';
-import { saveSubscription } from '../../redux/actions/subscriptions';
+import CustomText from '../../components/CustomText';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { saveSubscription } from '../../redux/actions/subscriptions-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
+import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'AddSubscription'>;
 
@@ -48,34 +53,24 @@ export default function AddSubscriptionScreen({ navigation }: Props) {
   }
 
   return (
-    <Screen isAuth>
-      <ScreenHeader title="Add subscription" onBack={() => navigation.goBack()} />
+    <Container is_auth>
+      <View style={styles.main_view}>
+      <Header title="Add subscription" onBack={() => navigation.goBack()} />
       <ScrollView keyboardShouldPersistTaps="handled">
         <SubscriptionFields value={draft} onChange={setDraft} />
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        <PrimaryButton label="Save" onPress={onSave} disabled={loading} />
+        {error ? <CustomText text={error} weight={FONTS.regular} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} /> : null}
+        <CustomButton text="Save" onPress={onSave} disabled={loading} />
         <View style={styles.cancel}>
-          <Text style={styles.cancelText} onPress={() => navigation.goBack()}>
-            Cancel
-          </Text>
+          <CustomText
+            text="Cancel"
+            color={COLORS.text_secondary}
+            size={SIZES.button}
+            line_height={SIZES.button_line}
+            onPress={() => navigation.goBack()}
+          />
         </View>
       </ScrollView>
-    </Screen>
+      </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  error: {
-    color: colors.navy,
-    marginBottom: 12,
-  },
-  cancel: {
-    alignItems: 'center',
-    paddingVertical: 16,
-  },
-  cancelText: {
-    color: colors.muted,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-});

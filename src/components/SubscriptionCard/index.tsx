@@ -1,9 +1,15 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../constants/colors';
-import { colorsForStatus, statusLabel } from '../../constants/statusColors';
+import {
+  Pressable,
+} from 'react-native';
+import CustomText from '../CustomText';
+import RowView from '../RowView';
+import { colorsForStatus, statusLabel } from '../../constants/status_colors';
+import { FONTS, SIZES, colors } from '../../constants/theme';
 import type { Subscription } from '../../types';
+import { common_styles } from '../../utils/common_styles';
 import { formatDate } from '../../utils/dates';
 import { formatMoney } from '../../utils/money';
+import { styles } from './styles';
 
 type Props = {
   item: Subscription;
@@ -22,64 +28,42 @@ export default function SubscriptionCard({ item, onPress }: Props) {
       accessibilityRole="button"
       onPress={onPress}
       style={styles.card}>
-      <View style={styles.top}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={[styles.badge, { backgroundColor: tone.background, color: tone.text }]}>
-          {statusLabel(item.status)}
-        </Text>
-      </View>
-      <Text style={styles.line}>Renews {renewal}</Text>
-      <Text style={styles.line}>Started {formatDate(item.startDate)}</Text>
-      <Text style={styles.price}>{formatMoney(item.price, item.currency)}</Text>
-      {item.note ? <Text style={styles.note}>{item.note}</Text> : null}
+      <RowView justify_content="space-between" gap={SIZES.padding2}>
+        <CustomText text={item.name} size={SIZES.subscription_name} line_height={SIZES.subscription_name_line} style={common_styles.flex_1} />
+        <CustomText
+          text={statusLabel(item.status)}
+          size={SIZES.field_label}
+          line_height={SIZES.field_label_line}
+          color={tone.text}
+          style={[styles.badge, { backgroundColor: tone.background }]}
+        />
+      </RowView>
+      <CustomText
+        text={`Renews ${renewal}`}
+        weight={FONTS.regular}
+        color={colors.text_secondary}
+        size={SIZES.supporting}
+        line_height={SIZES.supporting_line}
+        mt={SIZES.padding3}
+      />
+      <CustomText
+        text={`Started ${formatDate(item.startDate)}`}
+        weight={FONTS.regular}
+        color={colors.text_secondary}
+        size={SIZES.supporting}
+        line_height={SIZES.supporting_line}
+        mt={SIZES.padding3}
+      />
+      <CustomText text={formatMoney(item.price, item.currency)} size={SIZES.row_price} line_height={SIZES.row_price_line} mt={SIZES.padding / 2} />
+      {item.note ? (
+        <CustomText
+          text={item.note}
+          weight={FONTS.regular}
+          size={SIZES.body}
+          line_height={SIZES.body_line}
+          mt={SIZES.padding / 2}
+        />
+      ) : null}
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    marginBottom: 12,
-    padding: 16,
-  },
-  top: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12,
-  },
-  name: {
-    color: colors.navy,
-    flex: 1,
-    fontSize: 17,
-    fontWeight: '700',
-  },
-  badge: {
-    borderRadius: 999,
-    fontSize: 12,
-    fontWeight: '700',
-    overflow: 'hidden',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  line: {
-    color: colors.muted,
-    fontSize: 14,
-    marginTop: 8,
-  },
-  price: {
-    color: colors.navy,
-    fontSize: 16,
-    fontWeight: '700',
-    marginTop: 10,
-  },
-  note: {
-    color: colors.navy,
-    fontSize: 14,
-    lineHeight: 20,
-    marginTop: 10,
-  },
-});

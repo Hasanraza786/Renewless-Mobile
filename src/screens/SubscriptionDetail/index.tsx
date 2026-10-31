@@ -1,17 +1,23 @@
 import { useCallback } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  View,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Screen from '../../components/Screen';
-import ScreenHeader from '../../components/ScreenHeader';
+import Container from '../../components/Container';
+import Header from '../../components/Header';
 import StateView from '../../components/StateView';
-import { colors } from '../../constants/colors';
-import { colorsForStatus, statusLabel } from '../../constants/statusColors';
-import { loadSubscription, removeSubscriptionById } from '../../redux/actions/subscriptions';
+import CustomText from '../../components/CustomText';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { colorsForStatus, statusLabel } from '../../constants/status_colors';
+import { loadSubscription, removeSubscriptionById } from '../../redux/actions/subscriptions-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
 import { formatDate } from '../../utils/dates';
 import { formatMoney } from '../../utils/money';
+import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'SubscriptionDetail'>;
 
@@ -57,80 +63,71 @@ export default function SubscriptionDetailScreen({ navigation, route }: Props) {
         : '';
 
   return (
-    <Screen isAuth>
-      <ScreenHeader title="Subscription" onBack={() => navigation.goBack()} />
+    <Container is_auth>
+      <View style={styles.main_view}>
+      <Header title="Subscription" onBack={() => navigation.goBack()} />
       {status === 'loading' ? <StateView status="loading" message="Loading this subscription." /> : null}
       {status === 'failed' ? <StateView status="failed" message={error} onRetry={load} /> : null}
       {status === 'ready' && item && tone ? (
         <View style={styles.card}>
-          <Text style={styles.name}>{item.name}</Text>
-          <Text style={[styles.badge, { backgroundColor: tone.background, color: tone.text }]}>
-            {statusLabel(item.status)}
-          </Text>
-          <Text style={styles.line}>{formatMoney(item.price, item.currency)}</Text>
-          <Text style={styles.line}>Cycle {item.cycle}</Text>
-          <Text style={styles.line}>Started {formatDate(item.startDate)}</Text>
-          <Text style={styles.line}>Renews {renewal}</Text>
-          {item.note ? <Text style={styles.note}>{item.note}</Text> : null}
+          <CustomText text={item.name} size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} />
+          <CustomText
+            text={statusLabel(item.status)}
+            size={SIZES.field_label}
+            line_height={SIZES.field_label_line}
+            color={tone.text}
+            mt={SIZES.padding2}
+            style={[styles.badge, { backgroundColor: tone.background }]}
+          />
+          <CustomText
+            text={formatMoney(item.price, item.currency)}
+            size={SIZES.row_price}
+            line_height={SIZES.row_price_line}
+            mt={SIZES.padding2}
+          />
+          <CustomText
+            text={`Cycle ${item.cycle}`}
+            weight={FONTS.regular}
+            size={SIZES.supporting}
+            line_height={SIZES.supporting_line}
+            mt={SIZES.padding2}
+            transform="capitalize"
+          />
+          <CustomText
+            text={`Started ${formatDate(item.startDate)}`}
+            weight={FONTS.regular}
+            size={SIZES.supporting}
+            line_height={SIZES.supporting_line}
+            mt={SIZES.padding2}
+          />
+          <CustomText
+            text={`Renews ${renewal}`}
+            weight={FONTS.regular}
+            size={SIZES.supporting}
+            line_height={SIZES.supporting_line}
+            mt={SIZES.padding2}
+          />
+          {item.note ? (
+            <CustomText
+              text={item.note}
+              weight={FONTS.regular}
+              color={COLORS.text_secondary}
+              size={SIZES.body}
+              line_height={SIZES.body_line}
+              mt={SIZES.padding2}
+            />
+          ) : null}
           <Pressable
             onPress={() => navigation.navigate('EditSubscription', { id: item.id })}
             style={styles.action}>
-            <Text style={styles.actionText}>Edit</Text>
+            <CustomText text="Edit" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
           </Pressable>
           <Pressable onPress={onDelete} style={styles.action}>
-            <Text style={styles.delete}>Delete</Text>
+            <CustomText text="Delete" color={COLORS.expired} size={SIZES.button} line_height={SIZES.button_line} />
           </Pressable>
         </View>
       ) : null}
-    </Screen>
+      </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-  },
-  name: {
-    color: colors.navy,
-    fontSize: 24,
-    fontWeight: '700',
-  },
-  badge: {
-    alignSelf: 'flex-start',
-    borderRadius: 999,
-    fontWeight: '700',
-    marginTop: 12,
-    overflow: 'hidden',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  line: {
-    color: colors.navy,
-    fontSize: 16,
-    marginTop: 12,
-    textTransform: 'capitalize',
-  },
-  note: {
-    color: colors.muted,
-    fontSize: 15,
-    lineHeight: 22,
-    marginTop: 12,
-  },
-  action: {
-    marginTop: 16,
-  },
-  actionText: {
-    color: colors.mint,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  delete: {
-    color: colors.navy,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-});

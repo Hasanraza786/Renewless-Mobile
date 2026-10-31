@@ -1,0 +1,10 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const vm=require('node:vm');
+const path=require('node:path');
+function model(){const records=[{id:'a',status:'Active'},{id:'b',status:'Active'},{id:'c',status:'Cancelled'},{id:'d',status:'Expired'},{id:'e',status:'Active',trialEnded:true}];const prefs=new Map([['b',{mode:'off',days:0}]]);const ctx={document:{addEventListener(){}},subscriptionListData:()=>records,reminderPreferences:prefs,go(){},toast(){}};vm.createContext(ctx);vm.runInContext(fs.readFileSync(path.join(__dirname,'../dist/alerts.js'),'utf8'),ctx);return {ctx,prefs,run:code=>vm.runInContext(code,ctx)};}
+test('existing update preserves explicit custom Off and excludes ended records',()=>{const m=model();assert.equal(m.run('reminderApplyRecords().map(r=>r.id).join()'),'a');assert.equal(m.run('reminderApplyRecords(false).map(r=>r.id).join()'),'a,b');});
+test('new-subscriptions-only save changes account defaults without overwriting existing preferences',()=>{const m=model();m.run("finishReminderSettings({...accountReminders,timing:'7'})");assert.equal(m.run('accountReminders.timing'),'7');assert.equal(m.prefs.size,1);assert.equal(m.prefs.get('b').mode,'off');});
+test('bulk update only overrides custom preferences after explicit opt-out of preservation',()=>{const m=model();m.run("finishReminderSettings({...accountReminders,timing:'daily'},true,true)");assert.equal(m.prefs.get('a').mode,'daily');assert.equal(m.prefs.get('b').mode,'off');m.run("finishReminderSettings({...accountReminders,timing:'custom',customDays:10},true,false)");assert.equal(m.prefs.get('b').days,10);assert.equal(m.prefs.has('c'),false);assert.equal(m.prefs.has('e'),false);});
+test('master pause preserves individual reminder preferences; Reset demo restores account defaults',()=>{const m=model();m.run('finishReminderSettings({...accountReminders,enabled:false})');assert.equal(m.run('accountReminders.enabled'),false);assert.equal(m.prefs.get('b').mode,'off');m.run('resetAccountReminders()');assert.equal(m.run('accountReminders.enabled'),true);assert.equal(m.run('accountReminders.timing'),'3');});

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import {
   CodeField,
   Cursor,
@@ -7,12 +7,15 @@ import {
   useClearByFocusCell,
 } from 'react-native-confirmation-code-field';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import AuthLayout, { AuthError, AuthLink } from '../../components/AuthLayout';
-import PrimaryButton from '../../components/PrimaryButton';
-import { colors } from '../../constants/colors';
-import { resendOtp, verifyOtp } from '../../redux/actions/auth';
+import Container from '../../components/Container';
+import CustomButton from '../../components/CustomButton';
+import CustomText from '../../components/CustomText';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { resendOtp, verifyOtp } from '../../redux/actions/auth-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList } from '../../types';
+import { common_styles } from '../../utils/common_styles';
+import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Otp'>;
 
@@ -26,7 +29,7 @@ export default function OtpScreen({ navigation, route }: Props) {
   const [code, setCode] = useState('');
   const [resent, setResent] = useState('');
   const ref = useBlurOnFulfill({ value: code, cellCount: CELL_COUNT });
-  const [cellProps, getCellOnLayoutHandler] = useClearByFocusCell({
+  const [cell_props, getCellOnLayoutHandler] = useClearByFocusCell({
     value: code,
     setValue: setCode,
   });
@@ -42,75 +45,63 @@ export default function OtpScreen({ navigation, route }: Props) {
   }
 
   return (
-    <AuthLayout
-      title="Enter code"
-      subtitle={`Enter the 6-digit code for ${email}.`}
-      plain
-      logo>
-      <Text style={styles.label}>6-digit code</Text>
-      <CodeField
-        ref={ref}
-        {...cellProps}
-        value={code}
-        onChangeText={value => setCode(value.replace(/\D/g, '').slice(0, CELL_COUNT))}
-        cellCount={CELL_COUNT}
-        rootStyle={styles.codeField}
-        keyboardType="number-pad"
-        textContentType="oneTimeCode"
-        renderCell={({ index, symbol, isFocused }) => (
-          <Text
-            key={index}
-            style={[styles.cell, isFocused && styles.cellFocused]}
-            onLayout={getCellOnLayoutHandler(index)}>
-            {symbol || (isFocused ? <Cursor /> : null)}
-          </Text>
-        )}
-      />
-      <AuthLink label="Resend code" onPress={onResend} />
-      {resent ? <Text style={styles.resent}>{resent}</Text> : null}
-      <AuthError message={error} />
-      <PrimaryButton
-        label="Continue"
-        onPress={onContinue}
-        disabled={loading || code.length !== CELL_COUNT}
-      />
-    </AuthLayout>
+    <Container is_auth>
+      <View style={styles.main_view}>
+        <KeyboardAvoidingView style={common_styles.flex_1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.content}>
+            <CustomText text="Enter code" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
+            <CustomText
+              text={`Enter the 6-digit code for ${email}.`}
+              weight={FONTS.regular}
+              color={COLORS.text_secondary}
+              size={SIZES.body}
+              line_height={SIZES.body_line}
+              mb={SIZES.padding3 * 2}
+              mt={-SIZES.padding3}
+            />
+            <CustomText text="6-digit code" weight={FONTS.regular} size={SIZES.field_label} line_height={SIZES.field_label_line} mb={SIZES.padding3} />
+            <CodeField
+              ref={ref}
+              {...cell_props}
+              value={code}
+              onChangeText={value => setCode(value.replace(/\D/g, '').slice(0, CELL_COUNT))}
+              cellCount={CELL_COUNT}
+              rootStyle={styles.codeField}
+              keyboardType="number-pad"
+              textContentType="oneTimeCode"
+              renderCell={({ index, symbol, isFocused }) => (
+                <CustomText
+                  key={index}
+                  text={symbol || (isFocused ? <Cursor /> : null)}
+                  size={SIZES.screen_heading}
+                  align="center"
+                  line_height={SIZES.screen_heading_line}
+                  style={[styles.cell, isFocused && styles.cell_focused]}
+                  onLayout={getCellOnLayoutHandler(index)}
+                />
+              )}
+            />
+            <Pressable accessibilityRole="link" hitSlop={SIZES.padding3} onPress={onResend} style={styles.link}>
+              <CustomText text="Resend code" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
+            </Pressable>
+            {resent ? (
+              <CustomText text={resent} color={COLORS.primary} size={SIZES.supporting} line_height={SIZES.supporting_line} mt={SIZES.padding3} align="center" />
+            ) : null}
+            {error ? (
+              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} />
+            ) : null}
+            <CustomButton
+              text="Continue"
+              onPress={onContinue}
+              disabled={loading || code.length !== CELL_COUNT}
+            />
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  label: {
-    color: colors.navy,
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  codeField: {
-    justifyContent: 'space-between',
-    marginBottom: 4,
-  },
-  cell: {
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderRadius: 12,
-    borderWidth: 1,
-    color: colors.navy,
-    fontSize: 22,
-    fontWeight: '700',
-    height: 52,
-    lineHeight: 50,
-    overflow: 'hidden',
-    textAlign: 'center',
-    width: 46,
-  },
-  cellFocused: {
-    borderColor: colors.mint,
-  },
-  resent: {
-    color: colors.mint,
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 8,
-    textAlign: 'center',
-  },
-});

@@ -1,36 +1,43 @@
 import { useCallback } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  View,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Screen from '../../components/Screen';
-import ScreenHeader from '../../components/ScreenHeader';
+import RowView from '../../components/RowView';
+import Container from '../../components/Container';
+import Header from '../../components/Header';
 import StateView from '../../components/StateView';
-import { colors } from '../../constants/colors';
-import { addReview, dismissReview, loadReview } from '../../redux/actions/connectors';
+import CustomText from '../../components/CustomText';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { addReview, dismissReview, loadReview } from '../../redux/actions/connectors-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
 import { formatDate } from '../../utils/dates';
 import { formatMoney } from '../../utils/money';
+import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'Review'>;
 
-const noReviewItems: never[] = [];
+const no_review_items: never[] = [];
 
 export default function ReviewScreen({ navigation, route }: Props) {
   const dispatch = useAppDispatch();
   const items = useAppSelector(state =>
     state.connectors.reviewConnectorId === route.params.connectorId
       ? state.connectors.reviewItems
-      : noReviewItems,
+      : no_review_items,
   );
   const loading = useAppSelector(state => state.connectors.loading.review);
-  const loadError = useAppSelector(state => state.connectors.error.review);
+  const load_error = useAppSelector(state => state.connectors.error.review);
   const error = useAppSelector(state => state.connectors.reviewActionError);
-  const busyId = useAppSelector(state => state.connectors.reviewBusyId);
+  const busy_id = useAppSelector(state => state.connectors.reviewBusyId);
   const loaded = useAppSelector(
     state => state.connectors.reviewConnectorId === route.params.connectorId,
   );
-  const status = loading ? 'loading' : loadError ? 'failed' : loaded ? 'ready' : 'loading';
+  const status = loading ? 'loading' : load_error ? 'failed' : loaded ? 'ready' : 'loading';
 
   const load = useCallback(() => {
     dispatch(loadReview(route.params.connectorId));
@@ -42,88 +49,64 @@ export default function ReviewScreen({ navigation, route }: Props) {
     }, [load]),
   );
 
-  function act(itemId: string, kind: 'add' | 'dismiss') {
-    if (busyId) return;
-    dispatch(kind === 'add' ? addReview(itemId) : dismissReview(itemId));
+  function act(item_id: string, kind: 'add' | 'dismiss') {
+    if (busy_id) return;
+    dispatch(kind === 'add' ? addReview(item_id) : dismissReview(item_id));
   }
 
   return (
-    <Screen isAuth>
-      <ScreenHeader title="Review" onBack={() => navigation.goBack()} />
-      <Text style={styles.email}>{route.params.email}</Text>
+    <Container is_auth>
+      <View style={styles.main_view}>
+      <Header title="Review" onBack={() => navigation.goBack()} />
+      <CustomText
+        text={route.params.email}
+        weight={FONTS.regular}
+        color={COLORS.text_secondary}
+        size={SIZES.supporting}
+        line_height={SIZES.supporting_line}
+        mb={SIZES.padding2}
+      />
       {status === 'loading' ? <StateView status="loading" message="Loading found renewals." /> : null}
       {status === 'failed' ? (
-        <StateView status="failed" message={loadError} onRetry={load} />
+        <StateView status="failed" message={load_error} onRetry={load} />
       ) : null}
       {status === 'ready' ? (
         <ScrollView showsVerticalScrollIndicator={false}>
-          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {error ? <CustomText text={error} weight={FONTS.regular} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} /> : null}
           {items.length === 0 ? (
             <StateView status="empty" message="Nothing is waiting for review." />
           ) : (
             items.map(item => (
               <View key={item.id} style={styles.card}>
-                <Text style={styles.name}>{item.name}</Text>
-                <Text style={styles.line}>{formatMoney(item.price, item.currency)}</Text>
-                <Text style={styles.line}>{formatDate(item.nextRenewal)}</Text>
-                <View style={styles.actions}>
-                  <Pressable disabled={busyId === item.id} onPress={() => act(item.id, 'add')}>
-                    <Text style={styles.add}>Add</Text>
+                <CustomText text={item.name} size={SIZES.subscription_name} line_height={SIZES.subscription_name_line} />
+                <CustomText
+                  text={formatMoney(item.price, item.currency)}
+                  weight={FONTS.regular}
+                  size={SIZES.supporting}
+                  line_height={SIZES.supporting_line}
+                  mt={SIZES.padding3}
+                />
+                <CustomText
+                  text={formatDate(item.nextRenewal)}
+                  weight={FONTS.regular}
+                  size={SIZES.supporting}
+                  line_height={SIZES.supporting_line}
+                  mt={SIZES.padding3}
+                />
+                <RowView align_items="stretch" gap={SIZES.padding} mt={SIZES.padding2 + 2}>
+                  <Pressable disabled={busy_id === item.id} onPress={() => act(item.id, 'add')}>
+                    <CustomText text="Add" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
                   </Pressable>
-                  <Pressable disabled={busyId === item.id} onPress={() => act(item.id, 'dismiss')}>
-                    <Text style={styles.dismiss}>Dismiss</Text>
+                  <Pressable disabled={busy_id === item.id} onPress={() => act(item.id, 'dismiss')}>
+                    <CustomText text="Dismiss" size={SIZES.button} line_height={SIZES.button_line} />
                   </Pressable>
-                </View>
+                </RowView>
               </View>
             ))
           )}
         </ScrollView>
       ) : null}
-    </Screen>
+      </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  email: {
-    color: colors.muted,
-    fontSize: 14,
-    marginBottom: 12,
-  },
-  error: {
-    color: colors.navy,
-    marginBottom: 12,
-  },
-  card: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    marginBottom: 12,
-    padding: 16,
-  },
-  name: {
-    color: colors.navy,
-    fontSize: 18,
-    fontWeight: '700',
-  },
-  line: {
-    color: colors.navy,
-    fontSize: 15,
-    marginTop: 8,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 20,
-    marginTop: 14,
-  },
-  add: {
-    color: colors.mint,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  dismiss: {
-    color: colors.navy,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-});

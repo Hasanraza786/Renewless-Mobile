@@ -1,7 +1,9 @@
-import { API_BASE_URL as configuredUrl } from '@env';
+import Config from 'react-native-config';
 
-if (!configuredUrl) {
+const configured_url = Config.API_BASE_URL;
+
+if (!configured_url) {
   throw new Error('API_BASE_URL is missing. Set it in .env.');
 }
 
-export const API_BASE_URL = configuredUrl;
+export const API_BASE_URL = configured_url;

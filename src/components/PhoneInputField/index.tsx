@@ -1,27 +1,33 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  TextInput,
+  View,
+} from 'react-native';
 import CountryPicker, {
   FlagType,
   getAllCountries,
   type Country,
   type CountryCode,
 } from 'react-native-country-picker-modal';
-import { colors } from '../../constants/colors';
+import RowView from '../RowView';
+import CustomText from '../CustomText';
+import { FONTS, SIZES, colors } from '../../constants/theme';
+import { styles } from './styles';
 
 type Props = {
   phone: string;
-  dialCode: string;
+  dial_code: string;
   onChangePhone: (phone: string) => void;
-  onChangeDialCode: (dialCode: string) => void;
+  onChangeDialCode: (dial_code: string) => void;
 };
 
 export default function PhoneInputField({
   phone,
-  dialCode,
+  dial_code,
   onChangePhone,
   onChangeDialCode,
 }: Props) {
-  const [countryCode, setCountryCode] = useState<CountryCode>('US');
+  const [country_code, setCountryCode] = useState<CountryCode>('US');
   const [focused, setFocused] = useState(false);
 
   useEffect(() => {
@@ -32,16 +38,16 @@ export default function PhoneInputField({
         const match =
           countries.find(
             country =>
-              country.callingCode?.[0] === dialCode &&
-              (dialCode !== '1' || country.cca2 === 'US'),
-          ) || countries.find(country => country.callingCode?.[0] === dialCode);
+              country.callingCode?.[0] === dial_code &&
+              (dial_code !== '1' || country.cca2 === 'US'),
+          ) || countries.find(country => country.callingCode?.[0] === dial_code);
         if (match) setCountryCode(match.cca2);
       })
       .catch(() => undefined);
     return () => {
       active = false;
     };
-  }, [dialCode]);
+  }, [dial_code]);
 
   function onSelect(country: Country) {
     setCountryCode(country.cca2);
@@ -50,12 +56,20 @@ export default function PhoneInputField({
 
   return (
     <View style={styles.wrap}>
-      <Text style={styles.label}>
-        Phone number <Text style={styles.required}>*</Text>
-      </Text>
-      <View style={[styles.row, focused && styles.rowFocused]}>
+      <CustomText
+        text={
+          <>
+            Phone number <CustomText text="*" weight={FONTS.regular} color={colors.accent} size={SIZES.field_label} />
+          </>
+        }
+        weight={FONTS.regular}
+        size={SIZES.field_label}
+        line_height={SIZES.field_label_line}
+        mb={SIZES.padding3}
+      />
+      <RowView gap={0} style={[styles.row, focused && styles.row_focused]}>
         <CountryPicker
-          countryCode={countryCode}
+          countryCode={country_code}
           withFilter
           withFlag
           withCallingCode
@@ -64,58 +78,18 @@ export default function PhoneInputField({
           withCloseButton
           onSelect={onSelect}
         />
-        <Text style={styles.chevron}>▾</Text>
+        <CustomText text="▾" weight={FONTS.regular} color={colors.text_secondary} size={SIZES.field_label} mr={SIZES.padding3} />
         <TextInput
           value={phone}
           onChangeText={value => onChangePhone(value.replace(/\D/g, ''))}
           keyboardType="number-pad"
           placeholder="201 555 0123"
-          placeholderTextColor={colors.muted}
+          placeholderTextColor={colors.text_secondary}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           style={styles.input}
         />
-      </View>
+      </RowView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  wrap: {
-    marginBottom: 16,
-  },
-  label: {
-    color: colors.navy,
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  required: {
-    color: colors.mint,
-  },
-  row: {
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderRadius: 12,
-    borderWidth: 1,
-    flexDirection: 'row',
-    height: 52,
-    paddingHorizontal: 10,
-  },
-  rowFocused: {
-    borderColor: colors.mint,
-  },
-  chevron: {
-    color: colors.muted,
-    fontSize: 14,
-    marginRight: 8,
-  },
-  input: {
-    color: colors.navy,
-    flex: 1,
-    fontSize: 16,
-    height: 52,
-    paddingVertical: 0,
-  },
-});

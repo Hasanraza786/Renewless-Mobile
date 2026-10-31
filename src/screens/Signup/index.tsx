@@ -1,16 +1,20 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import AuthLayout, { AuthError, AuthPrompt } from '../../components/AuthLayout';
+import Container from '../../components/Container';
+import RowView from '../../components/RowView';
 import PhoneInputField from '../../components/PhoneInputField';
-import PrimaryButton from '../../components/PrimaryButton';
-import TextField from '../../components/TextField';
-import { colors } from '../../constants/colors';
-import { signup } from '../../redux/actions/auth';
-import { setAuthError } from '../../redux/slices/authSlice';
+import CustomButton from '../../components/CustomButton';
+import CustomText from '../../components/CustomText';
+import InputField from '../../components/InputField';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { signup } from '../../redux/actions/auth-action';
+import { setAuthError } from '../../redux/slices/auth-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList, Gender } from '../../types';
+import { common_styles } from '../../utils/common_styles';
 import { joinPhone } from '../../utils/phone';
+import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
 
@@ -29,9 +33,10 @@ export default function SignupScreen({ navigation }: Props) {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const [phone, setPhone] = useState('');
-  const [dialCode, setDialCode] = useState('1');
-  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [dial_code, setDialCode] = useState('1');
+  const [date_of_birth, setDateOfBirth] = useState('');
   const [gender, setGender] = useState<Gender | null>(null);
+
   function onSubmit() {
     if (password !== confirm) {
       dispatch(setAuthError({ key: 'signup', value: 'Passwords do not match' }));
@@ -42,115 +47,106 @@ export default function SignupScreen({ navigation }: Props) {
         name,
         email,
         password,
-        phone: joinPhone(dialCode, phone),
-        dateOfBirth: dateOfBirth.trim() || undefined,
+        phone: joinPhone(dial_code, phone),
+        dateOfBirth: date_of_birth.trim() || undefined,
         gender,
       }),
     );
   }
 
   return (
-    <AuthLayout
-      title="Sign up"
-      plain
-      logo
-      footer={
-        <AuthPrompt
-          label="Already have an account?"
-          link="Log in"
-          onPress={() => navigation.navigate('Login')}
-        />
-      }>
-      <TextField label="Name" value={name} onChangeText={setName} textContentType="name" />
-      <TextField
-        label="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-        autoCorrect={false}
-        keyboardType="email-address"
-        textContentType="emailAddress"
-      />
-      <TextField
-        label="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        textContentType="newPassword"
-      />
-      <TextField
-        label="Confirm password"
-        value={confirm}
-        onChangeText={setConfirm}
-        secureTextEntry
-        textContentType="newPassword"
-      />
-      <PhoneInputField
-        phone={phone}
-        dialCode={dialCode}
-        onChangePhone={setPhone}
-        onChangeDialCode={setDialCode}
-      />
-      <TextField
-        label="Date of birth (optional)"
-        value={dateOfBirth}
-        onChangeText={setDateOfBirth}
-        placeholder="YYYY-MM-DD"
-      />
-      <Text style={styles.genderLabel}>Gender (optional)</Text>
-      <View style={styles.choices}>
-        {GENDERS.map(choice => {
-          const selected = gender === choice.value;
-          return (
-            <Pressable
-              key={choice.value}
-              onPress={() => setGender(selected ? null : choice.value)}
-              style={[styles.choice, selected && styles.choiceOn]}>
-              <Text style={[styles.choiceText, selected && styles.choiceTextOn]}>
-                {choice.label}
-              </Text>
-            </Pressable>
-          );
-        })}
+    <Container is_auth>
+      <View style={styles.main_view}>
+        <KeyboardAvoidingView style={common_styles.flex_1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            keyboardDismissMode="interactive"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.content}>
+            <CustomText text="Sign up" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
+            <InputField label="Name" value={name} onChangeText={setName} textContentType="name" />
+            <InputField
+              label="Email"
+              value={email}
+              onChangeText={setEmail}
+              autoCapitalize="none"
+              autoCorrect={false}
+              keyboardType="email-address"
+              textContentType="emailAddress"
+            />
+            <InputField
+              label="Password"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              textContentType="newPassword"
+            />
+            <InputField
+              label="Confirm password"
+              value={confirm}
+              onChangeText={setConfirm}
+              secureTextEntry
+              textContentType="newPassword"
+            />
+            <PhoneInputField
+              phone={phone}
+              dial_code={dial_code}
+              onChangePhone={setPhone}
+              onChangeDialCode={setDialCode}
+            />
+            <InputField
+              label="Date of birth (optional)"
+              value={date_of_birth}
+              onChangeText={setDateOfBirth}
+              placeholder="YYYY-MM-DD"
+            />
+            <CustomText text="Gender (optional)" weight={FONTS.regular} size={SIZES.field_label} line_height={SIZES.field_label_line} mb={SIZES.padding3} />
+            <RowView align_items="stretch" gap={SIZES.padding3} style={{ marginBottom: SIZES.padding3 * 2 }}>
+              {GENDERS.map(choice => {
+                const selected = gender === choice.value;
+                return (
+                  <Pressable
+                    key={choice.value}
+                    onPress={() => setGender(selected ? null : choice.value)}
+                    style={[styles.choice, selected && styles.choice_on]}>
+                    <CustomText
+                      text={choice.label}
+                      size={SIZES.button}
+                      line_height={SIZES.button_line}
+                      weight={selected ? FONTS.regular : FONTS.medium}
+                      color={selected ? COLORS.on_accent : COLORS.text_primary}
+                    />
+                  </Pressable>
+                );
+              })}
+            </RowView>
+            {error ? (
+              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} />
+            ) : null}
+            <CustomButton text="Create account" onPress={onSubmit} disabled={loading} />
+            <CustomText
+              text={
+                <>
+                  Already have an account?{' '}
+                  <CustomText
+                    text="Log in"
+                    color={COLORS.primary}
+                    size={SIZES.button}
+                    line_height={SIZES.button_line}
+                    onPress={() => navigation.navigate('Login')}
+                  />
+                </>
+              }
+              weight={FONTS.regular}
+              color={COLORS.text_secondary}
+              size={SIZES.body}
+              line_height={SIZES.body_line}
+              align="center"
+              mt={SIZES.padding2 * 2}
+            />
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
-      <AuthError message={error} />
-      <PrimaryButton label="Create account" onPress={onSubmit} disabled={loading} />
-    </AuthLayout>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  genderLabel: {
-    color: colors.navy,
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  choices: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 16,
-  },
-  choice: {
-    alignItems: 'center',
-    backgroundColor: colors.background,
-    borderColor: colors.border,
-    borderRadius: 12,
-    borderWidth: 1,
-    flex: 1,
-    justifyContent: 'center',
-    minHeight: 44,
-    paddingHorizontal: 8,
-  },
-  choiceOn: {
-    backgroundColor: colors.navy,
-    borderColor: colors.navy,
-  },
-  choiceText: {
-    color: colors.navy,
-    fontWeight: '600',
-  },
-  choiceTextOn: {
-    color: colors.white,
-  },
-});

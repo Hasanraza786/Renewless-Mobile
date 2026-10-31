@@ -1,16 +1,24 @@
 import { useCallback } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  View,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Screen from '../../components/Screen';
+import RowView from '../../components/RowView';
+import Container from '../../components/Container';
 import StateView from '../../components/StateView';
-import { colors } from '../../constants/colors';
-import { loadConnectors } from '../../redux/actions/connectors';
+import CustomText from '../../components/CustomText';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { loadConnectors } from '../../redux/actions/connectors-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, TabParamList } from '../../types';
+import { common_styles } from '../../utils/common_styles';
 import { formatDate } from '../../utils/dates';
+import { styles } from './styles';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, 'Connectors'>,
@@ -40,13 +48,14 @@ export default function ConnectorsScreen({ navigation }: Props) {
   );
 
   return (
-    <Screen>
-      <View style={styles.header}>
-        <Text style={styles.title}>Connectors</Text>
+    <Container>
+      <View style={styles.main_view}>
+      <RowView gap={0} style={{ marginBottom: SIZES.padding2 }}>
+        <CustomText text="Connectors" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} style={common_styles.flex_1} />
         <Pressable onPress={() => navigation.navigate('AddConnector')}>
-          <Text style={styles.add}>Add</Text>
+          <CustomText text="Add" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
         </Pressable>
-      </View>
+      </RowView>
       {status === 'loading' ? <StateView status="loading" message="Loading accounts." /> : null}
       {status === 'failed' ? <StateView status="failed" message={error} onRetry={load} /> : null}
       {status === 'ready' ? (
@@ -62,51 +71,30 @@ export default function ConnectorsScreen({ navigation }: Props) {
                 navigation.navigate('Review', { connectorId: item.id, email: item.email })
               }
               style={styles.card}>
-              <Text style={styles.email}>{item.email}</Text>
-              <Text style={styles.meta}>{item.status}</Text>
-              <Text style={styles.meta}>Last sync {syncLabel(item.lastSync)}</Text>
+              <CustomText text={item.email} size={SIZES.subscription_name} line_height={SIZES.subscription_name_line} />
+              <CustomText
+                text={item.status}
+                weight={FONTS.regular}
+                color={COLORS.text_secondary}
+                size={SIZES.supporting}
+                line_height={SIZES.supporting_line}
+                mt={SIZES.padding2 / 2}
+                transform="capitalize"
+              />
+              <CustomText
+                text={`Last sync ${syncLabel(item.lastSync)}`}
+                weight={FONTS.regular}
+                color={COLORS.text_secondary}
+                size={SIZES.supporting}
+                line_height={SIZES.supporting_line}
+                mt={SIZES.padding2 / 2}
+                transform="capitalize"
+              />
             </Pressable>
           )}
         />
       ) : null}
-    </Screen>
+      </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  title: {
-    color: colors.navy,
-    flex: 1,
-    fontSize: 22,
-    fontWeight: '700',
-  },
-  add: {
-    color: colors.mint,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  card: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    marginBottom: 12,
-    padding: 16,
-  },
-  email: {
-    color: colors.navy,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  meta: {
-    color: colors.muted,
-    fontSize: 14,
-    marginTop: 6,
-    textTransform: 'capitalize',
-  },
-});

@@ -1,7 +1,13 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../constants/colors';
+import {
+  Pressable,
+  View,
+} from 'react-native';
 import type { Cycle } from '../../types';
-import TextField from '../TextField';
+import CustomText from '../CustomText';
+import RowView from '../RowView';
+import InputField from '../InputField';
+import { FONTS, SIZES, colors } from '../../constants/theme';
+import { styles } from './styles';
 
 const CYCLES: Cycle[] = ['weekly', 'monthly', 'yearly', 'custom'];
 
@@ -27,47 +33,54 @@ export default function SubscriptionFields({ value, onChange }: Props) {
 
   return (
     <View>
-      <TextField label="Company" value={value.name} onChangeText={name => set('name', name)} />
-      <TextField
+      <InputField label="Company" value={value.name} onChangeText={name => set('name', name)} />
+      <InputField
         label="Price"
         value={value.price}
         onChangeText={price => set('price', price)}
         keyboardType="decimal-pad"
       />
-      <TextField
+      <InputField
         label="Currency"
         value={value.currency}
         onChangeText={currency => set('currency', currency.toUpperCase())}
         autoCapitalize="characters"
         maxLength={3}
       />
-      <Text style={styles.label}>Billing cycle</Text>
-      <View style={styles.cycles}>
+      <CustomText text="Billing cycle" weight={FONTS.regular} size={SIZES.field_label} line_height={SIZES.field_label_line} mb={SIZES.padding3} />
+      <RowView align_items="stretch" gap={SIZES.padding3} style={{ flexWrap: 'wrap', marginBottom: SIZES.padding3 * 2 }}>
         {CYCLES.map(cycle => {
           const selected = value.cycle === cycle;
           return (
             <Pressable
               key={cycle}
               onPress={() => set('cycle', cycle)}
-              style={[styles.chip, selected && styles.chipOn]}>
-              <Text style={[styles.chipText, selected && styles.chipTextOn]}>{cycle}</Text>
+              style={[styles.chip, selected && styles.chip_on]}>
+              <CustomText
+                text={cycle}
+                size={SIZES.button}
+                line_height={SIZES.button_line}
+                weight={selected ? FONTS.regular : FONTS.medium}
+                color={selected ? colors.on_accent : colors.text}
+                transform="capitalize"
+              />
             </Pressable>
           );
         })}
-      </View>
-      <TextField
+      </RowView>
+      <InputField
         label="Start date"
         value={value.startDate}
-        onChangeText={startDate => set('startDate', startDate)}
+        onChangeText={start_date => set('startDate', start_date)}
         placeholder="YYYY-MM-DD"
       />
-      <TextField
+      <InputField
         label="Next renewal date"
         value={value.nextRenewal}
-        onChangeText={nextRenewal => set('nextRenewal', nextRenewal)}
+        onChangeText={next_renewal => set('nextRenewal', next_renewal)}
         placeholder="YYYY-MM-DD"
       />
-      <TextField
+      <InputField
         label="Note (optional)"
         value={value.note}
         onChangeText={note => set('note', note)}
@@ -76,37 +89,3 @@ export default function SubscriptionFields({ value, onChange }: Props) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  label: {
-    color: colors.navy,
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  cycles: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
-    marginBottom: 16,
-  },
-  chip: {
-    borderColor: colors.border,
-    borderRadius: 999,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  chipOn: {
-    backgroundColor: colors.navy,
-    borderColor: colors.navy,
-  },
-  chipText: {
-    color: colors.navy,
-    fontWeight: '600',
-    textTransform: 'capitalize',
-  },
-  chipTextOn: {
-    color: colors.white,
-  },
-});

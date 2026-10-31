@@ -1,6 +1,11 @@
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
-import { colors } from '../../constants/colors';
-import PrimaryButton from '../PrimaryButton';
+import {
+  ActivityIndicator,
+  View,
+} from 'react-native';
+import { FONTS, SIZES, colors } from '../../constants/theme';
+import CustomButton from '../CustomButton';
+import CustomText from '../CustomText';
+import { styles } from './styles';
 
 type Props = {
   status: 'loading' | 'failed' | 'empty';
@@ -11,23 +16,17 @@ type Props = {
 export default function StateView({ status, message, onRetry }: Props) {
   return (
     <View style={styles.wrap}>
-      {status === 'loading' ? <ActivityIndicator color={colors.mint} /> : null}
-      <Text style={styles.message}>{message}</Text>
+      {status === 'loading' ? <ActivityIndicator color={colors.accent} /> : null}
+      <CustomText
+        text={message}
+        weight={FONTS.regular}
+        color={colors.text_secondary}
+        size={SIZES.body}
+        line_height={SIZES.body_line}
+      />
       {status === 'failed' && onRetry ? (
-        <PrimaryButton label="Try again" onPress={onRetry} />
+        <CustomButton text="Try again" onPress={onRetry} />
       ) : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  wrap: {
-    gap: 16,
-    paddingVertical: 28,
-  },
-  message: {
-    color: colors.muted,
-    fontSize: 16,
-    lineHeight: 22,
-  },
-});

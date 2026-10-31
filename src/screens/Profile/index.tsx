@@ -1,15 +1,20 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import {
+  Pressable,
+  View,
+} from 'react-native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Screen from '../../components/Screen';
-import { colors } from '../../constants/colors';
-import { logout } from '../../redux/actions/auth';
-import { selectUser } from '../../redux/slices/profileSlice';
+import Container from '../../components/Container';
+import CustomText from '../../components/CustomText';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { logout } from '../../redux/actions/auth-action';
+import { selectUser } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, Gender, TabParamList } from '../../types';
 import { formatDate } from '../../utils/dates';
 import { fullPhone } from '../../utils/phone';
+import { styles } from './styles';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, 'Profile'>,
@@ -31,8 +36,9 @@ export default function ProfileScreen({ navigation }: Props) {
   }
 
   return (
-    <Screen>
-      <Text style={styles.title}>Profile</Text>
+    <Container>
+      <View style={styles.main_view}>
+      <CustomText text="Profile" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} mb={SIZES.padding3 * 2} />
       {user ? (
         <View style={styles.card}>
           <Row label="Name" value={user.name} />
@@ -45,66 +51,27 @@ export default function ProfileScreen({ navigation }: Props) {
         </View>
       ) : null}
       <Pressable onPress={() => navigation.navigate('EditProfile')} style={styles.action}>
-        <Text style={styles.actionText}>Edit profile</Text>
+        <CustomText text="Edit profile" color={COLORS.primary} size={SIZES.button}
+        line_height={SIZES.button_line} />
       </Pressable>
       <Pressable onPress={() => navigation.navigate('ChangePassword')} style={styles.action}>
-        <Text style={styles.actionText}>Change password</Text>
+        <CustomText text="Change password" color={COLORS.primary} size={SIZES.button}
+        line_height={SIZES.button_line} />
       </Pressable>
       <Pressable onPress={onLogout} style={styles.action}>
-        <Text style={styles.logout}>Log out</Text>
+        <CustomText text="Log out" size={SIZES.button}
+        line_height={SIZES.button_line} />
       </Pressable>
-    </Screen>
+      </View>
+    </Container>
   );
 }
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.row}>
-      <Text style={styles.label}>{label}</Text>
-      <Text style={styles.value}>{value}</Text>
+      <CustomText text={label} color={COLORS.text_secondary} weight={FONTS.regular} size={SIZES.supporting} line_height={SIZES.supporting_line} />
+      <CustomText text={value} weight={FONTS.regular} size={SIZES.body} line_height={SIZES.body_line} mt={SIZES.padding3 / 2} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  title: {
-    color: colors.navy,
-    fontSize: 22,
-    fontWeight: '700',
-    marginBottom: 16,
-  },
-  card: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    marginBottom: 8,
-    padding: 16,
-  },
-  row: {
-    marginBottom: 14,
-  },
-  label: {
-    color: colors.muted,
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  value: {
-    color: colors.navy,
-    fontSize: 16,
-    marginTop: 4,
-  },
-  action: {
-    marginTop: 16,
-  },
-  actionText: {
-    color: colors.mint,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  logout: {
-    color: colors.navy,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-});

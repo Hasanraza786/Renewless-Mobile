@@ -8,7 +8,7 @@ import RootNavigator from './src/navigation/RootNavigator';
 function App() {
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle="light-content" />
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <RootNavigator />

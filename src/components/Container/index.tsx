@@ -1,66 +1,39 @@
 import type { ReactNode } from 'react';
 import {
-  ScrollView,
   StatusBar,
-  StyleSheet,
   View,
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
-import { colors } from '../../constants/colors';
+import { colors } from '../../constants/theme';
+import { common_styles } from '../../utils/common_styles';
+import { styles } from './styles';
 
 type Props = {
-  isScroll?: boolean;
   children?: ReactNode;
   style?: StyleProp<ViewStyle>;
   background?: string;
-  barStyle?: 'dark-content' | 'light-content' | 'default';
-  isAuth?: boolean;
+  bar_style?: 'dark-content' | 'light-content' | 'default';
+  is_auth?: boolean;
   edges?: readonly Edge[];
 };
 
 export default function Container({
-  isScroll = false,
   children,
   style,
   background,
-  barStyle,
-  isAuth = false,
+  bar_style,
+  is_auth = false,
   edges,
 }: Props) {
-  const backgroundColor = background || colors.background;
-  const resolvedEdges: Edge[] =
-    edges != null
-      ? [...edges]
-      : isAuth
-        ? ['left', 'top', 'right', 'bottom']
-        : ['left', 'top', 'right'];
+  const background_color = background || colors.background;
+  const resolved_edges: Edge[] = edges != null ? [...edges] : is_auth ? ['left', 'top', 'right', 'bottom'] : ['left', 'top', 'right'];
 
   return (
-    <SafeAreaView edges={resolvedEdges} style={[styles.safeArea, { backgroundColor }]}>
-      <StatusBar barStyle={barStyle || 'dark-content'} />
-      {isScroll ? (
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.flex}
-          style={[styles.flex, style]}>
-          {children}
-        </ScrollView>
-      ) : (
-        <View style={[styles.flex, style]}>{children}</View>
-      )}
+    <SafeAreaView edges={resolved_edges} style={[styles.safe_area, { backgroundColor: background_color }]}>
+      <StatusBar barStyle={bar_style || 'light-content'} />
+      <View style={[common_styles.flex_1, style]}>{children}</View>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
-  flex: {
-    flex: 1,
-  },
-});

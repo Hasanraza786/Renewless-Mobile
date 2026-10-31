@@ -1,15 +1,20 @@
 import { useCallback } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  View,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Screen from '../../components/Screen';
-import ScreenHeader from '../../components/ScreenHeader';
+import Container from '../../components/Container';
+import Header from '../../components/Header';
 import StateView from '../../components/StateView';
-import { colors } from '../../constants/colors';
-import { loadNotifications } from '../../redux/actions/notifications';
+import CustomText from '../../components/CustomText';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { loadNotifications } from '../../redux/actions/notifications-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
 import { formatDate } from '../../utils/dates';
+import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'Notifications'>;
 
@@ -31,8 +36,9 @@ export default function NotificationsScreen({ navigation }: Props) {
   );
 
   return (
-    <Screen isAuth>
-      <ScreenHeader title="Notifications" onBack={() => navigation.goBack()} />
+    <Container is_auth>
+      <View style={styles.main_view}>
+      <Header title="Notifications" onBack={() => navigation.goBack()} />
       {status === 'loading' ? <StateView status="loading" message="Loading notices." /> : null}
       {status === 'failed' ? <StateView status="failed" message={error} onRetry={load} /> : null}
       {status === 'ready' && items.length === 0 ? (
@@ -44,37 +50,21 @@ export default function NotificationsScreen({ navigation }: Props) {
           keyExtractor={item => item.id}
           renderItem={({ item }) => (
             <View style={styles.row}>
-              <Text style={styles.name}>{item.name}</Text>
-              <Text style={styles.date}>{formatDate(item.date)}</Text>
-              <Text style={styles.kind}>{item.estimated ? 'Estimated' : 'Confirmed'}</Text>
+              <CustomText text={item.name} size={SIZES.subscription_name} line_height={SIZES.subscription_name_line} />
+              <CustomText text={formatDate(item.date)} weight={FONTS.regular} size={SIZES.supporting} line_height={SIZES.supporting_line} mt={SIZES.padding2 / 2} />
+              <CustomText
+                text={item.estimated ? 'Estimated' : 'Confirmed'}
+                weight={FONTS.regular}
+                color={COLORS.text_secondary}
+                size={SIZES.supporting}
+                line_height={SIZES.supporting_line}
+                mt={SIZES.padding3 / 2}
+              />
             </View>
           )}
         />
       ) : null}
-    </Screen>
+      </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderRadius: 16,
-    borderWidth: 1,
-    marginBottom: 12,
-    padding: 16,
-  },
-  name: {
-    color: colors.navy,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  date: {
-    color: colors.navy,
-    marginTop: 6,
-  },
-  kind: {
-    color: colors.muted,
-    marginTop: 4,
-  },
-});

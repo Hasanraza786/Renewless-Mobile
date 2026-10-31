@@ -1,0 +1,83 @@
+import { colors } from '../../constants/theme';
+import { StyleSheet } from 'react-native';
+
+export const styles = StyleSheet.create({
+  main_view: {
+    flex: 1,
+    paddingBottom: 26,
+    paddingHorizontal: 22,
+    paddingTop: 7,
+  },
+  body: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingBottom: 18,
+    paddingHorizontal: 2,
+    paddingTop: 4,
+  },
+  halo: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    borderColor: colors.accent_tile,
+    borderRadius: 56,
+    borderWidth: 1,
+    height: 112,
+    justifyContent: 'center',
+    marginBottom: 24,
+    marginTop: 12,
+    width: 112,
+  },
+  badge: {
+    alignItems: 'center',
+    backgroundColor: colors.accent,
+    borderColor: colors.background,
+    borderRadius: 15,
+    borderWidth: 3,
+    bottom: 2,
+    height: 30,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: -1,
+    width: 30,
+  },
+  summary: {
+    backgroundColor: colors.card,
+    borderColor: colors.accent_border,
+    borderRadius: 16,
+    borderWidth: 1,
+    flexDirection: 'row',
+    gap: 12,
+    padding: 16,
+  },
+  split: {
+    borderLeftColor: colors.line_faint,
+    borderLeftWidth: 1,
+    flex: 1.35,
+    gap: 8,
+    paddingLeft: 14,
+  },
+  stat: {
+    flex: 1,
+    gap: 8,
+  },
+  next: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 8,
+    paddingHorizontal: 4,
+    paddingVertical: 16,
+  },
+  logo: {
+    alignItems: 'center',
+    backgroundColor: colors.logo_tile,
+    borderRadius: 10,
+    height: 36,
+    justifyContent: 'center',
+    width: 34,
+  },
+  footer: {
+    paddingBottom: 14,
+    paddingTop: 12,
+  },
+});

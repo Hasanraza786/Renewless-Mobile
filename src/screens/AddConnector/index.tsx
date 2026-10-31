@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import PrimaryButton from '../../components/PrimaryButton';
-import Screen from '../../components/Screen';
-import ScreenHeader from '../../components/ScreenHeader';
-import TextField from '../../components/TextField';
-import { colors } from '../../constants/colors';
-import { saveConnector } from '../../redux/actions/connectors';
+import CustomButton from '../../components/CustomButton';
+import Container from '../../components/Container';
+import Header from '../../components/Header';
+import CustomText from '../../components/CustomText';
+import InputField from '../../components/InputField';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { saveConnector } from '../../redux/actions/connectors-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { styles } from './styles';
 import type { AppStackParamList } from '../../types';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'AddConnector'>;
@@ -23,33 +25,27 @@ export default function AddConnectorScreen({ navigation }: Props) {
   }
 
   return (
-    <Screen isAuth>
-      <ScreenHeader title="Add connector" onBack={() => navigation.goBack()} />
-      <Text style={styles.copy}>
-        Renewless reads renewal mail from this inbox. Enter the Gmail address to connect.
-      </Text>
-      <TextField
+    <Container is_auth>
+      <View style={styles.main_view}>
+      <Header title="Add connector" onBack={() => navigation.goBack()} />
+      <CustomText
+        text="Renewless reads renewal mail from this inbox. Enter the Gmail address to connect."
+        weight={FONTS.regular}
+        color={COLORS.text_secondary}
+        size={SIZES.body}
+        line_height={SIZES.body_line}
+        mb={SIZES.padding3 * 2}
+      />
+      <InputField
         label="Gmail address"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
         keyboardType="email-address"
       />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <PrimaryButton label="Save" onPress={onSubmit} disabled={loading} />
-    </Screen>
+      {error ? <CustomText text={error} weight={FONTS.regular} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} /> : null}
+      <CustomButton text="Save" onPress={onSubmit} disabled={loading} />
+      </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  copy: {
-    color: colors.muted,
-    fontSize: 16,
-    lineHeight: 22,
-    marginBottom: 16,
-  },
-  error: {
-    color: colors.navy,
-    marginBottom: 12,
-  },
-});

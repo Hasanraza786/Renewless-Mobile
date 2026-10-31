@@ -1,18 +1,20 @@
 import { useCallback, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import PrimaryButton from '../../components/PrimaryButton';
-import Screen from '../../components/Screen';
-import ScreenHeader from '../../components/ScreenHeader';
+import CustomButton from '../../components/CustomButton';
+import Container from '../../components/Container';
+import Header from '../../components/Header';
 import StateView from '../../components/StateView';
 import SubscriptionFields, {
   type SubscriptionDraft,
 } from '../../components/SubscriptionFields';
-import { colors } from '../../constants/colors';
-import { loadSubscriptionForEdit, saveSubscriptionEdits } from '../../redux/actions/subscriptions';
+import CustomText from '../../components/CustomText';
+import { FONTS, SIZES } from '../../constants/theme';
+import { loadSubscriptionForEdit, saveSubscriptionEdits } from '../../redux/actions/subscriptions-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
+import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'EditSubscription'>;
 
@@ -22,11 +24,11 @@ export default function EditSubscriptionScreen({ navigation, route }: Props) {
     state.subscriptions.current?.id === route.params.id ? state.subscriptions.current : null,
   );
   const loading = useAppSelector(state => state.subscriptions.loading.edit);
-  const loadError = useAppSelector(state => state.subscriptions.error.edit);
-  const saveError = useAppSelector(state => state.subscriptions.error.update);
+  const load_error = useAppSelector(state => state.subscriptions.error.edit);
+  const save_error = useAppSelector(state => state.subscriptions.error.update);
   const saving = useAppSelector(state => state.subscriptions.loading.update);
   const [draft, setDraft] = useState<SubscriptionDraft | null>(null);
-  const [draftId, setDraftId] = useState('');
+  const [draft_id, setDraftId] = useState('');
 
   const load = useCallback(() => {
     dispatch(loadSubscriptionForEdit(route.params.id));
@@ -39,7 +41,7 @@ export default function EditSubscriptionScreen({ navigation, route }: Props) {
   );
 
   useEffect(() => {
-    if (!current || draftId === current.id) return;
+    if (!current || draft_id === current.id) return;
     setDraft({
       name: current.name,
       price: String(current.price),
@@ -50,7 +52,7 @@ export default function EditSubscriptionScreen({ navigation, route }: Props) {
       note: current.note || '',
     });
     setDraftId(current.id);
-  }, [current, draftId]);
+  }, [current, draft_id]);
 
   function onSave() {
     if (!draft) return;
@@ -72,28 +74,25 @@ export default function EditSubscriptionScreen({ navigation, route }: Props) {
   }
 
   return (
-    <Screen isAuth>
-      <ScreenHeader title="Edit subscription" onBack={() => navigation.goBack()} />
-      {loading || (!draft && !loadError) ? (
+    <Container is_auth>
+      <View style={styles.main_view}>
+      <Header title="Edit subscription" onBack={() => navigation.goBack()} />
+      {loading || (!draft && !load_error) ? (
         <StateView status="loading" message="Loading this subscription." />
       ) : null}
-      {!loading && loadError && !draft ? (
-        <StateView status="failed" message={loadError} onRetry={load} />
+      {!loading && load_error && !draft ? (
+        <StateView status="failed" message={load_error} onRetry={load} />
       ) : null}
       {!loading && draft ? (
         <ScrollView keyboardShouldPersistTaps="handled">
           <SubscriptionFields value={draft} onChange={setDraft} />
-          {saveError ? <Text style={styles.error}>{saveError}</Text> : null}
-          <PrimaryButton label="Save" onPress={onSave} disabled={saving} />
+          {save_error ? (
+            <CustomText text={save_error} weight={FONTS.regular} size={SIZES.body} line_height={SIZES.body_line} mb={SIZES.padding2} />
+          ) : null}
+          <CustomButton text="Save" onPress={onSave} disabled={saving} />
         </ScrollView>
       ) : null}
-    </Screen>
+      </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  error: {
-    color: colors.navy,
-    marginBottom: 12,
-  },
-});

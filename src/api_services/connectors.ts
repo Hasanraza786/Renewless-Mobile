@@ -13,21 +13,21 @@ export function createConnector(token: string, email: string) {
   });
 }
 
-export function listReview(token: string, connectorId: string) {
-  return request<{ items: ReviewItem[] }>(`/connectors/${connectorId}/review`, {
+export function listReview(token: string, connector_id: string) {
+  return request<{ items: ReviewItem[] }>(`/connectors/${connector_id}/review`, {
     token,
   });
 }
 
-export function addReviewItem(token: string, itemId: string) {
-  return request<Subscription>(`/review/${itemId}/add`, {
+export function addReviewItem(token: string, item_id: string) {
+  return request<Subscription>(`/review/${item_id}/add`, {
     method: 'POST',
     token,
   });
 }
 
-export function dismissReviewItem(token: string, itemId: string) {
-  return request<{ ok: true }>(`/review/${itemId}/dismiss`, {
+export function dismissReviewItem(token: string, item_id: string) {
+  return request<{ ok: true }>(`/review/${item_id}/dismiss`, {
     method: 'POST',
     token,
   });

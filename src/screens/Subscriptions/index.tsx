@@ -1,17 +1,26 @@
 import { useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  TextInput,
+  View,
+} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Screen from '../../components/Screen';
+import RowView from '../../components/RowView';
+import Container from '../../components/Container';
 import StateView from '../../components/StateView';
 import SubscriptionCard from '../../components/SubscriptionCard';
-import { colors } from '../../constants/colors';
-import { colorsForStatus, statusLabel } from '../../constants/statusColors';
-import { loadSubscriptions } from '../../redux/actions/subscriptions';
+import CustomText from '../../components/CustomText';
+import { COLORS, SIZES } from '../../constants/theme';
+import { colorsForStatus, statusLabel } from '../../constants/status_colors';
+import { loadSubscriptions } from '../../redux/actions/subscriptions-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, SubscriptionStatus, TabParamList } from '../../types';
+import { common_styles } from '../../utils/common_styles';
+import { styles } from './styles';
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, 'Subscriptions'>,
@@ -49,21 +58,22 @@ export default function SubscriptionsScreen({ navigation }: Props) {
   }, [filter, items, query]);
 
   return (
-    <Screen>
-      <View style={styles.header}>
-        <Text style={styles.title}>Subscriptions</Text>
+    <Container>
+      <View style={styles.main_view}>
+      <RowView gap={0} style={{ marginBottom: SIZES.padding2 }}>
+        <CustomText text="Subscriptions" size={SIZES.screen_heading} line_height={SIZES.screen_heading_line} style={common_styles.flex_1} />
         <Pressable onPress={() => navigation.navigate('AddSubscription')}>
-          <Text style={styles.add}>Add</Text>
+          <CustomText text="Add" color={COLORS.primary} size={SIZES.button} line_height={SIZES.button_line} />
         </Pressable>
-      </View>
+      </RowView>
       <TextInput
         value={query}
         onChangeText={setQuery}
         placeholder="Search companies"
-        placeholderTextColor={colors.muted}
+        placeholderTextColor={COLORS.text_secondary}
         style={styles.search}
       />
-      <View style={styles.filters}>
+      <RowView align_items="stretch" gap={SIZES.padding3} style={{ marginBottom: SIZES.padding2 }}>
         {FILTERS.map(item => {
           const selected = item === filter;
           const tone = colorsForStatus(item);
@@ -75,13 +85,16 @@ export default function SubscriptionsScreen({ navigation }: Props) {
                 styles.chip,
                 selected && { backgroundColor: tone.background },
               ]}>
-              <Text style={[styles.chipText, selected && { color: tone.text }]}>
-                {statusLabel(item)}
-              </Text>
+              <CustomText
+                text={statusLabel(item)}
+                size={SIZES.button}
+                line_height={SIZES.button_line}
+                color={selected ? tone.text : COLORS.text_primary}
+              />
             </Pressable>
           );
         })}
-      </View>
+      </RowView>
       {status === 'loading' ? <StateView status="loading" message="Loading subscriptions." /> : null}
       {status === 'failed' ? <StateView status="failed" message={error} onRetry={load} /> : null}
       {status === 'ready' ? (
@@ -99,51 +112,7 @@ export default function SubscriptionsScreen({ navigation }: Props) {
           )}
         />
       ) : null}
-    </Screen>
+      </View>
+    </Container>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  title: {
-    color: colors.navy,
-    flex: 1,
-    fontSize: 22,
-    fontWeight: '700',
-  },
-  add: {
-    color: colors.mint,
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  search: {
-    backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderRadius: 14,
-    borderWidth: 1,
-    color: colors.navy,
-    marginBottom: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  filters: {
-    flexDirection: 'row',
-    gap: 8,
-    marginBottom: 12,
-  },
-  chip: {
-    borderColor: colors.border,
-    borderRadius: 999,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  chipText: {
-    color: colors.navy,
-    fontWeight: '600',
-  },
-});
