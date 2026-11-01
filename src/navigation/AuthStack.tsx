@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Splash, ConnectInboxScreen, DiscoveringScreen, ForgotPasswordScreen, InboxPermissionScreen, LoginScreen, OtpScreen, ReadyToGoScreen, ResetPasswordScreen, SaveYourFindsScreen, ScanInterruptedScreen, ScanNoResultsScreen, SignupScreen, WelcomeScreen, YourSubscriptionsScreen } from '../screens';
+import { Splash, Onboarding, DiscoveringScreen, ForgotPasswordScreen, LoginScreen, OtpScreen, ReadyToGoScreen, ResetPasswordScreen, SaveYourFindsScreen, ScanInterruptedScreen, ScanNoResultsScreen, SignupScreen, YourSubscriptionsScreen } from '../screens';
 import { useAppSelector } from '../redux/store';
 import type { AuthStackParamList } from '../types';
 import { stack_options } from '../config';
@@ -10,11 +10,9 @@ export default function AuthStack() {
   const splash_seen = useAppSelector(state => state.constant.splash_seen);
 
   return (
-    <Stack.Navigator initialRouteName={splash_seen ? 'Welcome' : 'Splash'} screenOptions={stack_options}>
+    <Stack.Navigator initialRouteName={splash_seen ? 'Onboarding' : 'Splash'} screenOptions={stack_options}>
       <Stack.Screen name="Splash" component={Splash} />
-      <Stack.Screen name="Welcome" component={WelcomeScreen} />
-      <Stack.Screen name="ConnectInbox" component={ConnectInboxScreen} />
-      <Stack.Screen name="InboxPermission" component={InboxPermissionScreen} />
+      <Stack.Screen name="Onboarding" component={Onboarding} />
       <Stack.Screen name="Discovering" component={DiscoveringScreen} />
       <Stack.Screen name="YourSubscriptions" component={YourSubscriptionsScreen} />
       <Stack.Screen name="SaveYourFinds" component={SaveYourFindsScreen} />

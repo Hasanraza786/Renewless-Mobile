@@ -6,6 +6,7 @@ import {
   authReducer,
   connectorsReducer,
   constantReducer,
+  onboardingReducer,
   dashboardReducer,
   notificationsReducer,
   profileReducer,
@@ -21,6 +22,7 @@ const root_reducer = combineReducers({
   subscriptions: subscriptionsReducer,
   notifications: notificationsReducer,
   connectors: connectorsReducer,
+  onboarding: onboardingReducer,
 });
 
 const persisted_reducer = persistReducer(

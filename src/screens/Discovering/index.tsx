@@ -30,7 +30,7 @@ export default function DiscoveringScreen({ navigation }: Props) {
   return (
     <Container>
       <View style={styles.main_view}>
-        <OnboardingHeader step={3} on_back={() => navigation.navigate('ConnectInbox')} />
+        <OnboardingHeader step={3} on_back={() => navigation.navigate('Onboarding', { step: 'connectInbox' })} />
         <View style={styles.radar}>
           <View style={[styles.ring, finished && { borderColor: colors.accent }]} />
           <Icons name={loop_mascot} icon_height={75} />

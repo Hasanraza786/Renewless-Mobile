@@ -11,6 +11,9 @@ type Props = {
   name: string;
   style?: StyleProp<ViewStyle>;
   icon_height?: number;
+  // Needed for assets whose intrinsic width differs from the drawn size (e.g. 512-wide brand files).
+  // width/fill are passed only when set: an explicit undefined replaces the asset's own root attribute.
+  icon_width?: number;
   fill?: string;
   stroke?: string;
   reveal?: {
@@ -21,21 +24,21 @@ type Props = {
   };
 };
 
-function Icons({ name, style, icon_height, fill = colors.transparent, stroke, reveal }: Props) {
+function Icons({ name, style, icon_height, icon_width, fill, stroke, reveal }: Props) {
   const svg = useMemo(
     () =>
       icon_height ? (
-        <SvgXml stroke={stroke} xml={name} height={icon_height} fill={fill} />
+        <SvgXml stroke={stroke} xml={name} height={icon_height} {...(icon_width ? { width: icon_width } : null)} {...(fill ? { fill } : null)} />
       ) : (
-        <SvgXml stroke={stroke} xml={name} fill={fill} />
+        <SvgXml stroke={stroke} xml={name} {...(fill ? { fill } : null)} />
       ),
-    [fill, icon_height, name, stroke],
+    [fill, icon_height, icon_width, name, stroke],
   );
 
   if (reveal) {
     return (
       <View style={[styles.main_view, style]} accessible={false}>
-        <Svg width={icon_height} height={icon_height} viewBox={reveal.view_box} fill={fill}>
+        <Svg width={icon_height} height={icon_height} viewBox={reveal.view_box} fill={fill ?? colors.transparent}>
           {reveal.paths.map((path, index) => (
             <AnimatedPath
               key={path.d}

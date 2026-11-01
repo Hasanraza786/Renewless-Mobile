@@ -35,7 +35,7 @@ export default function ReadyToGoScreen({ navigation, route }: Props) {
             </View>
           </View>
           <OnboardingTitle
-            variant="ready"
+            align="center"
             eyebrow="A LITTLE LESS TO REMEMBER"
             title="You’re all set,"
             emphasis="Alex."

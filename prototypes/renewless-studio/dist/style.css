@@ -140,7 +140,7 @@
 .phone .ob-page>.ob-bottom{flex:0 0 auto;margin:0;padding:12px 0 0;background:var(--bg);border-top:1px solid #ffffff0b}
 .ob-bottom .ob-account{margin:0}.ob-bottom .note{font-size:10px;line-height:1.5;margin:8px 0 0}
 .ob-bottom>.link:last-child{margin-bottom:4px}
-.ob-scroll .ob-scene{flex-shrink:0}
+.ob-scroll .ob-scene{flex-shrink:0;margin-left:0;margin-right:0}
 /* Compact review: total, one-line renewal summary, then results. */
 .phone .ob-page:has(.ob-results) .ob-intro{margin:8px 0 14px}
 .phone .ob-page:has(.ob-results) .ob-intro h2{font-size:23px;line-height:1.22;letter-spacing:-.5px}

@@ -18,7 +18,7 @@ export default function ScanInterruptedScreen({ navigation }: Props) {
   return (
     <Container>
       <View style={styles.main_view}>
-        <OnboardingHeader step={3} on_back={() => navigation.navigate('ConnectInbox')} />
+        <OnboardingHeader step={3} on_back={() => navigation.navigate('Onboarding', { step: 'connectInbox' })} />
         <View style={styles.art}>
           <Icons name={loop_sad} icon_height={150} />
           <View style={styles.badge}>
@@ -26,7 +26,7 @@ export default function ScanInterruptedScreen({ navigation }: Props) {
           </View>
         </View>
         <OnboardingTitle
-          variant="empty"
+          align="center"
           eyebrow="LET’S GET BACK ON TRACK"
           title="Your scan"
           emphasis="was interrupted."
@@ -52,7 +52,7 @@ export default function ScanInterruptedScreen({ navigation }: Props) {
           size={(SIZES.padding2 + SIZES.padding3 / 8)}
         />
         <View style={styles.footer}>
-          <CustomButton text="Reconnect & try again" onPress={() => navigation.navigate('ConnectInbox')} />
+          <CustomButton text="Reconnect & try again" onPress={() => navigation.navigate('Onboarding', { step: 'connectInbox' })} />
           <Pressable accessibilityRole="button" onPress={() => navigation.navigate('Signup')} style={styles.secondary}>
             <CustomText text="Add a subscription manually" size={(SIZES.padding2 + SIZES.padding3 / 4)} />
           </Pressable>

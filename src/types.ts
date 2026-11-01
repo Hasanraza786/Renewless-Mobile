@@ -122,6 +122,12 @@ export type ConnectorsState = {
   error: Record<ConnectorRequest, string>;
 };
 
+export type OnboardingState = {
+  google_email: string;
+  google_loading: boolean;
+  google_error: string;
+};
+
 export type RootState = {
   constant: ConstantState;
   auth: AuthState;
@@ -130,13 +136,14 @@ export type RootState = {
   subscriptions: SubscriptionsState;
   notifications: NotificationsState;
   connectors: ConnectorsState;
+  onboarding: OnboardingState;
 };
+
+export type OnboardingStep = 'welcome' | 'connectInbox' | 'inboxPermission';
 
 export type AuthStackParamList = {
   Splash: undefined;
-  Welcome: undefined;
-  ConnectInbox: undefined;
-  InboxPermission: undefined;
+  Onboarding: { step?: OnboardingStep } | undefined;
   Discovering: undefined;
   YourSubscriptions: undefined;
   SaveYourFinds: {

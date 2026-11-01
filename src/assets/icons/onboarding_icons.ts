@@ -1,6 +1,8 @@
 export const back_icon = `<svg width="21" height="21" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M15 5 8 12l7 7"  stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-export const info_icon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8"  stroke-width="1.7"/><path d="M12 11v5M12 8h.01"  stroke-width="1.7" stroke-linecap="round"/></svg>`;
+export const info_icon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke-width="1.7"/><path d="M12 11v6M12 7v.5" stroke-width="1.7" stroke-linecap="round"/></svg>`;
+
+export const close_icon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 7l10 10M17 7 7 17" stroke-width="1.7" stroke-linecap="round"/></svg>`;
 
 export const find_icon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="3"  stroke-width="1.8"/><path d="m4 7 8 6 8-6"  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
@@ -8,7 +10,7 @@ export const track_icon = `<svg width="22" height="22" viewBox="0 0 24 24" fill=
 
 export const remember_icon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 17h14l-2-4V9a5 5 0 0 0-10 0v4zM10 21h4"  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
-export const arrow_icon = `<svg width="48" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12h38m-7-7 7 7-7 7"  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+export const arrow_icon = `<svg width="48" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 12h38m-7-7 7 7-7 7"  stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 export const gmail_icon = `<svg width="28" height="28" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="#EA4335" d="M2 6.5 12 14 22 6.5V18a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2z"/><path fill="#FBBC05" d="M2 6.5 12 14V4L4.5 4A2.5 2.5 0 0 0 2 6.5z"/><path fill="#34A853" d="M22 6.5 12 14V4l7.5 0A2.5 2.5 0 0 1 22 6.5z"/></svg>`;
 

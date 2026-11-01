@@ -33,7 +33,6 @@ export default function SaveYourFindsScreen({ navigation, route }: Props) {
             </View>
           </View>
           <OnboardingTitle
-            variant="save"
             eyebrow="MAKE IT YOURS"
             title="Keep what"
             emphasis="you found."

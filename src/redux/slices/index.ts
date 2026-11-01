@@ -1,4 +1,5 @@
 export { default as constantReducer } from './constant-slice';
+export { default as onboardingReducer } from './onboarding-slice';
 export { default as authReducer } from './auth-slice';
 export { default as profileReducer } from './profile-slice';
 export { default as dashboardReducer } from './dashboard-slice';

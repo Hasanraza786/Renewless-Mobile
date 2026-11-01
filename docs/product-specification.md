@@ -292,7 +292,7 @@ List is full-width Search + right-side **Status filters**, no Sort by/external c
 
 The studio also supports double-click text inspection and icon preview/download from a right-side panel. Heading/subheading/body use the requested 22/16/12 scale. These are design-review tools and a pending typography scope, owned by [Design system](design-system.md#design-studio-inspector-and-prototype-typography) and the screen lock register; no mobile/backend feature is implied.
 
-Public review URL: [Renewless Design Studio](https://renewless-design-studio.web.app/#home), published to Firebase project/site `renewless-design-studio` with explicit user approval on 31 October 2026. Hosting publishes only `dist`; current release version is `f550667def1565ae`. The current typography scope remains pending review while shared publicly. The static deployment provides screen navigation, inspector and local asset downloads; it does not implement mobile authentication, Gmail/AI services or backend APIs.
+Public review URL: [Renewless Design Studio](https://renewless-design-studio.web.app/#home), published to Firebase project/site `renewless-design-studio` with explicit user approval on 31 October 2026. Hosting publishes only `dist`; current release version is `a3d00a9d6b3c82b1` (Welcome card clipping correction, 1 November 2026). The current typography scope remains pending review while shared publicly. The static deployment provides screen navigation, inspector and local asset downloads; it does not implement mobile authentication, Gmail/AI services or backend APIs.
 
 ### Local verification
 
@@ -375,6 +375,8 @@ Immediate scope is the approved React Native frontend using development mock ser
 Work one reviewable section at a time, with only prerequisites implemented beforehand. Existing partial screens/components are migrated, not counted as complete because a folder exists. Implementation has begun with the explicitly requested Splash slice and only its minimal shared prerequisites. F0 is not yet complete. Every section follows: inspect locked contract/current code → implement mock-backed UI → test appropriate behavior on native target → present preview → user accepts frontend section → update canonical owners and proceed. If new UX is needed, use scoped unlock rather than silently changing the prototype. No new sixth document, automatic commits, backend deployment or publication is part of this plan.
 
 
-### Frontend delivery progress — Splash
+### Frontend delivery progress — Splash and onboarding
+
+Onboarding Part A (host + Welcome, Connect inbox, Inbox permission) is implemented and awaiting the user's frontend review; Part B (scan, review, save, Ready, recovery) follows. Details are in [Product screens](product-screens.md#native-onboarding--part-a-1-november-2026-awaiting-frontend-acceptance).
 
 Implementation started with the user's explicitly requested Splash slice of F1, reusing the minimal F0 primitives. Native Splash, optional shared icon path reveal and themed OS launch backgrounds are implemented and frontend-accepted by the user on 31 October 2026 (iOS verified; Android build/device parity unverified). F0 and the rest of F1 are not complete. No whole-section acceptance, real session validation, mock fixture repository or backend/provider integration is implied. Screen behavior and component/motion ownership remain in Product screens and Design system.

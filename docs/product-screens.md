@@ -11,7 +11,7 @@ Design freeze requested by the user on 30 October 2026. **LOCKED means approved 
 | Section / exact preview screens | Status | Approval / scope |
 | --- | --- | --- |
 | Splash; Login; Login · error; Sign up; Verify OTP; Forgot password; Verify reset; Reset password | **BASE LOCKED · Typography pending** | Auth approved 29 Oct 2026. Splash first-launch-only behaviour approved and relocked 1 Nov 2026 |
-| Welcome; Connect inbox; Inbox permission; Discovering; Your subscriptions; Save your finds; Ready to go; Scan · no results; Scan · interrupted | **BASE LOCKED · Typography pending** | Complete onboarding approved 29 Oct 2026 |
+| Welcome; Connect inbox; Inbox permission; Discovering; Your subscriptions; Save your finds; Ready to go; Scan · no results; Scan · interrupted | **BASE LOCKED · Typography pending** | Complete onboarding approved 29 Oct 2026. Welcome illustration inset (scene no longer bleeds past the content edge, so the Netflix card is fully visible) changed and locked 1 Nov 2026 |
 | Home; Home · loading; Home · empty; Home · quiet; Spending breakdown; This month | **BASE LOCKED · Typography pending** | Home family approved 30 Oct 2026 |
 | Calendar; Calendar day | **BASE LOCKED · Typography pending** | Approved 29 Oct; refinements 30 Oct 2026 |
 | List; List · empty; List · upcoming; List · no renewal; List · active; List · trial; List · trial ended; List · due today; List · cancelled; List · expired | **BASE LOCKED · Typography pending** | Entire Listing finalized 30 Oct 2026, including Status filters and empty states |
@@ -30,6 +30,8 @@ Design freeze requested by the user on 30 October 2026. **LOCKED means approved 
 | Add form; Edit | **BASE LOCKED · Typography pending** | Complete Add/Edit approved 31 Oct 2026 with whole-prototype final approval: base plus Trial days, required Start date, custom validation, calculated end with 10px gap, renewal restoration, tracking switch and pinned commit. |
 
 Shared typography scope was authorized by the user after the full-base approval on 31 October 2026: heading **22**, subheading **16**, normal text **12**, with matching line heights **28/22/18**. All 74 views now await typography reapproval; their other approved scopes remain locked. This is not a global layout, navigation or feature unlock. The Studio `screenDesignLocks` map marks each view `base`, with a Base lock badge and tooltip “Base design locked; typography pending review”. Relock the typography scope only after explicit visual acceptance.
+
+Welcome illustration clipping scope was explicitly unlocked and authorized for immediate relock/deployment by the user on **1 November 2026**. The receipt-to-subscription scene now has zero horizontal margins inside its scroll viewport, keeping the Netflix result card and both rounded corners fully inside the clip boundary. This bounded layout correction is **LOCKED** again after desktop and 390/320-width browser verification; the separate shared typography review remains pending. The Welcome Base badge tooltip records the illustration relock.
 
 The new studio-only inspector opens on double-click inside the phone: text shows computed family/size/weight/line height/spacing/color/alignment and layout measurements, with Copy CSS; SVG/img icons show preview and SVG/PNG export as supported by the original asset. PNG scales are 1×/2×/4×. Inspect mode pauses phone actions for inspecting controls; leaving it returns to interactive preview. Close/Escape dismisses the panel and screen changes clear stale selection. No inspector controls are part of the mobile app.
 
@@ -156,7 +158,7 @@ Phone-screen copy is production-facing: no sample/test/simulation wording. The s
 
 Connect inbox and results use `infoTooltip({id, label, paragraphs, className})` in `prototypes/renewless-studio/dist/info-tooltip.js`. Reuse this component for future informational disclosures; unique IDs and escaped plain-text content are required.
 
-Plain inline info icon adjacent to the label, invisible 44px touch target. Graphite-green `#252B29` surface, mint border, shadow and pointer aligned to trigger. Surrounding content dims to 65% and blurs 2px; background controls become inert. Close, outside click or Escape dismisses; explicit close/Escape restores trigger focus. No API call occurs when opening a tooltip.
+Plain inline info icon adjacent to the label, invisible 44px touch target. Graphite-green `#252B29` surface, mint border, shadow and pointer aligned to trigger. Surrounding content dims to 65% and blurs 2px in the prototype; native uses the dim only (no blur dependency), approved by the user 1 November 2026; background controls become inert. Close, outside click or Escape dismisses; explicit close/Escape restores trigger focus. No API call occurs when opening a tooltip.
 
 Connect tooltip explains mailbox-wide read access, filtering relevant receipts, AI extraction and disconnect/consent. Results tooltip explains inferred dates/costs, older/cancelled plans, normalized monthly costs versus upcoming actual charges and separate currencies.
 
@@ -187,6 +189,10 @@ Real Terms/Privacy destinations are required before release. Current prototype c
 - Ready celebration: full-phone overlay outside content padding; two outer-corner poppers animate in, overshoot/recoil, emit 60 pieces after 420ms, then exit. Particle duration 3.2s, emission stagger 261ms, complete by 4s. Upward/inward burst slows at apex then falls/fades. Poppers offset outward (left/right -12px, bottom -8px in prototype). No looping or intercepted touches.
 - `src/assets/animations/ready-celebration.json`: transparent 390×844, 60fps, four-second vector adaptation. GIF is a looping charcoal-background reference, not the runtime animation. Browser uses CSS/emoji; JSON uses vector cones and is not a pixel-identical export.
 - Reduced Motion removes decorative entry/scan/celebration animation. Success and error remain understandable without animation. Native Lottie rendering/aspect ratios still need validation.
+
+### Native onboarding — Part A, 1 November 2026, awaiting frontend acceptance
+
+`src/screens/Onboarding` is the single native host (`index.tsx`, `index.function.ts`, `styles.ts`) with step panels in `components/Welcome`, `components/ConnectInbox` and `components/InboxPermission`. The header (Back or spacer, RENEWLESS, mark, five-stage rail) lives in the host and never animates; only its rail fill and Back visibility change. On Next the current panel slides out (180 ms) and fades, then the next panel slides in from the travel direction (240 ms); Back reverses direction; Reduce Motion keeps the fade only; taps are ignored during a transition. The footer stays fixed and its buttons cross-fade with the panel. Values reproduce the rendered Studio geometry on the 844pt frame using token sums; fonts use the shared `SIZES` keys, so they scale by screen height. All icons and brand art are SVG. Splash and returning launches open `Onboarding`; the Discovering → Ready and recovery screens are still legacy routes (Part B) and return to the host with `Onboarding { step: 'connectInbox' }`. Inbox permission reads the account email through the onboarding mock service; real Google sign-in/consent is not integrated. Part B will add the scan/review/save/Ready/recovery panels with Animated confetti (no Lottie dependency) and SVG poppers, as approved by the user.
 
 ### Implementation readiness and verification
 

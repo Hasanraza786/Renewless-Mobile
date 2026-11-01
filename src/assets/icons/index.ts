@@ -4,6 +4,7 @@ export {
   back_icon,
   info_icon,
   check_icon,
+  close_icon,
   find_icon,
   gmail_icon,
   google_icon,

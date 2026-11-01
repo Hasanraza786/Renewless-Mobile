@@ -1,46 +1,62 @@
-import { colors } from '../../constants/theme';
 import { StyleSheet } from 'react-native';
+import { SIZES, colors } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
-  wrap: {
+  row: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 4,
-    marginTop: 12,
-    position: 'relative',
+    gap: SIZES.padding3 / 2,
   },
   trigger: {
     alignItems: 'center',
-    height: 44,
+    height: SIZES.padding * 2 + SIZES.padding3 / 2,
     justifyContent: 'center',
-    width: 44,
+    width: SIZES.padding * 2 + SIZES.padding3 / 2,
+  },
+  scrim: {
+    ...StyleSheet.absoluteFill,
+    backgroundColor: colors.background_scrim,
+  },
+  floating: {
+    position: 'absolute',
   },
   popover: {
     backgroundColor: colors.tooltip,
     borderColor: colors.accent_ring,
-    borderRadius: 16,
-    borderWidth: 1,
-    bottom: 52,
-    padding: 14,
+    borderRadius: SIZES.padding2 + SIZES.padding3 / 2,
+    borderWidth: SIZES.padding3 / 8,
+    padding: SIZES.padding2 + SIZES.padding3 / 4,
     position: 'absolute',
-    right: 0,
-    width: '100%',
-    zIndex: 12,
+    shadowColor: colors.background,
+    shadowOffset: { width: 0, height: SIZES.padding3 * 2 },
+    shadowOpacity: 0.6,
+    shadowRadius: SIZES.padding,
   },
-  popover_head: {
+  head: {
     alignItems: 'center',
     flexDirection: 'row',
-    gap: 8,
+    gap: SIZES.padding3,
   },
-  popover_title: {
+  title: {
     flex: 1,
   },
   close: {
     alignItems: 'center',
     backgroundColor: colors.overlay_soft,
-    borderRadius: 10,
-    height: 36,
+    borderRadius: SIZES.padding3 + SIZES.padding3 / 4,
+    height: SIZES.padding * 2 - SIZES.padding3 / 2,
     justifyContent: 'center',
-    width: 36,
+    width: SIZES.padding * 2 - SIZES.padding3 / 2,
+  },
+  arrow: {
+    backgroundColor: colors.tooltip,
+    borderBottomWidth: SIZES.padding3 / 8,
+    borderColor: colors.accent_ring,
+    borderRightWidth: SIZES.padding3 / 8,
+    bottom: -(SIZES.padding3 - SIZES.padding3 / 4),
+    height: SIZES.padding3 + SIZES.padding3 / 4,
+    position: 'absolute',
+    transform: [{ rotate: '45deg' }],
+    width: SIZES.padding3 + SIZES.padding3 / 4,
   },
 });

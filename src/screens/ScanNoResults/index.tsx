@@ -18,7 +18,7 @@ export default function ScanNoResultsScreen({ navigation }: Props) {
   return (
     <Container>
       <View style={styles.main_view}>
-        <OnboardingHeader step={3} on_back={() => navigation.navigate('ConnectInbox')} />
+        <OnboardingHeader step={3} on_back={() => navigation.navigate('Onboarding', { step: 'connectInbox' })} />
         <View style={styles.art}>
           <Icons name={loop_sad} icon_height={150} />
           <View style={styles.badge}>
@@ -26,7 +26,7 @@ export default function ScanNoResultsScreen({ navigation }: Props) {
           </View>
         </View>
         <OnboardingTitle
-          variant="empty"
+          align="center"
           eyebrow="YOUR INBOX, CHECKED"
           title="No subscriptions"
           emphasis="found this time."
@@ -52,7 +52,7 @@ export default function ScanNoResultsScreen({ navigation }: Props) {
           size={(SIZES.padding2 + SIZES.padding3 / 8)}
         />
         <View style={styles.footer}>
-          <CustomButton text="Try another Gmail account" onPress={() => navigation.navigate('ConnectInbox')} />
+          <CustomButton text="Try another Gmail account" onPress={() => navigation.navigate('Onboarding', { step: 'connectInbox' })} />
           <Pressable accessibilityRole="button" onPress={() => navigation.navigate('Signup')} style={styles.secondary}>
             <CustomText text="Add a subscription manually" size={(SIZES.padding2 + SIZES.padding3 / 4)} />
           </Pressable>

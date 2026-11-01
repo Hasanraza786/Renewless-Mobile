@@ -78,12 +78,12 @@ export function useSplashReveal(onComplete?: () => void) {
   return { upper_progress, lower_progress, settle_progress, name_progress, tagline_progress };
 }
 
-// First-launch only: once the reveal finishes, remember it and continue to Welcome.
+// First-launch only: once the reveal finishes, remember it and continue to Onboarding.
 export default function useSplash(navigation: NativeStackScreenProps<AuthStackParamList, 'Splash'>['navigation']) {
   const dispatch = useAppDispatch();
   const onComplete = useCallback(() => {
     dispatch(setSplashSeen());
-    navigation.replace('Welcome');
+    navigation.replace('Onboarding');
   }, [dispatch, navigation]);
   return useSplashReveal(onComplete);
 }

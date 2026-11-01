@@ -47,10 +47,9 @@ export default function YourSubscriptionsScreen({ navigation }: Props) {
   return (
     <Container>
       <View style={styles.main_view}>
-        <OnboardingHeader step={4} on_back={() => navigation.navigate('ConnectInbox')} />
+        <OnboardingHeader step={4} on_back={() => navigation.navigate('Onboarding', { step: 'connectInbox' })} />
         <ScrollView showsVerticalScrollIndicator={false} style={common_styles.flex_1}>
           <OnboardingTitle
-            variant="results"
             eyebrow="YOUR FIRST LOOK"
             title="Small charges."
             emphasis="A clearer picture."
