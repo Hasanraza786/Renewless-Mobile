@@ -702,3 +702,170 @@
 .phone .manual-form .trial-form-summary .trial-calculation{margin:0 0 4px;padding:10px 12px;border:1px solid #ffffff12;border-radius:12px;background:#202426;color:var(--muted);font-size:12px;line-height:1.45}
 .phone .manual-form .trial-form-summary .trial-calculation.is-calculated{color:var(--accent);border-color:#bfdf8b35;background:#bfdf8b08}
 .phone .manual-form .trial-form-summary .note{font-size:11px;margin:2px 0 0;line-height:1.5}
+
+/* Scoped Home review: keep header available; facts stay in three compact sections. */
+.phone .home-dashboard>.head{position:sticky;top:0;z-index:7;background:var(--bg);padding:8px 0;margin:0 0 12px}
+.phone .home-money-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.phone .home-money-grid>button{text-align:left;padding:0;min-width:0;min-height:88px}
+.phone .home-money-grid>button+button,.home-money-grid>div+div{border-left:1px solid var(--muted);padding-left:12px}
+.phone .home-money-grid span,.phone .home-money-grid small{display:block;color:var(--muted);line-height:1.5}
+.phone .home-money-grid strong{display:block;margin:8px 0;font-size:22px;font-weight:500;overflow-wrap:anywhere;line-height:1.3}
+.phone .home-money-grid small span{display:inline;color:var(--accent)}
+.phone .home-money-note{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.phone .month-overview h3{margin:0}
+.phone .home-event-tabs button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+.home-skeleton .home-money-grid>div{display:grid;gap:8px;min-width:0}
+
+.home-renewal .subscription-chevron,.upcoming-date-group .subscription-chevron{width:16px;height:16px;flex-shrink:0;color:var(--muted)}
+
+.home-next-block{margin-bottom:12px}.home-next-block .home-renewal{margin-bottom:0}
+.home-event-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.home-event-toolbar>.eyebrow{margin:0;flex:1}
+.home-event-tabs{display:flex;gap:8px;min-width:0;flex:1;margin:0}
+.phone .home-event-tabs button{display:flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0;max-width:132px;min-height:44px;padding:8px 12px;border:1px solid var(--muted);border-radius:12px;background:var(--card);text-align:left}
+.home-event-tabs .platform-logo{width:16px;height:16px;flex-shrink:0}
+.home-event-tabs span{overflow:hidden;text-overflow:ellipsis;font-size:12px;line-height:1.4}
+.phone .home-see-all{flex-shrink:0;min-height:44px;padding:8px;color:var(--accent);font-size:12px;white-space:nowrap}
+.upcoming-date-group>h3{margin:16px 0 8px}
+
+/* Listing-only staged Sort & price uses the existing graphite dialog shell. */
+.list-sort-overlay{position:absolute;inset:0;z-index:80;border-radius:inherit;overflow:hidden}
+.phone .list-filter-controls .list-filter-toolbar>.list-filter-trigger{flex:0 1 auto;min-width:0;min-height:44px}
+.phone .list-filter-controls .list-sort-trigger{margin-right:auto;margin-left:0}
+.list-sort-trigger svg{flex-shrink:0}
+.sort-price-body{overflow:auto;min-height:0;padding:12px 16px}
+.sort-price-body fieldset{border:0;padding:0;margin:0}
+.sort-price-body legend{color:var(--muted);font-size:12px;margin-bottom:4px}
+.phone .sort-price-dialog input[type=radio]{appearance:none;-webkit-appearance:none;flex:0 0 20px;width:20px;height:20px;min-height:20px;padding:0;margin:0;border:1px solid var(--muted);border-radius:6px;position:relative}
+.phone .sort-price-dialog input[type=radio]:checked{background:var(--accent);border-color:var(--accent)}
+.phone .sort-price-dialog input[type=radio]:checked:after{content:'';position:absolute;left:6px;top:3px;width:5px;height:9px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(45deg)}
+.phone .sort-price-dialog .note{font-size:12px;color:var(--muted);line-height:1.5;margin:8px 0}
+
+.sort-options-legend{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+
+.phone .list-filter-controls .list-filter-toolbar{align-items:stretch}
+.phone .list-filter-controls .list-filter-toolbar>.list-filter-trigger{height:auto;align-self:stretch}
+.list-sort-label{display:flex;flex-direction:column;gap:2px;min-width:0;text-align:left}
+.phone .list-sort-label>small{font-size:12px;color:var(--muted);line-height:1.3}
+.phone .list-sort-label>span{color:var(--accent);line-height:1.3;overflow-wrap:anywhere}
+
+/* Authenticated app header behavior; forms and footer actions retain their own safe areas. */
+.phone{--danger:#FF8A8A}
+.phone .post-auth-content .head{position:sticky;top:0;z-index:12;background:var(--bg);padding-top:8px;padding-bottom:8px;margin-top:0}
+.phone .post-auth-content .ai-chat-header{position:sticky;top:0;z-index:12;background:var(--bg)}
+.phone .detail-actions:not(.detail-actions-track-again){grid-template-columns:1fr 1fr}
+.phone .detail-actions>button{border-radius:12px;min-height:48px}
+.detail-spending h3{margin:0}.detail-spending .spend-heading{margin-bottom:16px}
+.phone .detail-inline-link{color:var(--accent);font-size:12px;padding:8px 0;min-height:44px}
+.detail-recorded-total{display:block;font-size:22px;font-weight:500;line-height:1.3;margin-top:8px}
+.detail-spending .note{font-size:12px;color:var(--muted);line-height:1.5}
+.detail-price-history .detail-related-link{width:100%}
+.price-current{display:flex;align-items:center;gap:12px}.price-current h3{margin:0}.price-current .note{margin:6px 0}
+.price-change-row .spend-heading{align-items:flex-start;gap:12px}.price-change-row p{line-height:1.8;overflow-wrap:anywhere}
+.price-history-empty{display:flex;align-items:center;flex-direction:column;text-align:center;padding:40px 12px}
+.price-update-fields{margin:12px 0;padding:12px;border:1px solid var(--muted);border-radius:12px;background:var(--card)}
+.phone .price-update-fields .select-field{margin:0}.phone .price-update-fields .note{font-size:12px;line-height:1.5;color:var(--muted)}
+.detail-confirm-buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.phone .detail-confirm-buttons>button{margin:0;min-height:48px;border-radius:12px;font-size:12px}
+.phone .access-reminder-option{display:flex;align-items:center;gap:12px;font-size:12px;line-height:1.5}
+.access-reminder-option input{flex:0 0 20px;margin:0}
+.tracking-delete-sheet .primary{background:var(--danger);color:var(--bg)}
+.tracking-undo{position:absolute;z-index:30;left:18px;right:18px;bottom:96px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px;border:1px solid var(--muted);border-radius:12px;background:var(--card);font-size:12px}
+.phone .tracking-undo button{min-height:44px;color:var(--accent);padding:8px}
+.cancellation-sheet .manual-error{font-size:12px}.phone .cancellation-sheet header{position:sticky;top:0;background:var(--card);z-index:2}
+
+.detail-dialog-overlay{position:absolute;inset:0;z-index:80;border-radius:inherit;overflow:hidden}
+.phone .access-reminder-option[hidden]{display:none}
+.detail-dialog-overlay{display:flex;align-items:flex-end}
+.phone .cancellation-sheet header{background:inherit}
+.phone .post-auth-content .gmail-layout{padding-top:0}
+
+/* Scoped Google continuation: preserve the five-stage onboarding layout. */
+.phone .ob-signin-disclosure{font-size:12px;line-height:1.5;color:var(--muted);margin:12px 0 0}
+.phone .ob-connection-feedback{font-size:12px;line-height:1.5;padding:12px;border:1px solid var(--accent);border-radius:12px;color:var(--text)}
+.phone .ob-google-connect{background:var(--accent);color:var(--bg);width:100%;min-height:48px}
+.phone .ob-google-connect svg{width:20px;height:20px}
+.ob-google-legal{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:8px;color:var(--muted)}
+.phone .ob-google-legal button{font-size:12px;text-decoration:underline;min-height:36px;padding:8px 0}
+.ob-signed-in{display:flex;align-items:center;justify-content:center;gap:12px;margin:0 0 12px;text-align:left}
+.ob-account-check{color:var(--accent);font-size:16px}.ob-signed-in strong,.ob-signed-in small{display:block;overflow-wrap:anywhere}
+.phone .ob-signed-in strong{font-size:12px;font-weight:500;margin-top:4px}
+.ob-page:has([data-ob="finish-save"]) .ob-scroll{justify-content:center}
+
+/* Onboarding review and optional shared mascot drawing: scoped to the approved change. */
+.ob-inbox-context{font-size:12px;color:var(--muted);margin:0 0 12px;overflow-wrap:anywhere}
+.phone .ob-results .ob-result-row{display:flex;align-items:center;border-bottom:1px solid #ffffff0b}
+.phone .ob-results .ob-result-row:last-child{border-bottom:0}
+.phone .ob-results .ob-result-row label{flex:1;min-width:0;border:0;padding:12px 8px;gap:9px}
+.phone .ob-results .ob-result-row label>span:last-child{min-width:0}
+.phone .ob-results .ob-result-row small{overflow-wrap:anywhere}
+.phone .ob-edit-draft{width:44px;height:44px;flex:none;display:grid;place-items:center;padding:12px;color:var(--accent)}
+.ob-edit-draft svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ob-review-dialog .track-again-sheet{max-height:85%;overflow:auto;background:var(--card)}
+.ob-review-dialog form{display:flex;flex-direction:column;gap:12px}
+.ob-review-dialog form label{margin:0}
+.ob-review-dialog .select-field label{margin-bottom:8px}
+.ob-scan-status{text-align:center;margin:8px 0;color:var(--muted)}
+.mascot-view>svg{display:block;flex:none;width:var(--mascot-artwork-size);height:var(--mascot-artwork-size);max-width:none;color:var(--accent)}
+.mascot-draw .mascot-outline{stroke-dasharray:1;stroke-dashoffset:1;animation:mascot-outline-draw .8s ease-out both}
+.mascot-draw .mascot-face{transform-origin:center;opacity:0;animation:mascot-face-reveal .25s .65s ease-out both}
+.ob-mascot-art{position:absolute;inset:0;display:grid;place-items:center}
+.ob-empty-art .mascot-view>svg{width:var(--mascot-artwork-size);height:var(--mascot-artwork-size)}
+@keyframes mascot-outline-draw{to{stroke-dashoffset:0}}
+@keyframes mascot-face-reveal{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.mascot-draw .mascot-outline{animation:none;stroke-dashoffset:0}.mascot-draw .mascot-face{animation:none;opacity:1;transform:none}}
+.mascot-draw>svg{animation:mascot-settle .3s .85s ease-out both}
+@keyframes mascot-settle{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.ob-review-dialog input[type=date]{color-scheme:dark}
+@media(prefers-reduced-motion:reduce){.mascot-draw>svg{animation:none;transform:none}}
+
+.phone .ob-page:has(.ob-connect-art) .ob-scroll{padding-bottom:24px;scroll-padding-bottom:24px}
+
+/* Keep the standard body label inside the selection ring. */
+.phone .ob-page:has(.ob-results) .ob-total{gap:12px}
+.phone .ob-page:has(.ob-results) .ob-total>div:first-child{min-width:0;flex:1}
+.phone .ob-page:has(.ob-results) .ob-donut{width:72px;height:72px;flex-shrink:0;display:grid;place-items:center}
+.phone .ob-page:has(.ob-results) .ob-donut>span{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;font-size:16px}
+.phone .ob-page:has(.ob-results) .ob-donut small{display:block;font-size:12px;line-height:1.2;white-space:nowrap;margin:0}
+
+/* Selection progress is represented once, as a fraction and matching ring fill. */
+.phone .ob-page:has(.ob-results) .ob-donut{position:relative;isolation:isolate;border:0;border-radius:50%;background:conic-gradient(var(--accent) 0 var(--selection-fill,0%),#53694c var(--selection-fill,0%) 100%)}
+.phone .ob-page:has(.ob-results) .ob-donut::before{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--card);z-index:-1}
+.phone .ob-page:has(.ob-results) .ob-donut>span{width:auto;line-height:1;font-size:16px;color:var(--text)}
+
+/* Discovery artwork grows modestly inside the unchanged 150px radar. */
+.ob-radar.ob-discovery-art .mascot-view>img{width:var(--mascot-artwork-size);height:var(--mascot-artwork-size)}
+
+/* Shared authenticated Alerts entry; existing actions retain their roles. */
+.header-actions{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
+.phone .header-alerts{display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;padding:10px;border:1px solid #ffffff10;border-radius:12px;background:var(--card);color:var(--text);margin:0}
+.header-alerts svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.phone .head:has(.header-actions),.phone .alerts-head{gap:12px}.phone .head:has(.header-actions) h2,.phone .alerts-head h2{min-width:0}
+.phone .header-actions .plus,.phone .header-actions .delete-icon{margin:0}
+.ai-chat-header .header-actions img{width:24px;height:24px;flex:none}
+.phone .alerts-head h2{flex:1;margin:0}
+.phone .tabs button{min-width:0}
+.phone .payments-screen>.head h2{flex:1}
+
+.ai-chat-header>.header-actions{flex:0 0 auto;min-width:0}
+/* Five equal tab slots with consistent icon/label spacing. */
+.phone .tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;align-items:stretch}
+.phone .tabs button{width:100%;min-width:0;max-width:none;margin:0;padding:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;line-height:1.2}
+.phone .tabs button>svg{width:20px;height:20px;flex-shrink:0;margin:0}
+
+/* Account deletion shares the existing Profile confirmation dialog. */
+.phone .profile-delete-account{margin-top:8px;scroll-margin-bottom:100px}
+.profile-delete-dialog{max-height:85%;overflow:auto}
+.phone .profile-delete-dialog p{font-size:12px;line-height:1.5}
+.profile-delete-provider-note{color:var(--text)}
+.profile-delete-verification{color:var(--muted)}
+.profile-delete-dialog form{display:flex;flex-direction:column;gap:12px}
+.profile-delete-dialog label{margin:0}
+.profile-delete-dialog input{margin-top:8px}
+.profile-dialog-actions{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.phone .profile-dialog-actions button{margin:0;min-height:44px}
+.profile-delete-dialog .field-error{margin:0}
+/* Reminder settings: compact labels, existing shared dropdown with multiple ticks. */
+.phone .reminder-settings-layout .settings-group-label{font-size:12px;line-height:18px;letter-spacing:.6px}
+.phone .reminder-settings-layout [data-select-trigger]{font-size:12px;line-height:18px}
+.phone .themed-select-menu[aria-multiselectable=true] [role=option]{font-size:12px;line-height:18px;min-height:42px}
