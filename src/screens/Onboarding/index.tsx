@@ -8,25 +8,41 @@ import Icons from '../../components/Icons';
 import { FONTS, SIZES, colors } from '../../constants/theme';
 import type { AuthStackParamList, OnboardingStep } from '../../types';
 import { ConnectInboxBody, ConnectInboxFooter } from './components/ConnectInbox';
+import { DiscoveringBody, DiscoveringFooter } from './components/Discovering';
 import { InboxPermissionBody, InboxPermissionFooter } from './components/InboxPermission';
+import { ReadyConfetti, ReadyToGoBody, ReadyToGoFooter } from './components/ReadyToGo';
+import { SaveYourFindsBody, SaveYourFindsFooter } from './components/SaveYourFinds';
+import { ScanInterruptedBody, ScanInterruptedFooter, ScanNoResultsBody, ScanNoResultsFooter } from './components/ScanRecovery';
 import { WelcomeBody, WelcomeFooter } from './components/Welcome';
+import { YourSubscriptionsBody, YourSubscriptionsFooter } from './components/YourSubscriptions';
 import useOnboarding, { type OnboardingController } from './index.function';
 import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>;
-type Panel = { Body: (props: { onboarding: OnboardingController }) => ReactNode; Footer: Panel['Body'] };
+type Panel = {
+  Body: (props: { onboarding: OnboardingController }) => ReactNode;
+  Footer: Panel['Body'];
+  // Save, Ready and recovery fit one view: content is centred and the footer has no divider.
+  fitted?: boolean;
+};
 
 const PANELS: Record<OnboardingStep, Panel> = {
   welcome: { Body: WelcomeBody, Footer: WelcomeFooter },
   connectInbox: { Body: ConnectInboxBody, Footer: ConnectInboxFooter },
   inboxPermission: { Body: InboxPermissionBody, Footer: InboxPermissionFooter },
+  discovering: { Body: DiscoveringBody, Footer: DiscoveringFooter },
+  yourSubscriptions: { Body: YourSubscriptionsBody, Footer: YourSubscriptionsFooter },
+  saveYourFinds: { Body: SaveYourFindsBody, Footer: SaveYourFindsFooter, fitted: true },
+  readyToGo: { Body: ReadyToGoBody, Footer: ReadyToGoFooter, fitted: true },
+  scanNoResults: { Body: ScanNoResultsBody, Footer: ScanNoResultsFooter, fitted: true },
+  scanInterrupted: { Body: ScanInterruptedBody, Footer: ScanInterruptedFooter, fitted: true },
 };
 
 const STAGE_COUNT = 5;
 
 export default function Onboarding(props: Props) {
   const onboarding = useOnboarding(props);
-  const { Body, Footer } = PANELS[onboarding.step];
+  const { Body, Footer, fitted } = PANELS[onboarding.step];
 
   return (
     <Container is_auth>
@@ -53,14 +69,15 @@ export default function Onboarding(props: Props) {
           pointerEvents={onboarding.animating ? 'none' : 'auto'}
           onLayout={event => onboarding.setPanelWidth(event.nativeEvent.layout.width)}
           style={[styles.panel, onboarding.panel_style]}>
-          <ScrollView key={onboarding.step} showsVerticalScrollIndicator={false} contentContainerStyle={styles.scroll}>
+          <ScrollView key={onboarding.step} showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scroll, fitted && styles.scroll_fitted]}>
             <Body onboarding={onboarding} />
           </ScrollView>
         </Animated.View>
-        <Animated.View pointerEvents={onboarding.animating ? 'none' : 'auto'} style={[styles.footer, onboarding.footer_style]}>
+        <Animated.View pointerEvents={onboarding.animating ? 'none' : 'auto'} style={[styles.footer, !fitted && styles.footer_divider, onboarding.footer_style]}>
           <Footer onboarding={onboarding} />
         </Animated.View>
       </View>
+      {onboarding.step === 'readyToGo' && !onboarding.reduce_motion ? <ReadyConfetti /> : null}
     </Container>
   );
 }

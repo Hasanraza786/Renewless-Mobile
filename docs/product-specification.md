@@ -447,7 +447,7 @@ Work one reviewable section at a time, with only prerequisites implemented befor
 
 ### Frontend delivery progress — Splash and onboarding
 
-Onboarding Part A (host + Welcome, Connect inbox, Inbox permission) is implemented and awaiting the user's frontend review; Part B (scan, review, save, Ready, recovery) follows. Details are in [Product screens](product-screens.md#native-onboarding--part-a-1-november-2026-awaiting-frontend-acceptance).
+Onboarding (all nine states in one host) is implemented with mock scan/import/sign-in and awaiting the user's frontend review. Details are in [Product screens](product-screens.md#native-onboarding--1-november-2026-awaiting-frontend-acceptance).
 
 Implementation started with the user's explicitly requested Splash slice of F1, reusing the minimal F0 primitives. Native Splash, optional shared icon path reveal and themed OS launch backgrounds are implemented and frontend-accepted by the user on 31 October 2026 (iOS verified; Android build/device parity unverified). F0 and the rest of F1 are not complete. No whole-section acceptance, real session validation, mock fixture repository or backend/provider integration is implied. Screen behavior and component/motion ownership remain in Product screens and Design system.
 

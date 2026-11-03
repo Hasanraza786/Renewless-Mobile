@@ -54,10 +54,15 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding3 / 4,
     paddingTop: SIZES.padding3 / 2,
   },
+  scroll_fitted: {
+    flexGrow: 1,
+    justifyContent: 'center',
+  },
   footer: {
+    paddingBottom: SIZES.padding3 / 2,
+  },
+  footer_divider: {
     borderTopColor: colors.line_quiet,
     borderTopWidth: SIZES.padding3 / 8,
-    paddingBottom: SIZES.padding3 / 2,
-    paddingTop: SIZES.padding2,
   },
 });

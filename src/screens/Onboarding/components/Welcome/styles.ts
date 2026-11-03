@@ -106,7 +106,7 @@ export const styles = StyleSheet.create({
     height: SIZES.padding2 * 2,
   },
   primary: {
-    marginTop: SIZES.padding3 + SIZES.padding3 / 4,
+    marginTop: SIZES.padding + SIZES.padding3 / 4,
   },
   link: {
     marginTop: SIZES.padding2 + SIZES.padding3 / 8,

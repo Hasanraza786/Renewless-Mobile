@@ -5,6 +5,7 @@ export {
   info_icon,
   check_icon,
   close_icon,
+  party_popper_icon,
   find_icon,
   gmail_icon,
   google_icon,
@@ -15,7 +16,7 @@ export {
   retry_icon,
   track_icon,
 } from './onboarding_icons';
-export { gmail_logo, icloud_logo, netflix_logo, spotify_logo } from './platform_logos';
+export { gmail_logo, icloud_logo, netflix_logo, platform_logos, spotify_logo } from './platform_logos';
 export { default as logo_mark } from './logo_mark';
 export { default as loop_happy } from './loop_happy';
 export { default as loop_mascot } from './loop_mascot';

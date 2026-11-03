@@ -27,3 +27,6 @@ export const hint_icon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="
 export const retry_icon = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20 7v5h-5M4 17v-5h5M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1"  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 export const check_icon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m6 12 4 4 8-9"  stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+// Celebration popper for Ready; colours match the confetti palette (accent, text, sage, amber).
+export const party_popper_icon = `<svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 44 17 15l16 16L7 44Z" fill="#E8BE78"/><path d="M12 30.5 22 40M14.5 23 29 37.5" stroke="#B9E58C" stroke-width="3" stroke-linecap="round"/><path d="M17 15l16 16" stroke="#151719" stroke-width="2" stroke-linecap="round"/><path d="M24 10c2-4 6-5 8-3M33 21c4-2 8-1 9 2M29 13l3-6M35 17l6-2" stroke="#B9E58C" stroke-width="2.4" stroke-linecap="round"/><circle cx="38" cy="9" r="2" fill="#E8EAED"/><circle cx="42" cy="28" r="2" fill="#849B76"/><circle cx="21" cy="6" r="1.6" fill="#E8BE78"/></svg>`;

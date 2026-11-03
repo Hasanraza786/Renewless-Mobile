@@ -34,6 +34,19 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
   },
+  social: {
+    alignItems: 'center',
+    borderColor: colors.social_border,
+    borderRadius: SIZES.padding2,
+    borderWidth: SIZES.padding3 / 8,
+    height: SIZES.padding * 2 + SIZES.padding3 - SIZES.padding3 / 4,
+    justifyContent: 'center',
+    width: '100%',
+  },
+  social_icon: {
+    left: SIZES.padding2 + SIZES.padding3 / 2 + SIZES.padding3 / 8,
+    position: 'absolute',
+  },
   link: {
     alignSelf: 'center',
     paddingHorizontal: SIZES.padding3 - SIZES.padding3 / 4,

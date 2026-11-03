@@ -126,6 +126,15 @@ export type OnboardingState = {
   google_email: string;
   google_loading: boolean;
   google_error: string;
+  scan_job_id: string;
+  scan_stages: number;
+  scan_status: 'idle' | 'running' | 'completed' | 'failed';
+  scan_error: string;
+  candidates: ScanCandidate[];
+  selected_ids: string[];
+  saved: ScanCandidate[];
+  save_loading: boolean;
+  save_error: string;
 };
 
 export type RootState = {
@@ -139,30 +148,40 @@ export type RootState = {
   onboarding: OnboardingState;
 };
 
-export type OnboardingStep = 'welcome' | 'connectInbox' | 'inboxPermission';
+export type OnboardingStep =
+  | 'welcome'
+  | 'connectInbox'
+  | 'inboxPermission'
+  | 'discovering'
+  | 'yourSubscriptions'
+  | 'saveYourFinds'
+  | 'readyToGo'
+  | 'scanNoResults'
+  | 'scanInterrupted';
+
+export type ScanCandidate = {
+  id: string;
+  platform_id: string;
+  name: string;
+  price: string;
+  currency: string;
+  cycle: 'monthly';
+  next_date: string;
+  trial?: { ends_on: string; auto_renew: boolean };
+};
+
+export type ScanStatus = {
+  job_id: string;
+  completed_stages: number;
+  status: 'running' | 'completed' | 'failed';
+  candidates: ScanCandidate[];
+};
+
+export type AccountProvider = 'google' | 'apple';
 
 export type AuthStackParamList = {
   Splash: undefined;
   Onboarding: { step?: OnboardingStep } | undefined;
-  Discovering: undefined;
-  YourSubscriptions: undefined;
-  SaveYourFinds: {
-    count: number;
-    monthly: string;
-    saved_total: string;
-    next_name?: string;
-    next_when?: string;
-    next_amount?: string;
-  };
-  ReadyToGo: {
-    count: number;
-    monthly: string;
-    next_name?: string;
-    next_when?: string;
-    next_amount?: string;
-  };
-  ScanNoResults: undefined;
-  ScanInterrupted: undefined;
   Login: undefined;
   Signup: undefined;
   ForgotPassword: undefined;

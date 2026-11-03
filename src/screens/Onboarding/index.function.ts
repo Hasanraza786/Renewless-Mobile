@@ -1,9 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, BackHandler, Easing } from 'react-native';
+import { AccessibilityInfo, Alert, Animated, BackHandler, Easing } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { loadGoogleAccount } from '../../redux/actions/onboarding-action';
+import {
+  loadGoogleAccount,
+  pollOnboardingScan,
+  saveOnboardingFinds,
+  startOnboardingScan,
+} from '../../redux/actions/onboarding-action';
+import { toggleCandidate } from '../../redux/slices/onboarding-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { AuthStackParamList, OnboardingStep } from '../../types';
+import type { AccountProvider, AuthStackParamList, OnboardingStep } from '../../types';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>;
 
@@ -12,27 +18,36 @@ export const ONBOARDING_STEPS: Record<OnboardingStep, { stage: number; back?: On
   welcome: { stage: 1 },
   connectInbox: { stage: 2, back: 'welcome' },
   inboxPermission: { stage: 2, back: 'connectInbox' },
+  discovering: { stage: 3, back: 'connectInbox' },
+  yourSubscriptions: { stage: 4, back: 'connectInbox' },
+  saveYourFinds: { stage: 4, back: 'yourSubscriptions' },
+  readyToGo: { stage: 5, back: 'saveYourFinds' },
+  scanNoResults: { stage: 3, back: 'connectInbox' },
+  scanInterrupted: { stage: 3, back: 'connectInbox' },
 };
 
 export const PANEL_MOTION = { out_duration: 180, in_duration: 240 } as const;
+// How often the client asks the scan job for its status; progress itself comes from the service.
+export const SCAN_POLL_MS = 1000;
 
 export default function useOnboarding({ navigation, route }: Props) {
   const dispatch = useAppDispatch();
-  const google_email = useAppSelector(state => state.onboarding.google_email);
+  const onboarding_state = useAppSelector(state => state.onboarding);
+  const user_name = useAppSelector(state => state.profile.user?.name ?? '');
   const [step, setStep] = useState<OnboardingStep>(route.params?.step ?? 'welcome');
   const [animating, setAnimating] = useState(false);
   const [panel_width, setPanelWidth] = useState(0);
-  const reduce_motion = useRef(false);
+  const [reduce_motion, setReduceMotion] = useState(false);
   const panel_x = useRef(new Animated.Value(0)).current;
   const panel_opacity = useRef(new Animated.Value(1)).current;
+  const { google_email, scan_status, candidates } = onboarding_state;
 
   useEffect(() => {
-    AccessibilityInfo.isReduceMotionEnabled().then(enabled => { reduce_motion.current = enabled; }, () => {});
-    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', enabled => { reduce_motion.current = enabled; });
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion, () => {});
+    const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
     return () => subscription.remove();
   }, []);
 
-  // Legacy scan routes return here with a target panel until they move into the host.
   useEffect(() => {
     if (route.params?.step) setStep(route.params.step);
   }, [route.params?.step]);
@@ -45,7 +60,7 @@ export default function useOnboarding({ navigation, route }: Props) {
   const goTo = useCallback((next: OnboardingStep, direction: 1 | -1 = 1) => {
     if (animating || next === step) return;
     setAnimating(true);
-    const travel = reduce_motion.current ? 0 : direction;
+    const travel = reduce_motion ? 0 : direction;
     Animated.parallel([
       Animated.timing(panel_x, { toValue: -travel, duration: PANEL_MOTION.out_duration, easing: Easing.in(Easing.quad), useNativeDriver: true }),
       Animated.timing(panel_opacity, { toValue: 0, duration: PANEL_MOTION.out_duration, easing: Easing.in(Easing.quad), useNativeDriver: true }),
@@ -57,7 +72,21 @@ export default function useOnboarding({ navigation, route }: Props) {
         Animated.timing(panel_opacity, { toValue: 1, duration: PANEL_MOTION.in_duration, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
       ]).start(() => setAnimating(false));
     });
-  }, [animating, panel_opacity, panel_x, step]);
+  }, [animating, panel_opacity, panel_x, reduce_motion, step]);
+
+  // Poll only while Discovering is visible and the job is still running.
+  useEffect(() => {
+    if (step !== 'discovering' || scan_status !== 'running') return;
+    const timer = setInterval(() => dispatch(pollOnboardingScan()), SCAN_POLL_MS);
+    return () => clearInterval(timer);
+  }, [dispatch, scan_status, step]);
+
+  // Zero candidates and failures leave Discovering on their own; found results wait for the user.
+  useEffect(() => {
+    if (step !== 'discovering') return;
+    if (scan_status === 'failed') goTo('scanInterrupted');
+    else if (scan_status === 'completed' && candidates.length === 0) goTo('scanNoResults');
+  }, [candidates.length, goTo, scan_status, step]);
 
   const back_target = ONBOARDING_STEPS[step].back;
   const onBack = useCallback(() => {
@@ -73,17 +102,32 @@ export default function useOnboarding({ navigation, route }: Props) {
     return () => subscription.remove();
   }, [back_target, onBack]);
 
+  const startScan = () => {
+    dispatch(startOnboardingScan());
+    goTo('discovering');
+  };
+
+  const saveWith = async (provider: AccountProvider) => {
+    if (await dispatch(saveOnboardingFinds(provider))) goTo('readyToGo');
+  };
+
   return {
+    ...onboarding_state,
     step,
     stage: ONBOARDING_STEPS[step].stage,
     animating,
-    google_email,
+    reduce_motion,
+    first_name: user_name.split(' ')[0],
     onBack: back_target ? onBack : undefined,
     goTo,
+    startScan,
+    toggleCandidate: (id: string) => dispatch(toggleCandidate(id)),
+    saveWith,
     openLogin: () => navigation.navigate('Login'),
+    // shortcut: email sign-up is the legacy Signup route; returning to Ready after it needs the auth section (F1).
     openSignup: () => navigation.navigate('Signup'),
-    // shortcut: Discovering is still the legacy route until the scan panels move into this host (Part B).
-    startScan: () => navigation.navigate('Discovering'),
+    openLegal: () => Alert.alert('Not available yet', 'Terms and Privacy will be available before release.'),
+    openDashboard: () => navigation.getParent()?.reset({ index: 0, routes: [{ name: 'Tabs' }] }),
     panel_style: {
       opacity: panel_opacity,
       transform: [{ translateX: Animated.multiply(panel_x, panel_width / 4) }],

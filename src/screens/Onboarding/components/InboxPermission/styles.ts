@@ -13,7 +13,7 @@ export const styles = StyleSheet.create({
     padding: SIZES.padding2 + SIZES.padding3 / 4,
   },
   primary: {
-    marginTop: SIZES.padding3 + SIZES.padding3 / 4,
+    marginTop: SIZES.padding + SIZES.padding3 / 4,
   },
   secondary: {
     marginTop: SIZES.padding3 + SIZES.padding3 / 4,

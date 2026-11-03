@@ -52,7 +52,7 @@ export const styles = StyleSheet.create({
     marginTop: SIZES.padding,
   },
   primary: {
-    marginTop: SIZES.padding3 + SIZES.padding3 / 4,
+    marginTop: SIZES.padding + SIZES.padding3 / 4,
   },
   link: {
     marginTop: SIZES.padding2 + SIZES.padding3 / 8,

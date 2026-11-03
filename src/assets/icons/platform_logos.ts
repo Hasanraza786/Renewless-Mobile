@@ -5,3 +5,6 @@ export const spotify_logo = "<svg fill=\"#1DB954\" role=\"img\" viewBox=\"0 0 24
 export const icloud_logo = "<svg fill=\"#3693F3\" role=\"img\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><title>iCloud</title><path d=\"M13.762 4.29a6.51 6.51 0 0 0-5.669 3.332 3.571 3.571 0 0 0-1.558-.36 3.571 3.571 0 0 0-3.516 3A4.918 4.918 0 0 0 0 14.796a4.918 4.918 0 0 0 4.92 4.914 4.93 4.93 0 0 0 .617-.045h14.42c2.305-.272 4.041-2.258 4.043-4.589v-.009a4.594 4.594 0 0 0-3.727-4.508 6.51 6.51 0 0 0-6.511-6.27z\"/></svg>";
 
 export const gmail_logo = "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"52 42 88 66\"> <path fill=\"#4285f4\" d=\"M58 108h14V74L52 59v43c0 3.32 2.69 6 6 6\"/> <path fill=\"#34a853\" d=\"M120 108h14c3.32 0 6-2.69 6-6V59l-20 15\"/> <path fill=\"#fbbc04\" d=\"M120 48v26l20-15v-8c0-7.42-8.47-11.65-14.4-7.2\"/> <path fill=\"#ea4335\" d=\"M72 74V48l24 18 24-18v26L96 92\"/> <path fill=\"#c5221f\" d=\"M52 51v8l20 15V48l-5.6-4.2c-5.94-4.45-14.4-.22-14.4 7.2\"/> </svg>";
+
+// Platform logo by stable platform ID.
+export const platform_logos: Record<string, string> = { netflix: netflix_logo, spotify: spotify_logo, icloud: icloud_logo, gmail: gmail_logo };
