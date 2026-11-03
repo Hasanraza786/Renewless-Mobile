@@ -9,6 +9,7 @@ const requests: AuthRequest[] = [
   'resend',
   'reset',
   'password',
+  'social',
   'logout',
 ];
 

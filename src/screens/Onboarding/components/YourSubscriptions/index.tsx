@@ -1,34 +1,115 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, View } from 'react-native';
-import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { check_icon, platform_logos } from '../../../../assets/icons';
+import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import { check_icon, edit_icon, platform_logos } from '../../../../assets/icons';
+import AppSheet from '../../../../components/AppSheet';
 import CustomButton from '../../../../components/CustomButton';
 import CustomText from '../../../../components/CustomText';
+import DateField from '../../../../components/DateField';
 import Icons from '../../../../components/Icons';
 import InfoTooltip from '../../../../components/InfoTooltip';
+import InputField from '../../../../components/InputField';
 import OnboardingTitle from '../../../../components/OnboardingTitle';
-import { FONTS, SIZES, colors } from '../../../../constants/theme';
+import SelectField from '../../../../components/SelectField';
+import { COLORS, FONTS, SIZES } from '../../../../constants/theme';
+import type { ScanCandidate, ScanCycle } from '../../../../types';
 import { localToday } from '../../../../utils/dates';
-import {
-  dayMonth,
-  formatTotals,
-  paidMonthlyTotals,
-  priceLabel,
-  upcomingWeek,
-} from '../../../../utils/scan';
+import { dateLabel, formatTotals, moneyLabel, paidMonthlyTotals, upcomingWeek } from '../../../../utils/scan';
 import type { OnboardingController } from '../../index.function';
-import { styles } from './styles';
+import { RING, RING_WIDTH, styles } from './styles';
 
 type Props = { onboarding: OnboardingController };
 
 const BODY_LINE = SIZES.padding - SIZES.padding3 / 4;
+const CURRENCIES = ['USD', 'EUR', 'GBP', 'PKR', 'AED', 'INR'] as const;
+const CYCLES: readonly ScanCycle[] = ['Monthly', 'Quarterly', 'Yearly', 'Weekly'];
+
+// Selected / total as a ring: mint for the selected share, sage for the rest.
+function SelectionRing({ selected, total }: { selected: number; total: number }) {
+  const radius = (RING - RING_WIDTH) / 2;
+  const length = 2 * Math.PI * radius;
+  const share = total ? selected / total : 0;
+  return (
+    <View style={styles.ring} accessible accessibilityRole="image" accessibilityLabel={`${selected} of ${total} subscriptions selected`}>
+      <Svg width={RING} height={RING} style={styles.ring_svg}>
+        <Circle cx={RING / 2} cy={RING / 2} r={radius} stroke={COLORS.donut_mid} strokeWidth={RING_WIDTH} fill={COLORS.card} />
+        {share > 0 ? (
+          <Circle
+            cx={RING / 2}
+            cy={RING / 2}
+            r={radius}
+            stroke={COLORS.primary}
+            strokeWidth={RING_WIDTH}
+            fill="none"
+            strokeDasharray={[length * share, length]}
+            transform={`rotate(-90 ${RING / 2} ${RING / 2})`}
+          />
+        ) : null}
+      </Svg>
+      <CustomText text={`${selected}/${total}`} weight={FONTS.regular} size={SIZES.lg} line_height={SIZES.padding + SIZES.padding3 / 4} />
+    </View>
+  );
+}
+
+function EditSheet({ onboarding }: Props) {
+  const item = onboarding.editing;
+  const [draft, setDraft] = useState<ScanCandidate | undefined>(item);
+  const [price_text, setPriceText] = useState('');
+
+  // The last draft stays rendered while the sheet fades out.
+  useEffect(() => {
+    if (!item) return;
+    setDraft(item);
+    setPriceText(item.price);
+  }, [item]);
+
+  const price = Number(price_text);
+  const valid = price_text.trim() !== '' && Number.isFinite(price) && price >= 0 && (!draft?.trial || !!draft.next_date);
+
+  const submit = () => {
+    if (!item || !draft || !valid) return;
+    // A changed date counts as reviewed; an amount-only edit keeps the date's confidence.
+    onboarding.saveEdit({ ...draft, price: price.toFixed(2), estimated: draft.next_date === item.next_date ? item.estimated : false });
+  };
+
+  return (
+    <AppSheet visible={!!item} title={draft ? `Review ${draft.name}` : ''} subtitle="Changes apply when you save your subscriptions." onClose={onboarding.closeEdit}>
+      {draft ? (
+        <>
+          <View style={styles.price_row}>
+            <View style={styles.amount}>
+              <InputField
+                variant="sheet"
+                label={draft.trial ? 'Price after trial' : 'Amount'}
+                value={price_text}
+                onChangeText={setPriceText}
+                keyboardType="decimal-pad"
+                error={price_text && !valid ? 'Enter an amount of 0 or more.' : undefined}
+              />
+            </View>
+            <View style={styles.currency}>
+              <SelectField label="Currency" value={draft.currency} options={CURRENCIES.includes(draft.currency as (typeof CURRENCIES)[number]) ? CURRENCIES : [draft.currency, ...CURRENCIES]} onChange={currency => setDraft({ ...draft, currency })} />
+            </View>
+          </View>
+          <View style={styles.sheet_field}>
+            <SelectField label="Billing cycle" value={draft.cycle} options={CYCLES} onChange={cycle => setDraft({ ...draft, cycle })} />
+          </View>
+          <View style={styles.sheet_field}>
+            <DateField label={draft.trial ? 'Trial end' : 'Next renewal · Optional'} value={draft.next_date} onChange={next_date => setDraft({ ...draft, next_date })} />
+          </View>
+          <View style={styles.sheet_submit}>
+            <CustomButton variant="primary" style={styles.sheet_button} text="Update details" disabled={!valid} onPress={submit} />
+          </View>
+        </>
+      ) : null}
+    </AppSheet>
+  );
+}
 
 export function YourSubscriptionsBody({ onboarding }: Props) {
-  const selected = onboarding.candidates.filter(item =>
-    onboarding.selected_ids.includes(item.id),
-  );
+  const { candidates, selected_ids, save_loading } = onboarding;
+  const selected = candidates.filter(item => selected_ids.includes(item.id));
   const week = upcomingWeek(selected, localToday());
-  const count = selected.length;
   const [card, setCard] = useState({ width: 0, height: 0 });
 
   return (
@@ -36,179 +117,79 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
       <View style={styles.intro}>
         <OnboardingTitle
           eyebrow="YOUR FIRST LOOK"
-          title="Small charges."
-          emphasis="A clearer picture."
-          copy={`We found ${onboarding.candidates.length} possible subscriptions. Review what you want to keep.`}
+          title="Your subscriptions,"
+          emphasis="in one place."
+          copy={`We found ${candidates.length} possible subscriptions. Choose the ones you want to track.`}
           title_spacing={-SIZES.padding3 / 16}
         />
       </View>
-      <View
-        style={styles.total}
-        onLayout={event => setCard(event.nativeEvent.layout)}
-      >
+      <CustomText text={`Found in ${onboarding.inbox_email}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} style={styles.inbox} />
+      <View style={styles.total} onLayout={event => setCard(event.nativeEvent.layout)}>
         <Svg style={styles.total_wash} width={card.width} height={card.height}>
           <Defs>
             <LinearGradient id="total_wash" x1="0" y1="0" x2="1" y2="0.6">
-              <Stop offset="0" stopColor={colors.total_card} />
-              <Stop offset="1" stopColor={colors.surface_green_end} />
+              <Stop offset="0" stopColor={COLORS.total_card} />
+              <Stop offset="1" stopColor={COLORS.surface_green_end} />
             </LinearGradient>
           </Defs>
-          <Rect
-            width={card.width}
-            height={card.height}
-            fill="url(#total_wash)"
-          />
+          <Rect width={card.width} height={card.height} fill="url(#total_wash)" />
         </Svg>
         <View style={styles.total_text}>
-          <CustomText
-            text="Estimated monthly cost"
-            weight={FONTS.regular}
-            color={colors.text_secondary}
-            size={SIZES.sm}
-            line_height={BODY_LINE}
-          />
-          <CustomText
-            text={formatTotals(paidMonthlyTotals(selected))}
-            weight={FONTS.regular}
-            size={SIZES.h3}
-            line_height={SIZES.padding + SIZES.padding3}
-            mt={SIZES.padding3 - SIZES.padding3 / 8}
-          />
-          <CustomText
-            text={`${count} selected · paid plans only in total`}
-            weight={FONTS.regular}
-            color={colors.text_secondary}
-            size={SIZES.sm}
-            line_height={BODY_LINE}
-            mt={SIZES.padding3 + SIZES.padding3 / 8}
-          />
+          <CustomText text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+          <CustomText text={formatTotals(paidMonthlyTotals(selected))} weight={FONTS.regular} size={SIZES.h3} line_height={SIZES.padding + SIZES.padding3} mt={SIZES.padding3 - SIZES.padding3 / 8} />
+          <CustomText text="Free trials aren’t included in this total." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 - SIZES.padding3 / 8} />
         </View>
-        <View style={styles.donut}>
-          <View style={styles.donut_label}>
-            <CustomText
-              text={String(count)}
-              weight={FONTS.regular}
-              size={SIZES.lg}
-              line_height={SIZES.padding + SIZES.padding3 / 4}
-              align="center"
-            />
-            <CustomText
-              text="selected"
-              weight={FONTS.regular}
-              color={colors.text_secondary}
-              size={SIZES.sm}
-              line_height={BODY_LINE}
-              align="center"
-              number_of_lines={1}
-            />
-          </View>
-        </View>
+        <SelectionRing selected={selected.length} total={candidates.length} />
       </View>
-      <View style={styles.week} accessibilityLabel="Upcoming renewals">
+      <View style={styles.week} accessibilityLabel="Upcoming renewals and trial endings">
         <CustomText
           weight={FONTS.regular}
-          color={colors.text_secondary}
+          color={COLORS.text_secondary}
           size={SIZES.sm}
           line_height={BODY_LINE}
           text={
             <>
-              <CustomText
-                text={`${week.count} ${
-                  week.count === 1 ? 'upcoming event' : 'upcoming events'
-                }`}
-                size={SIZES.sm}
-                line_height={BODY_LINE}
-              />
-              {' in the next 7 days'}
+              <CustomText text={`${week.count} upcoming ${week.count === 1 ? 'renewal' : 'renewals'}`} size={SIZES.sm} line_height={BODY_LINE} />
+              {' in 7 days'}
             </>
           }
         />
-        <CustomText
-          text={formatTotals(week.totals)}
-          weight={FONTS.regular}
-          color={colors.accent}
-          size={SIZES.sm}
-          line_height={BODY_LINE}
-        />
+        <CustomText text={formatTotals(week.totals)} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} />
       </View>
       <View style={styles.caption}>
-        <CustomText
-          text="SUBSCRIPTIONS FOUND"
-          weight={FONTS.regular}
-          color={colors.text_secondary}
-          size={SIZES.sm}
-          line_height={BODY_LINE}
-          style={styles.caption_label}
-        />
-        <CustomText
-          text="Review before saving"
-          weight={FONTS.regular}
-          color={colors.text_secondary}
-          size={SIZES.sm}
-          line_height={BODY_LINE}
-        />
+        <CustomText text="SUBSCRIPTIONS FOUND" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} style={styles.caption_label} />
+        <CustomText text="Review before saving" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
       </View>
       <View style={styles.results}>
-        {onboarding.candidates.map((item, index) => {
-          const checked = onboarding.selected_ids.includes(item.id);
-          const detail = item.trial
-            ? `Trial ends ${dayMonth(item.trial.ends_on)} · then ${priceLabel(
-                item,
-              )}/month`
-            : `Renews ${dayMonth(item.next_date)} · estimated`;
+        {candidates.map((item, index) => {
+          const checked = selected_ids.includes(item.id);
+          const date = `${item.trial ? 'Trial ends' : 'Renews'} ${item.next_date ? dateLabel(item.next_date) : 'Date not set'}${item.estimated ? ' · estimated' : ''}`;
+          const price = `${item.trial ? 'Then ' : ''}${moneyLabel(item)} · ${item.cycle}`;
           return (
-            <Pressable
-              key={item.id}
-              accessibilityRole="checkbox"
-              accessibilityState={{ checked }}
-              accessibilityLabel={`${item.name}, ${detail}`}
-              onPress={() => onboarding.toggleCandidate(item.id)}
-              style={[
-                styles.row,
-                index < onboarding.candidates.length - 1 && styles.row_divider,
-              ]}
-            >
-              <View
-                style={[styles.checkbox, checked && styles.checkbox_checked]}
-              >
-                {checked ? (
-                  <Icons
-                    name={check_icon}
-                    icon_height={SIZES.padding2 + SIZES.padding3 / 4}
-                    icon_width={SIZES.padding2 + SIZES.padding3 / 4}
-                    stroke={colors.on_accent}
-                  />
-                ) : null}
-              </View>
-              <View style={styles.logo_tile}>
-                <Icons
-                  name={platform_logos[item.platform_id] ?? ''}
-                  icon_height={SIZES.padding2 * 2}
-                  icon_width={SIZES.padding2 * 2}
-                />
-              </View>
-              <View style={styles.row_text}>
-                <CustomText
-                  text={item.name}
-                  size={SIZES.sm}
-                  line_height={BODY_LINE}
-                />
-                <CustomText
-                  text={detail}
-                  weight={FONTS.regular}
-                  color={colors.text_secondary}
-                  size={SIZES.sm}
-                  line_height={BODY_LINE}
-                  mt={SIZES.padding3 / 2 + SIZES.padding3 / 8}
-                />
-              </View>
-              <CustomText
-                text={item.trial ? 'Free trial' : priceLabel(item)}
-                weight={FONTS.regular}
-                size={SIZES.sm}
-                line_height={BODY_LINE}
-              />
-            </Pressable>
+            <View key={item.id} style={[styles.row, index < candidates.length - 1 && styles.row_divider]}>
+              <Pressable
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked, disabled: save_loading }}
+                accessibilityLabel={`Select ${item.name}, ${date}, ${price}`}
+                disabled={save_loading}
+                onPress={() => onboarding.toggleCandidate(item.id)}
+                style={styles.row_select}>
+                <View style={[styles.checkbox, checked && styles.checkbox_checked]}>
+                  {checked ? <Icons name={check_icon} icon_height={SIZES.padding2 + SIZES.padding3 / 4} icon_width={SIZES.padding2 + SIZES.padding3 / 4} stroke={COLORS.background} /> : null}
+                </View>
+                <View style={styles.logo_tile}>
+                  <Icons name={platform_logos[item.platform_id] ?? ''} icon_height={SIZES.padding2 * 2} icon_width={SIZES.padding2 * 2} />
+                </View>
+                <View style={styles.row_text}>
+                  <CustomText text={item.name} size={SIZES.sm} line_height={BODY_LINE} />
+                  <CustomText text={date} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 / 2 + SIZES.padding3 / 8} />
+                  <CustomText text={price} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 / 2 + SIZES.padding3 / 8} />
+                </View>
+              </Pressable>
+              <Pressable accessibilityRole="button" accessibilityLabel={`Edit ${item.name}`} disabled={save_loading} onPress={() => onboarding.openEdit(item.id)} style={styles.edit}>
+                <Icons name={edit_icon} icon_height={SIZES.padding2 + SIZES.padding3 * 3 / 4} icon_width={SIZES.padding2 + SIZES.padding3 * 3 / 4} stroke={COLORS.primary} />
+              </Pressable>
+            </View>
           );
         })}
       </View>
@@ -216,11 +197,12 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
         <InfoTooltip
           label="How these estimates work"
           paragraphs={[
-            'Costs and renewal dates are estimated from your receipts. Older emails may refer to plans you’ve already cancelled. Review each subscription before saving.',
-            'Monthly cost is an estimate based on billing frequency and excludes active free trials. Trial rows show the price after trial. Upcoming events show expected charges in the next 7 days. Different currencies are shown separately, without conversion.',
+            'Receipts may refer to older or cancelled plans. Review each subscription before saving. You can correct the amount and date with Edit.',
+            'Monthly cost averages paid billing cycles and excludes active free trials. Trial rows show the price after trial. Upcoming expected charges cover today and the next 6 calendar days. Currencies stay separate without conversion.',
           ]}
         />
       </View>
+      <EditSheet onboarding={onboarding} />
     </>
   );
 }
@@ -229,20 +211,26 @@ export function YourSubscriptionsFooter({ onboarding }: Props) {
   const count = onboarding.selected_ids.length;
   return (
     <>
+      {onboarding.save_error ? (
+        <View accessibilityRole="alert" style={styles.save_error}>
+          <CustomText text={onboarding.save_error} weight={FONTS.regular} size={SIZES.sm} line_height={BODY_LINE} />
+        </View>
+      ) : null}
       <View style={styles.primary}>
         <CustomButton
           variant="primary"
-          text={`Save ${count} subscriptions →`}
-          disabled={!count}
-          onPress={() => onboarding.goTo('saveYourFinds')}
+          text={onboarding.save_loading ? 'Saving…' : `Save ${count} ${count === 1 ? 'subscription' : 'subscriptions'} →`}
+          disabled={!count || onboarding.save_loading}
+          busy={onboarding.save_loading}
+          onPress={onboarding.save}
         />
       </View>
       <View style={styles.link}>
-        <CustomButton
-          variant="link"
-          text="Nothing looks right? Add manually"
-          onPress={onboarding.openSignup}
-        />
+        {count ? (
+          <CustomButton variant="link" text="Add a subscription manually" onPress={onboarding.openManual} />
+        ) : (
+          <CustomButton variant="link" text="Continue without saving" onPress={onboarding.skipSave} />
+        )}
       </View>
     </>
   );

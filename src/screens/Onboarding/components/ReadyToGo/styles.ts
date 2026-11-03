@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { SIZES, colors } from '../../../../constants/theme';
+import { COLORS, SIZES } from '../../../../constants/theme';
 
 export const HALO_SIZE = SIZES.padding * 5 + SIZES.padding2;
 const BADGE = SIZES.padding + SIZES.padding3 + SIZES.padding3 / 4;
@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
     width: HALO_SIZE,
   },
   halo: {
-    borderColor: colors.accent_tile,
+    borderColor: COLORS.accent_tile,
     borderRadius: HALO_SIZE / 2,
     borderWidth: SIZES.padding3 / 8,
     height: HALO_SIZE,
@@ -29,8 +29,8 @@ export const styles = StyleSheet.create({
   },
   badge: {
     alignItems: 'center',
-    backgroundColor: colors.accent,
-    borderColor: colors.background,
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.background,
     borderRadius: BADGE / 2,
     borderWidth: SIZES.padding3 / 2 - SIZES.padding3 / 8,
     bottom: SIZES.padding3 / 4,
@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     position: 'absolute',
     right: -SIZES.padding3 / 8,
-    shadowColor: colors.background,
+    shadowColor: COLORS.background,
     shadowOffset: { width: 0, height: SIZES.padding3 / 4 },
     shadowOpacity: 0.2,
     shadowRadius: SIZES.padding3 / 2,
@@ -48,8 +48,8 @@ export const styles = StyleSheet.create({
     marginBottom: SIZES.padding,
   },
   summary: {
-    backgroundColor: colors.card,
-    borderColor: colors.accent_border,
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.accent_border,
     borderRadius: SIZES.padding3 * 2,
     borderWidth: SIZES.padding3 / 8,
     flexDirection: 'row',
@@ -60,7 +60,7 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   summary_wide: {
-    borderLeftColor: colors.line_faint,
+    borderLeftColor: COLORS.line_faint,
     borderLeftWidth: SIZES.padding3 / 8,
     flex: 1.35,
     paddingLeft: SIZES.padding2 + SIZES.padding3 / 4,
@@ -78,7 +78,7 @@ export const styles = StyleSheet.create({
   },
   logo_tile: {
     alignItems: 'center',
-    backgroundColor: colors.logo_tile,
+    backgroundColor: COLORS.logo_tile,
     borderRadius: SIZES.padding3 + SIZES.padding3 / 4,
     height: SIZES.padding * 2 - SIZES.padding3 / 2,
     justifyContent: 'center',

@@ -3,75 +3,102 @@ import {
   forgotPassword as forgotPasswordRequest,
   login as loginRequest,
   logout as logoutRequest,
+  resendCode as resendCodeRequest,
   resetPassword as resetPasswordRequest,
+  signInWithProvider,
   signup as signupRequest,
-  verifyOtp as verifyOtpRequest,
+  verifyResetCode,
+  verifySignupCode,
 } from '../../api_services/auth';
-import type { Gender } from '../../types';
+import type { AuthProvider, AuthResponse } from '../../types';
 import { endSession } from '../endSession';
 import { runRequest, type AppThunk } from '../runRequest';
 import { authError, authLoading } from '../slices/auth-slice';
 import { setProfileUser } from '../slices/profile-slice';
 import { setSession } from '../slices/constant-slice';
 
-export function login(email: string, password: string) {
+const startSession = (session: AuthResponse) => [setSession(session), setProfileUser(session.user)];
+
+// Resolves to 'session', 'verify' (the account still needs its signup code) or undefined on failure.
+export function login(email: string, password: string): AppThunk<'session' | 'verify' | undefined> {
+  return async dispatch => {
+    const result = await dispatch(
+      runRequest({
+        request: () => loginRequest(email.trim(), password),
+        loading: authLoading('login'),
+        error: authError('login'),
+        success: value => ('token' in value ? startSession(value) : []),
+        endOnUnauthorized: false,
+      }),
+    );
+    if (!result) return undefined;
+    return 'token' in result ? 'session' : 'verify';
+  };
+}
+
+// Resolves to '' when the code was sent, otherwise the error to show under Email.
+export function signup(input: { name: string; email: string; password: string }): AppThunk<string> {
+  return async (dispatch, getState) => {
+    const sent = await dispatch(
+      runRequest({
+        request: async () => {
+          await signupRequest(input);
+          return true;
+        },
+        loading: authLoading('signup'),
+        error: authError('signup'),
+        endOnUnauthorized: false,
+      }),
+    );
+    return sent ? '' : getState().auth.error.signup;
+  };
+}
+
+export function signInSocial(provider: AuthProvider) {
   return runRequest({
-    request: () => loginRequest(email, password),
-    loading: authLoading('login'),
-    error: authError('login'),
-    success: result => [setSession(result), setProfileUser(result.user)],
+    request: () => signInWithProvider(provider),
+    loading: authLoading('social'),
+    error: authError('social'),
+    success: startSession,
+    endOnUnauthorized: false,
   });
 }
 
-export function signup(input: {
-  name: string;
-  email: string;
-  password: string;
-  phone: string;
-  dateOfBirth?: string;
-  gender?: Gender | null;
-}) {
+export function forgotPassword(email: string) {
   return runRequest({
-    request: () => signupRequest(input),
-    loading: authLoading('signup'),
-    error: authError('signup'),
-    success: result => [setSession(result), setProfileUser(result.user)],
-  });
-}
-
-export function forgotPassword(email: string, onDone?: () => void) {
-  return runRequest({
-    request: () => forgotPasswordRequest(email),
+    request: () => forgotPasswordRequest(email.trim()),
     loading: authLoading('forgot'),
     error: authError('forgot'),
-    onDone,
+    endOnUnauthorized: false,
   });
 }
 
-export function verifyOtp(email: string, code: string, onDone?: () => void) {
-  return runRequest({
-    request: () => verifyOtpRequest(email, code),
+// Signup verification starts a session; reset verification returns only a reset authorization.
+export function verifyCode(purpose: 'signup' | 'reset', email: string, code: string) {
+  return runRequest<AuthResponse | { reset_token: string }>({
+    request: () => (purpose === 'signup' ? verifySignupCode(email, code) : verifyResetCode(email, code)),
     loading: authLoading('otp'),
     error: authError('otp'),
-    onDone,
+    success: value => ('token' in value ? startSession(value) : []),
+    endOnUnauthorized: false,
   });
 }
 
-export function resendOtp(email: string, onDone?: () => void) {
+export function resendCode(email: string) {
   return runRequest({
-    request: () => forgotPasswordRequest(email),
+    request: () => resendCodeRequest(email),
     loading: authLoading('resend'),
-    error: authError('otp'),
-    onDone,
+    error: authError('resend'),
+    endOnUnauthorized: false,
   });
 }
 
-export function resetPassword(email: string, password: string, onDone?: () => void) {
+export function resetPassword(reset_token: string, password: string) {
   return runRequest({
-    request: () => resetPasswordRequest(email, password),
+    request: () => resetPasswordRequest(reset_token, password),
     loading: authLoading('reset'),
     error: authError('reset'),
-    onDone,
+    endOnUnauthorized: false,
   });
 }
 

@@ -76,6 +76,7 @@ export type AuthRequest =
   | 'resend'
   | 'reset'
   | 'password'
+  | 'social'
   | 'logout';
 
 export type AuthState = {
@@ -123,13 +124,13 @@ export type ConnectorsState = {
 };
 
 export type OnboardingState = {
-  google_email: string;
-  google_loading: boolean;
-  google_error: string;
+  connect_loading: boolean;
+  connect_message: string;
+  inbox_email: string;
   scan_job_id: string;
   scan_stages: number;
   scan_status: 'idle' | 'running' | 'completed' | 'failed';
-  scan_error: string;
+  scan_failure: ScanFailure | '';
   candidates: ScanCandidate[];
   selected_ids: string[];
   saved: ScanCandidate[];
@@ -151,43 +152,58 @@ export type RootState = {
 export type OnboardingStep =
   | 'welcome'
   | 'connectInbox'
-  | 'inboxPermission'
   | 'discovering'
   | 'yourSubscriptions'
-  | 'saveYourFinds'
   | 'readyToGo'
   | 'scanNoResults'
   | 'scanInterrupted';
+
+export type ScanCycle = 'Monthly' | 'Quarterly' | 'Yearly' | 'Weekly';
 
 export type ScanCandidate = {
   id: string;
   platform_id: string;
   name: string;
+  // Exact decimal string; for an active trial this is the price after the trial.
   price: string;
   currency: string;
-  cycle: 'monthly';
-  next_date: string;
-  trial?: { ends_on: string; auto_renew: boolean };
+  cycle: ScanCycle;
+  // Next renewal, or the trial end for a trial; null when unknown.
+  next_date: string | null;
+  // The date was inferred from receipts rather than stated or reviewed.
+  estimated: boolean;
+  trial?: { auto_renew: boolean };
 };
+
+export type ScanFailure = 'network' | 'access';
 
 export type ScanStatus = {
   job_id: string;
   completed_stages: number;
   status: 'running' | 'completed' | 'failed';
+  failure?: ScanFailure;
   candidates: ScanCandidate[];
 };
 
-export type AccountProvider = 'google' | 'apple';
+// Google identity and the Gmail grant come back from one connection, but are checked separately.
+export type GoogleConnection =
+  | { status: 'cancelled' }
+  | { status: 'signed_in'; session: AuthResponse; gmail_granted: boolean; inbox_email: string };
 
 export type AuthStackParamList = {
   Splash: undefined;
   Onboarding: { step?: OnboardingStep } | undefined;
-  Login: undefined;
-  Signup: undefined;
+  Login: { intent?: AuthIntent } | undefined;
+  Signup: { intent?: AuthIntent } | undefined;
   ForgotPassword: undefined;
-  Otp: { email: string };
-  ResetPassword: { email: string };
+  // One verification screen for both purposes: signup creates a session, reset only authorizes a new password.
+  Otp: { purpose: 'signup' | 'reset'; email: string; intent?: AuthIntent };
+  ResetPassword: { reset_token: string };
 };
+
+// Where the user goes after authenticating: the Add form for manual entry, otherwise Home.
+export type AuthIntent = 'add_manual';
+export type AuthProvider = 'google' | 'apple';
 
 export type TabParamList = {
   Dashboard: undefined;

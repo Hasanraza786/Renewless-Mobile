@@ -1,19 +1,17 @@
 import { USE_MOCK_API } from '../config/api';
 import { MOCK_DATA } from '../config/mock-data';
-import type { AccountProvider, AuthResponse, ScanCandidate, ScanStatus } from '../types';
+import type { GoogleConnection, ScanCandidate, ScanStatus } from '../types';
 import { localToday } from '../utils/dates';
 import { addDays } from '../utils/scan';
 
-export type GoogleAccount = { email: string };
-
-// shortcut: only the development mock adapter exists; the real Gmail scan/import API and native
-// Google/Apple sign-in replace these once the backend contract is agreed.
+// shortcut: only the development mock adapter exists; the real Google sign-in + Gmail consent and the
+// scan/import API replace these once the backend contract is agreed.
 function requireMock(feature: string) {
   if (!USE_MOCK_API) throw new Error(`${feature} is not available yet.`);
 }
 
 // Isolated in-memory repository; resetMockOnboarding restores it.
-const jobs = new Map<string, { started_at: number; imported: ScanCandidate[] | null }>();
+const jobs = new Map<string, { started_at: number; fails: boolean; imported: Map<string, ScanCandidate> }>();
 let job_sequence = 0;
 
 export function resetMockOnboarding() {
@@ -23,21 +21,27 @@ export function resetMockOnboarding() {
 
 function fixtureCandidates(): ScanCandidate[] {
   const today = localToday();
-  return MOCK_DATA.scan_candidates.map(({ next_in_days, ...item }) => {
-    const next_date = addDays(today, next_in_days);
-    return { ...item, next_date, trial: 'trial' in item ? { ends_on: next_date, auto_renew: item.trial.auto_renew } : undefined };
-  });
+  return MOCK_DATA.scan_candidates.map(({ next_in_days, ...item }) => ({ ...item, next_date: addDays(today, next_in_days) }));
 }
 
-export async function getGoogleAccount(): Promise<GoogleAccount> {
+export async function connectGoogle(): Promise<GoogleConnection> {
   requireMock('Google sign-in');
-  return { ...MOCK_DATA.google_account };
+  if (MOCK_DATA.connect_scenario === 'cancelled') return { status: 'cancelled' };
+  const { email, session } = MOCK_DATA.google_account;
+  return {
+    status: 'signed_in',
+    session: { token: session.token, user: { ...session.user } },
+    gmail_granted: MOCK_DATA.connect_scenario === 'granted',
+    inbox_email: email,
+  };
 }
 
 export async function startScan(): Promise<{ job_id: string }> {
   requireMock('Gmail scan');
   const job_id = `scan-${++job_sequence}`;
-  jobs.set(job_id, { started_at: Date.now(), imported: null });
+  // A network interruption hits only the first scan, so Try again can succeed.
+  const fails = MOCK_DATA.scan_scenario === 'access_expired' || (MOCK_DATA.scan_scenario === 'interrupted' && job_sequence === 1);
+  jobs.set(job_id, { started_at: Date.now(), fails, imported: new Map() });
   return { job_id };
 }
 
@@ -47,26 +51,19 @@ export async function getScanStatus(job_id: string): Promise<ScanStatus> {
   const job = jobs.get(job_id);
   if (!job) throw new Error('This scan is no longer available.');
   const completed_stages = Math.min(3, Math.floor((Date.now() - job.started_at) / MOCK_DATA.scan_stage_ms));
-  if (MOCK_DATA.scan_scenario === 'interrupted' && completed_stages >= 2) {
-    return { job_id, completed_stages, status: 'failed', candidates: [] };
+  if (job.fails && completed_stages >= 2) {
+    return { job_id, completed_stages, status: 'failed', failure: MOCK_DATA.scan_scenario === 'access_expired' ? 'access' : 'network', candidates: [] };
   }
   if (completed_stages < 3) return { job_id, completed_stages, status: 'running', candidates: [] };
-  return { job_id, completed_stages, status: 'completed', candidates: MOCK_DATA.scan_scenario === 'found' ? fixtureCandidates() : [] };
+  return { job_id, completed_stages, status: 'completed', candidates: MOCK_DATA.scan_scenario === 'no_results' ? [] : fixtureCandidates() };
 }
 
-export async function signInWithProvider(_provider: AccountProvider): Promise<AuthResponse> {
-  requireMock('Account sign-in');
-  return { token: MOCK_DATA.account.token, user: { ...MOCK_DATA.account.user } };
-}
-
-// Idempotent per scan job: repeating the save returns the first import instead of duplicating it.
-export async function importCandidates(job_id: string, candidate_ids: string[]): Promise<ScanCandidate[]> {
+// Saves the reviewed candidates under the signed-in owner. Idempotent per candidate ID: a repeat keeps
+// the first saved record, and earlier saves stay saved. Returns every record saved from this scan.
+export async function importCandidates(job_id: string, candidates: ScanCandidate[]): Promise<ScanCandidate[]> {
   requireMock('Import');
   const job = jobs.get(job_id);
   if (!job) throw new Error('This scan is no longer available.');
-  if (!job.imported) {
-    const ids = new Set(candidate_ids);
-    job.imported = fixtureCandidates().filter(item => ids.has(item.id));
-  }
-  return job.imported;
+  for (const item of candidates) if (!job.imported.has(item.id)) job.imported.set(item.id, item);
+  return [...job.imported.values()];
 }

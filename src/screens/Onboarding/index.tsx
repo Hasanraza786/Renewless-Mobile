@@ -1,38 +1,36 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
 import { Animated, Pressable, ScrollView, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { back_icon, logo_mark } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Icons from '../../components/Icons';
-import { FONTS, SIZES, colors } from '../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import type { AuthStackParamList, OnboardingStep } from '../../types';
 import { ConnectInboxBody, ConnectInboxFooter } from './components/ConnectInbox';
 import { DiscoveringBody, DiscoveringFooter } from './components/Discovering';
-import { InboxPermissionBody, InboxPermissionFooter } from './components/InboxPermission';
 import { ReadyConfetti, ReadyToGoBody, ReadyToGoFooter } from './components/ReadyToGo';
-import { SaveYourFindsBody, SaveYourFindsFooter } from './components/SaveYourFinds';
 import { ScanInterruptedBody, ScanInterruptedFooter, ScanNoResultsBody, ScanNoResultsFooter } from './components/ScanRecovery';
 import { WelcomeBody, WelcomeFooter } from './components/Welcome';
 import { YourSubscriptionsBody, YourSubscriptionsFooter } from './components/YourSubscriptions';
 import useOnboarding, { type OnboardingController } from './index.function';
 import { styles } from './styles';
+import RowView from '../../components/RowView';
+import SizedBox from '../../components/SizedBox';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>;
 type Panel = {
   Body: (props: { onboarding: OnboardingController }) => ReactNode;
   Footer: Panel['Body'];
-  // Save, Ready and recovery fit one view: content is centred and the footer has no divider.
+  // Ready and recovery fit one view: content is centred and the footer has no divider.
   fitted?: boolean;
 };
 
 const PANELS: Record<OnboardingStep, Panel> = {
   welcome: { Body: WelcomeBody, Footer: WelcomeFooter },
   connectInbox: { Body: ConnectInboxBody, Footer: ConnectInboxFooter },
-  inboxPermission: { Body: InboxPermissionBody, Footer: InboxPermissionFooter },
   discovering: { Body: DiscoveringBody, Footer: DiscoveringFooter },
   yourSubscriptions: { Body: YourSubscriptionsBody, Footer: YourSubscriptionsFooter },
-  saveYourFinds: { Body: SaveYourFindsBody, Footer: SaveYourFindsFooter, fitted: true },
   readyToGo: { Body: ReadyToGoBody, Footer: ReadyToGoFooter, fitted: true },
   scanNoResults: { Body: ScanNoResultsBody, Footer: ScanNoResultsFooter, fitted: true },
   scanInterrupted: { Body: ScanInterruptedBody, Footer: ScanInterruptedFooter, fitted: true },
@@ -47,24 +45,36 @@ export default function Onboarding(props: Props) {
   return (
     <Container is_auth>
       <View style={styles.main_view}>
-        <View style={styles.header}>
-          <View style={styles.bar}>
+
+        <Fragment>
+
+          <RowView justify_content='space-between' >
             {onboarding.onBack ? (
-              <Pressable accessibilityRole="button" accessibilityLabel="Back" disabled={onboarding.animating} onPress={onboarding.onBack} style={styles.back}>
-                <Icons name={back_icon} icon_height={SIZES.padding + SIZES.padding3 / 8} stroke={colors.text} />
+              <Pressable accessibilityRole="button" accessibilityLabel="Back" hitSlop={SIZES.padding3 / 4} disabled={onboarding.animating} onPress={onboarding.onBack} style={styles.back}>
+                <Icons name={back_icon} icon_height={SIZES.padding * 2} icon_width={SIZES.padding * 2} />
               </Pressable>
             ) : (
               <View style={styles.back_spacer} />
             )}
-            <CustomText text="RENEWLESS" weight={FONTS.regular} color={colors.text_secondary} size={SIZES.sm} line_height={SIZES.padding - SIZES.padding3 / 4} style={styles.wordmark} />
-            <Icons name={logo_mark} icon_height={SIZES.padding2 * 2} icon_width={SIZES.padding2 * 2} />
-          </View>
-          <View accessibilityRole="progressbar" accessibilityLabel={`Step ${onboarding.stage} of ${STAGE_COUNT}`} style={styles.steps}>
+            <CustomText text="RENEWLESS" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding - SIZES.padding3 / 4} style={styles.wordmark} />
+            <Icons name={logo_mark} icon_height={SIZES.padding * 2} icon_width={SIZES.padding * 2} />
+          </RowView>
+
+          <SizedBox />
+
+          <RowView
+            accessibilityRole="progressbar"
+            accessibilityLabel={`Step ${onboarding.stage} of ${STAGE_COUNT}`}
+            gap={SIZES.padding2 / 2}
+          >
             {Array.from({ length: STAGE_COUNT }, (_, index) => (
               <View key={index} style={[styles.step, index < onboarding.stage && styles.step_done]} />
             ))}
-          </View>
-        </View>
+          </RowView>
+        </Fragment>
+
+        <SizedBox />
+
         <Animated.View
           pointerEvents={onboarding.animating ? 'none' : 'auto'}
           onLayout={event => onboarding.setPanelWidth(event.nativeEvent.layout.width)}

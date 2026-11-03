@@ -1,7 +1,7 @@
 import { useRef, useState, type ComponentRef } from 'react';
 import { Modal, Pressable, View, useWindowDimensions } from 'react-native';
 import { close_icon, info_icon } from '../../assets/icons';
-import { FONTS, SIZES, colors } from '../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
 import { styles } from './styles';
@@ -25,7 +25,7 @@ export default function InfoTooltip({ label, paragraphs }: Props) {
 
   const row = (onPress: () => void, expanded: boolean) => (
     <>
-      <CustomText text={label} weight={FONTS.regular} color={colors.text_secondary} size={SIZES.sm} line_height={SIZES.padding - SIZES.padding3 / 4} />
+      <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding - SIZES.padding3 / 4} />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={label}
@@ -33,7 +33,7 @@ export default function InfoTooltip({ label, paragraphs }: Props) {
         onLayout={event => setTriggerX(event.nativeEvent.layout.x + event.nativeEvent.layout.width / 2)}
         onPress={onPress}
         style={styles.trigger}>
-        <Icons name={info_icon} icon_height={SIZES.padding} stroke={colors.text_secondary} />
+        <Icons name={info_icon} icon_height={SIZES.padding} stroke={COLORS.text_secondary} />
       </Pressable>
     </>
   );
@@ -53,11 +53,11 @@ export default function InfoTooltip({ label, paragraphs }: Props) {
               <View style={styles.head}>
                 <CustomText text={label} size={SIZES.lg} line_height={SIZES.padding + SIZES.padding3 / 4} style={styles.title} />
                 <Pressable accessibilityRole="button" accessibilityLabel="Close information" onPress={close} style={styles.close}>
-                  <Icons name={close_icon} icon_height={SIZES.padding} stroke={colors.text} />
+                  <Icons name={close_icon} icon_height={SIZES.padding} stroke={COLORS.text_primary} />
                 </Pressable>
               </View>
               {paragraphs.map(paragraph => (
-                <CustomText key={paragraph} text={paragraph} weight={FONTS.regular} color={colors.tooltip_text} size={SIZES.sm} line_height={SIZES.padding - SIZES.padding3 / 4} mt={SIZES.padding3} />
+                <CustomText key={paragraph} text={paragraph} weight={FONTS.regular} color={COLORS.tooltip_text} size={SIZES.sm} line_height={SIZES.padding - SIZES.padding3 / 4} mt={SIZES.padding3} />
               ))}
               <View style={[styles.arrow, { left: trigger_x - SIZES.padding3 / 2 - SIZES.padding3 / 8 }]} />
             </View>

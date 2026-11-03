@@ -1,35 +1,55 @@
 import { StyleSheet } from 'react-native';
-import { colors, SIZES } from '../../constants/theme';
+import { COLORS, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
-  main_view: {
-    flex: 1,
-    paddingHorizontal: SIZES.padding2 * 2,
-    paddingTop: SIZES.padding3,
+  destination: {
+    backgroundColor: COLORS.card,
+    borderRadius: SIZES.padding2 + SIZES.padding3 / 4,
+    marginBottom: SIZES.padding + SIZES.padding3 + SIZES.padding3 / 4,
+    paddingHorizontal: SIZES.padding2 + SIZES.padding3 - SIZES.padding3 / 4,
+    paddingVertical: SIZES.padding3 * 2,
   },
-  content: {
-    flexGrow: 1,
-    paddingBottom: SIZES.padding,
+  change_email: {
+    alignSelf: 'flex-start',
+    minHeight: SIZES.padding * 2 - SIZES.padding3,
+    paddingTop: SIZES.padding2,
   },
-  link: {
-    alignSelf: 'center',
-    marginBottom: SIZES.padding3,
-    marginTop: SIZES.padding3 * 2,
-  },
-  codeField: {
-    justifyContent: 'space-between',
-    marginBottom: SIZES.padding3 / 2,
+  code: {
+    gap: SIZES.padding3,
   },
   cell: {
-    backgroundColor: colors.card,
-    borderColor: colors.control_border,
-    borderRadius: SIZES.padding2,
-    borderWidth: 1,
-    height: SIZES.control_height,
-    overflow: 'hidden',
-    width: SIZES.padding * 2.3,
+    alignItems: 'center',
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.code_border,
+    borderRadius: SIZES.padding3 + SIZES.padding3 / 4,
+    borderWidth: SIZES.padding3 / 8,
+    flex: 1,
+    height: SIZES.padding * 2 + SIZES.padding3 - SIZES.padding3 / 4,
+    justifyContent: 'center',
   },
   cell_focused: {
-    borderColor: colors.accent,
+    borderColor: COLORS.primary,
+  },
+  cell_error: {
+    borderColor: COLORS.expired,
+  },
+  expiry: {
+    marginBottom: SIZES.padding2,
+    marginTop: SIZES.padding2 + SIZES.padding3 / 4,
+  },
+  submit: {
+    borderRadius: SIZES.padding2,
+    height: SIZES.padding * 2 + SIZES.padding3 + SIZES.padding3 / 8,
+    marginTop: SIZES.padding2,
+  },
+  resend: {
+    alignItems: 'center',
+    marginTop: SIZES.padding + SIZES.padding3,
+  },
+  resend_button: {
+    justifyContent: 'center',
+    marginTop: SIZES.padding3 / 2 - SIZES.padding3 / 8,
+    minHeight: SIZES.padding * 2,
+    paddingHorizontal: SIZES.padding3 + SIZES.padding3 / 4,
   },
 });

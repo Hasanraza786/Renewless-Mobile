@@ -1,4 +1,4 @@
-import type { ScanCandidate } from '../types';
+import type { ScanCandidate, ScanCycle } from '../types';
 
 type Totals = Record<string, number>;
 
@@ -8,47 +8,50 @@ export function addDays(iso: string, days: number) {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
 
-// "27 Oct"
-export function dayMonth(iso: string) {
+// "27 Oct 2026"
+export function dateLabel(iso: string) {
   const [year, month, day] = iso.split('-').map(Number);
-  return new Date(year, month - 1, day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  return new Date(year, month - 1, day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-// Money stays in integer cents per currency; currencies are never converted or merged.
-function addCents(totals: Totals, item: ScanCandidate) {
-  totals[item.currency] = (totals[item.currency] ?? 0) + Math.round(Number(item.price) * 100);
-  return totals;
-}
+export const moneyLabel = (item: ScanCandidate) => `${item.currency} ${Number(item.price).toFixed(2)}`;
 
+const cents = (item: ScanCandidate) => Math.round(Number(item.price) * 100);
+const MONTHLY_FACTOR: Record<ScanCycle, number> = { Weekly: 52 / 12, Monthly: 1, Quarterly: 1 / 3, Yearly: 1 / 12 };
+
+// Totals stay in cents per currency; currencies are never converted or merged.
 export function formatTotals(totals: Totals) {
-  const parts = Object.entries(totals).map(([currency, cents]) => `${currency} ${(cents / 100).toFixed(2)}`);
+  const parts = Object.entries(totals).map(([currency, amount]) => `${currency} ${(amount / 100).toFixed(2)}`);
   return parts.length ? parts.join(' · ') : '—';
 }
 
-export const eventDate = (item: ScanCandidate) => item.trial?.ends_on ?? item.next_date;
-
-// Estimated monthly cost of paid plans; active free trials are excluded.
+// Estimated monthly cost: paid plans normalised to a month; active free trials are excluded. With
+// only trials selected, their currencies show a zero total rather than a dash.
 export function paidMonthlyTotals(items: ScanCandidate[]) {
-  return items.filter(item => !item.trial).reduce(addCents, {});
+  const totals: Totals = {};
+  for (const item of items) {
+    if (item.trial || !(cents(item) >= 0)) continue;
+    totals[item.currency] = (totals[item.currency] ?? 0) + cents(item) * MONTHLY_FACTOR[item.cycle];
+  }
+  if (!Object.keys(totals).length) for (const item of items) if (item.trial) totals[item.currency] = 0;
+  return Object.fromEntries(Object.entries(totals).map(([currency, amount]) => [currency, Math.round(amount)]));
 }
 
-export function allMonthlyTotals(items: ScanCandidate[]) {
-  return items.reduce(addCents, {});
-}
-
-// Events from today through today + 7 inclusive; a trial that will not auto-renew charges nothing.
+// Events on exactly seven calendar dates, today through today + 6. Trial endings count as events but
+// add a charge only when the trial auto-renews.
 export function upcomingWeek(items: ScanCandidate[], today: string) {
-  const last = addDays(today, 7);
-  const upcoming = items.filter(item => eventDate(item) >= today && eventDate(item) <= last);
-  return {
-    count: upcoming.length,
-    totals: upcoming.filter(item => item.trial?.auto_renew !== false).reduce(addCents, {}),
-  };
+  const last = addDays(today, 6);
+  const upcoming = items.filter(item => item.next_date && item.next_date >= today && item.next_date <= last);
+  const totals: Totals = {};
+  for (const item of upcoming) {
+    if (item.trial && !item.trial.auto_renew) continue;
+    totals[item.currency] = (totals[item.currency] ?? 0) + cents(item);
+  }
+  return { count: upcoming.length, totals };
 }
 
 export function nextEvent(items: ScanCandidate[], today: string) {
-  return [...items].filter(item => eventDate(item) >= today).sort((a, b) => eventDate(a).localeCompare(eventDate(b)))[0];
+  return items
+    .filter(item => item.next_date && item.next_date >= today)
+    .sort((a, b) => a.next_date!.localeCompare(b.next_date!) || a.id.localeCompare(b.id))[0];
 }
-
-// "$15.99" for USD as in the approved design; other currencies keep their code.
-export const priceLabel = (item: ScanCandidate) => (item.currency === 'USD' ? `$${item.price}` : `${item.currency} ${item.price}`);

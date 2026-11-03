@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { SIZES, colors } from '../../../../constants/theme';
+import { COLORS, SIZES } from '../../../../constants/theme';
 
 const ART = SIZES.padding * 6 + SIZES.padding3;
 const BADGE = SIZES.padding2 * 2 + SIZES.padding3;
@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
   art: {
     alignItems: 'center',
     alignSelf: 'center',
-    borderColor: colors.accent_border,
+    borderColor: COLORS.accent_border,
     borderRadius: ART / 2,
     borderWidth: SIZES.padding3 / 8,
     height: ART,
@@ -20,8 +20,8 @@ export const styles = StyleSheet.create({
   },
   badge: {
     alignItems: 'center',
-    backgroundColor: colors.card,
-    borderColor: colors.background,
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.background,
     borderRadius: SIZES.padding3 + SIZES.padding3 / 4 + SIZES.padding3 / 8,
     borderWidth: SIZES.padding3 / 2 - SIZES.padding3 / 8,
     bottom: SIZES.padding3 / 2,
@@ -35,8 +35,8 @@ export const styles = StyleSheet.create({
     marginTop: SIZES.padding2 * 2,
   },
   hint: {
-    backgroundColor: colors.card,
-    borderColor: colors.line_soft,
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.line_soft,
     borderRadius: SIZES.padding3 * 2,
     borderWidth: SIZES.padding3 / 8,
     flexDirection: 'row',

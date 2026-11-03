@@ -1,10 +1,11 @@
 import { View } from 'react-native';
-import { hint_icon, inbox_badge_icon, loop_sad, offline_badge_icon, retry_icon } from '../../../../assets/icons';
+import { hint_icon, inbox_badge_icon, offline_badge_icon, retry_icon } from '../../../../assets/icons';
 import CustomButton from '../../../../components/CustomButton';
 import CustomText from '../../../../components/CustomText';
 import Icons from '../../../../components/Icons';
+import Mascot from '../../../../components/Mascot';
 import OnboardingTitle from '../../../../components/OnboardingTitle';
-import { FONTS, SIZES, colors } from '../../../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../../../constants/theme';
 import type { OnboardingController } from '../../index.function';
 import { styles } from './styles';
 
@@ -33,39 +34,43 @@ const COPY: Record<Kind, { badge: string; hint_icon: string; eyebrow: string; ti
     eyebrow: 'LET’S GET BACK ON TRACK',
     title: 'Your scan',
     emphasis: 'was interrupted.',
-    copy: 'We couldn’t finish checking your inbox. Reconnect and try again.',
+    copy: 'We couldn’t finish checking your inbox. Check your connection and try again.',
     hint_title: 'A quick check before retrying',
     hint: 'Check your internet connection. If Google asks, allow read-only Gmail access so we can complete your scan.',
     reassurance: 'You can also add subscriptions yourself and connect your inbox later.',
-    retry: 'Reconnect & try again',
+    retry: 'Try again',
   },
 };
 
-function RecoveryBody({ kind }: { kind: Kind }) {
+// Lost Gmail access needs a reconnect rather than a retry.
+const ACCESS_COPY = 'Gmail access needs to be renewed before we can continue.';
+
+function RecoveryBody({ kind, onboarding }: { kind: Kind } & Props) {
   const content = COPY[kind];
+  const access = kind === 'interrupted' && onboarding.scan_failure === 'access';
   return (
     <>
       <View style={styles.art}>
-        <View style={styles.mascot} accessible accessibilityLabel="Loop with a gently disappointed expression">
-          <Icons name={loop_sad} icon_height={SIZES.padding * 7 + SIZES.padding3 + SIZES.padding3 / 4} icon_width={SIZES.padding * 7 + SIZES.padding3 + SIZES.padding3 / 4} />
+        <View style={styles.mascot}>
+          <Mascot expression="sad" size={SIZES.padding * 7 + SIZES.padding3 + SIZES.padding3 / 4} label="Loop is here to help" draw={!onboarding.reduce_motion} />
         </View>
         <View style={styles.badge}>
-          <Icons name={content.badge} icon_height={ICON} icon_width={ICON} stroke={colors.accent} />
+          <Icons name={content.badge} icon_height={ICON} icon_width={ICON} stroke={COLORS.primary} />
         </View>
       </View>
       <View style={styles.intro}>
-        <OnboardingTitle eyebrow={content.eyebrow} title={content.title} emphasis={content.emphasis} copy={content.copy} align="center" />
+        <OnboardingTitle eyebrow={content.eyebrow} title={content.title} emphasis={content.emphasis} copy={access ? ACCESS_COPY : content.copy} align="center" />
       </View>
       <View style={styles.hint}>
         <View style={styles.hint_icon}>
-          <Icons name={content.hint_icon} icon_height={ICON} icon_width={ICON} stroke={colors.accent} />
+          <Icons name={content.hint_icon} icon_height={ICON} icon_width={ICON} stroke={COLORS.primary} />
         </View>
         <View style={styles.hint_text}>
           <CustomText text={content.hint_title} size={SIZES.lg} line_height={SIZES.padding + SIZES.padding3 / 4} />
-          <CustomText text={content.hint} weight={FONTS.regular} color={colors.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 - SIZES.padding3 / 8} />
+          <CustomText text={content.hint} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 - SIZES.padding3 / 8} />
         </View>
       </View>
-      <CustomText text={content.reassurance} weight={FONTS.regular} color={colors.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" style={styles.reassurance} />
+      <CustomText text={content.reassurance} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" style={styles.reassurance} />
     </>
   );
 }
@@ -74,16 +79,20 @@ function RecoveryFooter({ kind, onboarding }: { kind: Kind } & Props) {
   return (
     <>
       <View style={styles.primary}>
-        <CustomButton variant="primary" text={COPY[kind].retry} onPress={() => onboarding.goTo('connectInbox', -1)} />
+        {kind === 'interrupted' ? (
+          <CustomButton variant="primary" text={onboarding.scan_failure === 'access' ? 'Reconnect Gmail' : COPY[kind].retry} onPress={onboarding.retryScan} />
+        ) : (
+          <CustomButton variant="primary" text={COPY[kind].retry} onPress={() => onboarding.goTo('connectInbox', -1)} />
+        )}
       </View>
       <View style={styles.secondary}>
-        <CustomButton variant="secondary" text="Add a subscription manually" onPress={onboarding.openSignup} />
+        <CustomButton variant="secondary" text="Add a subscription manually" onPress={onboarding.openManual} />
       </View>
     </>
   );
 }
 
-export const ScanNoResultsBody = (_: Props) => <RecoveryBody kind="no_results" />;
+export const ScanNoResultsBody = (props: Props) => <RecoveryBody kind="no_results" {...props} />;
 export const ScanNoResultsFooter = (props: Props) => <RecoveryFooter kind="no_results" {...props} />;
-export const ScanInterruptedBody = (_: Props) => <RecoveryBody kind="interrupted" />;
+export const ScanInterruptedBody = (props: Props) => <RecoveryBody kind="interrupted" {...props} />;
 export const ScanInterruptedFooter = (props: Props) => <RecoveryFooter kind="interrupted" {...props} />;

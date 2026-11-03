@@ -1,6 +1,6 @@
 import { createNativeBottomTabNavigator } from '@react-navigation/bottom-tabs/unstable';
 import StateView from '../components/StateView';
-import { colors } from '../constants/theme';
+import { COLORS } from '../constants/theme';
 import { DashboardScreen, NotificationsScreen, ProfileScreen, SubscriptionsScreen } from '../screens';
 import type { TabParamList } from '../types';
 
@@ -18,8 +18,8 @@ export default function Tabs() {
     <TabsStack.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.accent,
-        tabBarInactiveTintColor: colors.text_secondary,
+        tabBarActiveTintColor: COLORS.primary,
+        tabBarInactiveTintColor: COLORS.text_secondary,
       }}>
       <TabsStack.Screen name="Dashboard" component={DashboardScreen} options={{ title: 'Home', tabBarIcon: tab_icon(require('../assets/images/tabs/tab_home.png')) }} />
       <TabsStack.Screen name="Subscriptions" component={SubscriptionsScreen} options={{ title: 'List', tabBarIcon: tab_icon(require('../assets/images/tabs/tab_list.png')) }} />

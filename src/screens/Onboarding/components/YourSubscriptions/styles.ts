@@ -1,20 +1,24 @@
 import { StyleSheet } from 'react-native';
-import { SIZES, colors } from '../../../../constants/theme';
+import { COLORS, SIZES } from '../../../../constants/theme';
 
-const DONUT = SIZES.padding * 3 - SIZES.padding / 10;
+export const RING = SIZES.padding * 3 + SIZES.padding2;
+export const RING_WIDTH = SIZES.padding3 - SIZES.padding3 / 4;
 
 export const styles = StyleSheet.create({
   intro: {
     marginTop: SIZES.padding3 / 2,
   },
+  inbox: {
+    marginTop: SIZES.padding2 + SIZES.padding3 / 4,
+  },
   total: {
     alignItems: 'center',
-    borderColor: colors.accent_card,
+    borderColor: COLORS.accent_card,
     borderRadius: SIZES.padding2 + SIZES.padding3 / 2 - SIZES.padding3 / 8,
     borderWidth: SIZES.padding3 / 8,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: SIZES.padding2 + SIZES.padding3 / 4,
+    gap: SIZES.padding2,
+    marginTop: SIZES.padding2,
     overflow: 'hidden',
     paddingHorizontal: SIZES.padding2 + SIZES.padding3 / 2 - SIZES.padding3 / 8,
     paddingVertical: SIZES.padding2 + SIZES.padding3 / 8,
@@ -27,23 +31,14 @@ export const styles = StyleSheet.create({
   total_text: {
     flex: 1,
   },
-  donut: {
+  ring: {
     alignItems: 'center',
-    borderBottomColor: colors.donut_end,
-    borderColor: colors.accent,
-    borderRadius: DONUT / 2,
-    borderRightColor: colors.donut_mid,
-    borderWidth: SIZES.padding3 - SIZES.padding3 / 4,
-    height: DONUT,
+    height: RING,
     justifyContent: 'center',
-    width: DONUT,
+    width: RING,
   },
-  // Scaled fonts on tall phones may exceed the ring's inner width; the label may overhang it.
-  donut_label: {
-    alignItems: 'center',
-    left: -SIZES.padding,
+  ring_svg: {
     position: 'absolute',
-    right: -SIZES.padding,
   },
   week: {
     flexDirection: 'row',
@@ -60,8 +55,8 @@ export const styles = StyleSheet.create({
     letterSpacing: SIZES.padding3 / 16,
   },
   results: {
-    backgroundColor: colors.card,
-    borderColor: colors.line_faint,
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.line_faint,
     borderRadius: SIZES.padding2 + SIZES.padding3 / 2 - SIZES.padding3 / 8,
     borderWidth: SIZES.padding3 / 8,
     marginTop: SIZES.padding3 + SIZES.padding3 / 4,
@@ -70,18 +65,29 @@ export const styles = StyleSheet.create({
   row: {
     alignItems: 'center',
     flexDirection: 'row',
+  },
+  row_select: {
+    alignItems: 'center',
+    flex: 1,
+    flexDirection: 'row',
     gap: SIZES.padding3 + SIZES.padding3 / 8,
-    paddingHorizontal: SIZES.padding3 + SIZES.padding3 / 4,
-    paddingVertical: SIZES.padding2 + SIZES.padding3 / 8,
+    paddingHorizontal: SIZES.padding3,
+    paddingVertical: SIZES.padding2,
+  },
+  edit: {
+    alignItems: 'center',
+    height: SIZES.padding * 2 + SIZES.padding3 / 2,
+    justifyContent: 'center',
+    width: SIZES.padding * 2 + SIZES.padding3 / 2,
   },
   row_divider: {
-    borderBottomColor: colors.line_quiet,
+    borderBottomColor: COLORS.line_quiet,
     borderBottomWidth: SIZES.padding3 / 8,
   },
   checkbox: {
     alignItems: 'center',
-    backgroundColor: colors.checkbox_fill,
-    borderColor: colors.checkbox_border,
+    backgroundColor: COLORS.checkbox_fill,
+    borderColor: COLORS.checkbox_border,
     borderRadius: SIZES.padding3 - SIZES.padding3 / 4,
     borderWidth: SIZES.padding3 / 8,
     height: SIZES.padding,
@@ -89,12 +95,12 @@ export const styles = StyleSheet.create({
     width: SIZES.padding,
   },
   checkbox_checked: {
-    backgroundColor: colors.accent,
-    borderColor: colors.accent,
+    backgroundColor: COLORS.primary,
+    borderColor: COLORS.primary,
   },
   logo_tile: {
     alignItems: 'center',
-    backgroundColor: colors.logo_tile,
+    backgroundColor: COLORS.logo_tile,
     borderRadius: SIZES.padding3 + SIZES.padding3 / 4,
     height: SIZES.padding * 2 - SIZES.padding3 / 2,
     justifyContent: 'center',
@@ -106,8 +112,34 @@ export const styles = StyleSheet.create({
   info: {
     marginTop: SIZES.padding2,
   },
+  save_error: {
+    borderColor: COLORS.primary,
+    borderRadius: SIZES.padding2,
+    borderWidth: SIZES.padding3 / 8,
+    marginTop: SIZES.padding2,
+    padding: SIZES.padding2,
+  },
   primary: {
     marginTop: SIZES.padding + SIZES.padding3 / 4,
+  },
+  price_row: {
+    flexDirection: 'row',
+    gap: SIZES.padding3 + SIZES.padding3 / 4,
+  },
+  amount: {
+    flex: 1,
+  },
+  currency: {
+    width: SIZES.padding * 5,
+  },
+  sheet_field: {
+    marginTop: SIZES.padding + SIZES.padding3 - SIZES.padding3 / 4,
+  },
+  sheet_button: {
+    height: SIZES.padding * 2 + SIZES.padding3 - SIZES.padding3 / 4,
+  },
+  sheet_submit: {
+    marginTop: SIZES.padding2,
   },
   link: {
     marginTop: SIZES.padding2 + SIZES.padding3 / 8,

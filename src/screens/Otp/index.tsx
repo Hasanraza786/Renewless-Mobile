@@ -1,105 +1,67 @@
-import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
-import {
-  CodeField,
-  Cursor,
-  useBlurOnFulfill,
-  useClearByFocusCell,
-} from 'react-native-confirmation-code-field';
+import { Pressable, View } from 'react-native';
+import { CodeField, useBlurOnFulfill, useClearByFocusCell } from 'react-native-confirmation-code-field';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Container from '../../components/Container';
+import AuthLayout from '../../components/AuthLayout';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
-import { resendOtp, verifyOtp } from '../../redux/actions/auth-action';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList } from '../../types';
-import { common_styles } from '../../utils/common_styles';
+import useOtp, { CODE_LENGTH } from './index.function';
 import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Otp'>;
 
-const CELL_COUNT = 6;
+const BODY_LINE = SIZES.padding - SIZES.padding3 / 4;
 
-export default function OtpScreen({ navigation, route }: Props) {
-  const { email } = route.params;
-  const dispatch = useAppDispatch();
-  const loading = useAppSelector(state => state.auth.loading.otp);
-  const error = useAppSelector(state => state.auth.error.otp);
-  const [code, setCode] = useState('');
-  const [resent, setResent] = useState('');
-  const ref = useBlurOnFulfill({ value: code, cellCount: CELL_COUNT });
-  const [cell_props, getCellOnLayoutHandler] = useClearByFocusCell({
-    value: code,
-    setValue: setCode,
-  });
-
-  function onContinue() {
-    if (code.length !== CELL_COUNT) return;
-    dispatch(verifyOtp(email, code, () => navigation.replace('ResetPassword', { email })));
-  }
-
-  function onResend() {
-    setResent('');
-    dispatch(resendOtp(email, () => setResent('A new code is ready.')));
-  }
+export default function OtpScreen(props: Props) {
+  const otp = useOtp(props);
+  const ref = useBlurOnFulfill({ value: otp.code, cellCount: CODE_LENGTH });
+  const [cell_props, getCellOnLayoutHandler] = useClearByFocusCell({ value: otp.code, setValue: otp.onChangeCode });
 
   return (
-    <Container is_auth>
-      <View style={styles.main_view}>
-        <KeyboardAvoidingView style={common_styles.flex_1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="interactive"
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.content}>
-            <CustomText text="Enter code" size={(SIZES.padding + SIZES.padding3 / 4)} mb={SIZES.padding3 * 2} />
-            <CustomText
-              text={`Enter the 6-digit code for ${email}.`}
-              weight={FONTS.regular}
-              color={COLORS.text_secondary}
-              size={(SIZES.padding2 + SIZES.padding3 / 4)}
-              mb={SIZES.padding3 * 2}
-              mt={-SIZES.padding3}
-            />
-            <CustomText text="6-digit code" weight={FONTS.regular} size={SIZES.padding2} mb={SIZES.padding3} />
-            <CodeField
-              ref={ref}
-              {...cell_props}
-              value={code}
-              onChangeText={value => setCode(value.replace(/\D/g, '').slice(0, CELL_COUNT))}
-              cellCount={CELL_COUNT}
-              rootStyle={styles.codeField}
-              keyboardType="number-pad"
-              textContentType="oneTimeCode"
-              renderCell={({ index, symbol, isFocused }) => (
-                <CustomText
-                  key={index}
-                  text={symbol || (isFocused ? <Cursor /> : null)}
-                  size={(SIZES.padding + SIZES.padding3 / 4)}
-                  align="center"
-                  style={[styles.cell, isFocused && styles.cell_focused]}
-                  onLayout={getCellOnLayoutHandler(index)}
-                />
-              )}
-            />
-            <Pressable accessibilityRole="link" hitSlop={SIZES.padding3} onPress={onResend} style={styles.link}>
-              <CustomText text="Resend code" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
-            </Pressable>
-            {resent ? (
-              <CustomText text={resent} color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 8)} mt={SIZES.padding3} align="center" />
-            ) : null}
-            {error ? (
-              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} mb={SIZES.padding2} />
-            ) : null}
-            <CustomButton
-              text="Continue"
-              onPress={onContinue}
-              disabled={loading || code.length !== CELL_COUNT}
-            />
-          </ScrollView>
-        </KeyboardAvoidingView>
+    <AuthLayout
+      onBack={otp.onBack}
+      title={otp.reset ? 'Check your email' : 'Verify your email'}
+      copy={otp.reset ? 'Enter the code we sent to reset your password.' : 'One last step. Enter the code sent to your email.'}>
+      <View style={styles.destination}>
+        <CustomText text="Code sent to" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+        <CustomText text={otp.email} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3} />
+        <Pressable accessibilityRole="button" onPress={otp.onBack} style={styles.change_email}>
+          <CustomText text="Change email" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} />
+        </Pressable>
       </View>
-    </Container>
+      <CustomText text="Verification code" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mb={SIZES.padding3 + SIZES.padding3 / 4} />
+      <CodeField
+        ref={ref}
+        {...cell_props}
+        value={otp.code}
+        onChangeText={otp.onChangeCode}
+        cellCount={CODE_LENGTH}
+        rootStyle={styles.code}
+        keyboardType="number-pad"
+        textContentType="oneTimeCode"
+        autoComplete="one-time-code"
+        accessibilityLabel="Verification code"
+        accessibilityHint={otp.code_error || undefined}
+        onSubmitEditing={otp.onSubmit}
+        renderCell={({ index, symbol, isFocused }) => (
+          <View key={index} onLayout={getCellOnLayoutHandler(index)} style={[styles.cell, isFocused && styles.cell_focused, !!otp.code_error && styles.cell_error]}>
+            <CustomText text={symbol} weight={FONTS.regular} size={SIZES.sm} line_height={BODY_LINE} />
+          </View>
+        )}
+      />
+      {otp.code_error ? (
+        <CustomText text={otp.code_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 - SIZES.padding3 / 8} />
+      ) : null}
+      <CustomText text="Code expires in 5 minutes" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} style={styles.expiry} />
+      <CustomButton variant="primary" text={otp.reset ? 'Verify code' : 'Verify email'} disabled={otp.loading} busy={otp.loading} onPress={otp.onSubmit} style={styles.submit} />
+      <View style={styles.resend}>
+        <CustomText text="Didn’t receive a code?" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" />
+        <Pressable accessibilityRole="button" onPress={otp.onResend} style={styles.resend_button}>
+          <CustomText text="Resend code" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} />
+        </Pressable>
+        <CustomText text="Available after 2 minutes" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" />
+      </View>
+    </AuthLayout>
   );
 }

@@ -1,14 +1,14 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { OnboardingState, ScanCandidate, ScanStatus } from '../../types';
+import type { OnboardingState, ScanCandidate, ScanFailure, ScanStatus } from '../../types';
 
 const initial_state: OnboardingState = {
-  google_email: '',
-  google_loading: false,
-  google_error: '',
+  connect_loading: false,
+  connect_message: '',
+  inbox_email: '',
   scan_job_id: '',
   scan_stages: 0,
   scan_status: 'idle',
-  scan_error: '',
+  scan_failure: '',
   candidates: [],
   selected_ids: [],
   saved: [],
@@ -20,37 +20,38 @@ const onboardingSlice = createSlice({
   name: 'onboarding',
   initialState: initial_state,
   reducers: {
-    setGoogleEmail(state, action: PayloadAction<string>) {
-      state.google_email = action.payload;
+    setConnectLoading(state, action: PayloadAction<boolean>) {
+      state.connect_loading = action.payload;
     },
-    setGoogleLoading(state, action: PayloadAction<boolean>) {
-      state.google_loading = action.payload;
+    setConnectMessage(state, action: PayloadAction<string>) {
+      state.connect_message = action.payload;
     },
-    setGoogleError(state, action: PayloadAction<string>) {
-      state.google_error = action.payload;
+    setInboxEmail(state, action: PayloadAction<string>) {
+      state.inbox_email = action.payload;
     },
-    // A new scan discards the previous job's results and selection.
+    // A new scan discards the previous job's results and drafts; already saved records stay saved.
     setScanJob(state, action: PayloadAction<string>) {
       state.scan_job_id = action.payload;
       state.scan_stages = 0;
       state.scan_status = 'running';
-      state.scan_error = '';
+      state.scan_failure = '';
       state.candidates = [];
       state.selected_ids = [];
-      state.saved = [];
+      state.save_error = '';
     },
     setScanStatus(state, action: PayloadAction<ScanStatus>) {
       if (action.payload.job_id !== state.scan_job_id) return;
       state.scan_stages = action.payload.completed_stages;
       state.scan_status = action.payload.status;
+      state.scan_failure = action.payload.failure ?? '';
       if (action.payload.status === 'completed' && state.candidates.length === 0) {
         state.candidates = action.payload.candidates;
         state.selected_ids = action.payload.candidates.map(item => item.id);
       }
     },
-    setScanFailed(state, action: PayloadAction<string>) {
+    setScanFailed(state, action: PayloadAction<ScanFailure>) {
       state.scan_status = 'failed';
-      state.scan_error = action.payload;
+      state.scan_failure = action.payload;
     },
     toggleCandidate(state, action: PayloadAction<string>) {
       const id = action.payload;
@@ -58,8 +59,14 @@ const onboardingSlice = createSlice({
         ? state.selected_ids.filter(selected => selected !== id)
         : state.candidates.filter(item => item.id === id || state.selected_ids.includes(item.id)).map(item => item.id);
     },
-    setSaved(state, action: PayloadAction<ScanCandidate[]>) {
-      state.saved = action.payload;
+    // Review edits stay in the draft until Save.
+    updateCandidate(state, action: PayloadAction<ScanCandidate>) {
+      state.candidates = state.candidates.map(item => (item.id === action.payload.id ? action.payload : item));
+    },
+    // Saved records accumulate across scans; a repeated save of the same ID keeps the first record.
+    addSaved(state, action: PayloadAction<ScanCandidate[]>) {
+      const known = new Set(state.saved.map(item => item.id));
+      state.saved.push(...action.payload.filter(item => !known.has(item.id)));
     },
     setSaveLoading(state, action: PayloadAction<boolean>) {
       state.save_loading = action.payload;
@@ -71,14 +78,15 @@ const onboardingSlice = createSlice({
 });
 
 export const {
-  setGoogleEmail,
-  setGoogleLoading,
-  setGoogleError,
+  setConnectLoading,
+  setConnectMessage,
+  setInboxEmail,
   setScanJob,
   setScanStatus,
   setScanFailed,
   toggleCandidate,
-  setSaved,
+  updateCandidate,
+  addSaved,
   setSaveLoading,
   setSaveError,
 } = onboardingSlice.actions;

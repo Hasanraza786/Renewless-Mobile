@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors, SIZES } from '../../constants/theme';
+import { COLORS, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   main_view: {
@@ -8,8 +8,8 @@ export const styles = StyleSheet.create({
     paddingTop: SIZES.padding2,
   },
   row: {
-    backgroundColor: colors.card,
-    borderColor: colors.hairline,
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.hairline,
     borderRadius: SIZES.padding3 * 2,
     borderWidth: 1,
     marginBottom: SIZES.padding2,

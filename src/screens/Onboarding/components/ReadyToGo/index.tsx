@@ -1,14 +1,15 @@
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { check_icon, loop_happy, party_popper_icon, platform_logos } from '../../../../assets/icons';
+import { check_icon, party_popper_icon, platform_logos } from '../../../../assets/icons';
 import CustomButton from '../../../../components/CustomButton';
 import CustomText from '../../../../components/CustomText';
 import Icons from '../../../../components/Icons';
+import Mascot from '../../../../components/Mascot';
 import OnboardingTitle from '../../../../components/OnboardingTitle';
-import { FONTS, SIZES, colors } from '../../../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../../../constants/theme';
 import { localToday } from '../../../../utils/dates';
-import { allMonthlyTotals, dayMonth, eventDate, formatTotals, nextEvent } from '../../../../utils/scan';
+import { dateLabel, formatTotals, moneyLabel, nextEvent, paidMonthlyTotals } from '../../../../utils/scan';
 import type { OnboardingController } from '../../index.function';
 import { HALO_SIZE, styles } from './styles';
 
@@ -37,16 +38,14 @@ export function ReadyToGoBody({ onboarding }: Props) {
           <Svg width={HALO_SIZE} height={HALO_SIZE}>
             <Defs>
               <RadialGradient id="ready_halo" cx="50%" cy="50%" r="50%">
-                <Stop offset="0" stopColor={colors.accent} stopOpacity={0.08} />
-                <Stop offset="0.7" stopColor={colors.accent} stopOpacity={0} />
+                <Stop offset="0" stopColor={COLORS.primary} stopOpacity={0.08} />
+                <Stop offset="0.7" stopColor={COLORS.primary} stopOpacity={0} />
               </RadialGradient>
             </Defs>
             <Circle cx={HALO_SIZE / 2} cy={HALO_SIZE / 2} r={HALO_SIZE / 2} fill="url(#ready_halo)" />
           </Svg>
         </View>
         <Animated.View
-          accessible
-          accessibilityLabel="Happy Loop celebrates your saved subscriptions"
           style={[styles.mascot, {
             opacity: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 1, 1] }),
             transform: [
@@ -54,7 +53,7 @@ export function ReadyToGoBody({ onboarding }: Props) {
               { scale: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0.92, 1.03, 1] }) },
             ],
           }]}>
-          <Icons name={loop_happy} icon_height={SIZES.padding * 6} icon_width={SIZES.padding * 6} />
+          <Mascot expression="happy" size={SIZES.padding * 6} label="Loop celebrates your saved subscriptions" draw={!onboarding.reduce_motion} />
         </Animated.View>
         <Animated.View
           style={[styles.badge, {
@@ -64,7 +63,7 @@ export function ReadyToGoBody({ onboarding }: Props) {
               { scale: badge.interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) },
             ],
           }]}>
-          <Icons name={check_icon} icon_height={SIZES.padding2 + SIZES.padding3 * 3 / 4} icon_width={SIZES.padding2 + SIZES.padding3 * 3 / 4} stroke={colors.background} />
+          <Icons name={check_icon} icon_height={SIZES.padding2 + SIZES.padding3 * 3 / 4} icon_width={SIZES.padding2 + SIZES.padding3 * 3 / 4} stroke={COLORS.background} />
         </Animated.View>
       </View>
       <View style={styles.intro}>
@@ -79,11 +78,11 @@ export function ReadyToGoBody({ onboarding }: Props) {
       <View style={styles.summary}>
         <View style={styles.summary_cell}>
           <CustomText text={String(saved.length)} size={SIZES.h3} line_height={SIZES.padding + SIZES.padding3} />
-          <CustomText text={saved.length === 1 ? 'subscription saved' : 'subscriptions saved'} weight={FONTS.regular} color={colors.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3} />
+          <CustomText text={saved.length === 1 ? 'subscription saved' : 'subscriptions saved'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3} />
         </View>
         <View style={[styles.summary_cell, styles.summary_wide]}>
-          <CustomText text={formatTotals(allMonthlyTotals(saved))} size={SIZES.h3} line_height={SIZES.padding + SIZES.padding3} />
-          <CustomText text="Estimated monthly cost" weight={FONTS.regular} color={colors.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3} />
+          <CustomText text={formatTotals(paidMonthlyTotals(saved))} size={SIZES.h3} line_height={SIZES.padding + SIZES.padding3} />
+          <CustomText text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3} />
         </View>
       </View>
       {next ? (
@@ -92,15 +91,15 @@ export function ReadyToGoBody({ onboarding }: Props) {
             <Icons name={platform_logos[next.platform_id] ?? ''} icon_height={SIZES.padding2 * 2} icon_width={SIZES.padding2 * 2} />
           </View>
           <View>
-            <CustomText text="NEXT ESTIMATED RENEWAL" weight={FONTS.regular} color={colors.accent} size={SIZES.sm} line_height={BODY_LINE} style={styles.next_label} />
+            <CustomText text={next.trial ? 'NEXT TRIAL ENDING' : next.estimated ? 'NEXT ESTIMATED RENEWAL' : 'NEXT RENEWAL'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} style={styles.next_label} />
             <CustomText text={next.name} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 / 2 + SIZES.padding3 / 8} />
-            <CustomText text={`${dayMonth(eventDate(next))} · ${next.currency} ${next.price}`} weight={FONTS.regular} color={colors.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 / 2 + SIZES.padding3 / 8} />
+            <CustomText text={`${dateLabel(next.next_date!)} · ${moneyLabel(next)}${next.trial ? ' after trial' : ''}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 / 2 + SIZES.padding3 / 8} />
           </View>
         </View>
       ) : (
-        <CustomText text="Add a renewal date to see what’s coming next." weight={FONTS.regular} color={colors.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" mt={SIZES.padding2} />
+        <CustomText text="Add a renewal date to see what’s coming next." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" mt={SIZES.padding2} />
       )}
-      <CustomText text="Set reminders and stay ahead of your next renewal." weight={FONTS.regular} color={colors.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" mt={SIZES.padding2} />
+      <CustomText text="Set reminders and stay ahead of your next renewal." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" mt={SIZES.padding2} />
     </>
   );
 }
@@ -115,7 +114,7 @@ export function ReadyToGoFooter({ onboarding }: Props) {
 
 // Prototype confetti, piece by piece: 60 pieces from the two lower corners, then two poppers. Values are
 // animation distances/times from the approved CSS formula, not layout sizes.
-const CONFETTI_COLORS = [colors.accent, colors.text, colors.donut_end, colors.renewing_soon];
+const CONFETTI_COLORS = [COLORS.primary, COLORS.text_primary, COLORS.donut_end, COLORS.renewing_soon];
 const PIECES = Array.from({ length: 60 }, (_, i) => ({
   right: i % 2 === 1,
   round: (i + 1) % 3 === 0,

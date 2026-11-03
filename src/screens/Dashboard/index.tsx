@@ -15,7 +15,7 @@ import Container from '../../components/Container';
 import StateView from '../../components/StateView';
 import SubscriptionCard from '../../components/SubscriptionCard';
 import CustomText from '../../components/CustomText';
-import { COLORS, FONTS, SIZES, colors } from '../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { loadDashboard } from '../../redux/actions/dashboard-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, TabParamList } from '../../types';
@@ -60,7 +60,7 @@ export default function DashboardScreen({ navigation }: Props) {
           hitSlop={SIZES.padding3}
           onPress={() => navigation.navigate('Profile')}
           style={styles.icon_button}>
-          <Icons name={profile_icon} icon_height={SIZES.padding * 1.1} stroke={colors.accent} />
+          <Icons name={profile_icon} icon_height={SIZES.padding * 1.1} stroke={COLORS.primary} />
         </Pressable>
         <CustomText text="Dashboard" size={(SIZES.padding + SIZES.padding3 / 4)} align="center" style={common_styles.flex_1} />
         <Pressable
@@ -69,7 +69,7 @@ export default function DashboardScreen({ navigation }: Props) {
           hitSlop={SIZES.padding3}
           onPress={() => navigation.navigate('Alerts')}
           style={styles.icon_button}>
-          <Icons name={notification_icon} icon_height={SIZES.padding * 1.1} stroke={colors.accent} />
+          <Icons name={notification_icon} icon_height={SIZES.padding * 1.1} stroke={COLORS.primary} />
         </Pressable>
       </RowView>
       {status === 'loading' ? <StateView status="loading" message="Loading your counts." /> : null}

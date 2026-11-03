@@ -2,17 +2,12 @@ import { StyleSheet } from 'react-native';
 import { SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
-  content: {
-    flexGrow: 1,
-    paddingBottom: SIZES.padding,
+  submit: {
+    borderRadius: SIZES.padding2,
+    height: SIZES.padding * 2 + SIZES.padding3 + SIZES.padding3 / 8,
+    marginTop: SIZES.padding + SIZES.padding3 + SIZES.padding3 / 4,
   },
-  link: {
-    alignSelf: 'center',
-    marginTop: SIZES.padding3 * 2,
-  },
-  main_view: {
-    flex: 1,
-    paddingHorizontal: SIZES.padding2 * 2,
-    paddingTop: SIZES.padding3,
+  footer: {
+    marginTop: SIZES.padding + SIZES.padding3 - SIZES.padding3 / 4,
   },
 });

@@ -4,7 +4,7 @@ import logo_mark, { brand_mark_paths } from '../../assets/icons/logo_mark';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Icons from '../../components/Icons';
-import { FONTS, SIZES, colors } from '../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import useSplash from './index.function';
 import type { AuthStackParamList } from '../../types';
 import { styles } from './styles';
@@ -33,7 +33,7 @@ export default function Splash({ navigation }: Props) {
           <Icons
             name={logo_mark}
             icon_height={SIZES.padding * 5}
-            stroke={colors.accent}
+            stroke={COLORS.primary}
             reveal={{ paths: brand_mark_paths, progress: [upper_progress, lower_progress], view_box: '0 0 51 51', stroke_width: 5.5 }}
           />
         </Animated.View>
@@ -44,7 +44,7 @@ export default function Splash({ navigation }: Props) {
           <CustomText
             text={'Stop the subscription renewals\nyou don’t need.'}
             weight={FONTS.regular}
-            color={colors.text_secondary}
+            color={COLORS.text_secondary}
             size={SIZES.sm}
             line_height={SIZES.padding - SIZES.padding3 / 4}
             align="center"

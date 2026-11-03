@@ -4,7 +4,7 @@ import {
 import CustomText from '../CustomText';
 import RowView from '../RowView';
 import { colorsForStatus, statusLabel } from '../../constants/status_colors';
-import { FONTS, SIZES, colors } from '../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import type { Subscription } from '../../types';
 import { common_styles } from '../../utils/common_styles';
 import { formatDate } from '../../utils/dates';
@@ -40,14 +40,14 @@ export default function SubscriptionCard({ item, onPress }: Props) {
       <CustomText
         text={`Renews ${renewal}`}
         weight={FONTS.regular}
-        color={colors.text_secondary}
+        color={COLORS.text_secondary}
         size={(SIZES.padding2 + SIZES.padding3 / 8)}
         mt={SIZES.padding3}
       />
       <CustomText
         text={`Started ${formatDate(item.startDate)}`}
         weight={FONTS.regular}
-        color={colors.text_secondary}
+        color={COLORS.text_secondary}
         size={(SIZES.padding2 + SIZES.padding3 / 8)}
         mt={SIZES.padding3}
       />

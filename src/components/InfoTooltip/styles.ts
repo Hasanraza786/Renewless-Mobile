@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { SIZES, colors } from '../../constants/theme';
+import { COLORS, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   row: {
@@ -15,19 +15,19 @@ export const styles = StyleSheet.create({
   },
   scrim: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: colors.background_scrim,
+    backgroundColor: COLORS.background_scrim,
   },
   floating: {
     position: 'absolute',
   },
   popover: {
-    backgroundColor: colors.tooltip,
-    borderColor: colors.accent_ring,
+    backgroundColor: COLORS.tooltip,
+    borderColor: COLORS.accent_ring,
     borderRadius: SIZES.padding2 + SIZES.padding3 / 2,
     borderWidth: SIZES.padding3 / 8,
     padding: SIZES.padding2 + SIZES.padding3 / 4,
     position: 'absolute',
-    shadowColor: colors.background,
+    shadowColor: COLORS.background,
     shadowOffset: { width: 0, height: SIZES.padding3 * 2 },
     shadowOpacity: 0.6,
     shadowRadius: SIZES.padding,
@@ -42,16 +42,16 @@ export const styles = StyleSheet.create({
   },
   close: {
     alignItems: 'center',
-    backgroundColor: colors.overlay_soft,
+    backgroundColor: COLORS.overlay_soft,
     borderRadius: SIZES.padding3 + SIZES.padding3 / 4,
     height: SIZES.padding * 2 - SIZES.padding3 / 2,
     justifyContent: 'center',
     width: SIZES.padding * 2 - SIZES.padding3 / 2,
   },
   arrow: {
-    backgroundColor: colors.tooltip,
+    backgroundColor: COLORS.tooltip,
     borderBottomWidth: SIZES.padding3 / 8,
-    borderColor: colors.accent_ring,
+    borderColor: COLORS.accent_ring,
     borderRightWidth: SIZES.padding3 / 8,
     bottom: -(SIZES.padding3 - SIZES.padding3 / 4),
     height: SIZES.padding3 + SIZES.padding3 / 4,

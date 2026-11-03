@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { SIZES, colors } from '../../../../constants/theme';
+import { COLORS, SIZES } from '../../../../constants/theme';
 
 export const styles = StyleSheet.create({
   art: {
@@ -16,8 +16,8 @@ export const styles = StyleSheet.create({
   },
   tile: {
     alignItems: 'center',
-    backgroundColor: colors.card,
-    borderColor: colors.line_faint,
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.line_faint,
     borderRadius: SIZES.padding,
     borderWidth: SIZES.padding3 / 8,
     height: SIZES.padding * 3 + SIZES.padding3 / 2 + SIZES.padding3 / 8,
@@ -31,10 +31,19 @@ export const styles = StyleSheet.create({
   intro: {
     marginTop: SIZES.padding,
   },
-  trust: {
-    backgroundColor: colors.card,
-    borderRadius: SIZES.padding3 * 2,
+  disclosure: {
     marginTop: SIZES.padding + SIZES.padding3 - SIZES.padding3 / 4,
+  },
+  feedback: {
+    borderColor: COLORS.primary,
+    borderRadius: SIZES.padding2,
+    borderWidth: SIZES.padding3 / 8,
+    marginVertical: SIZES.padding2,
+    padding: SIZES.padding2,
+  },
+  trust: {
+    backgroundColor: COLORS.card,
+    borderRadius: SIZES.padding3 * 2,
     paddingHorizontal: SIZES.padding2 + SIZES.padding3 / 2 - SIZES.padding3 / 8,
     paddingVertical: SIZES.padding3 / 2,
   },
@@ -45,7 +54,7 @@ export const styles = StyleSheet.create({
     paddingVertical: SIZES.padding2 + SIZES.padding3 / 4,
   },
   trust_divider: {
-    borderBottomColor: colors.line_soft,
+    borderBottomColor: COLORS.line_soft,
     borderBottomWidth: SIZES.padding3 / 8,
   },
   info: {
@@ -54,7 +63,27 @@ export const styles = StyleSheet.create({
   primary: {
     marginTop: SIZES.padding + SIZES.padding3 / 4,
   },
+  connect_button: {
+    height: SIZES.padding * 2 + SIZES.padding3,
+  },
   link: {
     marginTop: SIZES.padding2 + SIZES.padding3 / 8,
+  },
+  // The legal row ends flush with the footer, so it absorbs the footer's bottom padding.
+  legal: {
+    flexDirection: 'row',
+    gap: SIZES.padding2,
+    justifyContent: 'center',
+    marginBottom: -SIZES.padding3 / 2,
+    marginTop: SIZES.padding2 + SIZES.padding3 / 8,
+  },
+  legal_item: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: SIZES.padding2,
+  },
+  legal_link: {
+    height: SIZES.padding * 2 - SIZES.padding3 / 2,
+    justifyContent: 'center',
   },
 });

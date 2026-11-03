@@ -93,7 +93,7 @@ export default function EditProfileScreen({ navigation }: Props) {
                   text={choice.label}
                   size={(SIZES.padding2 + SIZES.padding3 / 4)}
                   weight={selected ? FONTS.regular : FONTS.medium}
-                  color={selected ? COLORS.on_accent : COLORS.text_primary}
+                  color={selected ? COLORS.background : COLORS.text_primary}
                 />
               </Pressable>
             );

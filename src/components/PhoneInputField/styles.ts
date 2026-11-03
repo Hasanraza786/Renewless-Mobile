@@ -1,24 +1,24 @@
 import { StyleSheet } from 'react-native';
-import { colors, fonts, SIZES } from '../../constants/theme';
+import { COLORS, fonts, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   wrap: {
     marginBottom: SIZES.padding3 * 2,
   },
   row: {
-    backgroundColor: colors.card,
-    borderColor: colors.control_border,
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.control_border,
     borderRadius: SIZES.padding2,
     borderWidth: 1,
     height: SIZES.control_height,
     paddingHorizontal: SIZES.padding / 2,
   },
   row_focused: {
-    borderColor: colors.accent,
+    borderColor: COLORS.primary,
   },
   input: {
     fontFamily: fonts.regular,
-    color: colors.text,
+    color: COLORS.text_primary,
     flex: 1,
     fontSize: (SIZES.padding2 + SIZES.padding3 / 4),
     height: SIZES.control_height,

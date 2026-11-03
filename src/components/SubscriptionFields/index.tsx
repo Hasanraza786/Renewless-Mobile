@@ -6,7 +6,7 @@ import type { Cycle } from '../../types';
 import CustomText from '../CustomText';
 import RowView from '../RowView';
 import InputField from '../InputField';
-import { FONTS, SIZES, colors } from '../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { styles } from './styles';
 
 const CYCLES: Cycle[] = ['weekly', 'monthly', 'yearly', 'custom'];
@@ -60,7 +60,7 @@ export default function SubscriptionFields({ value, onChange }: Props) {
                 text={cycle}
                 size={(SIZES.padding2 + SIZES.padding3 / 4)}
                 weight={selected ? FONTS.regular : FONTS.medium}
-                color={selected ? colors.on_accent : colors.text}
+                color={selected ? COLORS.background : COLORS.text_primary}
                 transform="capitalize"
               />
             </Pressable>

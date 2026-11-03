@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { check_icon, loop_mascot } from '../../../../assets/icons';
-import CustomButton from '../../../../components/CustomButton';
+import { check_icon } from '../../../../assets/icons';
 import CustomText from '../../../../components/CustomText';
 import Icons from '../../../../components/Icons';
+import Mascot from '../../../../components/Mascot';
 import OnboardingTitle from '../../../../components/OnboardingTitle';
-import { FONTS, SIZES, colors } from '../../../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../../../constants/theme';
 import type { OnboardingController } from '../../index.function';
 import { RADAR_SIZE, styles } from './styles';
 
@@ -32,8 +32,8 @@ export function DiscoveringBody({ onboarding }: Props) {
         <Svg width={RADAR_SIZE} height={RADAR_SIZE} style={styles.radar_wash}>
           <Defs>
             <RadialGradient id="radar_wash" cx="50%" cy="50%" r="50%">
-              <Stop offset="0" stopColor={colors.accent} stopOpacity={0.05} />
-              <Stop offset="1" stopColor={colors.accent} stopOpacity={0} />
+              <Stop offset="0" stopColor={COLORS.primary} stopOpacity={0.05} />
+              <Stop offset="1" stopColor={COLORS.primary} stopOpacity={0} />
             </RadialGradient>
           </Defs>
           <Circle cx={RADAR_SIZE / 2} cy={RADAR_SIZE / 2} r={RADAR_SIZE / 2} fill="url(#radar_wash)" />
@@ -41,7 +41,7 @@ export function DiscoveringBody({ onboarding }: Props) {
         <Animated.View
           style={[styles.ring, complete && styles.ring_complete, { transform: [{ rotate: spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] }) }] }]}
         />
-        <Icons name={loop_mascot} icon_height={SIZES.padding * 4 - SIZES.padding3 / 2 - SIZES.padding3 / 8} icon_width={SIZES.padding * 4 - SIZES.padding3 / 2 - SIZES.padding3 / 8} />
+        <Mascot expression="neutral" size={SIZES.padding * 4 + SIZES.padding3 + SIZES.padding3 / 4} label="Loop is finding subscriptions" draw={!onboarding.reduce_motion} />
       </View>
       <OnboardingTitle
         eyebrow="A LITTLE CLARITY IS ON ITS WAY"
@@ -56,12 +56,12 @@ export function DiscoveringBody({ onboarding }: Props) {
             <View key={label} style={styles.stage} accessibilityLabel={`${label}${done ? ', done' : scanning ? ', in progress' : ''}`}>
               <View style={[styles.badge, scanning && styles.badge_scanning]}>
                 {done ? (
-                  <Icons name={check_icon} icon_height={SIZES.padding2} icon_width={SIZES.padding2} stroke={colors.accent} />
+                  <Icons name={check_icon} icon_height={SIZES.padding2} icon_width={SIZES.padding2} stroke={COLORS.primary} />
                 ) : (
-                  <CustomText text={`0${index + 1}`} weight={FONTS.regular} color={scanning ? colors.accent : colors.text_secondary} size={SIZES.xs} />
+                  <CustomText text={`0${index + 1}`} weight={FONTS.regular} color={scanning ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
                 )}
               </View>
-              <CustomText text={label} weight={FONTS.regular} color={done ? colors.accent : colors.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+              <CustomText text={label} weight={FONTS.regular} color={done ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
             </View>
           );
         })}
@@ -71,10 +71,15 @@ export function DiscoveringBody({ onboarding }: Props) {
 }
 
 export function DiscoveringFooter({ onboarding }: Props) {
-  const ready = onboarding.scan_status === 'completed' && onboarding.candidates.length > 0;
   return (
-    <View style={styles.primary}>
-      <CustomButton variant="primary" text="Review my subscriptions →" disabled={!ready} onPress={() => onboarding.goTo('yourSubscriptions')} />
-    </View>
+    <CustomText
+      text={onboarding.scan_status === 'completed' ? 'Your results are ready.' : 'This may take a moment.'}
+      weight={FONTS.regular}
+      color={COLORS.text_secondary}
+      size={SIZES.sm}
+      line_height={BODY_LINE}
+      align="center"
+      style={styles.status}
+    />
   );
 }

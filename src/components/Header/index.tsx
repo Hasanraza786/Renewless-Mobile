@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import CustomText from '../CustomText';
 import RowView from '../RowView';
-import { SIZES, colors } from '../../constants/theme';
+import { COLORS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import { styles } from './styles';
 
@@ -20,7 +20,7 @@ export default function Header({ title, onBack, action_label, onAction }: Props)
     <RowView gap={0} style={{ marginBottom: SIZES.padding * 0.9 }}>
       {onBack ? (
         <Pressable accessibilityRole="button" onPress={onBack} style={styles.side}>
-          <CustomText text="Back" color={colors.text} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
+          <CustomText text="Back" color={COLORS.text_primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
         </Pressable>
       ) : (
         <View style={styles.side} />
@@ -28,7 +28,7 @@ export default function Header({ title, onBack, action_label, onAction }: Props)
       <CustomText text={title} size={(SIZES.padding + SIZES.padding3 / 4)} align="center" style={common_styles.flex_1} />
       {action_label && onAction ? (
         <Pressable accessibilityRole="button" onPress={onAction} style={styles.side}>
-          <CustomText text={action_label} color={colors.accent} size={(SIZES.padding2 + SIZES.padding3 / 4)} align="right" />
+          <CustomText text={action_label} color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} align="right" />
         </Pressable>
       ) : (
         <View style={styles.side} />

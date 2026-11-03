@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { SIZES, colors } from '../../../../constants/theme';
+import { COLORS, SIZES } from '../../../../constants/theme';
 
 export const ORBIT_SIZE = SIZES.padding * 11 + SIZES.padding3 / 2 + SIZES.padding3 / 8;
 
@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     height: SIZES.padding * 11 + SIZES.padding2,
   },
   orbit: {
-    borderColor: colors.accent_line,
+    borderColor: COLORS.accent_line,
     borderRadius: ORBIT_SIZE / 2,
     borderWidth: SIZES.padding3 / 8,
     height: ORBIT_SIZE,
@@ -19,8 +19,8 @@ export const styles = StyleSheet.create({
     width: ORBIT_SIZE,
   },
   receipt: {
-    backgroundColor: colors.receipt,
-    borderColor: colors.line_faint,
+    backgroundColor: COLORS.receipt,
+    borderColor: COLORS.line_faint,
     borderRadius: SIZES.padding2 + SIZES.padding3 / 4,
     borderWidth: SIZES.padding3 / 8,
     left: SIZES.padding + SIZES.padding3 + SIZES.padding3 / 4,
@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
     letterSpacing: SIZES.padding3 / 8,
   },
   line: {
-    backgroundColor: colors.receipt_line,
+    backgroundColor: COLORS.receipt_line,
     borderRadius: SIZES.padding3 / 2,
     height: SIZES.padding3 / 2,
     marginBottom: SIZES.padding3 + SIZES.padding3 / 8,
@@ -51,8 +51,8 @@ export const styles = StyleSheet.create({
   },
   found: {
     alignItems: 'center',
-    backgroundColor: colors.found_card,
-    borderColor: colors.accent_edge,
+    backgroundColor: COLORS.found_card,
+    borderColor: COLORS.accent_edge,
     borderRadius: SIZES.padding2 + SIZES.padding3 / 2 + SIZES.padding3 / 8,
     borderWidth: SIZES.padding3 / 8,
     flexDirection: 'row',
@@ -62,7 +62,7 @@ export const styles = StyleSheet.create({
     paddingVertical: SIZES.padding3 * 2,
     position: 'absolute',
     right: 0,
-    shadowColor: colors.background,
+    shadowColor: COLORS.background,
     shadowOffset: { width: 0, height: SIZES.padding3 * 2 },
     shadowOpacity: 0.2,
     shadowRadius: SIZES.padding2 + SIZES.padding3 / 2 - SIZES.padding3 / 8,
@@ -70,7 +70,7 @@ export const styles = StyleSheet.create({
   },
   logo_tile: {
     alignItems: 'center',
-    backgroundColor: colors.logo_tile,
+    backgroundColor: COLORS.logo_tile,
     borderRadius: SIZES.padding3 + SIZES.padding3 / 4,
     height: SIZES.padding * 2 - SIZES.padding3 / 2,
     justifyContent: 'center',
@@ -86,12 +86,9 @@ export const styles = StyleSheet.create({
   },
   loop: {
     position: 'absolute',
-    right: SIZES.padding3 - SIZES.padding3 / 8,
-    top: SIZES.padding * 2 + SIZES.padding3 / 4,
+    right: SIZES.padding2 / 2,
+    top: SIZES.padding * 2.15,
     transform: [{ rotate: '9deg' }],
-  },
-  intro: {
-    marginTop: SIZES.padding2 + SIZES.padding3 / 2,
   },
   benefits: {
     alignItems: 'center',
@@ -99,16 +96,8 @@ export const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: SIZES.padding,
   },
-  benefit: {
-    alignItems: 'center',
-    flexDirection: 'row',
+  benefit_row: {
     gap: SIZES.padding3 - SIZES.padding3 / 4,
     height: SIZES.padding2 * 2,
-  },
-  primary: {
-    marginTop: SIZES.padding + SIZES.padding3 / 4,
-  },
-  link: {
-    marginTop: SIZES.padding2 + SIZES.padding3 / 8,
   },
 });

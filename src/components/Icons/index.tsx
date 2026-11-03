@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { Animated, View, type StyleProp, type ViewStyle } from 'react-native';
 import Svg, { Path, SvgXml } from 'react-native-svg';
-import { colors } from '../../constants/theme';
+import { COLORS } from '../../constants/theme';
 
 import { styles } from './styles';
 
@@ -38,12 +38,12 @@ function Icons({ name, style, icon_height, icon_width, fill, stroke, reveal }: P
   if (reveal) {
     return (
       <View style={[styles.main_view, style]} accessible={false}>
-        <Svg width={icon_height} height={icon_height} viewBox={reveal.view_box} fill={fill ?? colors.transparent}>
+        <Svg width={icon_height} height={icon_height} viewBox={reveal.view_box} fill={fill ?? COLORS.transparent}>
           {reveal.paths.map((path, index) => (
             <AnimatedPath
               key={path.d}
               d={path.d}
-              stroke={stroke ?? colors.text}
+              stroke={stroke ?? COLORS.text_primary}
               strokeWidth={reveal.stroke_width}
               strokeLinecap="round"
               strokeLinejoin="round"

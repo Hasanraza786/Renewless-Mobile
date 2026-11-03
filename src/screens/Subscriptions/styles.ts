@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { colors, fonts, SIZES } from '../../constants/theme';
+import { COLORS, fonts, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   main_view: {
@@ -10,17 +10,17 @@ export const styles = StyleSheet.create({
   search: {
     fontFamily: fonts.regular,
     fontSize: (SIZES.padding2 + SIZES.padding3 / 4),
-    backgroundColor: colors.card,
-    borderColor: colors.control_border,
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.control_border,
     borderRadius: SIZES.padding2 + 2,
     borderWidth: 1,
-    color: colors.text,
+    color: COLORS.text_primary,
     marginBottom: SIZES.padding2,
     paddingHorizontal: SIZES.padding2 + 2,
     paddingVertical: SIZES.padding2,
   },
   chip: {
-    borderColor: colors.hairline,
+    borderColor: COLORS.hairline,
     borderRadius: 999,
     borderWidth: 1,
     paddingHorizontal: SIZES.padding2,

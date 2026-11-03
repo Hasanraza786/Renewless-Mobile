@@ -1,16 +1,19 @@
-import { useState } from 'react';
+import { useState, type ComponentRef, type Ref } from 'react';
 import {
   TextInput,
   View,
   type TextInputProps,
 } from 'react-native';
 import CustomText from '../CustomText';
-import { FONTS, SIZES, colors } from '../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { styles } from './styles';
 
 type Props = TextInputProps & {
   label: string;
   error?: string;
+  // 'sheet' is the compact field used inside bottom sheets; 'auth' is the approved auth form field.
+  variant?: 'sheet' | 'auth';
+  ref?: Ref<ComponentRef<typeof TextInput>>;
 };
 
 export default function InputField({
@@ -20,18 +23,35 @@ export default function InputField({
   error,
   onFocus,
   onBlur,
+  variant,
+  ref,
   ...input_props
 }: Props) {
   const [focused, setFocused] = useState(false);
+  const body_line = SIZES.padding - SIZES.padding3 / 4;
 
   return (
-    <View style={styles.wrap}>
-      <CustomText text={label} weight={FONTS.regular} size={SIZES.padding2} mb={SIZES.padding3} />
+    <View style={variant ? undefined : styles.wrap}>
+      {variant ? (
+        <CustomText
+          text={label}
+          weight={FONTS.regular}
+          color={COLORS.text_secondary}
+          size={SIZES.sm}
+          line_height={body_line}
+          mb={variant === 'auth' ? SIZES.padding3 + SIZES.padding3 / 8 : SIZES.padding3 - SIZES.padding3 / 4}
+        />
+      ) : (
+        <CustomText text={label} weight={FONTS.regular} size={SIZES.padding2} mb={SIZES.padding3} />
+      )}
       <TextInput
+        ref={ref}
         value={value}
         onChangeText={onChangeText}
-        placeholderTextColor={colors.text_secondary}
-        style={[styles.input, focused && styles.input_focused, error && styles.input_error]}
+        placeholderTextColor={COLORS.text_secondary}
+        accessibilityLabel={label}
+        accessibilityHint={error || undefined}
+        style={[variant ? styles[`${variant}_input`] : styles.input, focused && styles.input_focused, !!error && styles.input_error]}
         onFocus={event => {
           setFocused(true);
           onFocus?.(event);
@@ -42,10 +62,12 @@ export default function InputField({
         }}
         {...input_props}
       />
-      {error ? (
+      {error && variant ? (
+        <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} line_height={body_line} mt={SIZES.padding3 - SIZES.padding3 / 8} />
+      ) : error ? (
         <CustomText
           text={error}
-          color={colors.expired}
+          color={COLORS.expired}
           weight={FONTS.regular}
           size={(SIZES.padding2 + SIZES.padding3 / 8)}
           mt={SIZES.padding2 / 2}

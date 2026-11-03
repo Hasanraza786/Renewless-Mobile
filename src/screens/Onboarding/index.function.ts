@@ -2,14 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Alert, Animated, BackHandler, Easing } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
-  loadGoogleAccount,
+  connectOnboardingGoogle,
   pollOnboardingScan,
   saveOnboardingFinds,
   startOnboardingScan,
 } from '../../redux/actions/onboarding-action';
-import { toggleCandidate } from '../../redux/slices/onboarding-slice';
+import { toggleCandidate, updateCandidate } from '../../redux/slices/onboarding-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { AccountProvider, AuthStackParamList, OnboardingStep } from '../../types';
+import type { AuthStackParamList, OnboardingStep, ScanCandidate } from '../../types';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>;
 
@@ -17,11 +17,9 @@ type Props = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>;
 export const ONBOARDING_STEPS: Record<OnboardingStep, { stage: number; back?: OnboardingStep }> = {
   welcome: { stage: 1 },
   connectInbox: { stage: 2, back: 'welcome' },
-  inboxPermission: { stage: 2, back: 'connectInbox' },
   discovering: { stage: 3, back: 'connectInbox' },
   yourSubscriptions: { stage: 4, back: 'connectInbox' },
-  saveYourFinds: { stage: 4, back: 'yourSubscriptions' },
-  readyToGo: { stage: 5, back: 'saveYourFinds' },
+  readyToGo: { stage: 5, back: 'yourSubscriptions' },
   scanNoResults: { stage: 3, back: 'connectInbox' },
   scanInterrupted: { stage: 3, back: 'connectInbox' },
 };
@@ -29,18 +27,22 @@ export const ONBOARDING_STEPS: Record<OnboardingStep, { stage: number; back?: On
 export const PANEL_MOTION = { out_duration: 180, in_duration: 240 } as const;
 // How often the client asks the scan job for its status; progress itself comes from the service.
 export const SCAN_POLL_MS = 1000;
+// Brief pause on the completed stages before results open on their own.
+export const SCAN_COMPLETE_HOLD_MS = 650;
 
 export default function useOnboarding({ navigation, route }: Props) {
   const dispatch = useAppDispatch();
   const onboarding_state = useAppSelector(state => state.onboarding);
   const user_name = useAppSelector(state => state.profile.user?.name ?? '');
+  const signed_in = useAppSelector(state => !!state.constant.token);
+  const [editing_id, setEditingId] = useState('');
   const [step, setStep] = useState<OnboardingStep>(route.params?.step ?? 'welcome');
   const [animating, setAnimating] = useState(false);
   const [panel_width, setPanelWidth] = useState(0);
   const [reduce_motion, setReduceMotion] = useState(false);
   const panel_x = useRef(new Animated.Value(0)).current;
   const panel_opacity = useRef(new Animated.Value(1)).current;
-  const { google_email, scan_status, candidates } = onboarding_state;
+  const { scan_status, scan_failure, candidates } = onboarding_state;
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion, () => {});
@@ -51,10 +53,6 @@ export default function useOnboarding({ navigation, route }: Props) {
   useEffect(() => {
     if (route.params?.step) setStep(route.params.step);
   }, [route.params?.step]);
-
-  useEffect(() => {
-    if (step === 'inboxPermission' && !google_email) dispatch(loadGoogleAccount());
-  }, [dispatch, google_email, step]);
 
   // The outgoing panel leaves first; the incoming one enters only after it is gone.
   const goTo = useCallback((next: OnboardingStep, direction: 1 | -1 = 1) => {
@@ -81,11 +79,15 @@ export default function useOnboarding({ navigation, route }: Props) {
     return () => clearInterval(timer);
   }, [dispatch, scan_status, step]);
 
-  // Zero candidates and failures leave Discovering on their own; found results wait for the user.
+  // Discovering leaves on its own: results after a short hold on the completed stages, otherwise recovery.
   useEffect(() => {
     if (step !== 'discovering') return;
     if (scan_status === 'failed') goTo('scanInterrupted');
     else if (scan_status === 'completed' && candidates.length === 0) goTo('scanNoResults');
+    else if (scan_status === 'completed') {
+      const timer = setTimeout(() => goTo('yourSubscriptions'), SCAN_COMPLETE_HOLD_MS);
+      return () => clearTimeout(timer);
+    }
   }, [candidates.length, goTo, scan_status, step]);
 
   const back_target = ONBOARDING_STEPS[step].back;
@@ -102,14 +104,23 @@ export default function useOnboarding({ navigation, route }: Props) {
     return () => subscription.remove();
   }, [back_target, onBack]);
 
-  const startScan = () => {
+  const connectGoogle = async () => {
+    const next = await dispatch(connectOnboardingGoogle());
+    if (next) goTo(next);
+  };
+
+  // A network failure retries with the existing Gmail grant; lost access goes back to Connect.
+  const retryScan = () => {
+    if (scan_failure === 'access') return goTo('connectInbox', -1);
     dispatch(startOnboardingScan());
     goTo('discovering');
   };
 
-  const saveWith = async (provider: AccountProvider) => {
-    if (await dispatch(saveOnboardingFinds(provider))) goTo('readyToGo');
+  const save = async () => {
+    if (await dispatch(saveOnboardingFinds())) goTo('readyToGo');
   };
+
+  const openDashboard = () => navigation.getParent()?.reset({ index: 0, routes: [{ name: 'Tabs' }] });
 
   return {
     ...onboarding_state,
@@ -120,14 +131,25 @@ export default function useOnboarding({ navigation, route }: Props) {
     first_name: user_name.split(' ')[0],
     onBack: back_target ? onBack : undefined,
     goTo,
-    startScan,
+    signed_in,
+    connectGoogle,
+    retryScan,
     toggleCandidate: (id: string) => dispatch(toggleCandidate(id)),
-    saveWith,
+    editing: candidates.find(item => item.id === editing_id),
+    openEdit: setEditingId,
+    closeEdit: () => setEditingId(''),
+    saveEdit: (item: ScanCandidate) => {
+      dispatch(updateCandidate(item));
+      setEditingId('');
+    },
+    save,
     openLogin: () => navigation.navigate('Login'),
-    // shortcut: email sign-up is the legacy Signup route; returning to Ready after it needs the auth section (F1).
-    openSignup: () => navigation.navigate('Signup'),
+    // Manual entry: the Add form when signed in, otherwise sign up first and continue to it.
+    openManual: () => (signed_in ? navigation.getParent()?.navigate('AddSubscription') : navigation.navigate('Signup', { intent: 'add_manual' })),
     openLegal: () => Alert.alert('Not available yet', 'Terms and Privacy will be available before release.'),
-    openDashboard: () => navigation.getParent()?.reset({ index: 0, routes: [{ name: 'Tabs' }] }),
+    openDashboard,
+    // Zero selection: continue to the actual (possibly empty) dashboard without a fake success.
+    skipSave: openDashboard,
     panel_style: {
       opacity: panel_opacity,
       transform: [{ translateX: Animated.multiply(panel_x, panel_width / 4) }],

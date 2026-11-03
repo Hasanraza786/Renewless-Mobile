@@ -1,88 +1,30 @@
-import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Container from '../../components/Container';
+import AuthLayout, { AuthDivider, AuthFooterLink, SocialButtons } from '../../components/AuthLayout';
 import CustomButton from '../../components/CustomButton';
-import CustomText from '../../components/CustomText';
 import InputField from '../../components/InputField';
-import { COLORS, FONTS, SIZES } from '../../constants/theme';
-import { login } from '../../redux/actions/auth-action';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList } from '../../types';
-import { common_styles } from '../../utils/common_styles';
+import useLogin from './index.function';
 import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
-export default function LoginScreen({ navigation }: Props) {
-  const dispatch = useAppDispatch();
-  const loading = useAppSelector(state => state.auth.loading.login);
-  const error = useAppSelector(state => state.auth.error.login);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  function onSubmit() {
-    dispatch(login(email.trim(), password));
-  }
+export default function LoginScreen(props: Props) {
+  const { form, loading, onSubmit, onSocial, openForgot, openSignup } = useLogin(props);
 
   return (
-    <Container is_auth>
-      <View style={styles.main_view}>
-        <KeyboardAvoidingView style={common_styles.flex_1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="interactive"
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.content}>
-            <CustomText text="Log in" size={(SIZES.padding + SIZES.padding3 / 4)} mb={SIZES.padding3 * 2} />
-            <InputField
-              label="Email"
-              value={email}
-              onChangeText={setEmail}
-              autoCapitalize="none"
-              autoCorrect={false}
-              keyboardType="email-address"
-              textContentType="emailAddress"
-            />
-            <InputField
-              label="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              textContentType="password"
-            />
-            <Pressable
-              accessibilityRole="link"
-              hitSlop={SIZES.padding3}
-              onPress={() => navigation.navigate('ForgotPassword')}
-              style={styles.forgot}>
-              <CustomText text="Forgot password" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
-            </Pressable>
-            {error ? (
-              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} mb={SIZES.padding2} />
-            ) : null}
-            <CustomButton text="Log in" onPress={onSubmit} disabled={loading} />
-            <CustomText
-              text={
-                <>
-                  Don’t have an account?{' '}
-                  <CustomText
-                    text="Create an account"
-                    color={COLORS.primary}
-                    size={(SIZES.padding2 + SIZES.padding3 / 4)}
-                    onPress={() => navigation.navigate('Signup')}
-                  />
-                </>
-              }
-              weight={FONTS.regular}
-              color={COLORS.text_secondary}
-              size={(SIZES.padding2 + SIZES.padding3 / 4)}
-              align="center"
-              mt={SIZES.padding2 * 2}
-            />
-          </ScrollView>
-        </KeyboardAvoidingView>
+    <AuthLayout title="Welcome back" copy="Keep your next renewal in sight.">
+      <View style={styles.field}>
+        <InputField variant="auth" label="Email" onSubmitEditing={form.focusField('password')} submitBehavior="submit" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" returnKeyType="next" {...form.fieldProps('email')} />
       </View>
-    </Container>
+      <InputField variant="auth" label="Password" secureTextEntry autoComplete="current-password" textContentType="password" returnKeyType="go" onSubmitEditing={onSubmit} {...form.fieldProps('password')} />
+      <View style={styles.forgot}>
+        <CustomButton variant="link" text="Forgot password?" onPress={openForgot} style={styles.forgot_link} />
+      </View>
+      <CustomButton variant="primary" text="Log in" disabled={loading} busy={loading} onPress={onSubmit} style={styles.submit} />
+      <AuthDivider style={styles.divider} />
+      <SocialButtons disabled={loading} onPress={onSocial} />
+      <AuthFooterLink prompt="New to Renewless?" link="Sign up" onPress={openSignup} style={styles.footer} />
+    </AuthLayout>
   );
 }

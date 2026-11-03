@@ -1,14 +1,12 @@
-import type { ReactNode } from 'react';
-import { TouchableOpacity, type StyleProp, type ViewStyle } from 'react-native';
+import { TouchableOpacity, View, type ViewProps, type ViewStyle } from 'react-native';
 import { SIZES } from '../../constants/theme';
 
-type Props = {
-  children?: ReactNode;
+// Any View prop (accessibility etc.) passes through; it is touchable only when onPress is given.
+type Props = ViewProps & {
   justify_content?: ViewStyle['justifyContent'];
   onPress?: () => void;
   disabled?: boolean;
   align_items?: ViewStyle['alignItems'];
-  style?: StyleProp<ViewStyle>;
   gap?: number;
   mt?: number;
 };
@@ -22,23 +20,26 @@ export default function RowView({
   style,
   gap,
   mt,
+  ...view_props
 }: Props) {
-  return (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={onPress}
-      disabled={disabled || !onPress}
-      style={[
-        {
-          flexDirection: 'row',
-          alignItems: align_items ?? 'center',
-          justifyContent: justify_content ?? 'flex-start',
-          gap: gap ?? SIZES.padding3,
-          marginTop: mt ?? 0,
-        },
-        style,
-      ]}>
+  const row_style = [
+    {
+      flexDirection: 'row' as const,
+      alignItems: align_items ?? 'center',
+      justifyContent: justify_content ?? 'flex-start',
+      gap: gap ?? SIZES.padding3,
+      marginTop: mt ?? 0,
+    },
+    style,
+  ];
+
+  return onPress ? (
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} disabled={disabled} style={row_style} {...view_props}>
       {children}
     </TouchableOpacity>
+  ) : (
+    <View style={row_style} {...view_props}>
+      {children}
+    </View>
   );
 }

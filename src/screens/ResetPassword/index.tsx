@@ -1,74 +1,38 @@
-import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import Container from '../../components/Container';
+import AuthLayout from '../../components/AuthLayout';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
 import InputField from '../../components/InputField';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
-import { resetPassword } from '../../redux/actions/auth-action';
-import { setAuthError } from '../../redux/slices/auth-slice';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList } from '../../types';
-import { common_styles } from '../../utils/common_styles';
+import useResetPassword from './index.function';
 import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'ResetPassword'>;
 
-export default function ResetPasswordScreen({ navigation, route }: Props) {
-  const { email } = route.params;
-  const dispatch = useAppDispatch();
-  const loading = useAppSelector(state => state.auth.loading.reset);
-  const error = useAppSelector(state => state.auth.error.reset);
-  const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
+const BODY_LINE = SIZES.padding - SIZES.padding3 / 4;
 
-  function onSubmit() {
-    if (password !== confirm) {
-      dispatch(setAuthError({ key: 'reset', value: 'Passwords do not match' }));
-      return;
-    }
-    dispatch(
-      resetPassword(email, password, () =>
-        navigation.reset({ index: 0, routes: [{ name: 'Login' }] }),
-      ),
-    );
-  }
+export default function ResetPasswordScreen(props: Props) {
+  const { form, loading, error, onSubmit, onBack } = useResetPassword(props);
+  const confirm = form.fieldProps('confirm');
 
   return (
-    <Container is_auth>
-      <View style={styles.main_view}>
-        <KeyboardAvoidingView style={common_styles.flex_1} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-          <ScrollView
-            keyboardShouldPersistTaps="handled"
-            keyboardDismissMode="interactive"
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.content}>
-            <CustomText text="Reset password" size={(SIZES.padding + SIZES.padding3 / 4)} mb={SIZES.padding3 * 2} />
-            <InputField
-              label="New password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              textContentType="newPassword"
-            />
-            <InputField
-              label="Confirm password"
-              value={confirm}
-              onChangeText={setConfirm}
-              secureTextEntry
-              textContentType="newPassword"
-            />
-            {error ? (
-              <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} mb={SIZES.padding2} />
-            ) : null}
-            <CustomButton text="Save password" onPress={onSubmit} disabled={loading} />
-            <Pressable accessibilityRole="link" hitSlop={SIZES.padding3} onPress={() => navigation.navigate('Login')} style={styles.link}>
-              <CustomText text="Log in" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
-            </Pressable>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </View>
-    </Container>
+    <AuthLayout onBack={onBack} title="Set a new password" copy="Choose a new password to keep your account secure.">
+      <InputField variant="auth" label="New password" onSubmitEditing={form.focusField('confirm')} submitBehavior="submit" secureTextEntry autoComplete="new-password" textContentType="newPassword" returnKeyType="next" {...form.fieldProps('password')} />
+      <CustomText text="Use at least 6 characters." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} style={styles.hint} />
+      <InputField
+        variant="auth"
+        label="Confirm password"
+        secureTextEntry
+        autoComplete="new-password"
+        textContentType="newPassword"
+        returnKeyType="go"
+        onSubmitEditing={onSubmit}
+        {...confirm}
+        error={confirm.error || error || undefined}
+      />
+      <CustomButton variant="primary" text="Reset password" disabled={loading} busy={loading} onPress={onSubmit} style={styles.submit} />
+      <CustomText text="You’ll log in with your new password." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" style={styles.note} />
+    </AuthLayout>
   );
 }

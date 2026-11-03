@@ -1,26 +1,50 @@
 import { StyleSheet } from 'react-native';
-import { colors, fonts, SIZES } from '../../constants/theme';
+import { COLORS, fonts, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   wrap: {
     marginBottom: SIZES.padding3 * 2,
   },
   input: {
-    backgroundColor: colors.card,
-    borderColor: colors.control_border,
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.control_border,
     borderRadius: SIZES.padding2,
     borderWidth: 1,
-    color: colors.text,
+    color: COLORS.text_primary,
     fontFamily: fonts.regular,
     fontSize: (SIZES.padding2 + SIZES.padding3 / 4),
     height: SIZES.control_height,
     paddingHorizontal: SIZES.padding2 + 2,
     paddingVertical: 0,
   },
+  sheet_input: {
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.field_border,
+    borderRadius: SIZES.padding3 + SIZES.padding3 / 4,
+    borderWidth: SIZES.padding3 / 8,
+    color: COLORS.text_primary,
+    fontFamily: fonts.regular,
+    fontSize: SIZES.sm,
+    height: SIZES.padding * 2 + SIZES.padding3 / 8,
+    paddingHorizontal: SIZES.padding2,
+    paddingVertical: 0,
+  },
+  auth_input: {
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.social_border,
+    borderRadius: SIZES.padding2,
+    borderWidth: SIZES.padding3 / 8,
+    color: COLORS.text_primary,
+    fontFamily: fonts.regular,
+    fontSize: SIZES.sm,
+    height: SIZES.padding * 2 + SIZES.padding3 - SIZES.padding3 / 4,
+    paddingHorizontal: SIZES.padding2 + SIZES.padding3 / 4,
+    paddingVertical: 0,
+  },
   input_focused: {
-    borderColor: colors.accent,
+    borderColor: COLORS.primary,
   },
   input_error: {
-    borderColor: colors.expired,
+    borderColor: COLORS.expired,
   },
 });

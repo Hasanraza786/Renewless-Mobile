@@ -6,7 +6,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
-import { colors } from '../../constants/theme';
+import { COLORS } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import { styles } from './styles';
 
@@ -27,7 +27,7 @@ export default function Container({
   is_auth = false,
   edges,
 }: Props) {
-  const background_color = background || colors.background;
+  const background_color = background || COLORS.background;
   const resolved_edges: Edge[] = edges != null ? [...edges] : is_auth ? ['left', 'top', 'right', 'bottom'] : ['left', 'top', 'right'];
 
   return (

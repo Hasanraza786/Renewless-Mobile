@@ -11,7 +11,7 @@ import CountryPicker, {
 } from 'react-native-country-picker-modal';
 import RowView from '../RowView';
 import CustomText from '../CustomText';
-import { FONTS, SIZES, colors } from '../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { styles } from './styles';
 
 type Props = {
@@ -59,7 +59,7 @@ export default function PhoneInputField({
       <CustomText
         text={
           <>
-            Phone number <CustomText text="*" weight={FONTS.regular} color={colors.accent} size={SIZES.padding2} />
+            Phone number <CustomText text="*" weight={FONTS.regular} color={COLORS.primary} size={SIZES.padding2} />
           </>
         }
         weight={FONTS.regular}
@@ -77,13 +77,13 @@ export default function PhoneInputField({
           withCloseButton
           onSelect={onSelect}
         />
-        <CustomText text="▾" weight={FONTS.regular} color={colors.text_secondary} size={SIZES.padding2} mr={SIZES.padding3} />
+        <CustomText text="▾" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.padding2} mr={SIZES.padding3} />
         <TextInput
           value={phone}
           onChangeText={value => onChangePhone(value.replace(/\D/g, ''))}
           keyboardType="number-pad"
           placeholder="201 555 0123"
-          placeholderTextColor={colors.text_secondary}
+          placeholderTextColor={COLORS.text_secondary}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           style={styles.input}

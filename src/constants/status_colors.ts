@@ -1,17 +1,17 @@
-import { colors } from './theme';
+import { COLORS } from './theme';
 import type { SubscriptionStatus } from '../types';
 
 export const status_colors = {
-  active: { background: colors.status_active_bg, text: colors.accent },
-  trial: { background: colors.status_trial_bg, text: colors.trial },
-  trial_ended: { background: colors.status_muted_bg, text: colors.text_secondary },
-  renewing_soon: { background: colors.status_soon_bg, text: colors.renewing_soon },
-  due_today: { background: colors.status_due_bg, text: colors.due_today },
-  needs_date: { background: colors.status_trial_bg, text: colors.trial },
-  cancelled: { background: colors.status_muted_bg, text: colors.text_secondary },
-  expired: { background: colors.status_expired_bg, text: colors.expired },
-  upcoming: { background: colors.status_muted_bg, text: colors.text_secondary },
-  in_progress: { background: colors.status_active_bg, text: colors.accent },
+  active: { background: COLORS.status_active_bg, text: COLORS.primary },
+  trial: { background: COLORS.status_trial_bg, text: COLORS.trial },
+  trial_ended: { background: COLORS.status_muted_bg, text: COLORS.text_secondary },
+  renewing_soon: { background: COLORS.status_soon_bg, text: COLORS.renewing_soon },
+  due_today: { background: COLORS.status_due_bg, text: COLORS.due_today },
+  needs_date: { background: COLORS.status_trial_bg, text: COLORS.trial },
+  cancelled: { background: COLORS.status_muted_bg, text: COLORS.text_secondary },
+  expired: { background: COLORS.status_expired_bg, text: COLORS.expired },
+  upcoming: { background: COLORS.status_muted_bg, text: COLORS.text_secondary },
+  in_progress: { background: COLORS.status_active_bg, text: COLORS.primary },
 };
 
 export function colorsForStatus(status: SubscriptionStatus) {
