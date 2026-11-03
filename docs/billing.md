@@ -2,9 +2,11 @@
 
 ## V1 — fully free, approved 31 October 2026
 
+Aligned with the finalized prototype 3 November 2026. Payments is a main tab; Alerts opens from the authenticated header. Payment-history export and preferred-currency/FX conversion are deferred beyond v1 and are not Pro gates. Screen behavior and backend semantics remain owned by [Product screens](product-screens.md) and [API/mobile contract](api-mobile-contract.md).
+
 All planned user features are free in v1: manual tracking, AI text/voice/image/PDF, first and subsequent Gmail scans/incremental sync, additional inboxes, reminders, widgets and subscription tracking without the former 25-record paid cap. No Paywall route, Pro profile variant, Upgrade, plan meter, purchase, restore, manage-plan control or billing-induced sync pause ships in v1. Do not fake Pro=true; remove billing checks from v1 access decisions while preserving authentication, consent, ownership, validation and operational safety. Feature/native/API readiness remains separate from free availability. The finalized [mobile implementation plan](api-mobile-contract.md#mobile-implementation) and [milestones](product-specification.md#implementation-sequence) exclude purchase SDKs/paid gates from v1; Phase 2 is not a prerequisite for any approved v1 feature.
 
-Onboarding: reviewed finds → authentication → successful import → Ready → Home. Profile contains account, inboxes, activity, preferences/security/legal and logout. Payments continues to mean Gmail evidence for tracked third-party subscriptions; provider prices/trials and confirmed receipts are unaffected by free Renewless access. Real account/privacy/legal requirements remain in their owners.
+Final onboarding: Connect Gmail initiates verified Google app sign-in plus separate read-only Gmail consent → account-owned scan → reviewed finds → successful inline import → Ready → Home. No repeated sign-in at Save for a valid existing session. Manual entry retains its auth continuation. Profile contains account, inboxes, activity, preferences/security/legal, logout and Delete account. Account deletion changes Renewless data/access, not tracked third-party subscriptions. Payments continues to mean Gmail evidence for tracked third-party subscriptions; provider prices/trials and confirmed receipts are unaffected by free Renewless access. Real account/privacy/legal requirements remain in their owners.
 
 <a id="revenuecat"></a>
 ## Phase 2 — deferred monetization drafts

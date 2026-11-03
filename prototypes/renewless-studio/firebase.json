@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "renewless-design-studio",
+    "site": "renewless-11ddb",
     "public": "dist",
     "ignore": [
       "firebase.json",
