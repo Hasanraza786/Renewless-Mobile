@@ -37,7 +37,7 @@ export default function CustomButton({ text, onPress, disabled, variant, style, 
           weight={variant === 'primary' || variant === 'social' ? FONTS.medium : FONTS.regular}
           color={variant === 'primary' ? COLORS.background : variant === 'link' ? COLORS.text_secondary : COLORS.text_primary}
           size={SIZES.sm}
-          line_height={SIZES.padding - SIZES.padding3 / 4}
+          line_height={SIZES.padding * 0.9}
           align="center"
         />
       </Pressable>
@@ -57,7 +57,7 @@ export default function CustomButton({ text, onPress, disabled, variant, style, 
       <CustomText
         text={text}
         color={disabled ? COLORS.text_secondary : COLORS.background}
-        size={(SIZES.padding2 + SIZES.padding3 / 4)}
+        size={(SIZES.padding * 0.7)}
       />
     </Pressable>
   );

@@ -13,7 +13,7 @@ type Props = {
 };
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
-const SETTLE = -(SIZES.padding3 / 2 - SIZES.padding3 / 8);
+const SETTLE = -SIZES.padding * 0.15;
 
 function Face({ expression, size }: Pick<Props, 'expression' | 'size'>) {
   const face: { eyes: readonly { cx: number; cy: number; rx: number; ry: number }[]; mouth?: { d: string; width: number } } = LOOP_FACES[expression];

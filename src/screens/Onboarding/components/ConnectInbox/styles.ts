@@ -3,16 +3,12 @@ import { COLORS, SIZES } from '../../../../constants/theme';
 
 export const styles = StyleSheet.create({
   art: {
-    alignItems: 'center',
-    flexDirection: 'row',
     // 15pt beside the 48-wide arrow box keeps the prototype's 18pt gap to its 42pt-wide drawing.
-    gap: SIZES.padding - SIZES.padding3 / 2 - SIZES.padding3 / 8,
-    height: SIZES.padding * 7 - SIZES.padding3 / 2 - SIZES.padding3 / 8,
-    justifyContent: 'center',
+    height: SIZES.padding * 6.75,
   },
   brand: {
     alignItems: 'center',
-    gap: SIZES.padding3 + SIZES.padding3 / 4,
+    gap: SIZES.padding / 2,
   },
   tile: {
     alignItems: 'center',
@@ -20,70 +16,44 @@ export const styles = StyleSheet.create({
     borderColor: COLORS.line_faint,
     borderRadius: SIZES.padding,
     borderWidth: SIZES.padding3 / 8,
-    height: SIZES.padding * 3 + SIZES.padding3 / 2 + SIZES.padding3 / 8,
+    height: SIZES.padding * 3.25,
     justifyContent: 'center',
-    width: SIZES.padding * 3 + SIZES.padding3 / 2 + SIZES.padding3 / 8,
+    width: SIZES.padding * 3.25,
   },
   arrow: {
-    marginTop: -(SIZES.padding + SIZES.padding3 - SIZES.padding3 / 4),
+    marginTop: -SIZES.padding * 1.3,
     opacity: 0.65,
-  },
-  intro: {
-    marginTop: SIZES.padding,
-  },
-  disclosure: {
-    marginTop: SIZES.padding + SIZES.padding3 - SIZES.padding3 / 4,
   },
   feedback: {
     borderColor: COLORS.primary,
     borderRadius: SIZES.padding2,
     borderWidth: SIZES.padding3 / 8,
-    marginVertical: SIZES.padding2,
     padding: SIZES.padding2,
+    marginVertical: SIZES.padding2,
   },
   trust: {
     backgroundColor: COLORS.card,
     borderRadius: SIZES.padding3 * 2,
-    paddingHorizontal: SIZES.padding2 + SIZES.padding3 / 2 - SIZES.padding3 / 8,
+    paddingHorizontal: SIZES.padding * 0.75,
     paddingVertical: SIZES.padding3 / 2,
   },
   trust_row: {
-    flexDirection: 'row',
-    gap: SIZES.padding - SIZES.padding3 / 4,
-    justifyContent: 'space-between',
-    paddingVertical: SIZES.padding2 + SIZES.padding3 / 4,
+    paddingVertical: SIZES.padding * 0.7,
   },
   trust_divider: {
     borderBottomColor: COLORS.line_soft,
     borderBottomWidth: SIZES.padding3 / 8,
   },
-  info: {
-    marginTop: SIZES.padding,
-  },
-  primary: {
-    marginTop: SIZES.padding + SIZES.padding3 / 4,
-  },
   connect_button: {
-    height: SIZES.padding * 2 + SIZES.padding3,
-  },
-  link: {
-    marginTop: SIZES.padding2 + SIZES.padding3 / 8,
+    height: SIZES.padding * 2.4,
   },
   // The legal row ends flush with the footer, so it absorbs the footer's bottom padding.
   legal: {
-    flexDirection: 'row',
-    gap: SIZES.padding2,
-    justifyContent: 'center',
     marginBottom: -SIZES.padding3 / 2,
-    marginTop: SIZES.padding2 + SIZES.padding3 / 8,
-  },
-  legal_item: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: SIZES.padding2,
+    marginTop: SIZES.padding * 0.65,
   },
   legal_link: {
-    height: SIZES.padding * 2 - SIZES.padding3 / 2,
+    height: SIZES.padding * 1.8,
     justifyContent: 'center',
   },
 });

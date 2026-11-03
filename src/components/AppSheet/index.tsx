@@ -3,8 +3,10 @@ import { Animated, Easing, KeyboardAvoidingView, Modal, Pressable, ScrollView, V
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { close_icon } from '../../assets/icons';
 import { COLORS, FONTS, SIZES, behavior } from '../../constants/theme';
+import RowView from '../RowView';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
+import { common_styles } from '../../utils/common_styles';
 import { styles } from './styles';
 
 type Props = {
@@ -36,21 +38,21 @@ export default function AppSheet({ visible, title, subtitle, onClose, children }
           accessibilityViewIsModal
           style={[
             styles.sheet,
-            { paddingBottom: Math.max(insets.bottom, SIZES.padding + SIZES.padding3 + SIZES.padding3 / 4) },
+            { paddingBottom: Math.max(insets.bottom, SIZES.padding * 1.5) },
             { transform: [{ translateY: rise.interpolate({ inputRange: [0, 1], outputRange: [height, 0] }) }] },
           ]}>
           <View style={styles.handle} />
-          <View style={styles.header}>
-            <View style={styles.header_text}>
-              <CustomText text={title} size={SIZES.lg} line_height={SIZES.padding + SIZES.padding3 / 4} />
+          <RowView align_items="flex-start" gap={SIZES.padding2} style={styles.header}>
+            <View style={common_styles.flex_1}>
+              <CustomText text={title} size={SIZES.lg} line_height={SIZES.padding * 1.1} />
               {subtitle ? (
-                <CustomText text={subtitle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding - SIZES.padding3 / 4} mt={SIZES.padding3 - SIZES.padding3 / 8} />
+                <CustomText mt={SIZES.padding * 0.35} text={subtitle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 0.9} />
               ) : null}
             </View>
             <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={styles.close}>
               <Icons name={close_icon} icon_height={SIZES.padding} icon_width={SIZES.padding} stroke={COLORS.text_primary} />
             </Pressable>
-          </View>
+          </RowView>
           <ScrollView bounces={false} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
             {children}
           </ScrollView>

@@ -1,18 +1,18 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, SIZES } from '../../../../constants/theme';
 
-export const ORBIT_SIZE = SIZES.padding * 11 + SIZES.padding3 / 2 + SIZES.padding3 / 8;
+export const ORBIT_SIZE = SIZES.padding * 11.25;
 
 export const styles = StyleSheet.create({
   scene: {
-    height: SIZES.padding * 11 + SIZES.padding2,
+    height: SIZES.padding * 11.6,
   },
   orbit: {
     borderColor: COLORS.accent_line,
     borderRadius: ORBIT_SIZE / 2,
     borderWidth: SIZES.padding3 / 8,
     height: ORBIT_SIZE,
-    left: SIZES.padding * 2 + SIZES.padding3 / 4,
+    left: SIZES.padding * 2.1,
     overflow: 'hidden',
     position: 'absolute',
     top: 0,
@@ -21,68 +21,54 @@ export const styles = StyleSheet.create({
   receipt: {
     backgroundColor: COLORS.receipt,
     borderColor: COLORS.line_faint,
-    borderRadius: SIZES.padding2 + SIZES.padding3 / 4,
+    borderRadius: SIZES.padding * 0.7,
     borderWidth: SIZES.padding3 / 8,
-    left: SIZES.padding + SIZES.padding3 + SIZES.padding3 / 4,
-    padding: SIZES.padding - SIZES.padding3 / 8,
+    left: SIZES.padding * 1.5,
+    padding: SIZES.padding * 0.95,
     position: 'absolute',
     top: SIZES.padding2,
     transform: [{ rotate: '-7deg' }],
-    width: SIZES.padding * 10 + SIZES.padding3 - SIZES.padding3 / 8,
-  },
-  inline: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: SIZES.padding3,
-  },
-  inbox_label: {
-    letterSpacing: SIZES.padding3 / 8,
+    width: SIZES.padding * 10.35,
   },
   line: {
     backgroundColor: COLORS.receipt_line,
     borderRadius: SIZES.padding3 / 2,
     height: SIZES.padding3 / 2,
-    marginBottom: SIZES.padding3 + SIZES.padding3 / 8,
     width: '85%',
+    marginBottom: SIZES.padding * 0.45,
   },
   line_short: {
-    marginBottom: 0,
     width: '60%',
+    marginBottom: 0,
   },
   found: {
-    alignItems: 'center',
     backgroundColor: COLORS.found_card,
     borderColor: COLORS.accent_edge,
-    borderRadius: SIZES.padding2 + SIZES.padding3 / 2 + SIZES.padding3 / 8,
+    borderRadius: SIZES.padding * 0.85,
     borderWidth: SIZES.padding3 / 8,
-    flexDirection: 'row',
-    gap: SIZES.padding2 - SIZES.padding3 / 8,
-    left: SIZES.padding3 + SIZES.padding3 / 8,
-    paddingHorizontal: SIZES.padding2 + SIZES.padding3 / 8,
+    left: SIZES.padding * 0.45,
+    paddingHorizontal: SIZES.padding * 0.65,
     paddingVertical: SIZES.padding3 * 2,
     position: 'absolute',
     right: 0,
     shadowColor: COLORS.background,
     shadowOffset: { width: 0, height: SIZES.padding3 * 2 },
     shadowOpacity: 0.2,
-    shadowRadius: SIZES.padding2 + SIZES.padding3 / 2 - SIZES.padding3 / 8,
-    top: SIZES.padding * 6 + SIZES.padding3 + SIZES.padding3 / 8,
+    shadowRadius: SIZES.padding * 0.75,
+    top: SIZES.padding * 6.45,
   },
   logo_tile: {
     alignItems: 'center',
     backgroundColor: COLORS.logo_tile,
-    borderRadius: SIZES.padding3 + SIZES.padding3 / 4,
-    height: SIZES.padding * 2 - SIZES.padding3 / 2,
+    borderRadius: SIZES.padding / 2,
+    height: SIZES.padding * 1.8,
     justifyContent: 'center',
-    minWidth: SIZES.padding * 2 - SIZES.padding3 / 2 - SIZES.padding3 / 4,
-  },
-  found_text: {
-    flex: 1,
+    minWidth: SIZES.padding * 1.7,
   },
   pill: {
-    left: SIZES.padding + SIZES.padding3 + SIZES.padding3 / 4,
+    left: SIZES.padding * 1.5,
     position: 'absolute',
-    top: SIZES.padding * 10 + SIZES.padding3 + SIZES.padding3 / 4,
+    top: SIZES.padding * 10.5,
   },
   loop: {
     position: 'absolute',
@@ -90,14 +76,8 @@ export const styles = StyleSheet.create({
     top: SIZES.padding * 2.15,
     transform: [{ rotate: '9deg' }],
   },
-  benefits: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: SIZES.padding,
-  },
   benefit_row: {
-    gap: SIZES.padding3 - SIZES.padding3 / 4,
+    gap: SIZES.padding * 0.3,
     height: SIZES.padding2 * 2,
   },
 });

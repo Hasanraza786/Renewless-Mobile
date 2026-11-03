@@ -38,7 +38,7 @@ export default function Splash({ navigation }: Props) {
           />
         </Animated.View>
         <Animated.View style={[styles.name, revealStyle(name_progress)]}>
-          <CustomText text="Renewless" weight={FONTS.medium} size={SIZES.h3} line_height={SIZES.padding + SIZES.padding3} align="center" />
+          <CustomText text="Renewless" weight={FONTS.medium} size={SIZES.h3} line_height={SIZES.padding * 1.4} align="center" />
         </Animated.View>
         <Animated.View style={[styles.tagline, revealStyle(tagline_progress)]}>
           <CustomText
@@ -46,7 +46,7 @@ export default function Splash({ navigation }: Props) {
             weight={FONTS.regular}
             color={COLORS.text_secondary}
             size={SIZES.sm}
-            line_height={SIZES.padding - SIZES.padding3 / 4}
+            line_height={SIZES.padding * 0.9}
             align="center"
           />
         </Animated.View>

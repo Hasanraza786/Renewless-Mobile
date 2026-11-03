@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, SIZES } from '../../constants/theme';
 
-export const OPTION_HEIGHT = SIZES.padding * 2 + SIZES.padding3 / 4;
+export const OPTION_HEIGHT = SIZES.padding * 2.1;
 
 export const styles = StyleSheet.create({
   wrap: {
@@ -11,16 +11,16 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.checkbox_fill,
     borderColor: COLORS.select_border,
-    borderRadius: SIZES.padding3 + SIZES.padding3 / 4,
+    borderRadius: SIZES.padding / 2,
     borderWidth: SIZES.padding3 / 8,
     flexDirection: 'row',
     height: OPTION_HEIGHT,
-    paddingLeft: SIZES.padding2 - SIZES.padding3 / 8,
-    paddingRight: SIZES.padding * 2 + SIZES.padding3 / 4,
+    paddingLeft: SIZES.padding * 0.55,
+    paddingRight: SIZES.padding * 2.1,
   },
   chevron: {
     position: 'absolute',
-    right: SIZES.padding2 + SIZES.padding3 / 4,
+    right: SIZES.padding * 0.7,
   },
   backdrop: {
     ...StyleSheet.absoluteFill,
@@ -30,12 +30,12 @@ export const styles = StyleSheet.create({
     borderColor: COLORS.line_menu,
     borderRadius: SIZES.padding2,
     borderWidth: SIZES.padding3 / 8,
-    padding: SIZES.padding3 / 2 + SIZES.padding3 / 8,
+    padding: SIZES.padding / 4,
     position: 'absolute',
     shadowColor: COLORS.background,
     shadowOffset: { width: 0, height: SIZES.padding2 },
     shadowOpacity: 0.53,
-    shadowRadius: SIZES.padding2 + SIZES.padding3 / 4,
+    shadowRadius: SIZES.padding * 0.7,
   },
   option: {
     alignItems: 'center',
@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
     gap: SIZES.padding2,
     height: OPTION_HEIGHT,
     justifyContent: 'space-between',
-    paddingHorizontal: SIZES.padding2 - SIZES.padding3 / 8,
+    paddingHorizontal: SIZES.padding * 0.55,
   },
   option_selected: {
     backgroundColor: COLORS.accent_select,

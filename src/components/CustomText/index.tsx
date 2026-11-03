@@ -24,6 +24,8 @@ type Props = {
   decoration?: TextStyle['textDecorationLine'];
   line_height?: number;
   transform?: TextStyle['textTransform'];
+  // Raw number (prototype tracking), not a SIZES token.
+  letter_spacing?: number;
 };
 
 function CustomText({
@@ -43,6 +45,7 @@ function CustomText({
   decoration,
   line_height,
   transform,
+  letter_spacing,
 }: Props) {
   const base_style = useMemo(
     () => ({
@@ -57,8 +60,9 @@ function CustomText({
       textDecorationLine: decoration ?? 'none',
       lineHeight: line_height,
       textTransform: transform ?? 'none',
+      letterSpacing: letter_spacing,
     }),
-    [align, color, decoration, line_height, mb, ml, mr, mt, size, transform, weight],
+    [align, color, decoration, letter_spacing, line_height, mb, ml, mr, mt, size, transform, weight],
   );
 
   return (

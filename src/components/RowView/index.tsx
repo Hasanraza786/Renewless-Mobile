@@ -28,7 +28,8 @@ export default function RowView({
       alignItems: align_items ?? 'center',
       justifyContent: justify_content ?? 'flex-start',
       gap: gap ?? SIZES.padding3,
-      marginTop: mt ?? 0,
+      // Only when given, so a style's marginVertical still applies.
+      ...(mt !== undefined && { marginTop: mt }),
     },
     style,
   ];

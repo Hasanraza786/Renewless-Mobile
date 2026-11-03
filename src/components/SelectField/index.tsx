@@ -22,8 +22,8 @@ export default function SelectField<T extends string>({ label, value, options, o
   const [frame, setFrame] = useState<Frame | null>(null);
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const gap = SIZES.padding3 - SIZES.padding3 / 4;
-  const menu_height = options.length * OPTION_HEIGHT + SIZES.padding3 + SIZES.padding3 / 2;
+  const gap = SIZES.padding * 0.3;
+  const menu_height = options.length * OPTION_HEIGHT + SIZES.padding * 0.6;
 
   const open = () => control_ref.current?.measureInWindow((x, y, width, control_height) => setFrame({ x, y, width, height: control_height }));
   const close = () => setFrame(null);
@@ -31,7 +31,7 @@ export default function SelectField<T extends string>({ label, value, options, o
 
   return (
     <View style={styles.wrap}>
-      <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding - SIZES.padding3 / 4} mb={SIZES.padding3} />
+      <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 0.9} mb={SIZES.padding3} />
       <Pressable
         ref={control_ref}
         accessibilityRole="button"
@@ -39,8 +39,8 @@ export default function SelectField<T extends string>({ label, value, options, o
         accessibilityState={{ expanded: !!frame }}
         onPress={open}
         style={styles.control}>
-        <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} line_height={SIZES.padding - SIZES.padding3 / 4} number_of_lines={1} />
-        <Icons name={chevron_down_icon} icon_height={SIZES.padding2 + SIZES.padding3 * 3 / 4} icon_width={SIZES.padding2 + SIZES.padding3 * 3 / 4} stroke={COLORS.text_primary} style={styles.chevron} />
+        <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} line_height={SIZES.padding * 0.9} number_of_lines={1} />
+        <Icons name={chevron_down_icon} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} stroke={COLORS.text_primary} style={styles.chevron} />
       </Pressable>
       <Modal transparent visible={!!frame} animationType="fade" onRequestClose={close}>
         <Pressable accessibilityLabel={`Close ${label}`} onPress={close} style={styles.backdrop} />
@@ -61,7 +61,7 @@ export default function SelectField<T extends string>({ label, value, options, o
                   }}
                   style={[styles.option, selected && styles.option_selected]}>
                   <CustomText text={option} weight={FONTS.regular} color={selected ? COLORS.primary : COLORS.text_primary} size={SIZES.sm} />
-                  {selected ? <Icons name={option_check_icon} icon_height={SIZES.padding2 + SIZES.padding3 / 2 + SIZES.padding3 / 8} icon_width={SIZES.padding2 + SIZES.padding3 / 2 + SIZES.padding3 / 8} stroke={COLORS.primary} /> : null}
+                  {selected ? <Icons name={option_check_icon} icon_height={SIZES.padding * 0.85} icon_width={SIZES.padding * 0.85} stroke={COLORS.primary} /> : null}
                 </Pressable>
               );
             })}

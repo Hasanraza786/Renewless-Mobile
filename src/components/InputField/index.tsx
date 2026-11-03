@@ -28,7 +28,7 @@ export default function InputField({
   ...input_props
 }: Props) {
   const [focused, setFocused] = useState(false);
-  const body_line = SIZES.padding - SIZES.padding3 / 4;
+  const body_line = SIZES.padding * 0.9;
 
   return (
     <View style={variant ? undefined : styles.wrap}>
@@ -39,7 +39,7 @@ export default function InputField({
           color={COLORS.text_secondary}
           size={SIZES.sm}
           line_height={body_line}
-          mb={variant === 'auth' ? SIZES.padding3 + SIZES.padding3 / 8 : SIZES.padding3 - SIZES.padding3 / 4}
+          mb={variant === 'auth' ? SIZES.padding * 0.45 : SIZES.padding * 0.3}
         />
       ) : (
         <CustomText text={label} weight={FONTS.regular} size={SIZES.padding2} mb={SIZES.padding3} />
@@ -63,13 +63,13 @@ export default function InputField({
         {...input_props}
       />
       {error && variant ? (
-        <CustomText text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} line_height={body_line} mt={SIZES.padding3 - SIZES.padding3 / 8} />
+        <CustomText mt={SIZES.padding * 0.35} text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} line_height={body_line} />
       ) : error ? (
         <CustomText
           text={error}
           color={COLORS.expired}
           weight={FONTS.regular}
-          size={(SIZES.padding2 + SIZES.padding3 / 8)}
+          size={(SIZES.padding * 0.65)}
           mt={SIZES.padding2 / 2}
         />
       ) : null}

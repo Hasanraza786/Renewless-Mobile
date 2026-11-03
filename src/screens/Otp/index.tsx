@@ -11,7 +11,7 @@ import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Otp'>;
 
-const BODY_LINE = SIZES.padding - SIZES.padding3 / 4;
+const BODY_LINE = SIZES.padding * 0.9;
 
 export default function OtpScreen(props: Props) {
   const otp = useOtp(props);
@@ -25,12 +25,14 @@ export default function OtpScreen(props: Props) {
       copy={otp.reset ? 'Enter the code we sent to reset your password.' : 'One last step. Enter the code sent to your email.'}>
       <View style={styles.destination}>
         <CustomText text="Code sent to" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
-        <CustomText text={otp.email} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3} />
+        <CustomText mt={SIZES.padding3} text={otp.email} size={SIZES.sm} line_height={BODY_LINE} />
         <Pressable accessibilityRole="button" onPress={otp.onBack} style={styles.change_email}>
           <CustomText text="Change email" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} />
         </Pressable>
       </View>
-      <CustomText text="Verification code" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mb={SIZES.padding3 + SIZES.padding3 / 4} />
+
+      <CustomText text="Verification code" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mb={SIZES.padding / 2} />
+
       <CodeField
         ref={ref}
         {...cell_props}
@@ -51,10 +53,13 @@ export default function OtpScreen(props: Props) {
         )}
       />
       {otp.code_error ? (
-        <CustomText text={otp.code_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 - SIZES.padding3 / 8} />
+        <CustomText mt={SIZES.padding * 0.35} text={otp.code_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} line_height={BODY_LINE} />
       ) : null}
-      <CustomText text="Code expires in 5 minutes" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} style={styles.expiry} />
+
+      <CustomText mt={SIZES.padding * 0.7} text="Code expires in 5 minutes" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mb={SIZES.padding2} />
+
       <CustomButton variant="primary" text={otp.reset ? 'Verify code' : 'Verify email'} disabled={otp.loading} busy={otp.loading} onPress={otp.onSubmit} style={styles.submit} />
+
       <View style={styles.resend}>
         <CustomText text="Didn’t receive a code?" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" />
         <Pressable accessibilityRole="button" onPress={otp.onResend} style={styles.resend_button}>

@@ -1,9 +1,9 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, SIZES } from '../../../../constants/theme';
 
-export const HALO_SIZE = SIZES.padding * 5 + SIZES.padding2;
-const BADGE = SIZES.padding + SIZES.padding3 + SIZES.padding3 / 4;
-const PIECE_INSET = SIZES.padding3 + SIZES.padding3 / 4 + SIZES.padding3 / 8;
+export const HALO_SIZE = SIZES.padding * 5.6;
+const BADGE = SIZES.padding * 1.5;
+const PIECE_INSET = SIZES.padding * 0.55;
 
 export const styles = StyleSheet.create({
   celebration: {
@@ -11,9 +11,9 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     height: HALO_SIZE,
     justifyContent: 'center',
-    marginBottom: SIZES.padding2 * 2,
-    marginTop: SIZES.padding2,
     width: HALO_SIZE,
+    marginTop: SIZES.padding2,
+    marginBottom: SIZES.padding2 * 2,
   },
   halo: {
     borderColor: COLORS.accent_tile,
@@ -32,7 +32,7 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.primary,
     borderColor: COLORS.background,
     borderRadius: BADGE / 2,
-    borderWidth: SIZES.padding3 / 2 - SIZES.padding3 / 8,
+    borderWidth: SIZES.padding * 0.15,
     bottom: SIZES.padding3 / 4,
     height: BADGE,
     justifyContent: 'center',
@@ -44,48 +44,31 @@ export const styles = StyleSheet.create({
     shadowRadius: SIZES.padding3 / 2,
     width: BADGE,
   },
-  intro: {
-    marginBottom: SIZES.padding,
-  },
   summary: {
     backgroundColor: COLORS.card,
     borderColor: COLORS.accent_border,
     borderRadius: SIZES.padding3 * 2,
     borderWidth: SIZES.padding3 / 8,
-    flexDirection: 'row',
-    gap: SIZES.padding2,
     padding: SIZES.padding3 * 2,
-  },
-  summary_cell: {
-    flex: 1,
   },
   summary_wide: {
     borderLeftColor: COLORS.line_faint,
     borderLeftWidth: SIZES.padding3 / 8,
     flex: 1.35,
-    paddingLeft: SIZES.padding2 + SIZES.padding3 / 4,
+    paddingLeft: SIZES.padding * 0.7,
   },
   next: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: SIZES.padding2,
-    marginTop: SIZES.padding3,
     paddingHorizontal: SIZES.padding3 / 2,
     paddingVertical: SIZES.padding3 * 2,
-  },
-  next_label: {
-    letterSpacing: SIZES.padding3 / 10,
+    marginTop: SIZES.padding3,
   },
   logo_tile: {
     alignItems: 'center',
     backgroundColor: COLORS.logo_tile,
-    borderRadius: SIZES.padding3 + SIZES.padding3 / 4,
-    height: SIZES.padding * 2 - SIZES.padding3 / 2,
+    borderRadius: SIZES.padding / 2,
+    height: SIZES.padding * 1.8,
     justifyContent: 'center',
-    minWidth: SIZES.padding * 2 - SIZES.padding3 / 2 - SIZES.padding3 / 4,
-  },
-  primary: {
-    marginTop: SIZES.padding + SIZES.padding3 / 4,
+    minWidth: SIZES.padding * 1.7,
   },
   confetti: {
     ...StyleSheet.absoluteFill,
@@ -94,9 +77,9 @@ export const styles = StyleSheet.create({
   piece: {
     borderRadius: SIZES.padding3 / 4,
     bottom: SIZES.padding,
-    height: SIZES.padding3 + SIZES.padding3 / 4 + SIZES.padding3 / 8,
+    height: SIZES.padding * 0.55,
     position: 'absolute',
-    width: SIZES.padding3 - SIZES.padding3 / 8,
+    width: SIZES.padding * 0.35,
   },
   piece_left: {
     left: PIECE_INSET,
@@ -105,9 +88,9 @@ export const styles = StyleSheet.create({
     right: PIECE_INSET,
   },
   piece_round: {
-    borderRadius: SIZES.padding3 / 2 - SIZES.padding3 / 8,
-    height: SIZES.padding3 - SIZES.padding3 / 4,
-    width: SIZES.padding3 - SIZES.padding3 / 4,
+    borderRadius: SIZES.padding * 0.15,
+    height: SIZES.padding * 0.3,
+    width: SIZES.padding * 0.3,
   },
   popper: {
     bottom: -SIZES.padding3,

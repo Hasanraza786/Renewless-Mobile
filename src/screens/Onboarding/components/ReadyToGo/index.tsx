@@ -1,12 +1,15 @@
-import { useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
+import { common_styles } from '../../../../utils/common_styles';
 import { Animated, Easing, View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { check_icon, party_popper_icon, platform_logos } from '../../../../assets/icons';
 import CustomButton from '../../../../components/CustomButton';
+import RowView from '../../../../components/RowView';
 import CustomText from '../../../../components/CustomText';
 import Icons from '../../../../components/Icons';
 import Mascot from '../../../../components/Mascot';
 import OnboardingTitle from '../../../../components/OnboardingTitle';
+import SizedBox from '../../../../components/SizedBox';
 import { COLORS, FONTS, SIZES } from '../../../../constants/theme';
 import { localToday } from '../../../../utils/dates';
 import { dateLabel, formatTotals, moneyLabel, nextEvent, paidMonthlyTotals } from '../../../../utils/scan';
@@ -15,7 +18,7 @@ import { HALO_SIZE, styles } from './styles';
 
 type Props = { onboarding: OnboardingController };
 
-const BODY_LINE = SIZES.padding - SIZES.padding3 / 4;
+const BODY_LINE = SIZES.padding * 0.9;
 
 export function ReadyToGoBody({ onboarding }: Props) {
   const saved = onboarding.saved;
@@ -32,7 +35,7 @@ export function ReadyToGoBody({ onboarding }: Props) {
   }, [badge, mascot, onboarding.reduce_motion]);
 
   return (
-    <>
+    <Fragment>
       <View style={styles.celebration}>
         <View style={styles.halo}>
           <Svg width={HALO_SIZE} height={HALO_SIZE}>
@@ -49,7 +52,7 @@ export function ReadyToGoBody({ onboarding }: Props) {
           style={[styles.mascot, {
             opacity: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 1, 1] }),
             transform: [
-              { translateY: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [SIZES.padding3 + SIZES.padding3 / 8, -(SIZES.padding3 / 2 + SIZES.padding3 / 8), 0] }) },
+              { translateY: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [SIZES.padding * 0.45, -SIZES.padding / 4, 0] }) },
               { scale: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0.92, 1.03, 1] }) },
             ],
           }]}>
@@ -59,56 +62,60 @@ export function ReadyToGoBody({ onboarding }: Props) {
           style={[styles.badge, {
             opacity: badge,
             transform: [
-              { translateY: badge.interpolate({ inputRange: [0, 1], outputRange: [SIZES.padding2 + SIZES.padding3 / 2 + SIZES.padding3 / 4, 0] }) },
+              { translateY: badge.interpolate({ inputRange: [0, 1], outputRange: [SIZES.padding * 0.9, 0] }) },
               { scale: badge.interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) },
             ],
           }]}>
-          <Icons name={check_icon} icon_height={SIZES.padding2 + SIZES.padding3 * 3 / 4} icon_width={SIZES.padding2 + SIZES.padding3 * 3 / 4} stroke={COLORS.background} />
+          <Icons name={check_icon} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} stroke={COLORS.background} />
         </Animated.View>
       </View>
-      <View style={styles.intro}>
-        <OnboardingTitle
-          eyebrow="A LITTLE LESS TO REMEMBER"
-          title={onboarding.first_name ? 'You’re all set,' : 'You’re all set.'}
-          emphasis={onboarding.first_name ? `${onboarding.first_name}.` : undefined}
-          copy="Your subscriptions are together. Your next renewal is easier to keep track of."
-          align="center"
-        />
-      </View>
-      <View style={styles.summary}>
-        <View style={styles.summary_cell}>
-          <CustomText text={String(saved.length)} size={SIZES.h3} line_height={SIZES.padding + SIZES.padding3} />
-          <CustomText text={saved.length === 1 ? 'subscription saved' : 'subscriptions saved'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3} />
+
+      <OnboardingTitle
+        eyebrow="A LITTLE LESS TO REMEMBER"
+        title={onboarding.first_name ? 'You’re all set,' : 'You’re all set.'}
+        emphasis={onboarding.first_name ? `${onboarding.first_name}.` : undefined}
+        copy="Your subscriptions are together. Your next renewal is easier to keep track of."
+        align="center"
+      />
+
+      <SizedBox />
+
+      <RowView align_items="stretch" gap={SIZES.padding2} style={styles.summary}>
+        <View style={common_styles.flex_1}>
+          <CustomText text={String(saved.length)} size={SIZES.h3} line_height={SIZES.padding * 1.4} />
+          <CustomText mt={SIZES.padding3} text={saved.length === 1 ? 'subscription saved' : 'subscriptions saved'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
         </View>
-        <View style={[styles.summary_cell, styles.summary_wide]}>
-          <CustomText text={formatTotals(paidMonthlyTotals(saved))} size={SIZES.h3} line_height={SIZES.padding + SIZES.padding3} />
-          <CustomText text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3} />
+        <View style={[common_styles.flex_1, styles.summary_wide]}>
+          <CustomText text={formatTotals(paidMonthlyTotals(saved))} size={SIZES.h3} line_height={SIZES.padding * 1.4} />
+          <CustomText mt={SIZES.padding3} text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
         </View>
-      </View>
+      </RowView>
       {next ? (
-        <View style={styles.next}>
+        <RowView gap={SIZES.padding2} style={styles.next}>
           <View style={styles.logo_tile}>
             <Icons name={platform_logos[next.platform_id] ?? ''} icon_height={SIZES.padding2 * 2} icon_width={SIZES.padding2 * 2} />
           </View>
           <View>
-            <CustomText text={next.trial ? 'NEXT TRIAL ENDING' : next.estimated ? 'NEXT ESTIMATED RENEWAL' : 'NEXT RENEWAL'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} style={styles.next_label} />
-            <CustomText text={next.name} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 / 2 + SIZES.padding3 / 8} />
-            <CustomText text={`${dateLabel(next.next_date!)} · ${moneyLabel(next)}${next.trial ? ' after trial' : ''}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mt={SIZES.padding3 / 2 + SIZES.padding3 / 8} />
+            <CustomText text={next.trial ? 'NEXT TRIAL ENDING' : next.estimated ? 'NEXT ESTIMATED RENEWAL' : 'NEXT RENEWAL'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} letter_spacing={0.8} />
+            <CustomText mt={SIZES.padding / 4} text={next.name} size={SIZES.sm} line_height={BODY_LINE} />
+            <CustomText mt={SIZES.padding / 4} text={`${dateLabel(next.next_date!)} · ${moneyLabel(next)}${next.trial ? ' after trial' : ''}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
           </View>
-        </View>
+        </RowView>
       ) : (
-        <CustomText text="Add a renewal date to see what’s coming next." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" mt={SIZES.padding2} />
+        <CustomText mt={SIZES.padding2} text="Add a renewal date to see what’s coming next." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" />
       )}
-      <CustomText text="Set reminders and stay ahead of your next renewal." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" mt={SIZES.padding2} />
-    </>
+
+      <CustomText mt={SIZES.padding2} text="Set reminders and stay ahead of your next renewal." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" />
+    </Fragment>
   );
 }
 
 export function ReadyToGoFooter({ onboarding }: Props) {
   return (
-    <View style={styles.primary}>
+    <Fragment>
+      <SizedBox height={SIZES.padding * 1.1} />
       <CustomButton variant="primary" text="Go to my dashboard →" onPress={onboarding.openDashboard} />
-    </View>
+    </Fragment>
   );
 }
 

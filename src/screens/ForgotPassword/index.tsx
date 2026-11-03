@@ -26,7 +26,9 @@ export default function ForgotPasswordScreen(props: Props) {
         {...email}
         error={email.error || error || undefined}
       />
+
       <CustomButton variant="primary" text="Send code" disabled={loading} busy={loading} onPress={onSubmit} style={styles.submit} />
+
       <AuthFooterLink prompt="Remember your password?" link="Log in" onPress={openLogin} style={styles.footer} />
     </AuthLayout>
   );

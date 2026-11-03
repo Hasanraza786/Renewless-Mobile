@@ -1,8 +1,8 @@
 import { StyleSheet } from 'react-native';
 import { COLORS, SIZES } from '../../../../constants/theme';
 
-export const RADAR_SIZE = SIZES.padding * 7 + SIZES.padding3 + SIZES.padding3 / 4;
-const RING_INSET = SIZES.padding2 + SIZES.padding3 / 4;
+export const RADAR_SIZE = SIZES.padding * 7.5;
+const RING_INSET = SIZES.padding * 0.7;
 
 export const styles = StyleSheet.create({
   radar: {
@@ -13,9 +13,9 @@ export const styles = StyleSheet.create({
     borderWidth: SIZES.padding3 / 8,
     height: RADAR_SIZE,
     justifyContent: 'center',
-    marginBottom: SIZES.padding,
-    marginTop: SIZES.padding3 * 2,
     width: RADAR_SIZE,
+    marginTop: SIZES.padding3 * 2,
+    marginBottom: SIZES.padding,
   },
   radar_wash: {
     position: 'absolute',
@@ -35,28 +35,22 @@ export const styles = StyleSheet.create({
   ring_complete: {
     borderColor: COLORS.primary,
   },
-  stages: {
-    marginTop: SIZES.padding,
-  },
   stage: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: SIZES.padding2 + SIZES.padding3 / 4,
-    paddingVertical: SIZES.padding2 + SIZES.padding3 / 8,
+    paddingVertical: SIZES.padding * 0.65,
   },
   badge: {
     alignItems: 'center',
     backgroundColor: COLORS.card,
-    borderRadius: SIZES.padding2 + SIZES.padding3 / 4,
-    height: SIZES.padding + SIZES.padding3,
+    borderRadius: SIZES.padding * 0.7,
+    height: SIZES.padding * 1.4,
     justifyContent: 'center',
-    width: SIZES.padding + SIZES.padding3,
+    width: SIZES.padding * 1.4,
   },
   badge_scanning: {
     borderColor: COLORS.primary,
     borderWidth: SIZES.padding3 / 8,
   },
-  status: {
+  stages: {
     marginTop: SIZES.padding,
   },
 });

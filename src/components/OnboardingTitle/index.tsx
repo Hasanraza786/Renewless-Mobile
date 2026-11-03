@@ -1,7 +1,6 @@
 import { View } from 'react-native';
 import { FONTS, SIZES, COLORS } from '../../constants/theme';
 import CustomText from '../CustomText';
-import { styles } from './styles';
 
 type Props = {
   eyebrow: string;
@@ -21,35 +20,35 @@ export default function OnboardingTitle({ eyebrow, title, emphasis, copy, align 
         weight={FONTS.regular}
         color={COLORS.primary}
         size={SIZES.sm}
-        line_height={SIZES.padding - SIZES.padding3 / 4}
+        line_height={SIZES.padding * 0.9}
         align={align}
-        style={styles.eyebrow}
+        letter_spacing={1.5}
+        mb={SIZES.padding * 0.65}
       />
       <CustomText
         text={title}
         size={SIZES.h3}
-        line_height={SIZES.padding + SIZES.padding3}
         align={align}
-        style={[styles.title, title_spacing !== undefined && { letterSpacing: title_spacing }]}
+        letter_spacing={title_spacing ?? -1}
       />
       {emphasis ? (
         <CustomText
           text={emphasis}
           color={COLORS.primary}
           size={SIZES.h3}
-          line_height={SIZES.padding + SIZES.padding3}
+          line_height={SIZES.padding * 1.4}
           align={align}
-          style={[styles.title, title_spacing !== undefined && { letterSpacing: title_spacing }]}
+          letter_spacing={title_spacing ?? -1}
         />
       ) : null}
       <CustomText
+        mt={SIZES.padding2}
         text={copy}
         weight={FONTS.regular}
         color={COLORS.text_secondary}
         size={SIZES.sm}
-        line_height={SIZES.padding - SIZES.padding3 / 4}
+        line_height={SIZES.padding * 0.9}
         align={align}
-        mt={SIZES.padding2}
       />
     </View>
   );

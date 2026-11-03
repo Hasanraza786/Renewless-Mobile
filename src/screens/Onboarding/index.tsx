@@ -14,6 +14,7 @@ import { ScanInterruptedBody, ScanInterruptedFooter, ScanNoResultsBody, ScanNoRe
 import { WelcomeBody, WelcomeFooter } from './components/Welcome';
 import { YourSubscriptionsBody, YourSubscriptionsFooter } from './components/YourSubscriptions';
 import useOnboarding, { type OnboardingController } from './index.function';
+import { common_styles } from '../../utils/common_styles';
 import { styles } from './styles';
 import RowView from '../../components/RowView';
 import SizedBox from '../../components/SizedBox';
@@ -56,7 +57,7 @@ export default function Onboarding(props: Props) {
             ) : (
               <View style={styles.back_spacer} />
             )}
-            <CustomText text="RENEWLESS" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding - SIZES.padding3 / 4} style={styles.wordmark} />
+            <CustomText text="RENEWLESS" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 0.9} letter_spacing={2} />
             <Icons name={logo_mark} icon_height={SIZES.padding * 2} icon_width={SIZES.padding * 2} />
           </RowView>
 
@@ -78,7 +79,7 @@ export default function Onboarding(props: Props) {
         <Animated.View
           pointerEvents={onboarding.animating ? 'none' : 'auto'}
           onLayout={event => onboarding.setPanelWidth(event.nativeEvent.layout.width)}
-          style={[styles.panel, onboarding.panel_style]}>
+          style={[common_styles.flex_1, onboarding.panel_style]}>
           <ScrollView key={onboarding.step} showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scroll, fitted && styles.scroll_fitted]}>
             <Body onboarding={onboarding} />
           </ScrollView>

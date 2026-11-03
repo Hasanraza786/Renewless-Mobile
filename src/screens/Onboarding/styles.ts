@@ -15,23 +15,17 @@ export const styles = StyleSheet.create({
     width: SIZES.padding * 2,
     height: SIZES.padding * 2
   },
-  wordmark: {
-    letterSpacing: SIZES.padding3 / 4,
-  },
   step: {
     backgroundColor: COLORS.progress_track,
-    borderRadius: SIZES.padding3 / 2 - SIZES.padding3 / 8,
+    borderRadius: SIZES.padding * 0.15,
     flex: 1,
-    height: SIZES.padding3 / 2 - SIZES.padding3 / 8,
+    height: SIZES.padding * 0.15,
   },
   step_done: {
     backgroundColor: COLORS.primary,
   },
-  panel: {
-    flex: 1,
-  },
   scroll: {
-    paddingBottom: SIZES.padding2 + SIZES.padding3 - SIZES.padding3 / 4,
+    paddingBottom: SIZES.padding * 0.9,
     paddingTop: SIZES.padding3 / 2,
   },
   scroll_fitted: {

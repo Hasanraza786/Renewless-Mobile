@@ -1,7 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { Fragment, useEffect, useRef } from 'react';
 import { Animated, Easing, View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
 import { check_icon } from '../../../../assets/icons';
+import RowView from '../../../../components/RowView';
 import CustomText from '../../../../components/CustomText';
 import Icons from '../../../../components/Icons';
 import Mascot from '../../../../components/Mascot';
@@ -13,7 +14,7 @@ import { RADAR_SIZE, styles } from './styles';
 type Props = { onboarding: OnboardingController };
 
 const STAGES = ['Finding receipts', 'Grouping subscriptions', 'Checking renewal details'];
-const BODY_LINE = SIZES.padding - SIZES.padding3 / 4;
+const BODY_LINE = SIZES.padding * 0.9;
 
 export function DiscoveringBody({ onboarding }: Props) {
   const complete = onboarding.scan_status === 'completed';
@@ -27,7 +28,7 @@ export function DiscoveringBody({ onboarding }: Props) {
   }, [complete, onboarding.reduce_motion, spin]);
 
   return (
-    <>
+    <Fragment>
       <View style={styles.radar}>
         <Svg width={RADAR_SIZE} height={RADAR_SIZE} style={styles.radar_wash}>
           <Defs>
@@ -41,19 +42,21 @@ export function DiscoveringBody({ onboarding }: Props) {
         <Animated.View
           style={[styles.ring, complete && styles.ring_complete, { transform: [{ rotate: spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] }) }] }]}
         />
-        <Mascot expression="neutral" size={SIZES.padding * 4 + SIZES.padding3 + SIZES.padding3 / 4} label="Loop is finding subscriptions" draw={!onboarding.reduce_motion} />
+        <Mascot expression="neutral" size={SIZES.padding * 4.5} label="Loop is finding subscriptions" draw={!onboarding.reduce_motion} />
       </View>
+
       <OnboardingTitle
         eyebrow="A LITTLE CLARITY IS ON ITS WAY"
         title="Connecting the dots."
         copy="Turning your receipts into a clearer picture of your subscriptions."
       />
+
       <View accessibilityLiveRegion="polite" style={styles.stages}>
         {STAGES.map((label, index) => {
           const done = index < onboarding.scan_stages;
           const scanning = index === onboarding.scan_stages && onboarding.scan_status === 'running';
           return (
-            <View key={label} style={styles.stage} accessibilityLabel={`${label}${done ? ', done' : scanning ? ', in progress' : ''}`}>
+            <RowView gap={SIZES.padding * 0.7} key={label} style={styles.stage} accessibilityLabel={`${label}${done ? ', done' : scanning ? ', in progress' : ''}`}>
               <View style={[styles.badge, scanning && styles.badge_scanning]}>
                 {done ? (
                   <Icons name={check_icon} icon_height={SIZES.padding2} icon_width={SIZES.padding2} stroke={COLORS.primary} />
@@ -62,11 +65,11 @@ export function DiscoveringBody({ onboarding }: Props) {
                 )}
               </View>
               <CustomText text={label} weight={FONTS.regular} color={done ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
-            </View>
+            </RowView>
           );
         })}
       </View>
-    </>
+    </Fragment>
   );
 }
 
@@ -79,7 +82,7 @@ export function DiscoveringFooter({ onboarding }: Props) {
       size={SIZES.sm}
       line_height={BODY_LINE}
       align="center"
-      style={styles.status}
+      mt={SIZES.padding}
     />
   );
 }
