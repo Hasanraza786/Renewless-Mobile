@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import { common_styles } from '../../../../utils/common_styles';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { check_icon, find_icon, loop_mascot, netflix_logo, remember_icon, track_icon } from '../../../../assets/icons';
+import { check_icon, find_grey_icon, find_icon, loop_mascot, netflix_logo, remember_icon, track_icon } from '../../../../assets/icons';
 import CustomButton from '../../../../components/CustomButton';
 import CustomText from '../../../../components/CustomText';
 import Icons from '../../../../components/Icons';
@@ -15,7 +15,6 @@ import RowView from '../../../../components/RowView';
 
 type Props = { onboarding: OnboardingController };
 
-const BODY_LINE = SIZES.padding * 0.9;
 const BENEFITS = [
   { icon: find_icon, label: 'Find' },
   { icon: track_icon, label: 'Track' },
@@ -39,30 +38,30 @@ export function WelcomeBody(_: Props) {
         </View>
         <View style={styles.receipt}>
           <RowView gap={SIZES.padding3}>
-            <Icons name={find_icon} icon_height={SIZES.padding2} stroke={COLORS.text_secondary} />
-            <CustomText text="YOUR INBOX" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} letter_spacing={1} />
+            <Icons name={find_grey_icon} />
+            <CustomText text="YOUR INBOX" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} letter_spacing={1} />
           </RowView>
-          <CustomText mt={SIZES.padding2} text="Your monthly receipt" size={SIZES.sm} line_height={BODY_LINE} mb={SIZES.padding2} />
+          <CustomText mt={SIZES.padding2} text="Your monthly receipt" size={SIZES.sm} mb={SIZES.padding2} />
           <View style={styles.line} />
           <View style={[styles.line, styles.line_short]} />
-          <CustomText mt={SIZES.padding * 0.45} text="$15.99" weight={FONTS.regular} size={SIZES.h3} line_height={SIZES.padding * 1.4} />
+          <CustomText mt={SIZES.padding * 0.45} text="$15.99" weight={FONTS.regular} size={SIZES.h3} />
         </View>
         <RowView gap={SIZES.padding * 0.55} style={styles.found}>
           <View style={styles.logo_tile}>
-            <Icons name={netflix_logo} icon_height={SIZES.padding2 * 2} icon_width={SIZES.padding2 * 2} />
+            <Icons name={netflix_logo} />
           </View>
           <View style={common_styles.flex_1}>
-            <CustomText text="Netflix" size={SIZES.sm} line_height={BODY_LINE} />
-            <CustomText mt={SIZES.padding3 / 2} text="Monthly · renews Oct 27" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+            <CustomText text="Netflix" size={SIZES.sm} />
+            <CustomText mt={SIZES.padding3 / 2} text="Monthly · renews Oct 27" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           </View>
-          <CustomText text="$15.99" weight={FONTS.regular} size={SIZES.sm} line_height={BODY_LINE} />
+          <CustomText text="$15.99" weight={FONTS.regular} size={SIZES.sm} />
         </RowView>
         <RowView gap={SIZES.padding3} style={styles.pill}>
-          <Icons name={check_icon} icon_height={SIZES.padding2} stroke={COLORS.primary} />
-          <CustomText text="Renewal found" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} />
+          <Icons name={check_icon} />
+          <CustomText text="Renewal found" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
         </RowView>
         <View style={styles.loop}>
-          <Icons name={loop_mascot} icon_height={SIZES.padding * 2.9} icon_width={SIZES.padding * 2.9} />
+          <Icons name={loop_mascot} />
         </View>
       </View>
 
@@ -80,7 +79,7 @@ export function WelcomeBody(_: Props) {
       <RowView justify_content='space-between'>
         {BENEFITS.map(item => (
           <RowView key={item.label} style={styles.benefit_row}>
-            <Icons name={item.icon} icon_height={SIZES.padding * 1.1} stroke={COLORS.primary} />
+            <Icons name={item.icon} />
             <CustomText text={item.label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 1.1} />
           </RowView>
         ))}

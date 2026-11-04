@@ -22,9 +22,8 @@ type Props = {
   ml?: number;
   mr?: number;
   decoration?: TextStyle['textDecorationLine'];
-  line_height?: number;
+  line_height?: number | null;
   transform?: TextStyle['textTransform'];
-  // Raw number (prototype tracking), not a SIZES token.
   letter_spacing?: number;
 };
 
@@ -47,22 +46,23 @@ function CustomText({
   transform,
   letter_spacing,
 }: Props) {
+  const font_size = size ?? SIZES.md;
   const base_style = useMemo(
     () => ({
       color: color ?? COLORS.text_primary,
       fontFamily: weight ?? FONTS.medium,
       textAlign: align ?? 'left',
-      fontSize: size ?? (SIZES.padding2 + SIZES.padding3 / 4),
+      fontSize: font_size,
       marginTop: mt ?? 0,
       marginBottom: mb ?? 0,
       marginLeft: ml ?? 0,
       marginRight: mr ?? 0,
       textDecorationLine: decoration ?? 'none',
-      lineHeight: line_height,
+      lineHeight: line_height === undefined ? font_size + SIZES.padding2 / 2 : line_height ?? undefined,
       textTransform: transform ?? 'none',
       letterSpacing: letter_spacing,
     }),
-    [align, color, decoration, letter_spacing, line_height, mb, ml, mr, mt, size, transform, weight],
+    [align, color, decoration, font_size, letter_spacing, line_height, mb, ml, mr, mt, transform, weight],
   );
 
   return (

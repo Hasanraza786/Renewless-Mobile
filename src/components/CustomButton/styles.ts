@@ -29,7 +29,7 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.card,
     borderColor: COLORS.secondary_border,
     borderRadius: SIZES.padding / 2,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     height: SIZES.padding * 2.2,
     justifyContent: 'center',
     width: '100%',
@@ -38,7 +38,7 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: COLORS.social_border,
     borderRadius: SIZES.padding2,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     height: SIZES.padding * 2.45,
     justifyContent: 'center',
     width: '100%',
@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
   link: {
     alignSelf: 'center',
     paddingHorizontal: SIZES.padding * 0.3,
-    paddingVertical: SIZES.padding3 / 8,
+    paddingVertical: 1,
   },
   pressed_variant: {
     opacity: 0.85,

@@ -12,7 +12,7 @@ type Props = {
   style?: StyleProp<ViewStyle>;
   icon_height?: number;
   // Needed for assets whose intrinsic width differs from the drawn size (e.g. 512-wide brand files).
-  // width/fill are passed only when set: an explicit undefined replaces the asset's own root attribute.
+  // width/fill/stroke are passed only when set: an explicit undefined replaces the asset's own root attribute.
   icon_width?: number;
   fill?: string;
   stroke?: string;
@@ -28,9 +28,9 @@ function Icons({ name, style, icon_height, icon_width, fill, stroke, reveal }: P
   const svg = useMemo(
     () =>
       icon_height ? (
-        <SvgXml stroke={stroke} xml={name} height={icon_height} {...(icon_width ? { width: icon_width } : null)} {...(fill ? { fill } : null)} />
+        <SvgXml xml={name} height={icon_height} {...(icon_width ? { width: icon_width } : null)} {...(fill ? { fill } : null)} {...(stroke ? { stroke } : null)} />
       ) : (
-        <SvgXml stroke={stroke} xml={name} {...(fill ? { fill } : null)} />
+        <SvgXml xml={name} {...(fill ? { fill } : null)} {...(stroke ? { stroke } : null)} />
       ),
     [fill, icon_height, icon_width, name, stroke],
   );

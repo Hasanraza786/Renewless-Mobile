@@ -10,22 +10,19 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     borderColor: COLORS.accent_border,
     borderRadius: RADAR_SIZE / 2,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     height: RADAR_SIZE,
     justifyContent: 'center',
     width: RADAR_SIZE,
     marginTop: SIZES.padding3 * 2,
     marginBottom: SIZES.padding,
   },
-  radar_wash: {
-    position: 'absolute',
-  },
   ring: {
     borderColor: COLORS.accent_ring,
     borderRadius: (RADAR_SIZE - RING_INSET * 2) / 2,
     borderTopColor: COLORS.primary,
     borderTopWidth: SIZES.padding3 / 4,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     bottom: RING_INSET,
     left: RING_INSET,
     position: 'absolute',
@@ -48,7 +45,7 @@ export const styles = StyleSheet.create({
   },
   badge_scanning: {
     borderColor: COLORS.primary,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
   },
   stages: {
     marginTop: SIZES.padding,

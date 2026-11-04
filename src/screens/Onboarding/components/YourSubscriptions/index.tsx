@@ -2,7 +2,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { common_styles } from '../../../../utils/common_styles';
 import { Pressable, View } from 'react-native';
 import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { check_icon, edit_icon, platform_logos } from '../../../../assets/icons';
+import { check_dark_icon, edit_icon, platform_logos } from '../../../../assets/icons';
 import AppSheet from '../../../../components/AppSheet';
 import CustomButton from '../../../../components/CustomButton';
 import RowView from '../../../../components/RowView';
@@ -23,7 +23,6 @@ import { RING, RING_WIDTH, styles } from './styles';
 
 type Props = { onboarding: OnboardingController };
 
-const BODY_LINE = SIZES.padding * 0.9;
 const CURRENCIES = ['USD', 'EUR', 'GBP', 'PKR', 'AED', 'INR'] as const;
 const CYCLES: readonly ScanCycle[] = ['Monthly', 'Quarterly', 'Yearly', 'Weekly'];
 
@@ -34,7 +33,7 @@ function SelectionRing({ selected, total }: { selected: number; total: number })
   const share = total ? selected / total : 0;
   return (
     <View style={styles.ring} accessible accessibilityRole="image" accessibilityLabel={`${selected} of ${total} subscriptions selected`}>
-      <Svg width={RING} height={RING} style={styles.ring_svg}>
+      <Svg width={RING} height={RING} style={common_styles.absolute}>
         <Circle cx={RING / 2} cy={RING / 2} r={radius} stroke={COLORS.donut_mid} strokeWidth={RING_WIDTH} fill={COLORS.card} />
         {share > 0 ? (
           <Circle
@@ -49,7 +48,7 @@ function SelectionRing({ selected, total }: { selected: number; total: number })
           />
         ) : null}
       </Svg>
-      <CustomText text={`${selected}/${total}`} weight={FONTS.regular} size={SIZES.lg} line_height={SIZES.padding * 1.1} />
+      <CustomText text={`${selected}/${total}`} weight={FONTS.regular} size={SIZES.lg} />
     </View>
   );
 }
@@ -130,7 +129,7 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
         title_spacing={-0.5}
       />
 
-      <CustomText mt={SIZES.padding * 0.7} text={`Found in ${onboarding.inbox_email}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+      <CustomText mt={SIZES.padding * 0.7} text={`Found in ${onboarding.inbox_email}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
 
       <RowView gap={SIZES.padding2} style={styles.total} onLayout={event => setCard(event.nativeEvent.layout)}>
         <Svg style={styles.total_wash} width={card.width} height={card.height}>
@@ -143,9 +142,9 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
           <Rect width={card.width} height={card.height} fill="url(#total_wash)" />
         </Svg>
         <View style={common_styles.flex_1}>
-          <CustomText text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
-          <CustomText mt={SIZES.padding * 0.35} text={formatTotals(paidMonthlyTotals(selected))} weight={FONTS.regular} size={SIZES.h3} line_height={SIZES.padding * 1.4} />
-          <CustomText mt={SIZES.padding * 0.35} text="Free trials aren’t included in this total." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+          <CustomText text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          <CustomText mt={SIZES.padding * 0.35} text={formatTotals(paidMonthlyTotals(selected))} weight={FONTS.regular} size={SIZES.h3} />
+          <CustomText mt={SIZES.padding * 0.35} text="Free trials aren’t included in this total." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
         <SelectionRing selected={selected.length} total={candidates.length} />
       </RowView>
@@ -155,20 +154,19 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
           weight={FONTS.regular}
           color={COLORS.text_secondary}
           size={SIZES.sm}
-          line_height={BODY_LINE}
           text={
             <>
-              <CustomText text={`${week.count} upcoming ${week.count === 1 ? 'renewal' : 'renewals'}`} size={SIZES.sm} line_height={BODY_LINE} />
+              <CustomText text={`${week.count} upcoming ${week.count === 1 ? 'renewal' : 'renewals'}`} size={SIZES.sm} />
               {' in 7 days'}
             </>
           }
         />
-        <CustomText text={formatTotals(week.totals)} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} />
+        <CustomText text={formatTotals(week.totals)} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
       </RowView>
 
       <RowView align_items="stretch" justify_content="space-between" gap={0} style={styles.caption}>
-        <CustomText text="SUBSCRIPTIONS FOUND" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} letter_spacing={0.5} />
-        <CustomText text="Review before saving" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+        <CustomText text="SUBSCRIPTIONS FOUND" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} letter_spacing={0.5} />
+        <CustomText text="Review before saving" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </RowView>
 
       <View style={styles.results}>
@@ -186,19 +184,19 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
                 onPress={() => onboarding.toggleCandidate(item.id)}
                 style={styles.row_select}>
                 <View style={[styles.checkbox, checked && styles.checkbox_checked]}>
-                  {checked ? <Icons name={check_icon} icon_height={SIZES.padding * 0.7} icon_width={SIZES.padding * 0.7} stroke={COLORS.background} /> : null}
+                  {checked ? <Icons name={check_dark_icon} /> : null}
                 </View>
                 <View style={styles.logo_tile}>
-                  <Icons name={platform_logos[item.platform_id] ?? ''} icon_height={SIZES.padding2 * 2} icon_width={SIZES.padding2 * 2} />
+                  <Icons name={platform_logos[item.platform_id] ?? ''} />
                 </View>
                 <View style={common_styles.flex_1}>
-                  <CustomText text={item.name} size={SIZES.sm} line_height={BODY_LINE} />
-                  <CustomText mt={SIZES.padding / 4} text={date} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
-                  <CustomText mt={SIZES.padding / 4} text={price} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+                  <CustomText text={item.name} size={SIZES.sm} />
+                  <CustomText mt={SIZES.padding / 4} text={date} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+                  <CustomText mt={SIZES.padding / 4} text={price} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
                 </View>
               </Pressable>
               <Pressable accessibilityRole="button" accessibilityLabel={`Edit ${item.name}`} disabled={save_loading} onPress={() => onboarding.openEdit(item.id)} style={styles.edit}>
-                <Icons name={edit_icon} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} stroke={COLORS.primary} />
+                <Icons name={edit_icon} />
               </Pressable>
             </RowView>
           );
@@ -225,7 +223,7 @@ export function YourSubscriptionsFooter({ onboarding }: Props) {
     <Fragment>
       {onboarding.save_error ? (
         <View accessibilityRole="alert" style={styles.save_error}>
-          <CustomText text={onboarding.save_error} weight={FONTS.regular} size={SIZES.sm} line_height={BODY_LINE} />
+          <CustomText text={onboarding.save_error} weight={FONTS.regular} size={SIZES.sm} />
         </View>
       ) : null}
 

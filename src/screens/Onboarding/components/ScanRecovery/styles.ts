@@ -10,13 +10,10 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     borderColor: COLORS.accent_border,
     borderRadius: ART / 2,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     height: ART,
     justifyContent: 'center',
     width: ART,
-  },
-  mascot: {
-    position: 'absolute',
   },
   badge: {
     alignItems: 'center',
@@ -35,12 +32,12 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.card,
     borderColor: COLORS.line_soft,
     borderRadius: SIZES.padding3 * 2,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     padding: SIZES.padding3 * 2,
     marginTop: SIZES.padding * 1.1,
   },
   hint_icon: {
-    paddingTop: SIZES.padding3 / 8,
+    paddingTop: 1,
   },
   reassurance: {
     marginHorizontal: SIZES.padding3,

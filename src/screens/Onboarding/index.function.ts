@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, Alert, Animated, BackHandler, Easing } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
@@ -35,6 +35,7 @@ export default function useOnboarding({ navigation, route }: Props) {
   const onboarding_state = useAppSelector(state => state.onboarding);
   const user_name = useAppSelector(state => state.profile.user?.name ?? '');
   const signed_in = useAppSelector(state => !!state.constant.token);
+
   const [editing_id, setEditingId] = useState('');
   const [step, setStep] = useState<OnboardingStep>(route.params?.step ?? 'welcome');
   const [animating, setAnimating] = useState(false);
@@ -42,6 +43,8 @@ export default function useOnboarding({ navigation, route }: Props) {
   const [reduce_motion, setReduceMotion] = useState(false);
   const panel_x = useRef(new Animated.Value(0)).current;
   const panel_opacity = useRef(new Animated.Value(1)).current;
+  // Built once per width, not on every render, so a running slide keeps its node.
+  const panel_shift = useMemo(() => Animated.multiply(panel_x, panel_width / 4), [panel_width, panel_x]);
   const { scan_status, scan_failure, candidates } = onboarding_state;
 
   useEffect(() => {
@@ -54,6 +57,9 @@ export default function useOnboarding({ navigation, route }: Props) {
     if (route.params?.step) setStep(route.params.step);
   }, [route.params?.step]);
 
+  // Direction of the panel waiting to slide in once the new step has rendered.
+  const entering = useRef<number | null>(null);
+
   // The outgoing panel leaves first; the incoming one enters only after it is gone.
   const goTo = useCallback((next: OnboardingStep, direction: 1 | -1 = 1) => {
     if (animating || next === step) return;
@@ -63,14 +69,21 @@ export default function useOnboarding({ navigation, route }: Props) {
       Animated.timing(panel_x, { toValue: -travel, duration: PANEL_MOTION.out_duration, easing: Easing.in(Easing.quad), useNativeDriver: true }),
       Animated.timing(panel_opacity, { toValue: 0, duration: PANEL_MOTION.out_duration, easing: Easing.in(Easing.quad), useNativeDriver: true }),
     ]).start(() => {
+      entering.current = travel;
       setStep(next);
-      panel_x.setValue(travel);
-      Animated.parallel([
-        Animated.timing(panel_x, { toValue: 0, duration: PANEL_MOTION.in_duration, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-        Animated.timing(panel_opacity, { toValue: 1, duration: PANEL_MOTION.in_duration, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
-      ]).start(() => setAnimating(false));
     });
   }, [animating, panel_opacity, panel_x, reduce_motion, step]);
+
+  // Slide the new panel in after it has rendered, so the old one never reappears while the JS thread catches up.
+  useEffect(() => {
+    if (entering.current === null) return;
+    panel_x.setValue(entering.current);
+    entering.current = null;
+    Animated.parallel([
+      Animated.timing(panel_x, { toValue: 0, duration: PANEL_MOTION.in_duration, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+      Animated.timing(panel_opacity, { toValue: 1, duration: PANEL_MOTION.in_duration, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+    ]).start(() => setAnimating(false));
+  }, [panel_opacity, panel_x, step]);
 
   // Poll only while Discovering is visible and the job is still running.
   useEffect(() => {
@@ -152,7 +165,7 @@ export default function useOnboarding({ navigation, route }: Props) {
     skipSave: openDashboard,
     panel_style: {
       opacity: panel_opacity,
-      transform: [{ translateX: Animated.multiply(panel_x, panel_width / 4) }],
+      transform: [{ translateX: panel_shift }],
     },
     footer_style: { opacity: panel_opacity },
     setPanelWidth,

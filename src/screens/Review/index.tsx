@@ -62,7 +62,7 @@ export default function ReviewScreen({ navigation, route }: Props) {
         text={route.params.email}
         weight={FONTS.regular}
         color={COLORS.text_secondary}
-        size={(SIZES.padding2 + SIZES.padding3 / 8)}
+        size={SIZES.sm}
         mb={SIZES.padding2}
       />
       {status === 'loading' ? <StateView status="loading" message="Loading found renewals." /> : null}
@@ -71,31 +71,31 @@ export default function ReviewScreen({ navigation, route }: Props) {
       ) : null}
       {status === 'ready' ? (
         <ScrollView showsVerticalScrollIndicator={false}>
-          {error ? <CustomText text={error} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} mb={SIZES.padding2} /> : null}
+          {error ? <CustomText text={error} weight={FONTS.regular} size={SIZES.md} mb={SIZES.padding2} /> : null}
           {items.length === 0 ? (
             <StateView status="empty" message="Nothing is waiting for review." />
           ) : (
             items.map(item => (
               <View key={item.id} style={styles.card}>
-                <CustomText text={item.name} size={(SIZES.padding * 3 / 4)} />
+                <CustomText text={item.name} size={SIZES.md} />
                 <CustomText
                   text={formatMoney(item.price, item.currency)}
                   weight={FONTS.regular}
-                  size={(SIZES.padding2 + SIZES.padding3 / 8)}
+                  size={SIZES.sm}
                   mt={SIZES.padding3}
                 />
                 <CustomText
                   text={formatDate(item.nextRenewal)}
                   weight={FONTS.regular}
-                  size={(SIZES.padding2 + SIZES.padding3 / 8)}
+                  size={SIZES.sm}
                   mt={SIZES.padding3}
                 />
                 <RowView align_items="stretch" gap={SIZES.padding} mt={SIZES.padding2 + 2}>
                   <Pressable disabled={busy_id === item.id} onPress={() => act(item.id, 'add')}>
-                    <CustomText text="Add" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
+                    <CustomText text="Add" color={COLORS.primary} size={SIZES.md} />
                   </Pressable>
                   <Pressable disabled={busy_id === item.id} onPress={() => act(item.id, 'dismiss')}>
-                    <CustomText text="Dismiss" size={(SIZES.padding2 + SIZES.padding3 / 4)} />
+                    <CustomText text="Dismiss" size={SIZES.md} />
                   </Pressable>
                 </RowView>
               </View>

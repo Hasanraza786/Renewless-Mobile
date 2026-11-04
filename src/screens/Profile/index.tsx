@@ -38,7 +38,7 @@ export default function ProfileScreen({ navigation }: Props) {
   return (
     <Container>
       <View style={styles.main_view}>
-      <CustomText text="Profile" size={(SIZES.padding + SIZES.padding3 / 4)} mb={SIZES.padding3 * 2} />
+      <CustomText text="Profile" size={SIZES.h3} mb={SIZES.padding3 * 2} />
       {user ? (
         <View style={styles.card}>
           <Row label="Name" value={user.name} />
@@ -51,15 +51,15 @@ export default function ProfileScreen({ navigation }: Props) {
         </View>
       ) : null}
       <Pressable onPress={() => navigation.navigate('EditProfile')} style={styles.action}>
-        <CustomText text="Edit profile" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)}
+        <CustomText text="Edit profile" color={COLORS.primary} size={SIZES.md}
  />
       </Pressable>
       <Pressable onPress={() => navigation.navigate('ChangePassword')} style={styles.action}>
-        <CustomText text="Change password" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)}
+        <CustomText text="Change password" color={COLORS.primary} size={SIZES.md}
  />
       </Pressable>
       <Pressable onPress={onLogout} style={styles.action}>
-        <CustomText text="Log out" size={(SIZES.padding2 + SIZES.padding3 / 4)}
+        <CustomText text="Log out" size={SIZES.md}
  />
       </Pressable>
       </View>
@@ -70,8 +70,8 @@ export default function ProfileScreen({ navigation }: Props) {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <View style={styles.row}>
-      <CustomText text={label} color={COLORS.text_secondary} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 8)} />
-      <CustomText text={value} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} mt={SIZES.padding3 / 2} />
+      <CustomText text={label} color={COLORS.text_secondary} weight={FONTS.regular} size={SIZES.sm} />
+      <CustomText text={value} weight={FONTS.regular} size={SIZES.md} mt={SIZES.padding3 / 2} />
     </View>
   );
 }

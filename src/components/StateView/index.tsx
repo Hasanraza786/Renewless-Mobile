@@ -21,7 +21,7 @@ export default function StateView({ status, message, onRetry }: Props) {
         text={message}
         weight={FONTS.regular}
         color={COLORS.text_secondary}
-        size={(SIZES.padding2 + SIZES.padding3 / 4)}
+        size={SIZES.md}
       />
       {status === 'failed' && onRetry ? (
         <CustomButton text="Try again" onPress={onRetry} />

@@ -37,6 +37,6 @@ export const styles = StyleSheet.create({
   },
   footer_divider: {
     borderTopColor: COLORS.line_quiet,
-    borderTopWidth: SIZES.padding3 / 8,
+    borderTopWidth: 1,
   },
 });

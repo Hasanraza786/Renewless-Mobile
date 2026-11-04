@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
   total: {
     borderColor: COLORS.accent_card,
     borderRadius: SIZES.padding * 0.75,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     overflow: 'hidden',
     paddingHorizontal: SIZES.padding * 0.75,
     paddingVertical: SIZES.padding * 0.65,
@@ -25,18 +25,15 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     width: RING,
   },
-  ring_svg: {
-    position: 'absolute',
-  },
   week: {
-    marginHorizontal: SIZES.padding3 / 8,
+    marginHorizontal: 1,
     marginTop: SIZES.padding * 0.7,
   },
   results: {
     backgroundColor: COLORS.card,
     borderColor: COLORS.line_faint,
     borderRadius: SIZES.padding * 0.75,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     overflow: 'hidden',
     marginTop: SIZES.padding / 2,
   },
@@ -56,14 +53,14 @@ export const styles = StyleSheet.create({
   },
   row_divider: {
     borderBottomColor: COLORS.line_quiet,
-    borderBottomWidth: SIZES.padding3 / 8,
+    borderBottomWidth: 1,
   },
   checkbox: {
     alignItems: 'center',
     backgroundColor: COLORS.checkbox_fill,
     borderColor: COLORS.checkbox_border,
     borderRadius: SIZES.padding * 0.3,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     height: SIZES.padding,
     justifyContent: 'center',
     width: SIZES.padding,
@@ -83,7 +80,7 @@ export const styles = StyleSheet.create({
   save_error: {
     borderColor: COLORS.primary,
     borderRadius: SIZES.padding2,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     padding: SIZES.padding2,
     marginTop: SIZES.padding2,
   },

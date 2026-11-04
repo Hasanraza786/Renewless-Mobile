@@ -28,7 +28,11 @@ const texts = (tree: ReactTestRenderer.ReactTestRenderer) =>
   tree.root.findAll(node => typeof node.props.text === 'string').map(node => node.props.text);
 const press = (tree: ReactTestRenderer.ReactTestRenderer, label: string) =>
   tree.root.find(node => typeof node.props.onPress === 'function' && (node.props.accessibilityLabel === label || node.findAll(child => child.props.text === label).length > 0)).props.onPress();
-const settle = () => act(async () => { jest.advanceTimersByTime(PANEL_MOTION.out_duration + PANEL_MOTION.in_duration + 50); });
+// The panel leaves, then the next one enters after it has rendered (a separate update).
+const settle = async () => {
+  await act(async () => { jest.advanceTimersByTime(PANEL_MOTION.out_duration + 50); });
+  await act(async () => { jest.advanceTimersByTime(PANEL_MOTION.in_duration + 50); });
+};
 
 beforeEach(() => {
   jest.useFakeTimers();

@@ -22,9 +22,6 @@ type Props = {
   children: ReactNode;
 };
 
-const HEADING_LINE = SIZES.padding * 1.4;
-const BODY_LINE = SIZES.padding * 0.9;
-
 export default function AuthLayout({ title, copy, onBack, compact, children }: Props) {
   return (
     <Container is_auth>
@@ -33,20 +30,20 @@ export default function AuthLayout({ title, copy, onBack, compact, children }: P
           {onBack ? (
             <RowView justify_content="space-between" style={styles.recovery_top}>
               <Pressable accessibilityRole="button" accessibilityLabel="Go back" hitSlop={SIZES.padding3 / 4} onPress={onBack} style={styles.back}>
-                <Icons name={back_icon} icon_height={SIZES.padding * 2} icon_width={SIZES.padding * 2} />
+                <Icons name={back_icon} />
               </Pressable>
               <Icons name={logo_mark} icon_height={SIZES.padding * 1.5} icon_width={SIZES.padding * 1.5} />
             </RowView>
           ) : (
             <RowView accessible accessibilityRole="header" accessibilityLabel="Renewless" gap={SIZES.padding * 0.35} style={compact ? styles.brand_compact : styles.brand}>
               <Icons name={logo_mark} icon_height={SIZES.padding * 1.55} icon_width={SIZES.padding * 1.55} />
-              <CustomText text="Renewless" size={SIZES.h3} line_height={HEADING_LINE} letter_spacing={-0.5} />
+              <CustomText text="Renewless" size={SIZES.h3} letter_spacing={-0.5} />
             </RowView>
           )}
 
-          <CustomText text={title} size={SIZES.h3} line_height={HEADING_LINE} letter_spacing={-0.5} />
+          <CustomText text={title} size={SIZES.h3} letter_spacing={-0.5} />
 
-          <CustomText mt={onBack ? SIZES.padding2 : SIZES.padding * 0.45} text={copy} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} style={onBack && styles.copy_recovery} />
+          <CustomText mt={onBack ? SIZES.padding2 : SIZES.padding * 0.45} text={copy} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} style={onBack && styles.copy_recovery} />
 
           <SizedBox height={onBack ? SIZES.padding * 1.6 : compact ? SIZES.padding * 1.2 : SIZES.padding * 1.45} />
 
@@ -61,7 +58,7 @@ export function AuthDivider({ style }: { style: StyleProp<ViewStyle> }) {
   return (
     <RowView gap={SIZES.padding * 0.75} style={style}>
       <View style={styles.divider_line} />
-      <CustomText text="or" weight={FONTS.regular} color={COLORS.divider_text} size={SIZES.sm} line_height={BODY_LINE} />
+      <CustomText text="or" weight={FONTS.regular} color={COLORS.divider_text} size={SIZES.sm} />
       <View style={styles.divider_line} />
     </RowView>
   );
@@ -80,9 +77,9 @@ export function SocialButtons({ onPress, disabled }: { onPress: (provider: AuthP
 export function AuthFooterLink({ prompt, link, onPress, style }: { prompt: string; link: string; onPress: () => void; style?: StyleProp<ViewStyle> }) {
   return (
     <RowView justify_content="center" gap={SIZES.padding * 0.3} style={[styles.footer, style]}>
-      <CustomText text={prompt} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+      <CustomText text={prompt} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       <Pressable accessibilityRole="link" onPress={onPress} style={styles.footer_link}>
-        <CustomText text={link} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} />
+        <CustomText text={link} color={COLORS.primary} size={SIZES.sm} />
       </Pressable>
     </RowView>
   );

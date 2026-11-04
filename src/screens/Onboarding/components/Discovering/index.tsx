@@ -8,13 +8,13 @@ import Icons from '../../../../components/Icons';
 import Mascot from '../../../../components/Mascot';
 import OnboardingTitle from '../../../../components/OnboardingTitle';
 import { COLORS, FONTS, SIZES } from '../../../../constants/theme';
+import { common_styles } from '../../../../utils/common_styles';
 import type { OnboardingController } from '../../index.function';
 import { RADAR_SIZE, styles } from './styles';
 
 type Props = { onboarding: OnboardingController };
 
 const STAGES = ['Finding receipts', 'Grouping subscriptions', 'Checking renewal details'];
-const BODY_LINE = SIZES.padding * 0.9;
 
 export function DiscoveringBody({ onboarding }: Props) {
   const complete = onboarding.scan_status === 'completed';
@@ -30,7 +30,7 @@ export function DiscoveringBody({ onboarding }: Props) {
   return (
     <Fragment>
       <View style={styles.radar}>
-        <Svg width={RADAR_SIZE} height={RADAR_SIZE} style={styles.radar_wash}>
+        <Svg width={RADAR_SIZE} height={RADAR_SIZE} style={common_styles.absolute}>
           <Defs>
             <RadialGradient id="radar_wash" cx="50%" cy="50%" r="50%">
               <Stop offset="0" stopColor={COLORS.primary} stopOpacity={0.05} />
@@ -59,12 +59,12 @@ export function DiscoveringBody({ onboarding }: Props) {
             <RowView gap={SIZES.padding * 0.7} key={label} style={styles.stage} accessibilityLabel={`${label}${done ? ', done' : scanning ? ', in progress' : ''}`}>
               <View style={[styles.badge, scanning && styles.badge_scanning]}>
                 {done ? (
-                  <Icons name={check_icon} icon_height={SIZES.padding2} icon_width={SIZES.padding2} stroke={COLORS.primary} />
+                  <Icons name={check_icon} />
                 ) : (
                   <CustomText text={`0${index + 1}`} weight={FONTS.regular} color={scanning ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
                 )}
               </View>
-              <CustomText text={label} weight={FONTS.regular} color={done ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+              <CustomText text={label} weight={FONTS.regular} color={done ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
             </RowView>
           );
         })}
@@ -80,7 +80,6 @@ export function DiscoveringFooter({ onboarding }: Props) {
       weight={FONTS.regular}
       color={COLORS.text_secondary}
       size={SIZES.sm}
-      line_height={BODY_LINE}
       align="center"
       mt={SIZES.padding}
     />

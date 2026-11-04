@@ -16,9 +16,6 @@ import { styles } from './styles';
 type Kind = 'no_results' | 'interrupted';
 type Props = { onboarding: OnboardingController };
 
-const BODY_LINE = SIZES.padding * 0.9;
-const ICON = SIZES.padding;
-
 const COPY: Record<Kind, { badge: string; hint_icon: string; eyebrow: string; title: string; emphasis: string; copy: string; hint_title: string; hint: string; reassurance: string; retry: string }> = {
   no_results: {
     badge: inbox_badge_icon,
@@ -55,11 +52,11 @@ function RecoveryBody({ kind, onboarding }: { kind: Kind } & Props) {
   return (
     <Fragment>
       <View style={styles.art}>
-        <View style={styles.mascot}>
+        <View style={common_styles.absolute}>
           <Mascot expression="sad" size={SIZES.padding * 7.5} label="Loop is here to help" draw={!onboarding.reduce_motion} />
         </View>
         <View style={styles.badge}>
-          <Icons name={content.badge} icon_height={ICON} icon_width={ICON} stroke={COLORS.primary} />
+          <Icons name={content.badge} />
         </View>
       </View>
 
@@ -69,15 +66,15 @@ function RecoveryBody({ kind, onboarding }: { kind: Kind } & Props) {
 
       <RowView align_items="stretch" gap={SIZES.padding * 0.55} style={styles.hint}>
         <View style={styles.hint_icon}>
-          <Icons name={content.hint_icon} icon_height={ICON} icon_width={ICON} stroke={COLORS.primary} />
+          <Icons name={content.hint_icon} />
         </View>
         <View style={common_styles.flex_1}>
-          <CustomText text={content.hint_title} size={SIZES.lg} line_height={SIZES.padding * 1.1} />
-          <CustomText mt={SIZES.padding * 0.35} text={content.hint} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+          <CustomText text={content.hint_title} size={SIZES.lg} />
+          <CustomText mt={SIZES.padding * 0.35} text={content.hint} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
       </RowView>
 
-      <CustomText mt={SIZES.padding3 * 2} text={content.reassurance} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" style={styles.reassurance} />
+      <CustomText mt={SIZES.padding3 * 2} text={content.reassurance} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" style={styles.reassurance} />
     </Fragment>
   );
 }

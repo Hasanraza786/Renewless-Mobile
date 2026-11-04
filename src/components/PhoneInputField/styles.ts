@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
     fontFamily: fonts.regular,
     color: COLORS.text_primary,
     flex: 1,
-    fontSize: (SIZES.padding2 + SIZES.padding3 / 4),
+    fontSize: SIZES.md,
     height: SIZES.control_height,
     paddingVertical: 0,
   },

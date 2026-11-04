@@ -3,22 +3,21 @@ import { COLORS, SIZES } from '../../../../constants/theme';
 
 export const styles = StyleSheet.create({
   art: {
-    // 15pt beside the 48-wide arrow box keeps the prototype's 18pt gap to its 42pt-wide drawing.
     height: SIZES.padding * 6.75,
   },
-  brand: {
+  brand_view: {
     alignItems: 'center',
     gap: SIZES.padding / 2,
   },
-  tile: {
-    alignItems: 'center',
+  icon_view: {
+    height: SIZES.padding * 3.25,
+    width: SIZES.padding * 3.25,
     backgroundColor: COLORS.card,
     borderColor: COLORS.line_faint,
     borderRadius: SIZES.padding,
-    borderWidth: SIZES.padding3 / 8,
-    height: SIZES.padding * 3.25,
+    borderWidth: 1,
+    alignItems: 'center',
     justifyContent: 'center',
-    width: SIZES.padding * 3.25,
   },
   arrow: {
     marginTop: -SIZES.padding * 1.3,
@@ -27,7 +26,7 @@ export const styles = StyleSheet.create({
   feedback: {
     borderColor: COLORS.primary,
     borderRadius: SIZES.padding2,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     padding: SIZES.padding2,
     marginVertical: SIZES.padding2,
   },
@@ -36,13 +35,14 @@ export const styles = StyleSheet.create({
     borderRadius: SIZES.padding3 * 2,
     paddingHorizontal: SIZES.padding * 0.75,
     paddingVertical: SIZES.padding3 / 2,
+    marginTop: SIZES.padding2,
   },
   trust_row: {
     paddingVertical: SIZES.padding * 0.7,
   },
   trust_divider: {
     borderBottomColor: COLORS.line_soft,
-    borderBottomWidth: SIZES.padding3 / 8,
+    borderBottomWidth: 1,
   },
   connect_button: {
     height: SIZES.padding * 2.4,

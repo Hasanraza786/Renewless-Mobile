@@ -2,7 +2,7 @@ import { Fragment, useEffect, useRef } from 'react';
 import { common_styles } from '../../../../utils/common_styles';
 import { Animated, Easing, View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { check_icon, party_popper_icon, platform_logos } from '../../../../assets/icons';
+import { check_dark_icon, party_popper_icon, platform_logos } from '../../../../assets/icons';
 import CustomButton from '../../../../components/CustomButton';
 import RowView from '../../../../components/RowView';
 import CustomText from '../../../../components/CustomText';
@@ -17,8 +17,6 @@ import type { OnboardingController } from '../../index.function';
 import { HALO_SIZE, styles } from './styles';
 
 type Props = { onboarding: OnboardingController };
-
-const BODY_LINE = SIZES.padding * 0.9;
 
 export function ReadyToGoBody({ onboarding }: Props) {
   const saved = onboarding.saved;
@@ -49,7 +47,7 @@ export function ReadyToGoBody({ onboarding }: Props) {
           </Svg>
         </View>
         <Animated.View
-          style={[styles.mascot, {
+          style={[common_styles.absolute, {
             opacity: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 1, 1] }),
             transform: [
               { translateY: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [SIZES.padding * 0.45, -SIZES.padding / 4, 0] }) },
@@ -66,7 +64,7 @@ export function ReadyToGoBody({ onboarding }: Props) {
               { scale: badge.interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) },
             ],
           }]}>
-          <Icons name={check_icon} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} stroke={COLORS.background} />
+          <Icons name={check_dark_icon} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} />
         </Animated.View>
       </View>
 
@@ -82,30 +80,30 @@ export function ReadyToGoBody({ onboarding }: Props) {
 
       <RowView align_items="stretch" gap={SIZES.padding2} style={styles.summary}>
         <View style={common_styles.flex_1}>
-          <CustomText text={String(saved.length)} size={SIZES.h3} line_height={SIZES.padding * 1.4} />
-          <CustomText mt={SIZES.padding3} text={saved.length === 1 ? 'subscription saved' : 'subscriptions saved'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+          <CustomText text={String(saved.length)} size={SIZES.h3} />
+          <CustomText mt={SIZES.padding3} text={saved.length === 1 ? 'subscription saved' : 'subscriptions saved'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
         <View style={[common_styles.flex_1, styles.summary_wide]}>
-          <CustomText text={formatTotals(paidMonthlyTotals(saved))} size={SIZES.h3} line_height={SIZES.padding * 1.4} />
-          <CustomText mt={SIZES.padding3} text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+          <CustomText text={formatTotals(paidMonthlyTotals(saved))} size={SIZES.h3} />
+          <CustomText mt={SIZES.padding3} text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
       </RowView>
       {next ? (
         <RowView gap={SIZES.padding2} style={styles.next}>
           <View style={styles.logo_tile}>
-            <Icons name={platform_logos[next.platform_id] ?? ''} icon_height={SIZES.padding2 * 2} icon_width={SIZES.padding2 * 2} />
+            <Icons name={platform_logos[next.platform_id] ?? ''} />
           </View>
           <View>
-            <CustomText text={next.trial ? 'NEXT TRIAL ENDING' : next.estimated ? 'NEXT ESTIMATED RENEWAL' : 'NEXT RENEWAL'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} letter_spacing={0.8} />
-            <CustomText mt={SIZES.padding / 4} text={next.name} size={SIZES.sm} line_height={BODY_LINE} />
-            <CustomText mt={SIZES.padding / 4} text={`${dateLabel(next.next_date!)} · ${moneyLabel(next)}${next.trial ? ' after trial' : ''}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
+            <CustomText text={next.trial ? 'NEXT TRIAL ENDING' : next.estimated ? 'NEXT ESTIMATED RENEWAL' : 'NEXT RENEWAL'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} letter_spacing={0.8} />
+            <CustomText mt={SIZES.padding / 4} text={next.name} size={SIZES.sm} />
+            <CustomText mt={SIZES.padding / 4} text={`${dateLabel(next.next_date!)} · ${moneyLabel(next)}${next.trial ? ' after trial' : ''}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           </View>
         </RowView>
       ) : (
-        <CustomText mt={SIZES.padding2} text="Add a renewal date to see what’s coming next." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" />
+        <CustomText mt={SIZES.padding2} text="Add a renewal date to see what’s coming next." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
       )}
 
-      <CustomText mt={SIZES.padding2} text="Set reminders and stay ahead of your next renewal." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" />
+      <CustomText mt={SIZES.padding2} text="Set reminders and stay ahead of your next renewal." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
     </Fragment>
   );
 }
@@ -180,7 +178,7 @@ export function ReadyConfetti() {
               { rotate: clock.interpolate({ inputRange: [0, 360, 480, 720], outputRange: ['-18deg', '8deg', '-7deg', '0deg'], extrapolate: 'clamp' }) },
             ],
           }]}>
-          <Icons name={party_popper_icon} icon_height={SIZES.padding2 * 4} icon_width={SIZES.padding2 * 4} />
+          <Icons name={party_popper_icon} />
         </Animated.View>
       ))}
     </View>

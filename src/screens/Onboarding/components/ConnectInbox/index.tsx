@@ -14,31 +14,29 @@ import { styles } from './styles';
 
 type Props = { onboarding: OnboardingController };
 
-const BODY_LINE = SIZES.padding * 0.9;
 const TRUST_ROWS = [
   ['Read-only access', 'We can’t send or delete emails'],
   ['You’re in control', 'Review before saving'],
   ['Scans & updates', 'Free to use'],
 ];
 
-function Brand({ icon, label, size }: { icon: string; label: string; size: number }) {
-  return (
-    <View style={styles.brand}>
-      <View style={styles.tile}>
-        <Icons name={icon} icon_height={size} icon_width={size} />
-      </View>
-      <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
-    </View>
-  );
-}
-
 export function ConnectInboxBody({ onboarding }: Props) {
   return (
     <Fragment>
       <RowView justify_content="center" gap={SIZES.padding * 0.75} style={styles.art} accessible accessibilityRole="image" accessibilityLabel="Connect Gmail to Renewless">
-        <Brand icon={gmail_logo} label="Gmail" size={SIZES.padding * 1.55} />
-        <Icons name={arrow_icon} icon_height={SIZES.padding * 1.05} stroke={COLORS.primary} style={styles.arrow} />
-        <Brand icon={logo_mark} label="Renewless" size={SIZES.padding * 1.65} />
+        <View style={styles.brand_view}>
+          <View style={styles.icon_view}>
+            <Icons name={gmail_logo} />
+          </View>
+          <CustomText text="Gmail" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        </View>
+        <Icons name={arrow_icon} style={styles.arrow} />
+        <View style={styles.brand_view}>
+          <View style={styles.icon_view}>
+            <Icons name={logo_mark} icon_height={SIZES.padding * 1.65} icon_width={SIZES.padding * 1.65} />
+          </View>
+          <CustomText text="Renewless" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        </View>
       </RowView>
 
       <SizedBox />
@@ -60,18 +58,18 @@ export function ConnectInboxBody({ onboarding }: Props) {
         weight={FONTS.regular}
         color={COLORS.text_secondary}
         size={SIZES.sm}
-        line_height={BODY_LINE}
       />
       {onboarding.connect_message ? (
         <View accessibilityRole="alert" style={styles.feedback}>
-          <CustomText text={onboarding.connect_message} weight={FONTS.regular} size={SIZES.sm} line_height={BODY_LINE} />
+          <CustomText text={onboarding.connect_message} weight={FONTS.regular} size={SIZES.sm} />
         </View>
       ) : null}
+
       <View style={styles.trust}>
         {TRUST_ROWS.map(([label, value], index) => (
           <RowView align_items="stretch" justify_content="space-between" gap={SIZES.padding * 0.9} key={label} style={[styles.trust_row, index < TRUST_ROWS.length - 1 && styles.trust_divider]}>
-            <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
-            <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} line_height={BODY_LINE} />
+            <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+            <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} />
           </RowView>
         ))}
       </View>
@@ -112,7 +110,7 @@ export function ConnectInboxFooter({ onboarding }: Props) {
           <RowView gap={SIZES.padding2} key={label}>
             {index ? <CustomText text="·" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.md} /> : null}
             <Pressable accessibilityRole="link" onPress={onboarding.openLegal} style={styles.legal_link}>
-              <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} decoration="underline" />
+              <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} decoration="underline" />
             </Pressable>
           </RowView>
         ))}

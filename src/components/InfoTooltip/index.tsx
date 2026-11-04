@@ -26,7 +26,10 @@ export default function InfoTooltip({ label, paragraphs }: Props) {
 
   const row = (onPress: () => void, expanded: boolean) => (
     <>
-      <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 0.9} />
+      {/* The label never takes the touch (selectable text would), so taps reach the scrim. */}
+      <View pointerEvents="none">
+        <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      </View>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={label}
@@ -34,7 +37,7 @@ export default function InfoTooltip({ label, paragraphs }: Props) {
         onLayout={event => setTriggerX(event.nativeEvent.layout.x + event.nativeEvent.layout.width / 2)}
         onPress={onPress}
         style={styles.trigger}>
-        <Icons name={info_icon} icon_height={SIZES.padding} stroke={COLORS.text_secondary} />
+        <Icons name={info_icon} />
       </Pressable>
     </>
   );
@@ -43,22 +46,24 @@ export default function InfoTooltip({ label, paragraphs }: Props) {
     <View ref={row_ref} collapsable={false} style={styles.row}>
       {row(open, false)}
       <Modal transparent visible={!!frame} animationType="fade" onRequestClose={close}>
-        <Pressable accessibilityLabel="Close information" onPress={close} style={styles.scrim} />
+        {/* Closes on touch-down so a light tap outside dismisses it, even during the fade-in. */}
+        <Pressable accessibilityLabel="Close information" onPressIn={close} style={styles.scrim} />
         {frame ? (
           <>
-            <View style={[styles.row, styles.floating, { left: frame.x, top: frame.y, width: frame.width }]}>{row(close, true)}</View>
+            {/* box-none: taps on the label or empty row reach the scrim and close it; the icon still closes too. */}
+            <View pointerEvents="box-none" style={[styles.row, common_styles.absolute, { left: frame.x, top: frame.y, width: frame.width }]}>{row(close, true)}</View>
             <View
               accessibilityViewIsModal
               accessibilityRole="alert"
               style={[styles.popover, { left: frame.x, width: frame.width, bottom: height - frame.y + SIZES.padding3 }]}>
               <View style={styles.head}>
-                <CustomText text={label} size={SIZES.lg} line_height={SIZES.padding * 1.1} style={common_styles.flex_1} />
-                <Pressable accessibilityRole="button" accessibilityLabel="Close information" onPress={close} style={styles.close}>
-                  <Icons name={close_icon} icon_height={SIZES.padding} stroke={COLORS.text_primary} />
+                <CustomText text={label} size={SIZES.lg} style={common_styles.flex_1} />
+                <Pressable accessibilityRole="button" accessibilityLabel="Close information" hitSlop={SIZES.padding3 / 2} onPress={close} style={styles.close}>
+                  <Icons name={close_icon} />
                 </Pressable>
               </View>
               {paragraphs.map(paragraph => (
-                <CustomText key={paragraph} mt={SIZES.padding3} text={paragraph} weight={FONTS.regular} color={COLORS.tooltip_text} size={SIZES.sm} line_height={SIZES.padding * 0.9} />
+                <CustomText key={paragraph} mt={SIZES.padding3} text={paragraph} weight={FONTS.regular} color={COLORS.tooltip_text} size={SIZES.sm} />
               ))}
               <View style={[styles.arrow, { left: trigger_x - SIZES.padding / 4 }]} />
             </View>

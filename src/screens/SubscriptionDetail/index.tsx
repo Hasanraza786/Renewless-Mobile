@@ -70,36 +70,36 @@ export default function SubscriptionDetailScreen({ navigation, route }: Props) {
       {status === 'failed' ? <StateView status="failed" message={error} onRetry={load} /> : null}
       {status === 'ready' && item && tone ? (
         <View style={styles.card}>
-          <CustomText text={item.name} size={(SIZES.padding + SIZES.padding3 / 4)} />
+          <CustomText text={item.name} size={SIZES.h3} />
           <CustomText
             text={statusLabel(item.status)}
-            size={SIZES.padding2}
+            size={SIZES.sm}
             color={tone.text}
             mt={SIZES.padding2}
             style={[styles.badge, { backgroundColor: tone.background }]}
           />
           <CustomText
             text={formatMoney(item.price, item.currency)}
-            size={(SIZES.padding3 * 2)}
+            size={SIZES.lg}
             mt={SIZES.padding2}
           />
           <CustomText
             text={`Cycle ${item.cycle}`}
             weight={FONTS.regular}
-            size={(SIZES.padding2 + SIZES.padding3 / 8)}
+            size={SIZES.sm}
             mt={SIZES.padding2}
             transform="capitalize"
           />
           <CustomText
             text={`Started ${formatDate(item.startDate)}`}
             weight={FONTS.regular}
-            size={(SIZES.padding2 + SIZES.padding3 / 8)}
+            size={SIZES.sm}
             mt={SIZES.padding2}
           />
           <CustomText
             text={`Renews ${renewal}`}
             weight={FONTS.regular}
-            size={(SIZES.padding2 + SIZES.padding3 / 8)}
+            size={SIZES.sm}
             mt={SIZES.padding2}
           />
           {item.note ? (
@@ -107,17 +107,17 @@ export default function SubscriptionDetailScreen({ navigation, route }: Props) {
               text={item.note}
               weight={FONTS.regular}
               color={COLORS.text_secondary}
-              size={(SIZES.padding2 + SIZES.padding3 / 4)}
+              size={SIZES.md}
               mt={SIZES.padding2}
             />
           ) : null}
           <Pressable
             onPress={() => navigation.navigate('EditSubscription', { id: item.id })}
             style={styles.action}>
-            <CustomText text="Edit" color={COLORS.primary} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
+            <CustomText text="Edit" color={COLORS.primary} size={SIZES.md} />
           </Pressable>
           <Pressable onPress={onDelete} style={styles.action}>
-            <CustomText text="Delete" color={COLORS.expired} size={(SIZES.padding2 + SIZES.padding3 / 4)} />
+            <CustomText text="Delete" color={COLORS.expired} size={SIZES.md} />
           </Pressable>
         </View>
       ) : null}

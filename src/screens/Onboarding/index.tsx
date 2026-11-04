@@ -52,13 +52,13 @@ export default function Onboarding(props: Props) {
           <RowView justify_content='space-between' >
             {onboarding.onBack ? (
               <Pressable accessibilityRole="button" accessibilityLabel="Back" hitSlop={SIZES.padding3 / 4} disabled={onboarding.animating} onPress={onboarding.onBack} style={styles.back}>
-                <Icons name={back_icon} icon_height={SIZES.padding * 2} icon_width={SIZES.padding * 2} />
+                <Icons name={back_icon} />
               </Pressable>
             ) : (
               <View style={styles.back_spacer} />
             )}
-            <CustomText text="RENEWLESS" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 0.9} letter_spacing={2} />
-            <Icons name={logo_mark} icon_height={SIZES.padding * 2} icon_width={SIZES.padding * 2} />
+            <CustomText text="RENEWLESS" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} letter_spacing={2} />
+            <Icons name={logo_mark} />
           </RowView>
 
           <SizedBox />

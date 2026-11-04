@@ -10,8 +10,6 @@ import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'ResetPassword'>;
 
-const BODY_LINE = SIZES.padding * 0.9;
-
 export default function ResetPasswordScreen(props: Props) {
   const { form, loading, error, onSubmit, onBack } = useResetPassword(props);
   const confirm = form.fieldProps('confirm');
@@ -20,7 +18,7 @@ export default function ResetPasswordScreen(props: Props) {
     <AuthLayout onBack={onBack} title="Set a new password" copy="Choose a new password to keep your account secure.">
       <InputField variant="auth" label="New password" onSubmitEditing={form.focusField('confirm')} submitBehavior="submit" secureTextEntry autoComplete="new-password" textContentType="newPassword" returnKeyType="next" {...form.fieldProps('password')} />
 
-      <CustomText mt={SIZES.padding * 0.55} text="Use at least 6 characters." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mb={SIZES.padding * 1.15} />
+      <CustomText mt={SIZES.padding * 0.55} text="Use at least 6 characters." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding * 1.15} />
 
       <InputField
         variant="auth"
@@ -36,7 +34,7 @@ export default function ResetPasswordScreen(props: Props) {
 
       <CustomButton variant="primary" text="Reset password" disabled={loading} busy={loading} onPress={onSubmit} style={styles.submit} />
 
-      <CustomText mt={SIZES.padding * 1.1} text="You’ll log in with your new password." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" />
+      <CustomText mt={SIZES.padding * 1.1} text="You’ll log in with your new password." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
     </AuthLayout>
   );
 }

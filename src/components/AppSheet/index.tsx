@@ -44,13 +44,13 @@ export default function AppSheet({ visible, title, subtitle, onClose, children }
           <View style={styles.handle} />
           <RowView align_items="flex-start" gap={SIZES.padding2} style={styles.header}>
             <View style={common_styles.flex_1}>
-              <CustomText text={title} size={SIZES.lg} line_height={SIZES.padding * 1.1} />
+              <CustomText text={title} size={SIZES.lg} />
               {subtitle ? (
-                <CustomText mt={SIZES.padding * 0.35} text={subtitle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 0.9} />
+                <CustomText mt={SIZES.padding * 0.35} text={subtitle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
               ) : null}
             </View>
             <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={styles.close}>
-              <Icons name={close_icon} icon_height={SIZES.padding} icon_width={SIZES.padding} stroke={COLORS.text_primary} />
+              <Icons name={close_icon} />
             </Pressable>
           </RowView>
           <ScrollView bounces={false} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>

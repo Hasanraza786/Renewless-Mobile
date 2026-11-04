@@ -80,7 +80,7 @@ export default function EditProfileScreen({ navigation }: Props) {
           onChangeText={setDateOfBirth}
           placeholder="YYYY-MM-DD"
         />
-        <CustomText text="Gender (optional)" weight={FONTS.regular} size={SIZES.padding2} mb={SIZES.padding3} />
+        <CustomText text="Gender (optional)" weight={FONTS.regular} size={SIZES.sm} mb={SIZES.padding3} />
         <RowView align_items="stretch" gap={SIZES.padding3} style={{ marginBottom: SIZES.padding3 * 2 }}>
           {GENDERS.map(choice => {
             const selected = gender === choice.value;
@@ -91,7 +91,7 @@ export default function EditProfileScreen({ navigation }: Props) {
                 style={[styles.choice, selected && styles.choice_on]}>
                 <CustomText
                   text={choice.label}
-                  size={(SIZES.padding2 + SIZES.padding3 / 4)}
+                  size={SIZES.md}
                   weight={selected ? FONTS.regular : FONTS.medium}
                   color={selected ? COLORS.background : COLORS.text_primary}
                 />
@@ -99,7 +99,7 @@ export default function EditProfileScreen({ navigation }: Props) {
             );
           })}
         </RowView>
-        {error ? <CustomText text={error} weight={FONTS.regular} size={(SIZES.padding2 + SIZES.padding3 / 4)} mb={SIZES.padding2} /> : null}
+        {error ? <CustomText text={error} weight={FONTS.regular} size={SIZES.md} mb={SIZES.padding2} /> : null}
         <CustomButton text="Save" onPress={onSubmit} disabled={loading} />
       </ScrollView>
       </View>

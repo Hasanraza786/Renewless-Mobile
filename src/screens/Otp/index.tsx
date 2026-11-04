@@ -11,8 +11,6 @@ import { styles } from './styles';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Otp'>;
 
-const BODY_LINE = SIZES.padding * 0.9;
-
 export default function OtpScreen(props: Props) {
   const otp = useOtp(props);
   const ref = useBlurOnFulfill({ value: otp.code, cellCount: CODE_LENGTH });
@@ -24,14 +22,14 @@ export default function OtpScreen(props: Props) {
       title={otp.reset ? 'Check your email' : 'Verify your email'}
       copy={otp.reset ? 'Enter the code we sent to reset your password.' : 'One last step. Enter the code sent to your email.'}>
       <View style={styles.destination}>
-        <CustomText text="Code sent to" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} />
-        <CustomText mt={SIZES.padding3} text={otp.email} size={SIZES.sm} line_height={BODY_LINE} />
+        <CustomText text="Code sent to" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        <CustomText mt={SIZES.padding3} text={otp.email} size={SIZES.sm} />
         <Pressable accessibilityRole="button" onPress={otp.onBack} style={styles.change_email}>
-          <CustomText text="Change email" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} />
+          <CustomText text="Change email" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
         </Pressable>
       </View>
 
-      <CustomText text="Verification code" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mb={SIZES.padding / 2} />
+      <CustomText text="Verification code" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding / 2} />
 
       <CodeField
         ref={ref}
@@ -48,24 +46,24 @@ export default function OtpScreen(props: Props) {
         onSubmitEditing={otp.onSubmit}
         renderCell={({ index, symbol, isFocused }) => (
           <View key={index} onLayout={getCellOnLayoutHandler(index)} style={[styles.cell, isFocused && styles.cell_focused, !!otp.code_error && styles.cell_error]}>
-            <CustomText text={symbol} weight={FONTS.regular} size={SIZES.sm} line_height={BODY_LINE} />
+            <CustomText text={symbol} weight={FONTS.regular} size={SIZES.sm} />
           </View>
         )}
       />
       {otp.code_error ? (
-        <CustomText mt={SIZES.padding * 0.35} text={otp.code_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} line_height={BODY_LINE} />
+        <CustomText mt={SIZES.padding * 0.35} text={otp.code_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} />
       ) : null}
 
-      <CustomText mt={SIZES.padding * 0.7} text="Code expires in 5 minutes" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} mb={SIZES.padding2} />
+      <CustomText mt={SIZES.padding * 0.7} text="Code expires in 5 minutes" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding2} />
 
       <CustomButton variant="primary" text={otp.reset ? 'Verify code' : 'Verify email'} disabled={otp.loading} busy={otp.loading} onPress={otp.onSubmit} style={styles.submit} />
 
       <View style={styles.resend}>
-        <CustomText text="Didn’t receive a code?" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" />
+        <CustomText text="Didn’t receive a code?" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
         <Pressable accessibilityRole="button" onPress={otp.onResend} style={styles.resend_button}>
-          <CustomText text="Resend code" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} line_height={BODY_LINE} />
+          <CustomText text="Resend code" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
         </Pressable>
-        <CustomText text="Available after 2 minutes" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={BODY_LINE} align="center" />
+        <CustomText text="Available after 2 minutes" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
       </View>
     </AuthLayout>
   );

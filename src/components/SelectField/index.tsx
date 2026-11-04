@@ -31,7 +31,7 @@ export default function SelectField<T extends string>({ label, value, options, o
 
   return (
     <View style={styles.wrap}>
-      <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 0.9} mb={SIZES.padding3} />
+      <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding3} />
       <Pressable
         ref={control_ref}
         accessibilityRole="button"
@@ -39,8 +39,8 @@ export default function SelectField<T extends string>({ label, value, options, o
         accessibilityState={{ expanded: !!frame }}
         onPress={open}
         style={styles.control}>
-        <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} line_height={SIZES.padding * 0.9} number_of_lines={1} />
-        <Icons name={chevron_down_icon} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} stroke={COLORS.text_primary} style={styles.chevron} />
+        <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} number_of_lines={1} />
+        <Icons name={chevron_down_icon} style={styles.chevron} />
       </Pressable>
       <Modal transparent visible={!!frame} animationType="fade" onRequestClose={close}>
         <Pressable accessibilityLabel={`Close ${label}`} onPress={close} style={styles.backdrop} />
@@ -61,7 +61,7 @@ export default function SelectField<T extends string>({ label, value, options, o
                   }}
                   style={[styles.option, selected && styles.option_selected]}>
                   <CustomText text={option} weight={FONTS.regular} color={selected ? COLORS.primary : COLORS.text_primary} size={SIZES.sm} />
-                  {selected ? <Icons name={option_check_icon} icon_height={SIZES.padding * 0.85} icon_width={SIZES.padding * 0.85} stroke={COLORS.primary} /> : null}
+                  {selected ? <Icons name={option_check_icon} /> : null}
                 </Pressable>
               );
             })}

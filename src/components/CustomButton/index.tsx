@@ -31,13 +31,12 @@ export default function CustomButton({ text, onPress, disabled, variant, style, 
           pressed && !disabled && styles.pressed_variant,
           disabled && styles.disabled_variant,
         ]}>
-        {icon ? <Icons name={icon} icon_height={SIZES.padding} icon_width={SIZES.padding} fill={COLORS.text_primary} style={styles.social_icon} /> : null}
+        {icon ? <Icons name={icon} style={styles.social_icon} /> : null}
         <CustomText
           text={text}
           weight={variant === 'primary' || variant === 'social' ? FONTS.medium : FONTS.regular}
           color={variant === 'primary' ? COLORS.background : variant === 'link' ? COLORS.text_secondary : COLORS.text_primary}
           size={SIZES.sm}
-          line_height={SIZES.padding * 0.9}
           align="center"
         />
       </Pressable>
@@ -57,7 +56,8 @@ export default function CustomButton({ text, onPress, disabled, variant, style, 
       <CustomText
         text={text}
         color={disabled ? COLORS.text_secondary : COLORS.background}
-        size={(SIZES.padding * 0.7)}
+        size={SIZES.md}
+        line_height={null}
       />
     </Pressable>
   );

@@ -27,7 +27,7 @@ export const styles = StyleSheet.create({
   divider_line: {
     backgroundColor: COLORS.line_faint,
     flex: 1,
-    height: SIZES.padding3 / 8,
+    height: 1,
   },
   social: {
     gap: SIZES.padding * 0.55,

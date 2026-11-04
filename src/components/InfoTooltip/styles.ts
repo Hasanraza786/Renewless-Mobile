@@ -17,14 +17,11 @@ export const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     backgroundColor: COLORS.background_scrim,
   },
-  floating: {
-    position: 'absolute',
-  },
   popover: {
     backgroundColor: COLORS.tooltip,
     borderColor: COLORS.accent_ring,
     borderRadius: SIZES.padding * 0.8,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     padding: SIZES.padding * 0.7,
     position: 'absolute',
     shadowColor: COLORS.background,
@@ -47,9 +44,9 @@ export const styles = StyleSheet.create({
   },
   arrow: {
     backgroundColor: COLORS.tooltip,
-    borderBottomWidth: SIZES.padding3 / 8,
+    borderBottomWidth: 1,
     borderColor: COLORS.accent_ring,
-    borderRightWidth: SIZES.padding3 / 8,
+    borderRightWidth: 1,
     bottom: -SIZES.padding * 0.3,
     height: SIZES.padding / 2,
     position: 'absolute',

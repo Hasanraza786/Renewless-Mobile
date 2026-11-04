@@ -20,7 +20,6 @@ export default function OnboardingTitle({ eyebrow, title, emphasis, copy, align 
         weight={FONTS.regular}
         color={COLORS.primary}
         size={SIZES.sm}
-        line_height={SIZES.padding * 0.9}
         align={align}
         letter_spacing={1.5}
         mb={SIZES.padding * 0.65}
@@ -36,7 +35,6 @@ export default function OnboardingTitle({ eyebrow, title, emphasis, copy, align 
           text={emphasis}
           color={COLORS.primary}
           size={SIZES.h3}
-          line_height={SIZES.padding * 1.4}
           align={align}
           letter_spacing={title_spacing ?? -1}
         />
@@ -47,7 +45,6 @@ export default function OnboardingTitle({ eyebrow, title, emphasis, copy, align 
         weight={FONTS.regular}
         color={COLORS.text_secondary}
         size={SIZES.sm}
-        line_height={SIZES.padding * 0.9}
         align={align}
       />
     </View>

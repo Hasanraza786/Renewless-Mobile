@@ -29,7 +29,7 @@ export default function DateField({ label, value, minimum, onChange }: Props) {
 
   return (
     <View>
-      <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 0.9} mb={SIZES.padding * 0.3} />
+      <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding * 0.3} />
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${label}, ${value ? shown : 'not set'}`}
@@ -37,7 +37,7 @@ export default function DateField({ label, value, minimum, onChange }: Props) {
         onPress={() => setOpen(current => !current)}
         style={[styles.field, open && styles.field_open]}>
         <CustomText text={shown} weight={FONTS.regular} color={value ? COLORS.text_primary : COLORS.text_secondary} size={SIZES.sm} />
-        <Icons name={calendar_icon} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} stroke={COLORS.text_primary} />
+        <Icons name={calendar_icon} />
       </Pressable>
       {open ? (
         <DateTimePicker

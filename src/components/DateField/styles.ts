@@ -7,7 +7,7 @@ export const styles = StyleSheet.create({
     backgroundColor: COLORS.card,
     borderColor: COLORS.field_border,
     borderRadius: SIZES.padding / 2,
-    borderWidth: SIZES.padding3 / 8,
+    borderWidth: 1,
     flexDirection: 'row',
     height: SIZES.padding * 2.15,
     justifyContent: 'space-between',
