@@ -35,10 +35,7 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding3 / 2,
   },
   row_select: {
-    alignItems: 'center',
     flex: 1,
-    flexDirection: 'row',
-    gap: SIZES.padding * 0.45,
     paddingHorizontal: SIZES.padding3,
     paddingVertical: SIZES.padding * 0.8,
   },

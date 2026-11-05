@@ -6,6 +6,7 @@ import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
 import { OPTION_HEIGHT, styles } from './styles';
+import RowView from '../RowView';
 
 type Single<T extends string> = {
   label: string;
@@ -74,7 +75,7 @@ export default function Dropdown<T extends string>(props: Single<T> | Multiple) 
               {items.map(item => {
                 const selected = isSelected(item.value);
                 return (
-                  <Pressable
+                  <RowView justify_content="space-between" gap={SIZES.padding2}
                     key={item.value}
                     accessibilityRole={props.multiple ? 'checkbox' : 'menuitem'}
                     accessibilityState={props.multiple ? { checked: selected } : { selected }}
@@ -82,7 +83,7 @@ export default function Dropdown<T extends string>(props: Single<T> | Multiple) 
                     style={[styles.option, selected && styles.option_selected]}>
                     <CustomText text={item.label} weight={FONTS.regular} color={selected ? COLORS.primary : COLORS.text_primary} size={SIZES.sm} />
                     {selected ? <Icons name={option_check_icon} /> : null}
-                  </Pressable>
+                  </RowView>
                 );
               })}
             </ScrollView>

@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { calendar_icon } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
 import { styles } from './styles';
+import RowView from '../RowView';
 
 type Props = {
   label: string;
@@ -31,7 +32,7 @@ export default function DateField({ label, value, minimum, maximum, onChange }: 
   return (
     <View>
       <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding * 0.3} />
-      <Pressable
+      <RowView justify_content="space-between"
         accessibilityRole="button"
         accessibilityLabel={`${label}, ${value ? shown : 'not set'}`}
         accessibilityState={{ expanded: open }}
@@ -39,7 +40,7 @@ export default function DateField({ label, value, minimum, maximum, onChange }: 
         style={[styles.field, open && styles.field_open]}>
         <CustomText text={shown} weight={FONTS.regular} color={value ? COLORS.text_primary : COLORS.text_secondary} size={SIZES.sm} />
         <Icons name={calendar_icon} />
-      </Pressable>
+      </RowView>
       {open ? (
         <DateTimePicker
           mode="date"

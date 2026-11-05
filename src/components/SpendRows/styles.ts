@@ -3,11 +3,8 @@ import { COLORS, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   spend_row: {
-    alignItems: 'center',
     borderBottomColor: COLORS.line_quiet,
     borderBottomWidth: 1,
-    flexDirection: 'row',
-    gap: SIZES.padding / 2,
     paddingVertical: SIZES.padding * 0.55,
   },
   spend_avatar: {
@@ -44,9 +41,6 @@ export const styles = StyleSheet.create({
     paddingTop: SIZES.padding / 2,
   },
   trial_row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: SIZES.padding * 0.45,
     paddingBottom: SIZES.padding / 10,
     paddingTop: SIZES.padding2,
   },

@@ -6,6 +6,7 @@ import CustomText from '../CustomText';
 import Icons from '../Icons';
 import { common_styles } from '../../utils/common_styles';
 import { styles } from './styles';
+import RowView from '../RowView';
 
 type Props = {
   label: string;
@@ -56,12 +57,12 @@ export default function InfoTooltip({ label, paragraphs }: Props) {
               accessibilityViewIsModal
               accessibilityRole="alert"
               style={[styles.popover, { left: frame.x, width: frame.width, bottom: height - frame.y + SIZES.padding3 }]}>
-              <View style={styles.head}>
+              <RowView gap={SIZES.padding3} style={styles.head}>
                 <CustomText text={label} size={SIZES.lg} style={common_styles.flex_1} />
                 <Pressable accessibilityRole="button" accessibilityLabel="Close information" hitSlop={SIZES.padding3 / 2} onPress={close} style={styles.close}>
                   <Icons name={close_icon} />
                 </Pressable>
-              </View>
+              </RowView>
               {paragraphs.map(paragraph => (
                 <CustomText key={paragraph} mt={SIZES.padding3} text={paragraph} weight={FONTS.regular} color={COLORS.tooltip_text} size={SIZES.sm} />
               ))}

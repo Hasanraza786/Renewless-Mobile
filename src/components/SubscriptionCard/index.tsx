@@ -1,10 +1,11 @@
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { chevron_right_icon, platform_logos } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
 import { styles } from './styles';
+import RowView from '../RowView';
 
 type Props = {
   name: string;
@@ -25,7 +26,7 @@ export default function SubscriptionCard({ name, platform_id, status, lines, amo
   const logo = platform_logos[platform_id];
 
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={accessibility_label ?? name} onPress={onPress} style={({ pressed }) => [styles.main_view, pressed && styles.pressed]}>
+    <RowView gap={SIZES.padding * 0.55} accessibilityRole="button" accessibilityLabel={accessibility_label ?? name} onPress={onPress} style={styles.main_view}>
       <View style={styles.avatar}>
         {logo ? <Icons name={logo} /> : <CustomText text={name.charAt(0)} size={SIZES.sm} />}
       </View>
@@ -41,6 +42,6 @@ export default function SubscriptionCard({ name, platform_id, status, lines, amo
         <CustomText mt={SIZES.padding / 5} text={caption} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
       </View>
       {chevron ? <Icons name={chevron_right_icon} /> : null}
-    </Pressable>
+    </RowView>
   );
 }

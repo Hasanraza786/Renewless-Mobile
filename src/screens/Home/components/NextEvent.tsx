@@ -24,7 +24,7 @@ function Toolbar({ events, selected, home }: { events: HomeEvent[]; selected: Ho
           const active = item.id === selected.id;
           const same_platform = tabs.filter(other => other.name === item.name).length > 1 && item.plan;
           return (
-            <Pressable
+            <RowView gap={SIZES.padding * 0.3}
               key={item.id}
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
@@ -33,7 +33,7 @@ function Toolbar({ events, selected, home }: { events: HomeEvent[]; selected: Ho
               style={[styles.event_tab, active && styles.event_tab_active]}>
               {platform_logos[item.platform_id] ? <Icons name={platform_logos[item.platform_id]} icon_height={SIZES.padding * 0.8} icon_width={SIZES.padding * 0.8} /> : null}
               <CustomText text={same_platform ? item.plan! : item.name} weight={FONTS.regular} color={active ? COLORS.primary : COLORS.text_primary} size={SIZES.sm} number_of_lines={1} />
-            </Pressable>
+            </RowView>
           );
         })}
       </RowView>

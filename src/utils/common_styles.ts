@@ -7,4 +7,8 @@ export const common_styles = StyleSheet.create({
   flex_1: {
     flex: 1,
   },
+  // Press feedback for touchable rows.
+  pressed: {
+    opacity: 0.8,
+  },
 });

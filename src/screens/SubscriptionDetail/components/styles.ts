@@ -8,9 +8,6 @@ export const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   check_row: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: SIZES.padding2,
     marginTop: SIZES.padding2,
     minHeight: SIZES.padding * 2.2,
   },

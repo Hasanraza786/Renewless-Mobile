@@ -1,7 +1,8 @@
-import { TouchableOpacity, View, type ViewProps, type ViewStyle } from 'react-native';
+import { Pressable, View, type ViewProps, type ViewStyle } from 'react-native';
 import { SIZES } from '../../constants/theme';
+import { common_styles } from '../../utils/common_styles';
 
-// Any View prop (accessibility etc.) passes through; it is touchable only when onPress is given.
+// Any View prop (accessibility, hitSlop etc.) passes through; it is a Pressable only when onPress is given.
 type Props = ViewProps & {
   justify_content?: ViewStyle['justifyContent'];
   onPress?: () => void;
@@ -35,9 +36,9 @@ export default function RowView({
   ];
 
   return onPress ? (
-    <TouchableOpacity activeOpacity={0.8} onPress={onPress} disabled={disabled} style={row_style} {...view_props}>
+    <Pressable onPress={onPress} disabled={disabled} style={({ pressed }) => [row_style, pressed && common_styles.pressed]} {...view_props}>
       {children}
-    </TouchableOpacity>
+    </Pressable>
   ) : (
     <View style={row_style} {...view_props}>
       {children}

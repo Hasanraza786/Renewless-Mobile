@@ -44,13 +44,13 @@ function Badge({ text, color, fill }: { text: string; color: string; fill: strin
 
 function LinkCard({ title, caption, trailing, onPress }: { title: string; caption: string; trailing: string; onPress: () => void }) {
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${title}, ${caption}`} onPress={onPress} style={styles.link_card}>
+    <RowView gap={SIZES.padding2} accessibilityRole="button" accessibilityLabel={`${title}, ${caption}`} onPress={onPress} style={styles.link_card}>
       <View style={common_styles.flex_1}>
         <CustomText text={title} weight={FONTS.regular} size={SIZES.sm} />
         <CustomText mt={SIZES.padding * 0.3} text={caption} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </View>
       <CustomText text={trailing} weight={FONTS.regular} color={trailing === '›' ? COLORS.text_primary : COLORS.primary} size={SIZES.sm} />
-    </Pressable>
+    </RowView>
   );
 }
 
@@ -146,14 +146,14 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
       </View>
 
       {record.manage_url ? (
-        <Pressable accessibilityRole="link" accessibilityLabel={`Manage on ${record.name}, opens the service’s website`} onPress={detail.openManage} style={styles.manage}>
+        <RowView gap={SIZES.padding / 2} accessibilityRole="link" accessibilityLabel={`Manage on ${record.name}, opens the service’s website`} onPress={detail.openManage} style={styles.manage}>
           <View style={common_styles.flex_1}>
             <CustomText text={`Manage on ${record.name}`} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
             <CustomText mt={SIZES.padding / 5} text="Opens the service’s website" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           </View>
           {/* \uFE0E keeps the arrow a text glyph instead of iOS's emoji. */}
           <CustomText text={'↗\uFE0E'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.h3} line_height={null} />
-        </Pressable>
+        </RowView>
       ) : null}
 
       {view.related ? <LinkCard title={`More on ${record.name}`} caption={view.related} trailing={`${view.related_count} ›`} onPress={detail.openRelated} /> : null}

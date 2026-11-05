@@ -65,13 +65,10 @@ export const styles = StyleSheet.create({
     minHeight: SIZES.padding * 2.2,
   },
   link_card: {
-    alignItems: 'center',
     backgroundColor: COLORS.card,
     borderColor: COLORS.line_faint,
     borderRadius: SIZES.padding * 0.75,
     borderWidth: 1,
-    flexDirection: 'row',
-    gap: SIZES.padding2,
     padding: SIZES.padding * 0.7,
   },
   sync: {
@@ -81,13 +78,10 @@ export const styles = StyleSheet.create({
     paddingTop: SIZES.padding / 2,
   },
   manage: {
-    alignItems: 'center',
     backgroundColor: COLORS.accent_select,
     borderColor: COLORS.accent_border,
     borderRadius: SIZES.padding * 0.7,
     borderWidth: 1,
-    flexDirection: 'row',
-    gap: SIZES.padding / 2,
     paddingHorizontal: SIZES.padding * 0.75,
     paddingVertical: SIZES.padding * 0.65,
   },

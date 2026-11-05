@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { platform_logos } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import type { HomeSpending, HomeTrial } from '../../types';
@@ -8,12 +8,13 @@ import { dateLabel } from '../../utils/scan';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
 import { styles } from './styles';
+import RowView from '../RowView';
 
 type Row = { key: string; name: string; logo?: string; amount: string; percent: number; meta: string; onPress: () => void };
 
 function SpendRow({ row, currency }: { row: Row; currency: string }) {
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${row.name}, ${currency} ${row.amount} a month, ${row.percent}%`} onPress={row.onPress} style={styles.spend_row}>
+    <RowView gap={SIZES.padding / 2} accessibilityRole="button" accessibilityLabel={`${row.name}, ${currency} ${row.amount} a month, ${row.percent}%`} onPress={row.onPress} style={styles.spend_row}>
       <View style={[styles.spend_avatar, !row.logo && styles.others_avatar]}>
         {row.logo ? <Icons name={row.logo} /> : <CustomText text="•••" weight={FONTS.regular} size={SIZES.sm} />}
       </View>
@@ -28,7 +29,7 @@ function SpendRow({ row, currency }: { row: Row; currency: string }) {
         <CustomText text={`${currency} ${row.amount}`} weight={FONTS.regular} size={SIZES.sm} align="right" />
         <CustomText mt={SIZES.padding / 5} text={`${row.percent}% ›`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="right" />
       </View>
-    </Pressable>
+    </RowView>
   );
 }
 
@@ -76,7 +77,7 @@ export function TrialRows({ trials, onPress }: { trials: HomeTrial[]; onPress: (
       <CustomText mt={SIZES.padding * 0.9} text={`Free trials · ${trials.length}`} size={SIZES.lg} />
       <CustomText mt={SIZES.padding2} text="Not included in current monthly spend." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       {trials.map(item => (
-        <Pressable key={item.subscription_id} accessibilityRole="button" accessibilityLabel={`View ${item.name} trial`} onPress={() => onPress(item.subscription_id)} style={styles.trial_row}>
+        <RowView gap={SIZES.padding * 0.45} key={item.subscription_id} accessibilityRole="button" accessibilityLabel={`View ${item.name} trial`} onPress={() => onPress(item.subscription_id)} style={styles.trial_row}>
           <View style={styles.trial_avatar}>
             {platform_logos[item.platform_id] ? <Icons name={platform_logos[item.platform_id]} icon_height={SIZES.padding * 1.05} icon_width={SIZES.padding * 1.05} /> : null}
           </View>
@@ -86,7 +87,7 @@ export function TrialRows({ trials, onPress }: { trials: HomeTrial[]; onPress: (
             <CustomText mt={SIZES.padding / 4} text={`Then ${item.currency} ${item.then_amount} · ${item.cycle}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           </View>
           <CustomText text="›" weight={FONTS.regular} size={SIZES.md} />
-        </Pressable>
+        </RowView>
       ))}
     </View>
   );

@@ -166,7 +166,7 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
           const price = `${item.trial ? 'Then ' : ''}${moneyLabel(item)} · ${item.cycle}`;
           return (
             <RowView gap={0} key={item.id} style={index < candidates.length - 1 && styles.row_divider}>
-              <Pressable
+              <RowView gap={SIZES.padding * 0.45}
                 accessibilityRole="checkbox"
                 accessibilityState={{ checked, disabled: save_loading }}
                 accessibilityLabel={`Select ${item.name}, ${date}, ${price}`}
@@ -184,7 +184,7 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
                   <CustomText mt={SIZES.padding / 4} text={date} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
                   <CustomText mt={SIZES.padding / 4} text={price} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
                 </View>
-              </Pressable>
+              </RowView>
               <Pressable accessibilityRole="button" accessibilityLabel={`Edit ${item.name}`} disabled={save_loading} onPress={() => onboarding.openEdit(item.id)} style={styles.edit}>
                 <Icons name={edit_icon} />
               </Pressable>

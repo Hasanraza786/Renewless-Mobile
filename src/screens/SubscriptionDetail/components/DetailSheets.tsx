@@ -106,10 +106,10 @@ function CancelSheet({ view, detail }: Props) {
       <DateField label="Access until · Optional" value={access_until} minimum={cancelled_on} onChange={value => { setAccessUntil(value); setError(''); }} />
       {error ? <CustomText mt={SIZES.padding * 0.35} text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} /> : null}
       {access_until && daysBetween(detail.today, access_until) >= 0 ? (
-        <Pressable accessibilityRole="checkbox" accessibilityState={{ checked: remind }} onPress={() => setRemind(!remind)} style={styles.check_row}>
+        <RowView gap={SIZES.padding2} accessibilityRole="checkbox" accessibilityState={{ checked: remind }} onPress={() => setRemind(!remind)} style={styles.check_row}>
           <View style={[styles.checkbox, remind && styles.checkbox_checked]}>{remind ? <Icons name={check_dark_icon} /> : null}</View>
           <CustomText text="Remind me when access ends" weight={FONTS.regular} size={SIZES.sm} />
-        </Pressable>
+        </RowView>
       ) : null}
       <CustomText mt={SIZES.padding2} text={`This updates your tracking in Renewless. Cancel your plan on ${name} separately.`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       <SaveError detail={detail} />

@@ -30,9 +30,6 @@ export const styles = StyleSheet.create({
     shadowRadius: SIZES.padding,
   },
   head: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: SIZES.padding3,
   },
   close: {
     alignItems: 'center',

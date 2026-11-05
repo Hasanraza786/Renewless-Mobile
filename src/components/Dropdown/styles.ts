@@ -38,12 +38,8 @@ export const styles = StyleSheet.create({
     shadowRadius: SIZES.padding * 0.7,
   },
   option: {
-    alignItems: 'center',
     borderRadius: SIZES.padding3,
-    flexDirection: 'row',
-    gap: SIZES.padding2,
     height: OPTION_HEIGHT,
-    justifyContent: 'space-between',
     paddingHorizontal: SIZES.padding * 0.55,
   },
   option_selected: {
