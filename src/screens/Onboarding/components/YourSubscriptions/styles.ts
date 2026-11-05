@@ -6,6 +6,7 @@ export const RING_WIDTH = SIZES.padding * 0.3;
 
 export const styles = StyleSheet.create({
   total: {
+    backgroundColor: COLORS.card,
     borderColor: COLORS.accent_card,
     borderRadius: SIZES.padding * 0.75,
     borderWidth: 1,
@@ -13,11 +14,6 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding * 0.75,
     paddingVertical: SIZES.padding * 0.65,
     marginTop: SIZES.padding2,
-  },
-  total_wash: {
-    left: 0,
-    position: 'absolute',
-    top: 0,
   },
   ring: {
     alignItems: 'center',
@@ -36,6 +32,7 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     overflow: 'hidden',
     marginTop: SIZES.padding / 2,
+    paddingHorizontal: SIZES.padding3 / 2,
   },
   row_select: {
     alignItems: 'center',
@@ -43,7 +40,7 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: SIZES.padding * 0.45,
     paddingHorizontal: SIZES.padding3,
-    paddingVertical: SIZES.padding2,
+    paddingVertical: SIZES.padding * 0.8,
   },
   edit: {
     alignItems: 'center',

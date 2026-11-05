@@ -17,7 +17,7 @@ type Props<T extends string> = {
 type Frame = { x: number; y: number; width: number; height: number };
 
 // Themed dropdown: the menu opens below the control, or above it when there is no room below.
-export default function SelectField<T extends string>({ label, value, options, onChange }: Props<T>) {
+export default function Dropdown<T extends string>({ label, value, options, onChange }: Props<T>) {
   const control_ref = useRef<ComponentRef<typeof Pressable>>(null);
   const [frame, setFrame] = useState<Frame | null>(null);
   const { height } = useWindowDimensions();

@@ -16,7 +16,7 @@ export function authFieldError(field: AuthField, value: string, password = '') {
   if (!value.trim()) return EMPTY[field];
   if (field === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return 'Enter a valid email address.';
   if (field === 'confirm' && value !== password) return 'Passwords do not match.';
-  if ((field === 'password' || field === 'confirm') && value.length < 6) return 'Use at least 6 characters.';
+  if ((field === 'password' || field === 'confirm') && value.length < 8) return 'Use at least 8 characters.';
   return '';
 }
 

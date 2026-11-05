@@ -36,8 +36,6 @@ export const COLORS = {
   receipt_line: '#454B4E',
   found_card: '#252B2C',
   logo_tile: '#292E31',
-  total_card: '#29342C',
-  surface_green_end: '#202726',
   checkbox_fill: '#191C1F',
   checkbox_border: '#78828A',
   field_border: '#52585C',

@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { common_styles } from '../../../../utils/common_styles';
 import { Pressable, View } from 'react-native';
-import Svg, { Circle, Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
+import Svg, { Circle } from 'react-native-svg';
 import { check_dark_icon, edit_icon, platform_logos } from '../../../../assets/icons';
 import AppSheet from '../../../../components/AppSheet';
 import CustomButton from '../../../../components/CustomButton';
@@ -12,7 +12,7 @@ import Icons from '../../../../components/Icons';
 import InfoTooltip from '../../../../components/InfoTooltip';
 import InputField from '../../../../components/InputField';
 import OnboardingTitle from '../../../../components/OnboardingTitle';
-import SelectField from '../../../../components/SelectField';
+import Dropdown from '../../../../components/Dropdown';
 import SizedBox from '../../../../components/SizedBox';
 import { COLORS, FONTS, SIZES } from '../../../../constants/theme';
 import type { ScanCandidate, ScanCycle } from '../../../../types';
@@ -90,13 +90,13 @@ function EditSheet({ onboarding }: Props) {
               />
             </View>
             <View style={styles.currency}>
-              <SelectField label="Currency" value={draft.currency} options={CURRENCIES.includes(draft.currency as (typeof CURRENCIES)[number]) ? CURRENCIES : [draft.currency, ...CURRENCIES]} onChange={currency => setDraft({ ...draft, currency })} />
+              <Dropdown label="Currency" value={draft.currency} options={CURRENCIES.includes(draft.currency as (typeof CURRENCIES)[number]) ? CURRENCIES : [draft.currency, ...CURRENCIES]} onChange={currency => setDraft({ ...draft, currency })} />
             </View>
           </RowView>
 
           <SizedBox height={SIZES.padding * 1.3} />
 
-          <SelectField label="Billing cycle" value={draft.cycle} options={CYCLES} onChange={cycle => setDraft({ ...draft, cycle })} />
+          <Dropdown label="Billing cycle" value={draft.cycle} options={CYCLES} onChange={cycle => setDraft({ ...draft, cycle })} />
 
           <SizedBox height={SIZES.padding * 1.3} />
 
@@ -115,7 +115,6 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
   const { candidates, selected_ids, save_loading } = onboarding;
   const selected = candidates.filter(item => selected_ids.includes(item.id));
   const week = upcomingWeek(selected, localToday());
-  const [card, setCard] = useState({ width: 0, height: 0 });
 
   return (
     <Fragment>
@@ -131,16 +130,7 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
 
       <CustomText mt={SIZES.padding * 0.7} text={`Found in ${onboarding.inbox_email}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
 
-      <RowView gap={SIZES.padding2} style={styles.total} onLayout={event => setCard(event.nativeEvent.layout)}>
-        <Svg style={styles.total_wash} width={card.width} height={card.height}>
-          <Defs>
-            <LinearGradient id="total_wash" x1="0" y1="0" x2="1" y2="0.6">
-              <Stop offset="0" stopColor={COLORS.total_card} />
-              <Stop offset="1" stopColor={COLORS.surface_green_end} />
-            </LinearGradient>
-          </Defs>
-          <Rect width={card.width} height={card.height} fill="url(#total_wash)" />
-        </Svg>
+      <RowView gap={SIZES.padding2} style={styles.total}>
         <View style={common_styles.flex_1}>
           <CustomText text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           <CustomText mt={SIZES.padding * 0.35} text={formatTotals(paidMonthlyTotals(selected))} weight={FONTS.regular} size={SIZES.h3} />
@@ -165,7 +155,7 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
       </RowView>
 
       <RowView align_items="stretch" justify_content="space-between" gap={0} style={styles.caption}>
-        <CustomText text="SUBSCRIPTIONS FOUND" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} letter_spacing={0.5} />
+        <CustomText text="SUBSCRIPTIONS FOUND" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} letter_spacing={0.5} />
         <CustomText text="Review before saving" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </RowView>
 

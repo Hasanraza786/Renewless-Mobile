@@ -56,13 +56,13 @@ function changePasswordErrors(values){
  const errors={};
  if(!values.currentPassword)errors.currentPassword='Enter your current password.';
  if(!values.newPassword)errors.newPassword='Enter a new password.';
- else if(values.newPassword.length<6)errors.newPassword='Use at least 6 characters.';
+ else if(values.newPassword.length<8)errors.newPassword='Use at least 8 characters.';
  else if(values.newPassword===values.currentPassword)errors.newPassword='Choose a password different from your current one.';
  if(!values.confirmPassword)errors.confirmPassword='Confirm your new password.';
  else if(values.confirmPassword!==values.newPassword)errors.confirmPassword='Passwords don’t match.';
  return errors;
 }
-function changePasswordField(label,name,autocomplete){return `<div class="cp-field"><label for="cp-${name}">${label}</label><div class="cp-input-wrap"><input id="cp-${name}" name="${name}" type="password" autocomplete="${autocomplete}" autocapitalize="none" spellcheck="false" required ${name==='currentPassword'?'':'minlength="6"'} aria-describedby="cp-${name}-error${name==='newPassword'?' cp-password-hint':''}"><button type="button" class="cp-visibility" data-cp-visibility="${name}" aria-label="Show ${label.toLowerCase()}" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="cp-eye-slash" d="m4 3 16 18"/></svg></button></div>${name==='newPassword'?'<p class="cp-hint" id="cp-password-hint">Use at least 6 characters.</p>':''}<p class="field-error" id="cp-${name}-error" aria-live="polite" hidden></p></div>`;}
+function changePasswordField(label,name,autocomplete){return `<div class="cp-field"><label for="cp-${name}">${label}</label><div class="cp-input-wrap"><input id="cp-${name}" name="${name}" type="password" autocomplete="${autocomplete}" autocapitalize="none" spellcheck="false" required ${name==='currentPassword'?'':'minlength="6"'} aria-describedby="cp-${name}-error${name==='newPassword'?' cp-password-hint':''}"><button type="button" class="cp-visibility" data-cp-visibility="${name}" aria-label="Show ${label.toLowerCase()}" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path class="cp-eye-slash" d="m4 3 16 18"/></svg></button></div>${name==='newPassword'?'<p class="cp-hint" id="cp-password-hint">Use at least 8 characters.</p>':''}<p class="field-error" id="cp-${name}-error" aria-live="polite" hidden></p></div>`;}
 function changePasswordScreen(){
  const header=`<div class="head cp-head">${backButton({attributes:`data-cp-back`,label:"Back to Profile",className:""})}<h2>Change password</h2></div>`;
  if(!profileContext().hasPassword)return `<div class="change-password-review">${header}<section class="cp-provider"><span class="cp-security-icon">${profileIcon('security')}</span><h3>You sign in with Google</h3><p>Your Google account manages your password. You don’t need a separate Renewless password.</p><button class="secondary" data-cp-back>Back to Profile</button></section></div>`;

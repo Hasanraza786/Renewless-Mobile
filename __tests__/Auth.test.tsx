@@ -72,12 +72,12 @@ test('sign up verifies the email code before the session, then continues to the 
   await act(async () => {
     type(signup, 'Name', 'Sam Lee');
     type(signup, 'Email', 'sam@example.com');
-    type(signup, 'Password', 'secret1');
-    type(signup, 'Confirm password', 'secret2');
+    type(signup, 'Password', 'secret12');
+    type(signup, 'Confirm password', 'secret21');
   });
   await act(async () => { press(signup, 'Create account'); });
   expect(texts(signup)).toContain('Passwords do not match.');
-  await act(async () => { type(signup, 'Confirm password', 'secret1'); });
+  await act(async () => { type(signup, 'Confirm password', 'secret12'); });
   await act(async () => { press(signup, 'Create account'); });
   expect(store.getState().constant.token).toBeNull();
   expect(navigation.navigate).toHaveBeenCalledWith('Otp', { purpose: 'signup', email: 'sam@example.com', intent: 'add_manual' });
