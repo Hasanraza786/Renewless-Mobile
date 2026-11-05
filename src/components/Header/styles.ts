@@ -1,8 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { SIZES } from '../../constants/theme';
+import { COLORS, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
-  side: {
-    minWidth: SIZES.padding * 3.2,
+  main_view: {
+    backgroundColor: COLORS.background,
+    paddingVertical: SIZES.padding3,
   },
 });

@@ -4,8 +4,6 @@ import {
   View,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
-import type { CompositeScreenProps } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Container from '../../components/Container';
 import Header from '../../components/Header';
@@ -14,14 +12,12 @@ import CustomText from '../../components/CustomText';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { loadNotifications } from '../../redux/actions/notifications-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { AppStackParamList, TabParamList } from '../../types';
+import type { AppStackParamList } from '../../types';
 import { formatDate } from '../../utils/dates';
 import { styles } from './styles';
 
-type Props = CompositeScreenProps<
-  BottomTabScreenProps<TabParamList, 'Alerts'>,
-  NativeStackScreenProps<AppStackParamList>
->;
+// Legacy notices list; the Alerts section replaces it.
+type Props = NativeStackScreenProps<AppStackParamList>;
 
 export default function NotificationsScreen({ navigation }: Props) {
   const dispatch = useAppDispatch();

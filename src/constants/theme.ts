@@ -10,11 +10,15 @@ export const COLORS = {
   primary: '#B9E58C',
   accent: '#A6D17B',
   text_primary: '#E8EAED',
+  white: '#FFFFFF',
   text_secondary: '#9DA4AB',
   background: '#151719',
   background_scrim: '#15171959',
   transparent: 'transparent',
   card: '#202326',
+  control_surface: '#24292C',
+  skeleton: '#2C3032',
+  chart_bar: '#D2D9D5',
   hairline: '#34393E',
   control_border: '#69727A',
   expired: '#FF8A8A',
@@ -86,7 +90,6 @@ export const FONTS = {
   regular: 'Raleway-Regular',
   medium: 'Raleway-Medium',
 };
-
 
 export const fonts = FONTS;
 

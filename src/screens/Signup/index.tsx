@@ -8,10 +8,10 @@ import type { AuthStackParamList } from '../../types';
 import useSignup from './index.function';
 import { styles } from './styles';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
+type Props = Pick<NativeStackScreenProps<AuthStackParamList, 'Signup'>, 'route'>;
 
-export default function SignupScreen(props: Props) {
-  const { form, loading, onSubmit, onSocial, openLogin } = useSignup(props);
+export default function SignupScreen({ route }: Props) {
+  const { form, loading, onSubmit, onSocial, openLogin } = useSignup(route);
 
   return (
     <AuthLayout compact title="Create your account" copy="Keep your subscriptions in one place.">

@@ -9,10 +9,10 @@ import type { AuthStackParamList } from '../../types';
 import useOtp, { CODE_LENGTH } from './index.function';
 import { styles } from './styles';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Otp'>;
+type Props = Pick<NativeStackScreenProps<AuthStackParamList, 'Otp'>, 'route'>;
 
-export default function OtpScreen(props: Props) {
-  const otp = useOtp(props);
+export default function OtpScreen({ route }: Props) {
+  const otp = useOtp(route);
   const ref = useBlurOnFulfill({ value: otp.code, cellCount: CODE_LENGTH });
   const [cell_props, getCellOnLayoutHandler] = useClearByFocusCell({ value: otp.code, setValue: otp.onChangeCode });
 

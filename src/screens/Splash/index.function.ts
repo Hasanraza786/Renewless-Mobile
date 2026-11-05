@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing } from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { setSplashSeen } from '../../redux/slices/constant-slice';
 import { useAppDispatch } from '../../redux/store';
-import type { AuthStackParamList } from '../../types';
+import { replace } from '../../navigation/service';
 
 export const BRAND_MOTION = {
   upper_delay: 120,
@@ -79,11 +78,11 @@ export function useSplashReveal(onComplete?: () => void) {
 }
 
 // First-launch only: once the reveal finishes, remember it and continue to Onboarding.
-export default function useSplash(navigation: NativeStackScreenProps<AuthStackParamList, 'Splash'>['navigation']) {
+export default function useSplash() {
   const dispatch = useAppDispatch();
   const onComplete = useCallback(() => {
     dispatch(setSplashSeen());
-    navigation.replace('Onboarding');
-  }, [dispatch, navigation]);
+    replace('Onboarding');
+  }, [dispatch]);
   return useSplashReveal(onComplete);
 }

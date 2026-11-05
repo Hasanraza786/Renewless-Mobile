@@ -38,6 +38,8 @@ export const party_popper_icon = `<svg width="48" height="48" viewBox="0 0 48 48
 
 export const edit_icon = `<svg stroke="${COLORS.primary}" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
+export const chevron_right_icon = `<svg stroke="${COLORS.text_secondary}" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m9 6 6 6-6 6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
 export const chevron_down_icon = `<svg stroke="${COLORS.text_primary}" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m6 9 6 6 6-6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 export const option_check_icon = `<svg stroke="${COLORS.primary}" width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m5 12 4 4 10-10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;

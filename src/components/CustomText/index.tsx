@@ -25,6 +25,7 @@ type Props = {
   line_height?: number | null;
   transform?: TextStyle['textTransform'];
   letter_spacing?: number;
+  accessibility_role?: TextProps['accessibilityRole'];
 };
 
 function CustomText({
@@ -45,6 +46,7 @@ function CustomText({
   line_height,
   transform,
   letter_spacing,
+  accessibility_role,
 }: Props) {
   const font_size = size ?? SIZES.md;
   const base_style = useMemo(
@@ -68,6 +70,7 @@ function CustomText({
   return (
     <Text
       numberOfLines={number_of_lines}
+      accessibilityRole={accessibility_role}
       style={[base_style, style]}
       onLayout={onLayout}
       onPress={onPress}

@@ -1,65 +1,46 @@
-import {
-  Pressable,
-} from 'react-native';
-import CustomText from '../CustomText';
-import RowView from '../RowView';
-import { colorsForStatus, statusLabel } from '../../constants/status_colors';
+import { Pressable, View } from 'react-native';
+import { chevron_right_icon, platform_logos } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
-import type { Subscription } from '../../types';
 import { common_styles } from '../../utils/common_styles';
-import { formatDate } from '../../utils/dates';
-import { formatMoney } from '../../utils/money';
+import CustomText from '../CustomText';
+import Icons from '../Icons';
 import { styles } from './styles';
 
 type Props = {
-  item: Subscription;
+  name: string;
+  platform_id: string;
+  status: { label: string; color: string };
+  // Timing, then optional plan/context lines.
+  lines: string[];
+  amount: string;
+  caption: string;
+  // Opt-in decorative chevron for cards that open Detail (Home, Upcoming).
+  chevron?: boolean;
   onPress?: () => void;
+  accessibility_label?: string;
 };
 
-export default function SubscriptionCard({ item, onPress }: Props) {
-  const tone = colorsForStatus(item.status);
-  const renewal =
-    item.renewalSource === 'predicted'
-      ? `${formatDate(item.nextRenewal)} Estimated`
-      : formatDate(item.nextRenewal);
+// The one shared tracked-subscription card: logo, name, status, timing/context lines and the amount.
+export default function SubscriptionCard({ name, platform_id, status, lines, amount, caption, chevron, onPress, accessibility_label }: Props) {
+  const logo = platform_logos[platform_id];
 
   return (
-    <Pressable
-      accessibilityRole="button"
-      onPress={onPress}
-      style={styles.card}>
-      <RowView justify_content="space-between" gap={SIZES.padding2}>
-        <CustomText text={item.name} size={SIZES.md} style={common_styles.flex_1} />
-        <CustomText
-          text={statusLabel(item.status)}
-          size={SIZES.sm}
-          color={tone.text}
-          style={[styles.badge, { backgroundColor: tone.background }]}
-        />
-      </RowView>
-      <CustomText
-        text={`Renews ${renewal}`}
-        weight={FONTS.regular}
-        color={COLORS.text_secondary}
-        size={SIZES.sm}
-        mt={SIZES.padding3}
-      />
-      <CustomText
-        text={`Started ${formatDate(item.startDate)}`}
-        weight={FONTS.regular}
-        color={COLORS.text_secondary}
-        size={SIZES.sm}
-        mt={SIZES.padding3}
-      />
-      <CustomText text={formatMoney(item.price, item.currency)} size={SIZES.lg} mt={SIZES.padding / 2} />
-      {item.note ? (
-        <CustomText
-          text={item.note}
-          weight={FONTS.regular}
-          size={SIZES.md}
-          mt={SIZES.padding / 2}
-        />
-      ) : null}
+    <Pressable accessibilityRole="button" accessibilityLabel={accessibility_label ?? name} onPress={onPress} style={({ pressed }) => [styles.main_view, pressed && styles.pressed]}>
+      <View style={styles.avatar}>
+        {logo ? <Icons name={logo} /> : <CustomText text={name.charAt(0)} size={SIZES.sm} />}
+      </View>
+      <View style={common_styles.flex_1}>
+        <CustomText text={name} size={SIZES.lg} />
+        <CustomText mt={SIZES.padding / 4} text={status.label} weight={FONTS.regular} color={status.color} size={SIZES.sm} />
+        {lines.map(line => (
+          <CustomText key={line} mt={SIZES.padding * 0.15} text={line} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        ))}
+      </View>
+      <View style={styles.amount}>
+        <CustomText text={amount} weight={FONTS.regular} size={SIZES.lg} align="center" />
+        <CustomText mt={SIZES.padding / 5} text={caption} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
+      </View>
+      {chevron ? <Icons name={chevron_right_icon} /> : null}
     </Pressable>
   );
 }

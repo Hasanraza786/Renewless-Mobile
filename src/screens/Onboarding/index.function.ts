@@ -10,8 +10,9 @@ import {
 import { toggleCandidate, updateCandidate } from '../../redux/slices/onboarding-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList, OnboardingStep, ScanCandidate } from '../../types';
+import { navigate, resetRoot } from '../../navigation/service';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>;
+type Route = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>['route'];
 
 // Progress stage (1–5) and the approved logical Back target of each panel.
 export const ONBOARDING_STEPS: Record<OnboardingStep, { stage: number; back?: OnboardingStep }> = {
@@ -30,7 +31,7 @@ export const SCAN_POLL_MS = 1000;
 // Brief pause on the completed stages before results open on their own.
 export const SCAN_COMPLETE_HOLD_MS = 650;
 
-export default function useOnboarding({ navigation, route }: Props) {
+export default function useOnboarding(route: Route) {
   const dispatch = useAppDispatch();
   const onboarding_state = useAppSelector(state => state.onboarding);
   const user_name = useAppSelector(state => state.profile.user?.name ?? '');
@@ -133,7 +134,7 @@ export default function useOnboarding({ navigation, route }: Props) {
     if (await dispatch(saveOnboardingFinds())) goTo('readyToGo');
   };
 
-  const openDashboard = () => navigation.getParent()?.reset({ index: 0, routes: [{ name: 'Tabs' }] });
+  const openDashboard = () => resetRoot([{ name: 'Tabs' }]);
 
   return {
     ...onboarding_state,
@@ -156,9 +157,9 @@ export default function useOnboarding({ navigation, route }: Props) {
       setEditingId('');
     },
     save,
-    openLogin: () => navigation.navigate('Login'),
+    openLogin: () => navigate('Login'),
     // Manual entry: the Add form when signed in, otherwise sign up first and continue to it.
-    openManual: () => (signed_in ? navigation.getParent()?.navigate('AddSubscription') : navigation.navigate('Signup', { intent: 'add_manual' })),
+    openManual: () => (signed_in ? navigate('AddSubscription') : navigate('Signup', { intent: 'add_manual' })),
     openLegal: () => Alert.alert('Not available yet', 'Terms and Privacy will be available before release.'),
     openDashboard,
     // Zero selection: continue to the actual (possibly empty) dashboard without a fake success.

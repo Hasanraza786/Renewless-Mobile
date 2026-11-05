@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { DashboardData, DashboardState } from '../../types';
+import type { DashboardState, HomeSnapshot } from '../../types';
 
 const initial_state: DashboardState = {
   data: null,
@@ -11,7 +11,7 @@ const dashboardSlice = createSlice({
   name: 'dashboard',
   initialState: initial_state,
   reducers: {
-    setDashboardData(state, action: PayloadAction<DashboardData>) {
+    setDashboardData(state, action: PayloadAction<HomeSnapshot>) {
       state.data = action.payload;
     },
     setDashboardLoading(state, action: PayloadAction<boolean>) {

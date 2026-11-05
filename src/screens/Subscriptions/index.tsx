@@ -23,7 +23,7 @@ import { common_styles } from '../../utils/common_styles';
 import { styles } from './styles';
 
 type Props = CompositeScreenProps<
-  BottomTabScreenProps<TabParamList, 'Subscriptions'>,
+  BottomTabScreenProps<TabParamList, 'List'>,
   NativeStackScreenProps<AppStackParamList>
 >;
 
@@ -105,7 +105,12 @@ export default function SubscriptionsScreen({ navigation }: Props) {
           }
           renderItem={({ item }) => (
             <SubscriptionCard
-              item={item}
+              name={item.name}
+              platform_id=""
+              status={{ label: statusLabel(item.status), color: colorsForStatus(item.status).text }}
+              lines={[`Renews ${item.nextRenewal}`]}
+              amount={`${item.currency} ${item.price.toFixed(2)}`}
+              caption={item.cycle}
               onPress={() => navigation.navigate('SubscriptionDetail', { id: item.id })}
             />
           )}

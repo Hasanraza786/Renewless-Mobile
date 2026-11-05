@@ -1,38 +1,44 @@
-import {
-  Pressable,
-  View,
-} from 'react-native';
-import CustomText from '../CustomText';
-import RowView from '../RowView';
-import { COLORS, SIZES } from '../../constants/theme';
+import { Pressable, View } from 'react-native';
+import { back_icon, bell_icon, plus_icon } from '../../assets/icons';
+import { FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
+import CustomText from '../CustomText';
+import Icons from '../Icons';
+import RowView from '../RowView';
 import { styles } from './styles';
+import { navigate } from '../../navigation/service';
 
 type Props = {
   title: string;
   onBack?: () => void;
-  action_label?: string;
-  onAction?: () => void;
+  // Header + on Home/List/Calendar opens the Add sheet.
+  onAdd?: () => void;
 };
 
-export default function Header({ title, onBack, action_label, onAction }: Props) {
+const HIT_SLOP = SIZES.padding3 / 4;
+
+// Fixed authenticated header: optional Back, title, then the shared Alerts bell and optional Add.
+export default function Header({ title, onBack, onAdd }: Props) {
   return (
-    <RowView gap={0} style={{ marginBottom: SIZES.padding * 0.9 }}>
+    <RowView gap={SIZES.padding2} style={styles.main_view}>
       {onBack ? (
-        <Pressable accessibilityRole="button" onPress={onBack} style={styles.side}>
-          <CustomText text="Back" color={COLORS.text_primary} size={SIZES.md} />
+        <Pressable accessibilityRole="button" accessibilityLabel="Back" hitSlop={HIT_SLOP} onPress={onBack}>
+          <Icons name={back_icon} />
         </Pressable>
-      ) : (
-        <View style={styles.side} />
-      )}
-      <CustomText text={title} size={SIZES.h3} align="center" style={common_styles.flex_1} />
-      {action_label && onAction ? (
-        <Pressable accessibilityRole="button" onPress={onAction} style={styles.side}>
-          <CustomText text={action_label} color={COLORS.primary} size={SIZES.md} align="right" />
+      ) : null}
+      <View style={common_styles.flex_1}>
+        <CustomText text={title} weight={FONTS.medium} size={SIZES.h3} accessibility_role="header" number_of_lines={1} />
+      </View>
+      <RowView gap={SIZES.padding3}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Alerts" hitSlop={HIT_SLOP} onPress={() => navigate('ComingSoon', { title: 'Alerts' })}>
+          <Icons name={bell_icon} />
         </Pressable>
-      ) : (
-        <View style={styles.side} />
-      )}
+        {onAdd ? (
+          <Pressable accessibilityRole="button" accessibilityLabel="Add subscription" hitSlop={HIT_SLOP} onPress={onAdd}>
+            <Icons name={plus_icon} />
+          </Pressable>
+        ) : null}
+      </RowView>
     </RowView>
   );
 }

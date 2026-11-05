@@ -19,7 +19,7 @@ import { styles } from './styles';
 import RowView from '../../components/RowView';
 import SizedBox from '../../components/SizedBox';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>;
+type Props = Pick<NativeStackScreenProps<AuthStackParamList, 'Onboarding'>, 'route'>;
 type Panel = {
   Body: (props: { onboarding: OnboardingController }) => ReactNode;
   Footer: Panel['Body'];
@@ -39,8 +39,8 @@ const PANELS: Record<OnboardingStep, Panel> = {
 
 const STAGE_COUNT = 5;
 
-export default function Onboarding(props: Props) {
-  const onboarding = useOnboarding(props);
+export default function Onboarding({ route }: Props) {
+  const onboarding = useOnboarding(route);
   const { Body, Footer, fitted } = PANELS[onboarding.step];
 
   return (

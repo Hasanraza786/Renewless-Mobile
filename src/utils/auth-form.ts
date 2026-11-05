@@ -1,6 +1,7 @@
 import { useRef, useState, type ComponentRef } from 'react';
 import type { TextInput } from 'react-native';
 import type { AuthIntent } from '../types';
+import { resetRoot } from '../navigation/service';
 
 export type AuthField = 'name' | 'email' | 'password' | 'confirm';
 
@@ -72,10 +73,7 @@ export function useAuthForm<K extends AuthField>(fields: K[], initial: Partial<R
   return { form_data: latest.current, errors, setErrors, validateAll, fieldProps, focusField };
 }
 
-type RootNavigation = { getParent: () => { reset: (state: { index: number; routes: { name: string }[] }) => void } | undefined };
-
 // After authentication: the Add form for manual entry (above Home), otherwise Home.
-export function enterApp(navigation: RootNavigation, intent?: AuthIntent) {
-  const routes = intent === 'add_manual' ? [{ name: 'Tabs' }, { name: 'AddSubscription' }] : [{ name: 'Tabs' }];
-  navigation.getParent()?.reset({ index: routes.length - 1, routes });
+export function enterApp(intent?: AuthIntent) {
+  resetRoot(intent === 'add_manual' ? [{ name: 'Tabs' }, { name: 'AddSubscription' }] : [{ name: 'Tabs' }]);
 }

@@ -3,10 +3,11 @@ import { signInSocial, signup } from '../../redux/actions/auth-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthProvider, AuthStackParamList } from '../../types';
 import { enterApp, useAuthForm } from '../../utils/auth-form';
+import { navigate } from '../../navigation/service';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
+type Route = NativeStackScreenProps<AuthStackParamList, 'Signup'>['route'];
 
-export default function useSignup({ navigation, route }: Props) {
+export default function useSignup(route: Route) {
   const dispatch = useAppDispatch();
   const intent = route.params?.intent;
   const loading = useAppSelector(state => state.auth.loading.signup || state.auth.loading.social);
@@ -18,11 +19,11 @@ export default function useSignup({ navigation, route }: Props) {
     // The account gets a session only after its email code is verified.
     const error = await dispatch(signup({ name: name.trim(), email: email.trim(), password }));
     if (error) form.setErrors({ email: error });
-    else navigation.navigate('Otp', { purpose: 'signup', email: email.trim(), intent });
+    else navigate('Otp', { purpose: 'signup', email: email.trim(), intent });
   };
 
   const onSocial = async (provider: AuthProvider) => {
-    if (await dispatch(signInSocial(provider))) enterApp(navigation, intent);
+    if (await dispatch(signInSocial(provider))) enterApp(intent);
   };
 
   return {
@@ -30,6 +31,6 @@ export default function useSignup({ navigation, route }: Props) {
     loading,
     onSubmit,
     onSocial,
-    openLogin: () => navigation.navigate('Login', { intent }),
+    openLogin: () => navigate('Login', { intent }),
   };
 }

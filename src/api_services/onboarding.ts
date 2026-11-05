@@ -67,3 +67,8 @@ export async function importCandidates(job_id: string, candidates: ScanCandidate
   for (const item of candidates) if (!job.imported.has(item.id)) job.imported.set(item.id, item);
   return [...job.imported.values()];
 }
+
+// Every record saved from any scan, for the mock Home.
+export function importedRecords(): ScanCandidate[] {
+  return [...jobs.values()].flatMap(job => [...job.imported.values()]);
+}

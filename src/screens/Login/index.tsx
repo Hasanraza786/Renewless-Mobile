@@ -9,10 +9,10 @@ import type { AuthStackParamList } from '../../types';
 import useLogin from './index.function';
 import { styles } from './styles';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+type Props = Pick<NativeStackScreenProps<AuthStackParamList, 'Login'>, 'route'>;
 
-export default function LoginScreen(props: Props) {
-  const { form, loading, onSubmit, onSocial, openForgot, openSignup } = useLogin(props);
+export default function LoginScreen({ route }: Props) {
+  const { form, loading, onSubmit, onSocial, openForgot, openSignup } = useLogin(route);
 
   return (
     <AuthLayout title="Welcome back" copy="Keep your next renewal in sight.">

@@ -30,14 +30,71 @@ export type Subscription = {
   note: string | null;
 };
 
-export type MonthTotal = { currency: string; amount: number };
+// Exact decimal amount per currency; currencies are never converted or combined.
+export type MoneyTotal = { currency: string; amount: string };
 
-export type DashboardData = {
-  active: number;
-  renewingSoon: number;
-  thisMonth: MonthTotal[];
-  expired: number;
-  upcoming: Subscription[];
+// One renewal or trial ending on a local calendar date, with the owning subscription's stable ID.
+export type HomeEvent = {
+  id: string;
+  subscription_id: string;
+  platform_id: string;
+  name: string;
+  plan: string | null;
+  date: string;
+  kind: 'renewal' | 'trial_end';
+  amount: string;
+  currency: string;
+  cycle: ScanCycle;
+  // False for a trial that ends without a charge.
+  expected_charge: boolean;
+  estimated: boolean;
+};
+
+export type HomePlatformSpend = {
+  platform_id: string;
+  name: string;
+  amount: string;
+  percent: number;
+  subscription_count: number;
+};
+
+export type HomeSpending = {
+  currency: string;
+  total: string;
+  platforms: HomePlatformSpend[];
+  others: { amount: string; percent: number; platform_count: number } | null;
+};
+
+export type HomeTrial = {
+  subscription_id: string;
+  platform_id: string;
+  name: string;
+  end_date: string;
+  then_amount: string;
+  currency: string;
+  cycle: ScanCycle;
+};
+
+// Server-authoritative Home snapshot in the user's local calendar.
+export type HomeSnapshot = {
+  as_of: string;
+  today: string;
+  has_subscriptions: boolean;
+  // Every event on the nearest date within the next seven days; empty means the quiet state.
+  nearest_events: HomeEvent[];
+  // Distinct subscriptions shown by Upcoming (See all).
+  upcoming_count: number;
+  month: {
+    month: string;
+    paid: MoneyTotal[];
+    receipt_count: number;
+    upcoming: MoneyTotal[];
+    charge_count: number;
+  };
+  spending: HomeSpending[];
+  trials: HomeTrial[];
+  // Six months from the current one, scheduled charges per currency.
+  forecast: { currency: string; months: { month: string; amount: string }[] }[];
 };
 
 export type RenewalNotice = {
@@ -91,7 +148,7 @@ export type ProfileState = {
 };
 
 export type DashboardState = {
-  data: DashboardData | null;
+  data: HomeSnapshot | null;
   loading: boolean;
   error: string;
 };
@@ -206,10 +263,10 @@ export type AuthIntent = 'add_manual';
 export type AuthProvider = 'google' | 'apple';
 
 export type TabParamList = {
-  Dashboard: undefined;
-  Subscriptions: undefined;
+  Home: undefined;
+  List: undefined;
   Calendar: undefined;
-  Alerts: undefined;
+  Payments: undefined;
   Profile: undefined;
 };
 
@@ -224,4 +281,6 @@ export type AppStackParamList = {
   ChangePassword: undefined;
   AddConnector: undefined;
   Review: { connectorId: string; email: string };
+  // shortcut: dev-only stand-in for destinations whose sections are not built yet; each section replaces its use.
+  ComingSoon: { title: string };
 };

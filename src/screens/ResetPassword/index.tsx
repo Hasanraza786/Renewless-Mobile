@@ -8,10 +8,10 @@ import type { AuthStackParamList } from '../../types';
 import useResetPassword from './index.function';
 import { styles } from './styles';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'ResetPassword'>;
+type Props = Pick<NativeStackScreenProps<AuthStackParamList, 'ResetPassword'>, 'route'>;
 
-export default function ResetPasswordScreen(props: Props) {
-  const { form, loading, error, onSubmit, onBack } = useResetPassword(props);
+export default function ResetPasswordScreen({ route }: Props) {
+  const { form, loading, error, onSubmit, onBack } = useResetPassword(route);
   const confirm = form.fieldProps('confirm');
 
   return (

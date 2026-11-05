@@ -1,15 +1,11 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import AuthLayout, { AuthFooterLink } from '../../components/AuthLayout';
 import CustomButton from '../../components/CustomButton';
 import InputField from '../../components/InputField';
-import type { AuthStackParamList } from '../../types';
 import useForgotPassword from './index.function';
 import { styles } from './styles';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'ForgotPassword'>;
-
-export default function ForgotPasswordScreen(props: Props) {
-  const { form, loading, error, onSubmit, onBack, openLogin } = useForgotPassword(props);
+export default function ForgotPasswordScreen() {
+  const { form, loading, error, onSubmit, onBack, openLogin } = useForgotPassword();
   const email = form.fieldProps('email');
 
   return (

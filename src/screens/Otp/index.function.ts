@@ -5,12 +5,13 @@ import { resendCode, verifyCode } from '../../redux/actions/auth-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList } from '../../types';
 import { enterApp } from '../../utils/auth-form';
+import { goBack, navigate } from '../../navigation/service';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Otp'>;
+type Route = NativeStackScreenProps<AuthStackParamList, 'Otp'>['route'];
 
 export const CODE_LENGTH = 6;
 
-export default function useOtp({ navigation, route }: Props) {
+export default function useOtp(route: Route) {
   const { purpose, email, intent } = route.params;
   const dispatch = useAppDispatch();
   const loading = useAppSelector(state => state.auth.loading.otp);
@@ -28,8 +29,8 @@ export default function useOtp({ navigation, route }: Props) {
     const result = await dispatch(verifyCode(purpose, email, code));
     if (!result) return setCodeError('That code is incorrect or has expired.');
     // Signup verification signs in; reset verification only authorizes choosing a new password.
-    if ('reset_token' in result) navigation.navigate('ResetPassword', { reset_token: result.reset_token });
-    else enterApp(navigation, intent);
+    if ('reset_token' in result) navigate('ResetPassword', { reset_token: result.reset_token });
+    else enterApp(intent);
   };
 
   // shortcut: resend feedback uses a system alert; replace if a shared toast/notice is designed.
@@ -47,6 +48,6 @@ export default function useOtp({ navigation, route }: Props) {
     onChangeCode,
     onSubmit,
     onResend,
-    onBack: navigation.goBack,
+    onBack: goBack,
   };
 }

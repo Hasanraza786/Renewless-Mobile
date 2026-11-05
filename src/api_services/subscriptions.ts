@@ -1,4 +1,4 @@
-import type { Cycle, DashboardData, RenewalNotice, Subscription } from '../types';
+import type { Cycle, RenewalNotice, Subscription } from '../types';
 import { request } from './http';
 
 export type SubscriptionInput = {
@@ -10,10 +10,6 @@ export type SubscriptionInput = {
   nextRenewal: string;
   note?: string;
 };
-
-export function getDashboard(token: string) {
-  return request<DashboardData>('/dashboard', { token });
-}
 
 export function listSubscriptions(token: string) {
   return request<{ subscriptions: Subscription[] }>('/subscriptions', { token });

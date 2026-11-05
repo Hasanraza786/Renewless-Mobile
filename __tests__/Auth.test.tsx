@@ -12,6 +12,9 @@ import constantReducer from '../src/redux/slices/constant-slice';
 import authReducer from '../src/redux/slices/auth-slice';
 import profileReducer from '../src/redux/slices/profile-slice';
 import { resetMockAuth } from '../src/api_services/auth';
+import { navigate, popTo, resetRoot } from '../src/navigation/service';
+
+jest.mock('../src/navigation/service', () => ({ navigate: jest.fn(), popTo: jest.fn(), goBack: jest.fn(), resetRoot: jest.fn() }));
 
 jest.mock('../src/config/api', () => ({ API_BASE_URL: '', USE_MOCK_API: true }));
 jest.mock('react-native-safe-area-context', () => ({ SafeAreaView: require('react-native').View, useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }) }));
@@ -31,14 +34,15 @@ const press = (tree: Tree, label: string) =>
   tree.root.find(node => typeof node.props.onPress === 'function' && (node.props.accessibilityLabel === label || node.findAll(child => child.props.text === label).length > 0)).props.onPress();
 const type = (tree: Tree, label: string, value: string) =>
   tree.root.find(node => node.props.accessibilityLabel === label && typeof node.props.onChangeText === 'function').props.onChangeText(value);
+// Screens navigate through the navigation service; each test reads its calls.
 const navigationMock = () => {
-  const root = { reset: jest.fn() };
-  return { root, navigation: { navigate: jest.fn(), popTo: jest.fn(), goBack: jest.fn(), getParent: () => root } as any };
+  jest.clearAllMocks();
+  return { root: { reset: resetRoot as jest.Mock }, navigation: { navigate: navigate as jest.Mock, popTo: popTo as jest.Mock } };
 };
-const render = async (Screen: React.ComponentType<any>, store: ReturnType<typeof makeStore>, navigation: any, params?: object) => {
+const render = async (Screen: React.ComponentType<any>, store: ReturnType<typeof makeStore>, _navigation: unknown, params?: object) => {
   let tree: Tree;
   await act(async () => {
-    tree = ReactTestRenderer.create(<Provider store={store}><Screen navigation={navigation} route={{ key: 'k', name: 'S', params }} /></Provider>);
+    tree = ReactTestRenderer.create(<Provider store={store}><Screen route={{ key: 'k', name: 'S', params }} /></Provider>);
   });
   return tree!;
 };
@@ -61,7 +65,7 @@ test('login validates, keeps credential errors generic, and enters Home on succe
   await act(async () => { type(tree, 'Password', 'sample123'); });
   await act(async () => { press(tree, 'Log in'); });
   expect(store.getState().constant.token).toBe('mock-token-mock-user-1');
-  expect(root.reset).toHaveBeenCalledWith({ index: 0, routes: [{ name: 'Tabs' }] });
+  expect(root.reset).toHaveBeenCalledWith([{ name: 'Tabs' }]);
   await act(async () => { tree.unmount(); });
 });
 
@@ -90,7 +94,7 @@ test('sign up verifies the email code before the session, then continues to the 
   await act(async () => { type(otp, 'Verification code', '481926'); });
   await act(async () => { press(otp, 'Verify email'); });
   expect(store.getState().profile.user?.name).toBe('Sam Lee');
-  expect(root.reset).toHaveBeenCalledWith({ index: 1, routes: [{ name: 'Tabs' }, { name: 'AddSubscription' }] });
+  expect(root.reset).toHaveBeenCalledWith([{ name: 'Tabs' }, { name: 'AddSubscription' }]);
 
   // Resend respects the cooldown.
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});

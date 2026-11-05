@@ -3,6 +3,7 @@ export {
   arrow_icon,
   calendar_icon,
   chevron_down_icon,
+  chevron_right_icon,
   info_icon,
   check_icon,
   check_dark_icon,
@@ -21,8 +22,10 @@ export {
   retry_icon,
   track_icon,
 } from './onboarding_icons';
-export { gmail_logo, icloud_logo, netflix_logo, platform_logos, spotify_logo } from './platform_logos';
+export { duolingo_logo, figma_logo, gmail_logo, icloud_logo, netflix_logo, notion_logo, platform_logos, spotify_logo } from './platform_logos';
 export { default as back_icon } from './back_icon';
+export { default as bell_icon } from './bell_icon';
+export { default as plus_icon } from './plus_icon';
 export { default as logo_mark } from './logo_mark';
 export { default as loop_mascot } from './loop_mascot';
 export { LOOP_FACES, LOOP_OUTLINE, LOOP_OUTLINE_LENGTH } from './loop_parts';

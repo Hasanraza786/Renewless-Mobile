@@ -1,4 +1,4 @@
-import { getDashboard } from '../../api_services/subscriptions';
+import { getHome } from '../../api_services/home';
 import { runRequest, type AppThunk } from '../runRequest';
 import {
   setDashboardData,
@@ -12,7 +12,7 @@ export function loadDashboard(): AppThunk {
     if (!token) return;
     await dispatch(
       runRequest({
-        request: () => getDashboard(token),
+        request: () => getHome(token),
         loading: setDashboardLoading,
         error: setDashboardError,
         success: setDashboardData,

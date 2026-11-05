@@ -1,20 +1,27 @@
-import { NavigationContainer } from '@react-navigation/native';
+import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppSelector } from '../redux/store';
-import { AddConnectorScreen, AddSubscriptionScreen, ChangePasswordScreen, ConnectorsScreen, EditProfileScreen, EditSubscriptionScreen, ReviewScreen, SubscriptionDetailScreen } from '../screens';
+import { AddConnectorScreen, AddSubscriptionScreen, ChangePasswordScreen, ComingSoonScreen, ConnectorsScreen, EditProfileScreen, EditSubscriptionScreen, ReviewScreen, SubscriptionDetailScreen } from '../screens';
 import type { AppStackParamList } from '../types';
 import AuthStack from './AuthStack';
 import { stack_options } from '../config';
 import Tabs from './Tabs';
+import { COLORS } from '../constants/theme';
+import { navigationRef } from './service';
 
 const AppStack = createNativeStackNavigator<AppStackParamList>();
 
+// Dark-only app: native tabs and system chrome take the dark scheme (dark Liquid Glass tab bar).
+const theme: Theme = {
+  ...DarkTheme,
+  colors: { ...DarkTheme.colors, primary: COLORS.primary, background: COLORS.background, card: COLORS.card, text: COLORS.text_primary, border: COLORS.hairline },
+};
 
 export default function MainNavigator() {
   const token = useAppSelector(state => state.constant.token);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef} theme={theme}>
       <AppStack.Navigator initialRouteName={token ? "Tabs" : "AuthStack"} screenOptions={stack_options}>
         <AppStack.Screen name="AuthStack" component={AuthStack} />
         <AppStack.Screen name="Tabs" component={Tabs} />
@@ -26,6 +33,7 @@ export default function MainNavigator() {
         <AppStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <AppStack.Screen name="AddConnector" component={AddConnectorScreen} />
         <AppStack.Screen name="Review" component={ReviewScreen} />
+        <AppStack.Screen name="ComingSoon" component={ComingSoonScreen} />
       </AppStack.Navigator>
     </NavigationContainer>
   );

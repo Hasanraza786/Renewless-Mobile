@@ -19,6 +19,7 @@ jest.mock('react-native-svg', () => {
   return { __esModule: true, default: NativeView, Circle: NativeView, Defs: NativeView, RadialGradient: NativeView, LinearGradient: NativeView, Rect: NativeView, Stop: NativeView, Path: NativeView, Ellipse: NativeView, SvgXml: NativeView };
 });
 jest.mock('../src/redux/store', () => {
+jest.mock('../src/navigation/service', () => ({ navigate: jest.fn(), resetRoot: jest.fn() }));
   const redux = require('react-redux');
   return { useAppDispatch: () => redux.useDispatch(), useAppSelector: redux.useSelector };
 });
@@ -42,10 +43,9 @@ beforeEach(() => {
 afterEach(() => { jest.restoreAllMocks(); jest.useRealTimers(); });
 
 const mount = async (store: ReturnType<typeof makeStore>) => {
-  const navigation = { navigate: jest.fn(), getParent: () => ({ reset: jest.fn(), navigate: jest.fn() }) } as any;
   let tree: ReactTestRenderer.ReactTestRenderer;
   await act(async () => {
-    tree = ReactTestRenderer.create(<Provider store={store}><Onboarding navigation={navigation} route={{ key: 'o', name: 'Onboarding' } as any} /></Provider>);
+    tree = ReactTestRenderer.create(<Provider store={store}><Onboarding route={{ key: 'o', name: 'Onboarding' } as any} /></Provider>);
   });
   await act(async () => { press(tree!, 'Find my subscriptions →'); });
   await act(async () => { press(tree!, 'Find my subscriptions →'); }); // ignored mid-transition
