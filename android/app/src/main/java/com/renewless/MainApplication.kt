@@ -1,4 +1,4 @@
-package com.renewless.app
+package com.renewless
 
 import android.app.Application
 import com.facebook.react.PackageList
