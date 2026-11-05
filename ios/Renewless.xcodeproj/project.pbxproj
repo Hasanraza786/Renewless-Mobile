@@ -13,6 +13,7 @@
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		761780F12CA45674006654F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780F02CA45674006654F1 /* SceneDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8CCE363C309CBB310028D272 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CCE363B309CBB310028D272 /* GoogleService-Info.plist */; };
 		F0E7A13A2CA4567400665403 /* Raleway-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0E7A11A2CA4567400665401 /* Raleway-Regular.ttf */; };
 		F0E7A14A2CA4567400665404 /* Raleway-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0E7A12A2CA4567400665402 /* Raleway-Medium.ttf */; };
 /* End PBXBuildFile section */
@@ -28,6 +29,8 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Renewless/AppDelegate.swift; sourceTree = "<group>"; };
 		761780F02CA45674006654F1 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = Renewless/SceneDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Renewless/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		8CCE363B309CBB310028D272 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		8CCE363D309CBB6F0028D272 /* Renewless.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Renewless.entitlements; path = Renewless/Renewless.entitlements; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F0E7A11A2CA4567400665401 /* Raleway-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Raleway-Regular.ttf"; path = "Renewless/Fonts/Raleway-Regular.ttf"; sourceTree = "<group>"; };
 		F0E7A12A2CA4567400665402 /* Raleway-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Raleway-Medium.ttf"; path = "Renewless/Fonts/Raleway-Medium.ttf"; sourceTree = "<group>"; };
@@ -48,6 +51,7 @@
 		13B07FAE1A68108700A75B9A /* Renewless */ = {
 			isa = PBXGroup;
 			children = (
+				8CCE363D309CBB6F0028D272 /* Renewless.entitlements */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				761780EC2CA45674006654EE /* AppDelegate.swift */,
 				761780F02CA45674006654F1 /* SceneDelegate.swift */,
@@ -79,6 +83,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				8CCE363B309CBB310028D272 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* Renewless */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				83CBBA001A601CBA00E9B192 /* Products */,
@@ -172,6 +177,7 @@
 				56DD18AC081ED86A71D7AA64 /* PrivacyInfo.xcprivacy in Resources */,
 				F0E7A13A2CA4567400665403 /* Raleway-Regular.ttf in Resources */,
 				F0E7A14A2CA4567400665404 /* Raleway-Medium.ttf in Resources */,
+				8CCE363C309CBB310028D272 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,7 +277,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Renewless/Renewless.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7K3NY3SR6K;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Renewless/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -285,7 +293,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.renewless.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.renewless;
 				PRODUCT_NAME = Renewless;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -301,7 +309,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Renewless/Renewless.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7K3NY3SR6K;
 				INFOPLIST_FILE = Renewless/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -314,7 +324,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.renewless.app;
+				PRODUCT_BUNDLE_IDENTIFIER = com.renewless;
 				PRODUCT_NAME = Renewless;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;

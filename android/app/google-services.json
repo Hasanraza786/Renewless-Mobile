@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "144689953825",
+    "project_id": "renewless-11ddb",
+    "storage_bucket": "renewless-11ddb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:144689953825:android:afc58f11fe437699b0f760",
+        "android_client_info": {
+          "package_name": "com.renewless"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "144689953825-hu2rt6k7ipouhtvgreaf45al179pr3jc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.renewless",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "144689953825-p7vppcan22ad9ljbj9j8a9arlr23toom.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB3kZ19ARoIJgnkRadE1tb9xaIthAidxvg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "144689953825-p7vppcan22ad9ljbj9j8a9arlr23toom.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "144689953825-mamrtekgu5urv52i6oj6osrjeh3uorvd.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.renewless"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
