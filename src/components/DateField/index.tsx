@@ -12,6 +12,7 @@ type Props = {
   // Local calendar date as YYYY-MM-DD; null when not set.
   value: string | null;
   minimum?: string;
+  maximum?: string;
   onChange: (value: string) => void;
 };
 
@@ -23,7 +24,7 @@ const toIso = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 // Date input that expands the native inline calendar below the field.
-export default function DateField({ label, value, minimum, onChange }: Props) {
+export default function DateField({ label, value, minimum, maximum, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const shown = value ? toDate(value).toLocaleDateString('en-GB') : 'dd/mm/yyyy';
 
@@ -47,6 +48,7 @@ export default function DateField({ label, value, minimum, onChange }: Props) {
           accentColor={COLORS.primary}
           value={value ? toDate(value) : new Date()}
           minimumDate={minimum ? toDate(minimum) : undefined}
+          maximumDate={maximum ? toDate(maximum) : undefined}
           onChange={(_, date) => date && onChange(toIso(date))}
         />
       ) : null}

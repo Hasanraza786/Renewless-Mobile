@@ -61,7 +61,9 @@ export type HomePlatformSpend = {
 export type HomeSpending = {
   currency: string;
   total: string;
+  // Top three for Home; every paid platform for Spending breakdown.
   platforms: HomePlatformSpend[];
+  all_platforms: HomePlatformSpend[];
   others: { amount: string; percent: number; platform_count: number } | null;
 };
 
@@ -84,17 +86,89 @@ export type HomeSnapshot = {
   nearest_events: HomeEvent[];
   // Distinct subscriptions shown by Upcoming (See all).
   upcoming_count: number;
+  // Upcoming: each dated subscription's next event, date ascending, through upcoming_until.
+  upcoming: HomeEvent[];
+  upcoming_until: string;
   month: {
     month: string;
     paid: MoneyTotal[];
     receipt_count: number;
     upcoming: MoneyTotal[];
     charge_count: number;
+    // This month: full-month expected total and every scheduled event, earlier ones included.
+    expected: MoneyTotal[];
+    events: HomeEvent[];
   };
   spending: HomeSpending[];
   trials: HomeTrial[];
   // Six months from the current one, scheduled charges per currency.
   forecast: { currency: string; months: { month: string; amount: string }[] }[];
+};
+
+export type TrackingStatus = 'active' | 'cancelled' | 'expired';
+
+export type PriceChange = {
+  id: string;
+  reason: 'price_changed' | 'correction';
+  from_amount: string;
+  from_cycle: ScanCycle;
+  to_amount: string;
+  to_cycle: ScanCycle;
+  currency: string;
+  effective_on: string;
+  source: 'user' | 'gmail';
+};
+
+export type Receipt = { id: string; subscription_id: string; amount: string; currency: string; paid_on: string };
+
+// Per-subscription override: follow the account default, Off, or one or more days before the event.
+export type ReminderPreference = { mode: 'default' } | { mode: 'off' } | { mode: 'days'; days: number[] };
+
+// A tracked subscription as the backend owns it (stable ID; dates are local YYYY-MM-DD).
+export type SubscriptionRecord = {
+  id: string;
+  platform_id: string;
+  name: string;
+  plan: string | null;
+  category: string;
+  price: string;
+  currency: string;
+  cycle: ScanCycle;
+  next_date: string | null;
+  estimated: boolean;
+  // Tracking assumption, not a provider setting; null = not set.
+  auto_renew: boolean | null;
+  trial: { start_date: string; end_date: string; auto_renew: boolean } | null;
+  status: TrackingStatus;
+  cancelled_on: string | null;
+  access_until: string | null;
+  start_date: string | null;
+  source: { kind: 'manual' | 'gmail'; email: string };
+  inbox: { email: string; last_sync: string } | null;
+  reminder: ReminderPreference;
+  notes: string | null;
+  manage_url: string | null;
+  price_history: PriceChange[];
+};
+
+// Detail: the record plus server-computed spending and relations.
+export type SubscriptionDetail = {
+  record: SubscriptionRecord;
+  today: string;
+  receipts: { totals: MoneyTotal[]; count: number };
+  annual_estimate: string;
+  related_count: number;
+  // Account default reminder days (Reminder settings), shown and used by "Account default".
+  account_reminder_days: number[];
+};
+
+export type DetailState = {
+  detail: SubscriptionDetail | null;
+  // Just-removed tracking that can still be undone (eight seconds).
+  removed: { id: string; name: string } | null;
+  platform: SubscriptionRecord[];
+  loading: { detail: boolean; platform: boolean; mutation: boolean };
+  error: { detail: string; platform: string; mutation: string };
 };
 
 export type RenewalNotice = {
@@ -200,6 +274,7 @@ export type RootState = {
   auth: AuthState;
   profile: ProfileState;
   dashboard: DashboardState;
+  detail: DetailState;
   subscriptions: SubscriptionsState;
   notifications: NotificationsState;
   connectors: ConnectorsState;
@@ -281,6 +356,12 @@ export type AppStackParamList = {
   ChangePassword: undefined;
   AddConnector: undefined;
   Review: { connectorId: string; email: string };
+  Upcoming: undefined;
+  ThisMonth: undefined;
+  SpendingBreakdown: undefined;
+  // From Detail exclude_id hides the current plan; from spending every plan on the platform shows.
+  PlatformSubscriptions: { platform_id: string; name: string; exclude_id?: string };
+  PriceHistory: { id: string };
   // shortcut: dev-only stand-in for destinations whose sections are not built yet; each section replaces its use.
   ComingSoon: { title: string };
 };

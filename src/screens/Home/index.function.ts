@@ -42,12 +42,12 @@ export default function useHome() {
     openAdd: () => open('Add'),
     openAddManual: () => open('Add subscription'),
     openConnectGmail: () => open('Connect Gmail'),
-    openDetail: () => open('Subscription detail'),
-    openUpcoming: () => open('Upcoming'),
+    openDetail: (id: string) => navigate('SubscriptionDetail', { id }),
+    openUpcoming: () => navigate('Upcoming'),
     openPayments: () => navigate('Payments'),
-    openThisMonth: () => open('This month'),
-    openSpending: () => open('Spending breakdown'),
-    openPlatform: () => open('Platform subscriptions'),
+    openThisMonth: () => navigate('ThisMonth'),
+    openSpending: () => navigate('SpendingBreakdown'),
+    openPlatform: (platform_id: string, name: string) => navigate('PlatformSubscriptions', { platform_id, name }),
   };
 }
 

@@ -1,13 +1,14 @@
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppSelector } from '../redux/store';
-import { AddConnectorScreen, AddSubscriptionScreen, ChangePasswordScreen, ComingSoonScreen, ConnectorsScreen, EditProfileScreen, EditSubscriptionScreen, ReviewScreen, SubscriptionDetailScreen } from '../screens';
+import { AddConnectorScreen, AddSubscriptionScreen, ChangePasswordScreen, ComingSoonScreen, ConnectorsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, EditSubscriptionScreen, ReviewScreen, SubscriptionDetailScreen } from '../screens';
 import type { AppStackParamList } from '../types';
 import AuthStack from './AuthStack';
 import { stack_options } from '../config';
 import Tabs from './Tabs';
 import { COLORS } from '../constants/theme';
 import { navigationRef } from './service';
+import UndoToast from '../components/UndoToast';
 
 const AppStack = createNativeStackNavigator<AppStackParamList>();
 
@@ -33,8 +34,14 @@ export default function MainNavigator() {
         <AppStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <AppStack.Screen name="AddConnector" component={AddConnectorScreen} />
         <AppStack.Screen name="Review" component={ReviewScreen} />
+        <AppStack.Screen name="Upcoming" component={UpcomingScreen} />
+        <AppStack.Screen name="ThisMonth" component={ThisMonthScreen} />
+        <AppStack.Screen name="SpendingBreakdown" component={SpendingBreakdownScreen} />
+        <AppStack.Screen name="PlatformSubscriptions" component={PlatformSubscriptionsScreen} />
+        <AppStack.Screen name="PriceHistory" component={PriceHistoryScreen} />
         <AppStack.Screen name="ComingSoon" component={ComingSoonScreen} />
       </AppStack.Navigator>
+      <UndoToast />
     </NavigationContainer>
   );
 }

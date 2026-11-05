@@ -40,7 +40,9 @@ export default function HomeScreen() {
         </View>
       ) : (
         // scrollableAxes: iOS adds the floating tab bar inset at the bottom without a second top inset under the fixed header.
-        <ScrollView showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="scrollableAxes" contentContainerStyle={styles.content}>
+        <ScrollView showsVerticalScrollIndicator={false}
+          contentInsetAdjustmentBehavior="scrollableAxes"
+          contentContainerStyle={styles.content}>
           <NextEvent home={home} />
           <MonthCard home={home} />
           <TopSpending home={home} />

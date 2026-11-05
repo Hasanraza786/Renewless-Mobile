@@ -26,6 +26,7 @@ export { duolingo_logo, figma_logo, gmail_logo, icloud_logo, netflix_logo, notio
 export { default as back_icon } from './back_icon';
 export { default as bell_icon } from './bell_icon';
 export { default as plus_icon } from './plus_icon';
+export { default as trash_icon } from './trash_icon';
 export { default as logo_mark } from './logo_mark';
 export { default as loop_mascot } from './loop_mascot';
 export { LOOP_FACES, LOOP_OUTLINE, LOOP_OUTLINE_LENGTH } from './loop_parts';

@@ -19,6 +19,8 @@ export const COLORS = {
   control_surface: '#24292C',
   skeleton: '#2C3032',
   chart_bar: '#D2D9D5',
+  danger_surface: '#302326',
+  dialog_raised: '#292E32',
   hairline: '#34393E',
   control_border: '#69727A',
   expired: '#FF8A8A',

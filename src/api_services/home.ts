@@ -1,10 +1,10 @@
 import { USE_MOCK_API } from '../config/api';
 import { MOCK_DATA } from '../config/mock-data';
-import type { HomeEvent, HomeSnapshot, HomeSpending, HomeTrial, MoneyTotal, ScanCycle } from '../types';
+import type { HomeEvent, HomeSnapshot, HomeSpending, HomeTrial, MoneyTotal, ScanCycle, SubscriptionRecord } from '../types';
 import { localToday } from '../utils/dates';
 import { addDays } from '../utils/scan';
 import { request } from './http';
-import { importedRecords } from './onboarding';
+import { allReceipts, allRecords } from './subscription-store';
 
 export function getHome(token: string): Promise<HomeSnapshot> {
   return USE_MOCK_API ? mockHome() : request<HomeSnapshot>('/home', { token });
@@ -74,16 +74,25 @@ function sumByCurrency(items: { currency: string; amount: number }[]): MoneyTota
   return [...totals].map(([currency, amount]) => ({ currency, amount: decimal(amount) }));
 }
 
-function records(today: string): MockRecord[] {
-  const imported = importedRecords();
-  if (imported.length) return imported.map(item => ({ ...item, plan: null }));
-  if (MOCK_DATA.home_scenario === 'empty') return [];
-  const offsets = MOCK_DATA.home_event_offsets[MOCK_DATA.home_scenario] ?? {};
-  const shift = MOCK_DATA.home_scenario === 'quiet' ? 8 : 0;
-  return MOCK_DATA.home_subscriptions.map(({ next_in_days, ...item }) => ({
-    ...item,
-    next_date: addDays(today, (offsets[item.id] ?? next_in_days) + shift),
-  }));
+// Home counts actively tracked plans: not cancelled/expired, and not a trial that ended without renewing.
+export function trackedForHome(list: SubscriptionRecord[], today: string): MockRecord[] {
+  return list
+    .filter(item => item.status === 'active' && !(item.trial && item.trial.end_date < today && !item.trial.auto_renew))
+    .map(item => {
+      const in_trial = item.trial && item.trial.end_date >= today;
+      return {
+        id: item.id,
+        platform_id: item.platform_id,
+        name: item.name,
+        plan: item.plan,
+        price: item.price,
+        currency: item.currency,
+        cycle: item.cycle,
+        next_date: in_trial ? item.trial!.end_date : item.next_date,
+        estimated: item.estimated,
+        ...(in_trial ? { trial: { auto_renew: item.trial!.auto_renew } } : null),
+      };
+    });
 }
 
 export function buildHomeSnapshot(items: MockRecord[], receipts: { subscription_id: string; amount: string; currency: string; paid_on: string }[], today: string): HomeSnapshot {
@@ -91,24 +100,43 @@ export function buildHomeSnapshot(items: MockRecord[], receipts: { subscription_
   const month_end = lastDayOf(month);
   const upcoming_end = lastDayOf(addMonths(month, 2));
 
+  const event = (item: MockRecord, date: string, kind: HomeEvent['kind']): HomeEvent => ({
+    id: `${item.id}:${date}`,
+    subscription_id: item.id,
+    platform_id: item.platform_id,
+    name: item.name,
+    plan: item.plan,
+    date,
+    kind,
+    amount: item.price,
+    currency: item.currency,
+    cycle: item.cycle,
+    expected_charge: kind === 'renewal' || !!item.trial?.auto_renew,
+    estimated: item.estimated,
+  });
+  const byDate = (a: HomeEvent, b: HomeEvent) => a.date.localeCompare(b.date) || a.name.localeCompare(b.name) || a.subscription_id.localeCompare(b.subscription_id);
+
   // Upcoming: each dated subscription's next event, date ascending, distinct by subscription.
   const events: HomeEvent[] = items
     .filter(item => item.next_date && item.next_date >= today && item.next_date <= upcoming_end)
-    .map(item => ({
-      id: `${item.id}:${item.next_date}`,
-      subscription_id: item.id,
-      platform_id: item.platform_id,
-      name: item.name,
-      plan: item.plan,
-      date: item.next_date!,
-      kind: item.trial ? 'trial_end' : 'renewal',
-      amount: item.price,
-      currency: item.currency,
-      cycle: item.cycle,
-      expected_charge: !item.trial || item.trial.auto_renew,
-      estimated: item.estimated,
-    }));
-  events.sort((a, b) => a.date.localeCompare(b.date) || a.name.localeCompare(b.name) || a.subscription_id.localeCompare(b.subscription_id));
+    .map(item => event(item, item.next_date!, item.trial ? 'trial_end' : 'renewal'));
+  events.sort(byDate);
+
+  // This month: every scheduled event in the month, including a paid plan's earlier cycle.
+  const month_events: HomeEvent[] = [];
+  for (const item of items) {
+    if (!item.next_date) continue;
+    if (item.trial) {
+      if (monthOf(item.next_date) === month) month_events.push(event(item, item.next_date, 'trial_end'));
+      continue;
+    }
+    for (let index = -1; ; index++) {
+      const date = occurrence(item.next_date, item.cycle, index);
+      if (date > month_end) break;
+      if (monthOf(date) === month) month_events.push(event(item, date, 'renewal'));
+    }
+  }
+  month_events.sort(byDate);
   const nearest = events[0] && events[0].date <= addDays(today, 6) ? events.filter(item => item.date === events[0].date) : [];
 
   const paid = receipts.filter(item => monthOf(item.paid_on) === month && item.paid_on <= today);
@@ -134,6 +162,7 @@ export function buildHomeSnapshot(items: MockRecord[], receipts: { subscription_
       currency,
       total: decimal(Math.round(total)),
       platforms: sorted.slice(0, 3).map(([platform_id, row]) => ({ platform_id, name: row.name, amount: decimal(Math.round(row.amount)), percent: percent(row.amount), subscription_count: row.count })),
+      all_platforms: sorted.map(([platform_id, row]) => ({ platform_id, name: row.name, amount: decimal(Math.round(row.amount)), percent: percent(row.amount), subscription_count: row.count })),
       others: rest.length ? { amount: decimal(Math.round(rest_amount)), percent: percent(rest_amount), platform_count: rest.length } : null,
     });
   }
@@ -161,12 +190,16 @@ export function buildHomeSnapshot(items: MockRecord[], receipts: { subscription_
     has_subscriptions: items.length > 0,
     nearest_events: nearest,
     upcoming_count: events.length,
+    upcoming: events,
+    upcoming_until: upcoming_end,
     month: {
       month,
       paid: sumByCurrency(paid.map(item => ({ currency: item.currency, amount: cents(item.amount) }))),
       receipt_count: paid.length,
       upcoming: sumByCurrency(month_charges),
       charge_count: month_charges.length,
+      expected: sumByCurrency(month_events.filter(item => item.expected_charge).map(item => ({ currency: item.currency, amount: cents(item.amount) }))),
+      events: month_events,
     },
     spending,
     trials,
@@ -181,14 +214,5 @@ async function mockHome(): Promise<HomeSnapshot> {
     throw new Error('We couldn’t load your dashboard. Check your connection and try again.');
   }
   const today = localToday();
-  const items = records(today);
-  const ids = new Set(items.map(item => item.id));
-  const month_start = `${monthOf(today)}-01`;
-  const receipts = MOCK_DATA.home_receipts
-    .filter(item => ids.has(item.subscription_id))
-    .map(({ paid_days_ago, ...item }) => {
-      const date = addDays(today, -paid_days_ago);
-      return { ...item, paid_on: date < month_start ? month_start : date };
-    });
-  return buildHomeSnapshot(items, receipts, today);
+  return buildHomeSnapshot(trackedForHome(allRecords(), today), allReceipts(), today);
 }

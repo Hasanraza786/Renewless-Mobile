@@ -7,7 +7,7 @@ import SubscriptionCard from '../../../components/SubscriptionCard';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import type { HomeEvent } from '../../../types';
 import { common_styles } from '../../../utils/common_styles';
-import { eventAmount, eventCaption, eventStatus, eventTiming } from '../../../utils/events';
+import { eventCardProps } from '../../../utils/events';
 import { dateLabel } from '../../../utils/scan';
 import type { HomeController } from '../index.function';
 import { styles } from '../styles';
@@ -67,17 +67,7 @@ export default function NextEvent({ home }: Props) {
           <CustomText text={selected.kind === 'trial_end' ? 'TRIAL ENDING' : 'NEXT RENEWAL'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} letter_spacing={0.7} />
           <CustomText text={dateLabel(selected.date)} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </RowView>
-        <SubscriptionCard
-          name={selected.name}
-          platform_id={selected.platform_id}
-          status={eventStatus(selected, data.today)}
-          lines={[eventTiming(selected, data.today), ...(selected.plan ? [selected.plan] : [])]}
-          amount={eventAmount(selected)}
-          caption={eventCaption(selected)}
-          chevron
-          accessibility_label={`View ${selected.name}${selected.plan ? ` ${selected.plan}` : ''} subscription`}
-          onPress={home.openDetail}
-        />
+        <SubscriptionCard {...eventCardProps(selected, data.today)} chevron onPress={() => home.openDetail(selected.subscription_id)} />
       </View>
     </View>
   );

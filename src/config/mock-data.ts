@@ -29,20 +29,35 @@ export const MOCK_DATA = {
   // fails the first load (Try again succeeds). After onboarding saves records, Home shows those instead.
   home_scenario: 'account' as 'account' | 'two_events' | 'multiple_events' | 'quiet' | 'empty' | 'error',
   home_latency_ms: 700,
-  // Next renewal (or trial end) as a day offset from today.
+  // The account's tracked subscriptions. Dates are day offsets from today (null = not set).
   home_subscriptions: [
-    { id: 'sub-duolingo', platform_id: 'duolingo', name: 'Duolingo', plan: null, price: '9.99', currency: 'USD', cycle: 'Monthly', next_in_days: 2, estimated: false },
-    { id: 'sub-netflix-standard', platform_id: 'netflix', name: 'Netflix', plan: 'Standard', price: '15.99', currency: 'USD', cycle: 'Monthly', next_in_days: 9, estimated: true },
-    { id: 'sub-netflix-family', platform_id: 'netflix', name: 'Netflix', plan: 'Family', price: '22.99', currency: 'USD', cycle: 'Monthly', next_in_days: 12, estimated: false },
-    { id: 'sub-figma', platform_id: 'figma', name: 'Figma', plan: null, price: '15.00', currency: 'USD', cycle: 'Monthly', next_in_days: 16, estimated: false },
-    { id: 'sub-notion', platform_id: 'notion', name: 'Notion', plan: null, price: '10.00', currency: 'USD', cycle: 'Monthly', next_in_days: 20, estimated: false },
-    { id: 'sub-icloud', platform_id: 'icloud', name: 'iCloud+', plan: null, price: '2.99', currency: 'USD', cycle: 'Monthly', next_in_days: 5, estimated: true },
-    { id: 'sub-spotify', platform_id: 'spotify', name: 'Spotify', plan: null, price: '11.99', currency: 'USD', cycle: 'Monthly', next_in_days: 4, estimated: false, trial: { auto_renew: true } },
+    { id: 'sub-duolingo', platform_id: 'duolingo', name: 'Duolingo', plan: null, category: 'Education', price: '9.99', currency: 'USD', cycle: 'Monthly', next_in_days: 2, estimated: false, auto_renew: true, start_in_days: -300, source: 'manual', reminder_days: 1 },
+    { id: 'sub-netflix-standard', platform_id: 'netflix', name: 'Netflix', plan: 'Standard', category: 'Entertainment', price: '15.99', currency: 'USD', cycle: 'Monthly', next_in_days: 9, estimated: true, auto_renew: null, start_in_days: null, source: 'manual', reminder_days: null,
+      price_history: [
+        { id: 'ph-1', from_amount: '13.99', to_amount: '15.99', effective_in_days: -40, source: 'user' },
+        { id: 'ph-2', from_amount: '11.99', to_amount: '13.99', effective_in_days: -132, source: 'gmail' },
+      ] },
+    { id: 'sub-netflix-family', platform_id: 'netflix', name: 'Netflix', plan: 'Family', category: 'Entertainment', price: '22.99', currency: 'USD', cycle: 'Monthly', next_in_days: 12, estimated: false, auto_renew: true, start_in_days: -210, source: 'gmail', reminder_days: 3 },
+    { id: 'sub-figma', platform_id: 'figma', name: 'Figma', plan: null, category: 'Productivity', price: '15.00', currency: 'USD', cycle: 'Monthly', next_in_days: null, estimated: false, auto_renew: null, start_in_days: null, source: 'manual', reminder_days: null },
+    { id: 'sub-notion', platform_id: 'notion', name: 'Notion', plan: null, category: 'Productivity', price: '10.00', currency: 'USD', cycle: 'Monthly', next_in_days: 20, estimated: false, auto_renew: true, start_in_days: -400, source: 'gmail', reminder_days: 3 },
+    { id: 'sub-icloud', platform_id: 'icloud', name: 'iCloud+', plan: null, category: 'Storage', price: '2.99', currency: 'USD', cycle: 'Monthly', next_in_days: 5, estimated: true, auto_renew: true, start_in_days: -700, source: 'gmail', reminder_days: null },
+    { id: 'sub-spotify', platform_id: 'spotify', name: 'Spotify', plan: null, category: 'Entertainment', price: '11.99', currency: 'USD', cycle: 'Monthly', next_in_days: 4, estimated: false, auto_renew: true, start_in_days: -10, source: 'gmail', reminder_days: 3, trial: { start_in_days: -10, auto_renew: true } },
+    // Not active: an ended trial and a cancelled plan, for the Detail variants and Platform subscriptions.
+    { id: 'sub-spotify-duo', platform_id: 'spotify', name: 'Spotify', plan: 'Duo', category: 'Entertainment', price: '16.99', currency: 'USD', cycle: 'Monthly', next_in_days: -19, estimated: false, auto_renew: false, start_in_days: -33, source: 'gmail', reminder_days: null, trial: { start_in_days: -33, auto_renew: false } },
+    { id: 'sub-netflix-basic', platform_id: 'netflix', name: 'Netflix', plan: 'Basic', category: 'Entertainment', price: '7.99', currency: 'USD', cycle: 'Monthly', next_in_days: null, estimated: false, auto_renew: false, start_in_days: -500, source: 'manual', reminder_days: null, cancelled_in_days: -60 },
   ],
-  // Successful Gmail receipts, as days before today (kept inside the current month).
+  // Reminder settings default (days before the event); records without their own override follow it.
+  account_reminder_days: [3],
+  // The inbox receipts are read from, and verified provider management links by platform.
+  home_inbox: { email: 'alex@example.com', last_sync_hours_ago: 4 },
+  manage_urls: { netflix: 'https://www.netflix.com/youraccount', spotify: 'https://www.spotify.com/account/subscription/' } as Record<string, string>,
+  // Successful Gmail receipts as days before today; this_month ones are kept inside the current month.
   home_receipts: [
-    { id: 'rcpt-netflix', subscription_id: 'sub-netflix-standard', amount: '15.99', currency: 'USD', paid_days_ago: 18 },
-    { id: 'rcpt-figma', subscription_id: 'sub-figma', amount: '15.00', currency: 'USD', paid_days_ago: 12 },
+    { id: 'rcpt-netflix', subscription_id: 'sub-netflix-standard', amount: '15.99', currency: 'USD', paid_days_ago: 18, this_month: true },
+    { id: 'rcpt-figma', subscription_id: 'sub-figma', amount: '15.00', currency: 'USD', paid_days_ago: 12, this_month: true },
+    { id: 'rcpt-netflix-prev', subscription_id: 'sub-netflix-standard', amount: '15.99', currency: 'USD', paid_days_ago: 48, this_month: false },
+    { id: 'rcpt-family', subscription_id: 'sub-netflix-family', amount: '22.99', currency: 'USD', paid_days_ago: 18, this_month: false },
+    { id: 'rcpt-spotify-duo', subscription_id: 'sub-spotify-duo', amount: '16.99', currency: 'USD', paid_days_ago: 80, this_month: false },
   ],
   // Nearest-date overrides for the event scenarios.
   home_event_offsets: {

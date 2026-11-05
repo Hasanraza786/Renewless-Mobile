@@ -869,3 +869,6 @@
 .phone .reminder-settings-layout .settings-group-label{font-size:12px;line-height:18px;letter-spacing:.6px}
 .phone .reminder-settings-layout [data-select-trigger]{font-size:12px;line-height:18px}
 .phone .themed-select-menu[aria-multiselectable=true] [role=option]{font-size:12px;line-height:18px;min-height:42px}
+
+.reminder-default-line{margin:0 0 14px;font-size:12px;line-height:18px;color:var(--muted)}
+.reminder-sheet .select-control{display:block;margin-top:6px}

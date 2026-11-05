@@ -1,5 +1,5 @@
 import { Pressable, View } from 'react-native';
-import { back_icon, bell_icon, plus_icon } from '../../assets/icons';
+import { back_icon, bell_icon, plus_icon, trash_icon } from '../../assets/icons';
 import { FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import CustomText from '../CustomText';
@@ -13,12 +13,14 @@ type Props = {
   onBack?: () => void;
   // Header + on Home/List/Calendar opens the Add sheet.
   onAdd?: () => void;
+  // Detail's top Delete (remove tracking).
+  onDelete?: () => void;
 };
 
 const HIT_SLOP = SIZES.padding3 / 4;
 
 // Fixed authenticated header: optional Back, title, then the shared Alerts bell and optional Add.
-export default function Header({ title, onBack, onAdd }: Props) {
+export default function Header({ title, onBack, onAdd, onDelete }: Props) {
   return (
     <RowView gap={SIZES.padding2} style={styles.main_view}>
       {onBack ? (
@@ -36,6 +38,11 @@ export default function Header({ title, onBack, onAdd }: Props) {
         {onAdd ? (
           <Pressable accessibilityRole="button" accessibilityLabel="Add subscription" hitSlop={HIT_SLOP} onPress={onAdd}>
             <Icons name={plus_icon} />
+          </Pressable>
+        ) : null}
+        {onDelete ? (
+          <Pressable accessibilityRole="button" accessibilityLabel="Remove tracking" hitSlop={HIT_SLOP} onPress={onDelete}>
+            <Icons name={trash_icon} />
           </Pressable>
         ) : null}
       </RowView>

@@ -25,6 +25,7 @@ export default function InputField({
   onBlur,
   variant,
   ref,
+  style,
   ...input_props
 }: Props) {
   const [focused, setFocused] = useState(false);
@@ -49,7 +50,8 @@ export default function InputField({
         placeholderTextColor={COLORS.text_secondary}
         accessibilityLabel={label}
         accessibilityHint={error || undefined}
-        style={[variant ? styles[`${variant}_input`] : styles.input, focused && styles.input_focused, !!error && styles.input_error]}
+        // A caller's style extends the variant (e.g. a taller multiline field); it never replaces it.
+        style={[variant ? styles[`${variant}_input`] : styles.input, style, focused && styles.input_focused, !!error && styles.input_error]}
         onFocus={event => {
           setFocused(true);
           onFocus?.(event);
