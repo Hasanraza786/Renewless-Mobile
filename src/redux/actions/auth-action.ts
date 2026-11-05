@@ -14,7 +14,7 @@ import type { AuthProvider, AuthResponse } from '../../types';
 import { endSession } from '../endSession';
 import { runRequest, type AppThunk } from '../runRequest';
 import { authError, authLoading } from '../slices/auth-slice';
-import { setProfileUser } from '../slices/profile-slice';
+import { setNotice, setProfileUser } from '../slices/profile-slice';
 import { setSession } from '../slices/constant-slice';
 
 const startSession = (session: AuthResponse) => [setSession(session), setProfileUser(session.user)];
@@ -102,22 +102,21 @@ export function resetPassword(reset_token: string, password: string) {
   });
 }
 
-export function changePassword(
-  current_password: string,
-  password: string,
-  onDone?: () => void,
-): AppThunk {
+// Resolves true when the server accepted the new password; a failure keeps the entered draft for retry.
+export function changePassword(current_password: string, password: string): AppThunk<boolean> {
   return async (dispatch, getState) => {
     const token = getState().constant.token;
-    if (!token) return;
-    await dispatch(
+    if (!token) return false;
+    const result = await dispatch(
       runRequest({
         request: () => changePasswordRequest(token, current_password, password),
         loading: authLoading('password'),
         error: authError('password'),
-        onDone,
       }),
     );
+    if (!result) return false;
+    dispatch(setNotice('Password updated.'));
+    return true;
   };
 }
 
@@ -133,5 +132,6 @@ export function logout(): AppThunk {
       }
     }
     dispatch(endSession());
+    dispatch(setNotice('You’re logged out.'));
   };
 }

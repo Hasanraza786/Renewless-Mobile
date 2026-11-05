@@ -1,4 +1,5 @@
 import { ScrollView, View } from 'react-native';
+import AddSheet from '../../components/AddSheet';
 import Container from '../../components/Container';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
@@ -49,6 +50,7 @@ export default function HomeScreen() {
           <Forecast home={home} />
         </ScrollView>
       )}
+      <AddSheet visible={home.add_open} onClose={home.closeAdd} />
     </Container>
   );
 }

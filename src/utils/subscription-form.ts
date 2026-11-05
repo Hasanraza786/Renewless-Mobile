@@ -1,0 +1,125 @@
+import { PLATFORM_CATALOG } from '../constants/catalog';
+import type { ScanCycle, SubscriptionFormInput, SubscriptionRecord } from '../types';
+import { addDays } from './scan';
+
+export const CURRENCIES = ['USD', 'EUR', 'GBP', 'PKR', 'AED', 'INR'];
+export const CYCLES: ScanCycle[] = ['Monthly', 'Quarterly', 'Yearly', 'Weekly'];
+export const CATEGORIES = ['Entertainment', 'Productivity', 'Education', 'Storage', 'Utilities', 'Other'];
+export const TRIAL_OPTIONS = ['No trial', '3 days', '7 days', '14 days', '30 days', 'Custom'];
+export const PRICE_REASONS = ['Choose an option', 'Price changed', 'Correcting a mistake'];
+export const NOTES_LIMIT = 500;
+
+export type SubscriptionDraft = {
+  name: string;
+  platform_id: string | null;
+  price: string;
+  currency: string;
+  cycle: ScanCycle;
+  category: string;
+  trial: string;
+  custom_days: string;
+  start_date: string | null;
+  // Kept while a trial hides it, so removing the trial restores it.
+  next_date: string | null;
+  auto_renew: boolean;
+  notes: string;
+  price_reason: string;
+  effective_on: string;
+};
+
+// Edit keeps an exact trial end (from Gmail/AI) until the start or duration changes.
+export type TrialOrigin = { start_date: string; days: number; end_date: string } | null;
+
+export type DraftErrors = Partial<Record<'name' | 'price' | 'custom_days' | 'start_date' | 'next_date' | 'price_reason' | 'effective_on', string>>;
+
+export const emptyDraft = (): SubscriptionDraft => ({
+  name: '', platform_id: null, price: '', currency: 'USD', cycle: 'Monthly', category: 'Entertainment', trial: 'No trial', custom_days: '',
+  start_date: null, next_date: null, auto_renew: true, notes: '', price_reason: PRICE_REASONS[0], effective_on: '',
+});
+
+const daysBetween = (from: string, to: string) => Math.round((Date.parse(to) - Date.parse(from)) / 86400000);
+
+export function draftFromRecord(record: SubscriptionRecord, today: string): { draft: SubscriptionDraft; origin: TrialOrigin } {
+  const days = record.trial ? daysBetween(record.trial.start_date, record.trial.end_date) : 0;
+  const preset = `${days} days`;
+  return {
+    draft: {
+      name: record.name, platform_id: record.platform_id, price: record.price, currency: record.currency, cycle: record.cycle, category: record.category,
+      trial: !record.trial ? 'No trial' : TRIAL_OPTIONS.includes(preset) ? preset : 'Custom', custom_days: record.trial && !TRIAL_OPTIONS.includes(preset) ? String(days) : '',
+      start_date: record.trial?.start_date ?? record.start_date, next_date: record.next_date, auto_renew: record.trial?.auto_renew ?? true, notes: record.notes ?? '',
+      price_reason: PRICE_REASONS[0], effective_on: today,
+    },
+    origin: record.trial ? { start_date: record.trial.start_date, days, end_date: record.trial.end_date } : null,
+  };
+}
+
+// Whole trial days, or NaN when the custom value is not a whole number from 1 to 365.
+export function trialDays(draft: SubscriptionDraft) {
+  if (draft.trial === 'No trial') return 0;
+  const value = draft.trial === 'Custom' ? Number(draft.custom_days) : Number.parseInt(draft.trial, 10);
+  return draft.trial === 'Custom' && (!/^\d+$/.test(draft.custom_days) || value < 1 || value > 365) ? NaN : value;
+}
+
+// Local-date arithmetic; an unchanged exact end wins over the calculation.
+export function trialEnd(draft: SubscriptionDraft, origin: TrialOrigin) {
+  const days = trialDays(draft);
+  if (!draft.start_date || !days) return null;
+  if (origin && origin.start_date === draft.start_date && origin.days === days) return origin.end_date;
+  return addDays(draft.start_date, days);
+}
+
+export function trialSummary(draft: SubscriptionDraft, origin: TrialOrigin, label: (iso: string) => string) {
+  const end = trialEnd(draft, origin);
+  if (end) return `Trial ends · ${label(end)}`;
+  return draft.start_date ? 'Enter valid trial days to calculate the trial end.' : 'Choose a start date to calculate the trial end.';
+}
+
+// Amount, currency or cycle differ from the saved values (Edit asks why).
+export const priceChanged = (draft: SubscriptionDraft, record: SubscriptionRecord | null) =>
+  !!record && (Number(draft.price) !== Number(record.price) || draft.currency !== record.currency || draft.cycle !== record.cycle);
+
+export function validateDraft(draft: SubscriptionDraft, record: SubscriptionRecord | null, today: string): DraftErrors {
+  const errors: DraftErrors = {};
+  const on_trial = draft.trial !== 'No trial';
+  if (!draft.name.trim()) errors.name = 'Enter a platform or service name.';
+  if (!draft.price.trim()) errors.price = 'Enter the subscription amount.';
+  else if (!/^\d+(\.\d{1,2})?$/.test(draft.price.trim()) || Number(draft.price) <= 0) errors.price = 'Enter a valid amount greater than 0 (up to 2 decimals).';
+  if (draft.trial === 'Custom') {
+    if (!draft.custom_days.trim()) errors.custom_days = 'Enter your trial duration.';
+    else if (Number.isNaN(trialDays(draft))) errors.custom_days = 'Enter a whole number from 1 to 365.';
+  }
+  if (on_trial && !draft.start_date) errors.start_date = 'Select a start date to calculate your trial end date.';
+  if (!on_trial && !draft.next_date) errors.next_date = 'Choose the next renewal date.';
+  if (priceChanged(draft, record)) {
+    if (draft.price_reason === PRICE_REASONS[0]) errors.price_reason = 'Choose whether the price changed or you are correcting a mistake.';
+    else if (draft.price_reason === 'Price changed' && (!draft.effective_on || draft.effective_on > today)) errors.effective_on = 'Choose today or a past effective date.';
+  }
+  return errors;
+}
+
+// Matching catalog services while typing, up to four, by name or alias.
+export function catalogMatches(query: string) {
+  const value = query.trim().toLowerCase();
+  if (!value) return [];
+  return PLATFORM_CATALOG.filter(entry => [entry.name, ...(entry.aliases ?? [])].some(alias => alias.toLowerCase().includes(value))).slice(0, 4);
+}
+
+export function draftToInput(draft: SubscriptionDraft, origin: TrialOrigin, record: SubscriptionRecord | null, today: string): SubscriptionFormInput {
+  const on_trial = draft.trial !== 'No trial';
+  const name = draft.name.trim();
+  // A typed name that exactly matches the catalog links its platform; unknown names stay as entered.
+  const known = PLATFORM_CATALOG.find(entry => [entry.name, ...(entry.aliases ?? [])].some(alias => alias.toLowerCase() === name.toLowerCase()));
+  return {
+    name,
+    platform_id: known?.platform_id ?? (record && record.name === name ? record.platform_id : null),
+    price: Number(draft.price).toFixed(2),
+    currency: draft.currency,
+    cycle: draft.cycle,
+    category: draft.category,
+    start_date: draft.start_date,
+    next_date: on_trial ? null : draft.next_date,
+    trial: on_trial ? { days: trialDays(draft), end_date: trialEnd(draft, origin)!, auto_renew: draft.auto_renew } : null,
+    notes: draft.notes.trim() || null,
+    price_change: priceChanged(draft, record) ? { reason: draft.price_reason === 'Correcting a mistake' ? 'correction' : 'price_changed', effective_on: draft.price_reason === 'Correcting a mistake' ? today : draft.effective_on } : null,
+  };
+}

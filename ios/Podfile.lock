@@ -1880,6 +1880,28 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - RNPermissions (5.6.3):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - RNScreens (4.30.1):
     - hermes-engine
     - RCTRequired
@@ -2072,6 +2094,7 @@ DEPENDENCIES:
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
+  - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSVG (from `../node_modules/react-native-svg`)
   - SocketRocket (from `build/rndeps-facades/SocketRocket`)
@@ -2274,6 +2297,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
+  RNPermissions:
+    :path: "../node_modules/react-native-permissions"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSVG:
@@ -2385,11 +2410,12 @@ SPEC CHECKSUMS:
   RNDateTimePicker: e2d1fa58ac2faa1e318fd4b1e86633c8ab4bdc73
   RNGestureHandler: 25c45091b113a1985be3cce8e84fa41fcdf4c619
   RNGoogleSignin: 4437d2b34d3015b2bcc63771bf140ad574f606c8
+  RNPermissions: d995d919dd8f83848f2ceb18377e329d0ddff676
   RNScreens: fd649b2059b4c136530f10e8001464b69cb634f4
   RNSVG: e771a5f988c085ee715ecbe4105e64e416ce5846
   SocketRocket: 37aec555668fb852ec12e3c0de59a86ca58f0871
   Yoga: d1c536142c5ff8ec8cd856ab2a7c227a1d875c8e
 
-PODFILE CHECKSUM: ded1edbe790cb67c91478e1a1f962f9c2f1b90f7
+PODFILE CHECKSUM: e072480e21ccfae9f3ef957b3fb0c1cf21e53c16
 
 COCOAPODS: 1.16.2

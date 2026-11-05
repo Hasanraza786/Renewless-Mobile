@@ -35,3 +35,21 @@ export { LOOP_FACES, LOOP_OUTLINE, LOOP_OUTLINE_LENGTH } from './loop_parts';
 export { default as loop_scanning } from './loop_scanning';
 export { default as notification_icon } from './notification_icon';
 export { default as profile_icon } from './profile_icon';
+export { default as edit_box_icon } from './edit_box_icon';
+export {
+  delete_icon,
+  eye_icon,
+  eye_off_icon,
+  help_icon,
+  history_icon,
+  logout_icon,
+  mail_icon,
+  payments_icon,
+  privacy_icon,
+  refresh_icon,
+  security_accent_icon,
+  security_icon,
+  terms_icon,
+} from './profile_icons';
+export { clock_icon, device_bell_icon, gear_accent_icon, notice_bell_icon, pencil_icon, sparkle_icon, switch_off_icon, switch_on_icon } from './switch_icons';
+export { default as gear_box_icon } from './gear_box_icon';

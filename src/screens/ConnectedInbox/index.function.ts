@@ -1,0 +1,87 @@
+import { useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { goBack, navigate } from '../../navigation/service';
+import { disconnect, loadInbox, reconnect, syncNow } from '../../redux/actions/inbox-action';
+import { setInboxError, setSyncError } from '../../redux/slices/inbox-slice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
+import type { AppStackParamList } from '../../types';
+
+export type ConnectedInboxRoute = NativeStackScreenProps<AppStackParamList, 'ConnectedInbox'>['route'];
+
+const STATUS = {
+  synced: 'Synced',
+  syncing: 'Syncing…',
+  reconnect: 'Reconnect needed',
+  error: 'Sync failed',
+  paused: 'Updates paused',
+} as const;
+
+// "26 Oct · 9:00 AM" from the last successful sync, or Not synced yet.
+const syncLabel = (iso: string | null) => {
+  if (!iso) return 'Not synced yet';
+  const date = new Date(iso);
+  return `${date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+};
+
+// One owned Gmail connector: real sync state from the server, Sync now / Reconnect, and disconnect.
+export default function useConnectedInbox(route: ConnectedInboxRoute) {
+  const { id } = route.params;
+  const dispatch = useAppDispatch();
+  const { inbox, syncing, sync_error, loading, error } = useAppSelector(state => state.inbox);
+  const [confirm_open, setConfirmOpen] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(setSyncError(''));
+      dispatch(loadInbox(id));
+    }, [dispatch, id]),
+  );
+
+  const view = inbox?.id === id ? inbox : null;
+  const status = view ? 'ready' : error.inbox && !loading.inbox ? 'failed' : 'loading';
+  const reconnect_needed = view?.status === 'reconnect';
+  // A failed attempt never shows a new successful time; the pill follows the latest attempt.
+  const state: keyof typeof STATUS = syncing ? 'syncing' : reconnect_needed ? 'reconnect' : sync_error ? 'error' : view?.status === 'paused' ? 'paused' : 'synced';
+  const status_label = STATUS[state];
+  const last_sync = syncLabel(view?.lastSync ?? null);
+
+  const retry = () => dispatch(loadInbox(id));
+  const openImported = () => navigate('InboxSubscriptions', { id });
+  const runMain = () => (reconnect_needed ? dispatch(reconnect(id)) : dispatch(syncNow(id)));
+  const openConfirm = () => {
+    dispatch(setInboxError({ key: 'disconnect', value: '' }));
+    setConfirmOpen(true);
+  };
+  const closeConfirm = () => setConfirmOpen(false);
+  const confirmDisconnect = async () => {
+    if (!(await dispatch(disconnect(id)))) return;
+    setConfirmOpen(false);
+    goBack();
+  };
+
+  return {
+    view,
+    status,
+    error: error.inbox,
+    state,
+    status_label,
+    last_sync,
+    reconnect_needed,
+    syncing,
+    sync_error,
+    reconnecting: loading.reconnect,
+    reconnect_error: error.reconnect,
+    disconnecting: loading.disconnect,
+    disconnect_error: error.disconnect,
+    confirm_open,
+    retry,
+    openImported,
+    runMain,
+    openConfirm,
+    closeConfirm,
+    confirmDisconnect,
+  };
+}
+
+export type ConnectedInboxController = ReturnType<typeof useConnectedInbox>;

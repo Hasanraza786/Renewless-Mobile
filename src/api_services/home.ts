@@ -22,6 +22,7 @@ type MockRecord = {
   cycle: ScanCycle;
   next_date: string | null;
   estimated: boolean;
+  start_date?: string | null;
   trial?: { auto_renew: boolean };
 };
 
@@ -74,6 +75,52 @@ function sumByCurrency(items: { currency: string; amount: number }[]): MoneyTota
   return [...totals].map(([currency, amount]) => ({ currency, amount: decimal(amount) }));
 }
 
+const event = (item: MockRecord, date: string, kind: HomeEvent['kind']): HomeEvent => ({
+  id: `${item.id}:${date}`,
+  subscription_id: item.id,
+  platform_id: item.platform_id,
+  name: item.name,
+  plan: item.plan,
+  date,
+  kind,
+  amount: item.price,
+  currency: item.currency,
+  cycle: item.cycle,
+  expected_charge: kind === 'renewal' || !!item.trial?.auto_renew,
+  estimated: item.estimated,
+});
+
+const byDate = (a: HomeEvent, b: HomeEvent) => a.date.localeCompare(b.date) || a.name.localeCompare(b.name) || a.subscription_id.localeCompare(b.subscription_id);
+
+const monthIndex = (month: string) => Number(month.slice(0, 4)) * 12 + Number(month.slice(5, 7)) - 1;
+
+// Every event of one month from the next renewal's recurrence. Earlier cycles project back to the start
+// date, or only to the previous cycle when the start is unknown.
+export function monthEvents(items: MockRecord[], month: string): HomeEvent[] {
+  const month_end = lastDayOf(month);
+  const list: HomeEvent[] = [];
+  for (const item of items) {
+    if (!item.next_date) continue;
+    if (item.trial) {
+      if (monthOf(item.next_date) === month) list.push(event(item, item.next_date, 'trial_end'));
+      continue;
+    }
+    // Start one cycle before the first occurrence that can fall in this month.
+    const first =
+      item.cycle === 'Weekly'
+        ? Math.floor((Date.parse(`${month}-01`) - Date.parse(item.next_date)) / (7 * 86400000)) - 1
+        : Math.floor((monthIndex(month) - monthIndex(monthOf(item.next_date))) / MONTH_STEP[item.cycle]) - 1;
+    for (let index = first; ; index++) {
+      const date = occurrence(item.next_date, item.cycle, index);
+      if (date > month_end) break;
+      if (monthOf(date) !== month) continue;
+      if (index < 0 && (item.start_date ? date < item.start_date : index < -1)) continue;
+      list.push(event(item, date, 'renewal'));
+    }
+  }
+  return list.sort(byDate);
+}
+
 // Home counts actively tracked plans: not cancelled/expired, and not a trial that ended without renewing.
 export function trackedForHome(list: SubscriptionRecord[], today: string): MockRecord[] {
   return list
@@ -90,6 +137,7 @@ export function trackedForHome(list: SubscriptionRecord[], today: string): MockR
         cycle: item.cycle,
         next_date: in_trial ? item.trial!.end_date : item.next_date,
         estimated: item.estimated,
+        start_date: item.start_date,
         ...(in_trial ? { trial: { auto_renew: item.trial!.auto_renew } } : null),
       };
     });
@@ -100,21 +148,6 @@ export function buildHomeSnapshot(items: MockRecord[], receipts: { subscription_
   const month_end = lastDayOf(month);
   const upcoming_end = lastDayOf(addMonths(month, 2));
 
-  const event = (item: MockRecord, date: string, kind: HomeEvent['kind']): HomeEvent => ({
-    id: `${item.id}:${date}`,
-    subscription_id: item.id,
-    platform_id: item.platform_id,
-    name: item.name,
-    plan: item.plan,
-    date,
-    kind,
-    amount: item.price,
-    currency: item.currency,
-    cycle: item.cycle,
-    expected_charge: kind === 'renewal' || !!item.trial?.auto_renew,
-    estimated: item.estimated,
-  });
-  const byDate = (a: HomeEvent, b: HomeEvent) => a.date.localeCompare(b.date) || a.name.localeCompare(b.name) || a.subscription_id.localeCompare(b.subscription_id);
 
   // Upcoming: each dated subscription's next event, date ascending, distinct by subscription.
   const events: HomeEvent[] = items
@@ -123,20 +156,7 @@ export function buildHomeSnapshot(items: MockRecord[], receipts: { subscription_
   events.sort(byDate);
 
   // This month: every scheduled event in the month, including a paid plan's earlier cycle.
-  const month_events: HomeEvent[] = [];
-  for (const item of items) {
-    if (!item.next_date) continue;
-    if (item.trial) {
-      if (monthOf(item.next_date) === month) month_events.push(event(item, item.next_date, 'trial_end'));
-      continue;
-    }
-    for (let index = -1; ; index++) {
-      const date = occurrence(item.next_date, item.cycle, index);
-      if (date > month_end) break;
-      if (monthOf(date) === month) month_events.push(event(item, date, 'renewal'));
-    }
-  }
-  month_events.sort(byDate);
+  const month_events = monthEvents(items, month);
   const nearest = events[0] && events[0].date <= addDays(today, 6) ? events.filter(item => item.date === events[0].date) : [];
 
   const paid = receipts.filter(item => monthOf(item.paid_on) === month && item.paid_on <= today);

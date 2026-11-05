@@ -112,13 +112,29 @@ export default function useSubscriptionDetail(route: Route) {
     setMessage(text);
   };
 
-  // shortcut: Edit, scoped Payments and Add/Edit are later sections; they open the dev-only ComingSoon screen.
-  const open = (title: string) => navigate('ComingSoon', { title });
+  const status = view ? 'ready' : error.detail && !loading.detail ? 'failed' : 'loading';
+  const today = detail?.today ?? '';
+
+  const retry = () => dispatch(loadDetail(id));
+  const openEdit = () => navigate('EditSubscription', { id });
+  const openPayments = () => view && navigate('SubscriptionPayments', { id, name: view.record.name });
+  const openPriceHistory = () => navigate('PriceHistory', { id });
+  const openRelated = () => view && navigate('PlatformSubscriptions', { platform_id: view.record.platform_id, name: view.record.name, exclude_id: id });
+  const openManage = () => view?.record.manage_url && Linking.openURL(view.record.manage_url);
+  const saveReminderPreference = async (reminder: ReminderPreference) => done(await dispatch(saveReminder(id, reminder)));
+  const saveNoteText = async (notes: string) => done(await dispatch(saveNotes(id, notes)));
+  const confirmCancel = async (input: { cancelled_on: string; access_until: string | null }) => done(await dispatch(cancelSubscription(id, input)));
+  const resume = async (input: { price: string; next_date: string; reminder: ReminderPreference }) => done(await dispatch(resumeSubscription(id, input)), 'Tracking resumed in Renewless.');
+  const remove = async () => {
+    if (!(await dispatch(removeSubscription(id, view?.record.name ?? 'Subscription')))) return;
+    setSheet(null);
+    goBack();
+  };
 
   return {
     view,
-    today: detail?.today ?? '',
-    status: view ? 'ready' : error.detail && !loading.detail ? 'failed' : 'loading',
+    today,
+    status,
     error: error.detail,
     saving: loading.mutation,
     save_error: error.mutation,
@@ -126,21 +142,17 @@ export default function useSubscriptionDetail(route: Route) {
     sheet,
     setSheet,
     close,
-    retry: () => dispatch(loadDetail(id)),
-    openEdit: () => open('Edit'),
-    openPayments: () => open('Payments'),
-    openPriceHistory: () => navigate('PriceHistory', { id }),
-    openRelated: () => view && navigate('PlatformSubscriptions', { platform_id: view.record.platform_id, name: view.record.name, exclude_id: id }),
-    openManage: () => view?.record.manage_url && Linking.openURL(view.record.manage_url),
-    saveReminder: async (reminder: ReminderPreference) => done(await dispatch(saveReminder(id, reminder))),
-    saveNotes: async (notes: string) => done(await dispatch(saveNotes(id, notes))),
-    confirmCancel: async (input: { cancelled_on: string; access_until: string | null }) => done(await dispatch(cancelSubscription(id, input))),
-    resume: async (input: { price: string; next_date: string; reminder: ReminderPreference }) => done(await dispatch(resumeSubscription(id, input)), 'Tracking resumed in Renewless.'),
-    remove: async () => {
-      if (!(await dispatch(removeSubscription(id, view?.record.name ?? 'Subscription')))) return;
-      setSheet(null);
-      goBack();
-    },
+    retry,
+    openEdit,
+    openPayments,
+    openPriceHistory,
+    openRelated,
+    openManage,
+    saveReminder: saveReminderPreference,
+    saveNotes: saveNoteText,
+    confirmCancel,
+    resume,
+    remove,
   };
 }
 

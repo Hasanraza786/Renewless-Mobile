@@ -3,19 +3,18 @@ import { COLORS, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
   main_view: {
-    flex: 1,
     paddingHorizontal: SIZES.padding,
-    paddingTop: SIZES.padding2,
   },
-  choice: {
-    borderColor: COLORS.hairline,
-    borderRadius: 999,
+  content: {
+    paddingBottom: SIZES.padding * 2,
+    paddingTop: SIZES.padding * 0.7,
+  },
+  email_card: {
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.line_soft,
+    borderRadius: SIZES.padding2,
     borderWidth: 1,
-    paddingHorizontal: SIZES.padding2 + 2,
-    paddingVertical: SIZES.padding3,
-  },
-  choice_on: {
-    backgroundColor: COLORS.primary,
-    borderColor: COLORS.primary,
+    marginVertical: SIZES.padding * 0.7,
+    padding: SIZES.padding2,
   },
 });

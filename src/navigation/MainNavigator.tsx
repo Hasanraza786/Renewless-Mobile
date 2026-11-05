@@ -1,7 +1,7 @@
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppSelector } from '../redux/store';
-import { AddConnectorScreen, AddSubscriptionScreen, ChangePasswordScreen, ComingSoonScreen, ConnectorsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, EditSubscriptionScreen, ReviewScreen, SubscriptionDetailScreen } from '../screens';
+import { AddConnectorScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, CalendarDayScreen, ChangePasswordScreen, ComingSoonScreen, ConnectorsScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, ReviewScreen, SubscriptionDetailScreen } from '../screens';
 import type { AppStackParamList } from '../types';
 import AuthStack from './AuthStack';
 import { stack_options } from '../config';
@@ -29,7 +29,7 @@ export default function MainNavigator() {
         <AppStack.Screen name="Connectors" component={ConnectorsScreen} />
         <AppStack.Screen name="AddSubscription" component={AddSubscriptionScreen} />
         <AppStack.Screen name="SubscriptionDetail" component={SubscriptionDetailScreen} />
-        <AppStack.Screen name="EditSubscription" component={EditSubscriptionScreen} />
+        <AppStack.Screen name="EditSubscription" component={AddSubscriptionScreen} />
         <AppStack.Screen name="EditProfile" component={EditProfileScreen} />
         <AppStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
         <AppStack.Screen name="AddConnector" component={AddConnectorScreen} />
@@ -39,6 +39,13 @@ export default function MainNavigator() {
         <AppStack.Screen name="SpendingBreakdown" component={SpendingBreakdownScreen} />
         <AppStack.Screen name="PlatformSubscriptions" component={PlatformSubscriptionsScreen} />
         <AppStack.Screen name="PriceHistory" component={PriceHistoryScreen} />
+        <AppStack.Screen name="Alerts" component={AlertsScreen} />
+        <AppStack.Screen name="History" component={HistoryScreen} />
+        <AppStack.Screen name="ConnectedInbox" component={ConnectedInboxScreen} />
+        <AppStack.Screen name="InboxSubscriptions" component={InboxSubscriptionsScreen} />
+        <AppStack.Screen name="ReminderSettings" component={ReminderSettingsScreen} />
+        <AppStack.Screen name="CalendarDay" component={CalendarDayScreen} />
+        <AppStack.Screen name="SubscriptionPayments" component={PaymentsScreen} />
         <AppStack.Screen name="ComingSoon" component={ComingSoonScreen} />
       </AppStack.Navigator>
       <UndoToast />

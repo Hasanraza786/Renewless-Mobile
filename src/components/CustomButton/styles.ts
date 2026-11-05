@@ -34,6 +34,14 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
   },
+  danger: {
+    alignItems: 'center',
+    backgroundColor: COLORS.danger,
+    borderRadius: SIZES.padding2,
+    height: SIZES.padding * 2.2,
+    justifyContent: 'center',
+    width: '100%',
+  },
   social: {
     alignItems: 'center',
     borderColor: COLORS.social_border,

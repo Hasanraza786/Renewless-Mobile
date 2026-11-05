@@ -1,75 +1,46 @@
-import { useState } from 'react';
-import {
-  ScrollView,
-  View,
-} from 'react-native';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import CustomButton from '../../components/CustomButton';
+import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
 import Container from '../../components/Container';
-import Header from '../../components/Header';
-import SubscriptionFields, {
-  type SubscriptionDraft,
-} from '../../components/SubscriptionFields';
+import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
+import Header from '../../components/Header';
+import StateView from '../../components/StateView';
+import SubscriptionFields from '../../components/SubscriptionFields';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
-import { saveSubscription } from '../../redux/actions/subscriptions-action';
-import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { AppStackParamList } from '../../types';
+import { goBack } from '../../navigation/service';
+import { common_styles } from '../../utils/common_styles';
+import useSubscriptionForm, { type SubscriptionFormRoute } from './index.function';
 import { styles } from './styles';
 
-type Props = NativeStackScreenProps<AppStackParamList, 'AddSubscription'>;
-
-const empty: SubscriptionDraft = {
-  name: '',
-  price: '',
-  currency: 'USD',
-  cycle: 'monthly',
-  startDate: '',
-  nextRenewal: '',
-  note: '',
-};
-
-export default function AddSubscriptionScreen({ navigation }: Props) {
-  const dispatch = useAppDispatch();
-  const loading = useAppSelector(state => state.subscriptions.loading.create);
-  const error = useAppSelector(state => state.subscriptions.error.create);
-  const [draft, setDraft] = useState<SubscriptionDraft>(empty);
-
-  function onSave() {
-    dispatch(
-      saveSubscription(
-        {
-          name: draft.name,
-          price: draft.price.trim() ? Number(draft.price) : Number.NaN,
-          currency: draft.currency,
-          cycle: draft.cycle,
-          startDate: draft.startDate,
-          nextRenewal: draft.nextRenewal,
-          note: draft.note,
-        },
-        () => navigation.goBack(),
-      ),
-    );
-  }
+// Add form and Edit share this screen; the action stays pinned above the keyboard and safe area.
+export default function AddSubscriptionScreen({ route }: { route: SubscriptionFormRoute }) {
+  const form = useSubscriptionForm(route);
 
   return (
-    <Container is_auth>
-      <View style={styles.main_view}>
-      <Header title="Add subscription" onBack={() => navigation.goBack()} />
-      <ScrollView keyboardShouldPersistTaps="handled">
-        <SubscriptionFields value={draft} onChange={setDraft} />
-        {error ? <CustomText text={error} weight={FONTS.regular} size={SIZES.md} mb={SIZES.padding2} /> : null}
-        <CustomButton text="Save" onPress={onSave} disabled={loading} />
-        <View style={styles.cancel}>
-          <CustomText
-            text="Cancel"
-            color={COLORS.text_secondary}
-            size={SIZES.md}
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-      </ScrollView>
-      </View>
+    <Container is_auth style={styles.main_view}>
+      <Header title={form.title} onBack={goBack} />
+      {form.status !== 'ready' || !form.draft ? (
+        <StateView status={form.status === 'failed' ? 'failed' : 'loading'} message={form.status === 'failed' ? form.load_error : 'Loading subscription.'} onRetry={form.retry} />
+      ) : (
+        <KeyboardAvoidingView behavior="padding" style={common_styles.flex_1}>
+          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={styles.content}>
+            <SubscriptionFields
+              draft={form.draft}
+              errors={form.errors}
+              onChange={form.update}
+              onPickService={form.pickService}
+              origin={form.origin}
+              show_price_change={form.show_price_change}
+              today={form.today}
+              editable={!form.saving}
+            />
+            {form.request_error ? <CustomText mt={SIZES.padding2} text={form.request_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} accessibility_role="alert" /> : null}
+          </ScrollView>
+          <View style={styles.footer}>
+            <CustomButton variant="primary" text={form.action} busy={form.saving} onPress={form.onSubmit} />
+            <CustomText mt={SIZES.padding3} text="You can edit these details anytime." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} align="center" />
+          </View>
+        </KeyboardAvoidingView>
+      )}
     </Container>
   );
 }

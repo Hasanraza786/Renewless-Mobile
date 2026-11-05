@@ -1,9 +1,9 @@
 import { USE_MOCK_API } from '../config/api';
 import { MOCK_DATA } from '../config/mock-data';
-import type { Cycle, ReminderPreference, RenewalNotice, ScanCycle, Subscription, SubscriptionDetail, SubscriptionRecord } from '../types';
+import type { Cycle, ReminderPreference, SubscriptionFormInput, RenewalNotice, ScanCycle, Subscription, SubscriptionDetail, SubscriptionRecord } from '../types';
 import { localToday } from '../utils/dates';
 import { request } from './http';
-import { allReceipts, allRecords, findRecord, removeRecord, restoreRecord, updateRecord } from './subscription-store';
+import { accountReminderSettings, addRecord, allReceipts, allRecords, findRecord, removeRecord, restoreRecord, updateRecord } from './subscription-store';
 
 export type SubscriptionInput = {
   name: string;
@@ -69,7 +69,7 @@ function detailFor(record: SubscriptionRecord): SubscriptionDetail {
     receipts: { totals: [...totals].map(([currency, amount]) => ({ currency, amount: (amount / 100).toFixed(2) })), count: receipts.length },
     annual_estimate: ((Math.round(Number(record.price) * 100) * ANNUAL_FACTOR[record.cycle]) / 100).toFixed(2),
     related_count: allRecords().filter(item => item.platform_id === record.platform_id && item.id !== record.id).length,
-    account_reminder_days: [...MOCK_DATA.account_reminder_days],
+    account_reminder_days: accountReminderSettings().days,
   };
 }
 
@@ -137,4 +137,72 @@ export async function listTrackedSubscriptions(token: string): Promise<{ records
   if (!USE_MOCK_API) return request<{ records: SubscriptionRecord[]; today: string }>('/subscriptions/tracked', { token });
   await mockDelay();
   return { records: [...allRecords()], today: localToday() };
+}
+
+// Fields Add/Edit own; source, inbox, reminder and history stay with the record.
+function formFields(input: SubscriptionFormInput, platform_id: string) {
+  return {
+    name: input.name,
+    platform_id,
+    category: input.category,
+    price: input.price,
+    currency: input.currency,
+    cycle: input.cycle,
+    start_date: input.start_date,
+    next_date: input.next_date,
+    // A manual date is explicit, so it is no longer an estimate.
+    estimated: false,
+    trial: input.trial && input.start_date ? { start_date: input.start_date, end_date: input.trial.end_date, auto_renew: input.trial.auto_renew } : null,
+    auto_renew: input.trial ? input.trial.auto_renew : true,
+    notes: input.notes,
+  };
+}
+
+const slug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+export async function createTracked(token: string, input: SubscriptionFormInput): Promise<SubscriptionRecord> {
+  if (!USE_MOCK_API) return request<SubscriptionRecord>('/subscriptions/tracked', { method: 'POST', token, body: input });
+  await mockDelay();
+  const inbox = MOCK_DATA.home_inbox;
+  return addRecord({
+    id: `sub-manual-${Date.now()}`,
+    ...formFields(input, input.platform_id ?? `custom-${slug(input.name)}`),
+    plan: null,
+    status: 'active',
+    cancelled_on: null,
+    access_until: null,
+    source: { kind: 'manual', email: inbox.email },
+    inbox: null,
+    reminder: { mode: 'default' },
+    manage_url: input.platform_id ? MOCK_DATA.manage_urls[input.platform_id] ?? null : null,
+    price_history: [],
+  });
+}
+
+// A changed amount/currency/cycle adds a Price history entry; earlier receipts never change.
+export async function updateTracked(token: string, id: string, input: SubscriptionFormInput): Promise<SubscriptionDetail> {
+  if (!USE_MOCK_API) return request<SubscriptionDetail>(`/subscriptions/${id}/tracked`, { method: 'PUT', token, body: input });
+  await mockDelay();
+  return detailFor(
+    updateRecord(id, record => ({
+      ...record,
+      ...formFields(input, input.platform_id ?? record.platform_id),
+      price_history: input.price_change
+        ? [
+            {
+              id: `ph-${Date.now()}`,
+              reason: input.price_change.reason,
+              from_amount: record.price,
+              from_cycle: record.cycle,
+              to_amount: input.price,
+              to_cycle: input.cycle,
+              currency: input.currency,
+              effective_on: input.price_change.effective_on,
+              source: 'user' as const,
+            },
+            ...record.price_history,
+          ]
+        : record.price_history,
+    })),
+  );
 }

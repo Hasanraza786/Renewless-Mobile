@@ -78,7 +78,9 @@ export function recordCardProps(record: SubscriptionRecord, today: string) {
   const timing =
     record.status === 'cancelled'
       ? `Cancelled ${record.cancelled_on ? dateLabel(record.cancelled_on) : ''}`.trim()
-      : record.trial && !in_trial && !record.trial.auto_renew
+      : record.status === 'expired'
+        ? `Expired ${record.access_until ? dateLabel(record.access_until) : ''}`.trim()
+        : record.trial && !in_trial && !record.trial.auto_renew
         ? `Trial ended ${dateLabel(record.trial.end_date)}`
         : in_trial
           ? `Trial ends · ${relative(today, record.trial!.end_date)} · ${dateLabel(record.trial!.end_date)}`

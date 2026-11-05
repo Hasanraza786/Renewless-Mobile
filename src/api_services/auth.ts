@@ -4,7 +4,7 @@ import type { AuthProvider, AuthResponse, Gender, Profile } from '../types';
 import { request } from './http';
 
 // Development mock adapter: an isolated in-memory account repository; resetMockAuth restores it.
-type MockAccount = { id: string; name: string; email: string; password: string; verified: boolean };
+type MockAccount = { id: string; name: string; email: string; password: string; verified: boolean; phone?: string; dateOfBirth?: string | null; gender?: Gender | null };
 let accounts: MockAccount[] = [];
 let code_sent_at: Record<string, number> = {};
 let reset_tokens: Record<string, string> = {};
@@ -18,10 +18,28 @@ resetMockAuth();
 const WRONG_CREDENTIALS = 'Wrong email or password. Please try again.';
 const WRONG_CODE = 'That code is incorrect or has expired.';
 const sameEmail = (a: string, b: string) => a.trim().toLowerCase() === b.trim().toLowerCase();
-const mockSession = (account: MockAccount): AuthResponse => ({
-  token: `mock-token-${account.id}`,
-  user: { id: account.id, name: account.name, email: account.email, phone: '', dateOfBirth: null, gender: null },
+// The token records how the session signed in, so the profile knows whether a password exists.
+const mockUser = (account: MockAccount, provider: Profile['provider']): Profile => ({
+  id: account.id,
+  name: account.name,
+  email: account.email,
+  phone: account.phone ?? '',
+  dateOfBirth: account.dateOfBirth ?? null,
+  gender: account.gender ?? null,
+  provider,
+  hasPassword: provider === 'email',
 });
+const mockSession = (account: MockAccount, provider: Profile['provider'] = 'email'): AuthResponse => ({
+  token: `mock-${provider}-${account.id}`,
+  user: mockUser(account, provider),
+});
+function sessionAccount(token: string) {
+  const [, provider, ...id] = token.split('-');
+  const account = accounts.find(item => item.id === id.join('-'));
+  if (!account) throw new Error('Your session has ended. Please log in again.');
+  return { account, provider: provider as Profile['provider'] };
+}
+const mockDelay = () => new Promise<void>(resolve => setTimeout(resolve, 450));
 
 // Returns a session, or `{ verify: true }` when the account still needs its signup code.
 export async function login(email: string, password: string): Promise<AuthResponse | { verify: true }> {
@@ -92,46 +110,51 @@ export async function resendCode(email: string): Promise<{ ok: true }> {
 
 // shortcut: mock only; the real adapter signs in with @react-native-google-signin/google-signin or
 // @invertase/react-native-apple-authentication and exchanges the ID token with the backend (integration phase).
-export async function signInWithProvider(_provider: AuthProvider): Promise<AuthResponse> {
+export async function signInWithProvider(provider: AuthProvider): Promise<AuthResponse> {
   requireMock('Social sign-in');
-  return mockSession({ ...MOCK_DATA.auth_accounts[0], verified: true });
+  const account = accounts.find(item => item.id === MOCK_DATA.auth_accounts[0].id) ?? accounts[0];
+  return mockSession(account, provider);
 }
 
 function requireMock(feature: string) {
   if (!USE_MOCK_API) throw new Error(`${feature} is not available yet.`);
 }
 
-export function changePassword(
-  token: string,
-  current_password: string,
-  password: string,
-) {
-  return request<{ ok: true }>('/auth/change-password', {
-    method: 'POST',
-    token,
-    body: { currentPassword: current_password, password },
-  });
+export async function changePassword(token: string, current_password: string, password: string): Promise<{ ok: true }> {
+  if (!USE_MOCK_API) {
+    return request<{ ok: true }>('/auth/change-password', { method: 'POST', token, body: { currentPassword: current_password, password } });
+  }
+  await mockDelay();
+  const { account, provider } = sessionAccount(token);
+  if (provider !== 'email') throw new Error('You sign in with Google. Manage your password through your Google account.');
+  if (account.password !== current_password) throw new Error('Your current password is incorrect.');
+  account.password = password;
+  return { ok: true };
 }
 
-export function updateProfile(
-  token: string,
-  input: {
-    name: string;
-    email: string;
-    phone: string;
-    dateOfBirth?: string;
-    gender?: Gender | null;
-  },
-) {
-  return request<AuthResponse>('/auth/profile', {
-    method: 'PATCH',
-    token,
-    body: input,
-  });
+// The login email is read-only here; email changes need their own verified flow.
+export type ProfileInput = { name: string; phone: string; dateOfBirth: string | null; gender: Gender | null };
+
+export async function updateProfile(token: string, input: ProfileInput): Promise<AuthResponse> {
+  if (!USE_MOCK_API) return request<AuthResponse>('/auth/profile', { method: 'PATCH', token, body: input });
+  await mockDelay();
+  const { account, provider } = sessionAccount(token);
+  Object.assign(account, { name: input.name.trim(), phone: input.phone.trim(), dateOfBirth: input.dateOfBirth, gender: input.gender });
+  return { token, user: mockUser(account, provider) };
 }
 
-export function logout(token: string) {
-  return request<{ ok: true }>('/auth/logout', { method: 'POST', token });
+export async function logout(token: string): Promise<{ ok: true }> {
+  if (!USE_MOCK_API) return request<{ ok: true }>('/auth/logout', { method: 'POST', token });
+  return { ok: true };
+}
+
+// shortcut: the mock skips provider re-verification; the real flow reauthenticates before the server deletes.
+export async function deleteAccount(token: string): Promise<{ ok: true }> {
+  if (!USE_MOCK_API) return request<{ ok: true }>('/auth/account', { method: 'DELETE', token });
+  await mockDelay();
+  const { account } = sessionAccount(token);
+  accounts = accounts.filter(item => item.id !== account.id);
+  return { ok: true };
 }
 
 export type { Profile };

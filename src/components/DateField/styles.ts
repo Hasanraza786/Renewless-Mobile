@@ -10,6 +10,14 @@ export const styles = StyleSheet.create({
     height: SIZES.padding * 2.15,
     paddingHorizontal: SIZES.padding2,
   },
+  field_form: {
+    backgroundColor: COLORS.checkbox_fill,
+    borderColor: COLORS.select_border,
+    height: SIZES.padding * 2.1,
+  },
+  field_error: {
+    borderColor: COLORS.expired,
+  },
   field_open: {
     borderColor: COLORS.primary,
   },

@@ -4,8 +4,8 @@ export const MOCK_DATA = {
   google_account: {
     email: 'alex@example.com',
     session: {
-      token: 'mock-session-token',
-      user: { id: 'mock-user-1', name: 'Alex Morgan', email: 'alex@example.com', phone: '', dateOfBirth: null, gender: null },
+      token: 'mock-google-mock-user-1',
+      user: { id: 'mock-user-1', name: 'Alex Morgan', email: 'alex@example.com', phone: '', dateOfBirth: null, gender: null, provider: 'google' as const, hasPassword: false },
     },
   },
   // Email accounts for Login; Sign up adds unverified accounts until the OTP is verified.
@@ -45,12 +45,28 @@ export const MOCK_DATA = {
     // Not active: an ended trial and a cancelled plan, for the Detail variants and Platform subscriptions.
     { id: 'sub-spotify-duo', platform_id: 'spotify', name: 'Spotify', plan: 'Duo', category: 'Entertainment', price: '16.99', currency: 'USD', cycle: 'Monthly', next_in_days: -19, estimated: false, auto_renew: false, start_in_days: -33, source: 'gmail', reminder_days: null, trial: { start_in_days: -33, auto_renew: false } },
     { id: 'sub-netflix-basic', platform_id: 'netflix', name: 'Netflix', plan: 'Basic', category: 'Entertainment', price: '7.99', currency: 'USD', cycle: 'Monthly', next_in_days: null, estimated: false, auto_renew: false, start_in_days: -500, source: 'manual', reminder_days: null, cancelled_in_days: -60 },
+    // Expired: access confirmed ended, for History and the List Expired group.
+    { id: 'sub-notion-team', platform_id: 'notion', name: 'Notion', plan: 'Team', category: 'Productivity', price: '17.00', currency: 'USD', cycle: 'Monthly', next_in_days: null, estimated: false, auto_renew: false, start_in_days: -400, source: 'gmail', reminder_days: null, expired_in_days: -25 },
   ],
   // Reminder settings default (days before the event); records without their own override follow it.
   account_reminder_days: [3],
   // The inbox receipts are read from, and verified provider management links by platform.
   home_inbox: { email: 'alex@example.com', last_sync_hours_ago: 4 },
+  // Profile: 'connected' lists home_inbox; 'none' reviews the No inbox connected state.
+  profile_inbox_scenario: 'connected' as 'connected' | 'none',
+  // Connected inbox: 'synced'; 'reconnect' needs Gmail permission again; 'sync_fails' makes Sync now fail (saved data unchanged).
+  inbox_scenario: 'synced' as 'synced' | 'reconnect' | 'sync_fails',
   manage_urls: { netflix: 'https://www.netflix.com/youraccount', spotify: 'https://www.spotify.com/account/subscription/' } as Record<string, string>,
+  // Alerts: 'sent' lists sent_alerts; 'empty' reviews Alerts · empty.
+  alerts_scenario: 'sent' as 'sent' | 'empty',
+  // Reminders the server sent: days before today and the local send time, with the event day offset from today.
+  sent_alerts: [
+    { id: 'alert-netflix', subscription_id: 'sub-netflix-standard', kind: 'renewal', sent_days_ago: 0, event_in_days: 0, time: '09:00' },
+    { id: 'alert-spotify', subscription_id: 'sub-spotify', kind: 'trial_end', sent_days_ago: 1, event_in_days: 4, time: '09:00' },
+    { id: 'alert-icloud', subscription_id: 'sub-icloud', kind: 'renewal', sent_days_ago: 3, event_in_days: 3, time: '09:00' },
+  ] as const,
+  // Payments: 'receipts' lists home_receipts; 'none' reviews Payments · empty.
+  payments_scenario: 'receipts' as 'receipts' | 'none',
   // Successful Gmail receipts as days before today; this_month ones are kept inside the current month.
   home_receipts: [
     { id: 'rcpt-netflix', subscription_id: 'sub-netflix-standard', amount: '15.99', currency: 'USD', paid_days_ago: 18, this_month: true },

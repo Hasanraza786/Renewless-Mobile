@@ -64,7 +64,7 @@ test('login validates, keeps credential errors generic, and enters Home on succe
 
   await act(async () => { type(tree, 'Password', 'sample123'); });
   await act(async () => { press(tree, 'Log in'); });
-  expect(store.getState().constant.token).toBe('mock-token-mock-user-1');
+  expect(store.getState().constant.token).toBe('mock-email-mock-user-1');
   expect(root.reset).toHaveBeenCalledWith([{ name: 'Tabs' }]);
   await act(async () => { tree.unmount(); });
 });
@@ -129,6 +129,6 @@ test('password reset verifies a code, sets the new password and returns to Login
   const login = await render(LoginScreen, store, navigationMock().navigation);
   await act(async () => { type(login, 'Email', 'alex@example.com'); type(login, 'Password', 'newpass1'); });
   await act(async () => { press(login, 'Log in'); });
-  expect(store.getState().constant.token).toBe('mock-token-mock-user-1');
+  expect(store.getState().constant.token).toBe('mock-email-mock-user-1');
   await act(async () => { login.unmount(); });
 });

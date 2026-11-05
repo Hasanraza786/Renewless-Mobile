@@ -13,6 +13,7 @@ export default function useList() {
   const [groups, setGroups] = useState<ListGroup[]>([]);
   const [sort, setSort] = useState<ListSort>('next');
   const [dialog, setDialog] = useState<'sort' | 'filters' | null>(null);
+  const [add_open, setAddOpen] = useState(false);
 
   // Refresh on every visit; query, filters and sort stay as the user left them.
   useFocusEffect(
@@ -27,35 +28,49 @@ export default function useList() {
   // Counts are global: every record before search or status filtering.
   const counts = useMemo(() => groupCounts(all, today), [all, today]);
 
-  // shortcut: the Add sheet and Edit form are later sections; they open the dev-only ComingSoon screen.
+  const status = records ? 'ready' : error && !loading ? 'failed' : 'loading';
+  const has_records = all.length > 0;
+  const sort_label = LIST_SORTS.find(item => item.key === sort)!.label;
+  const matching_count = matching.length;
+
+  // Needs date rows open Edit to supply the date; others open Detail.
   const open = (record: SubscriptionRecord) =>
-    listGroup(record, today) === 'needs_date' ? navigate('ComingSoon', { title: 'Edit' }) : navigate('SubscriptionDetail', { id: record.id });
+    listGroup(record, today) === 'needs_date' ? navigate('EditSubscription', { id: record.id }) : navigate('SubscriptionDetail', { id: record.id });
+  const toggleGroup = (group: ListGroup) => setGroups(current => (current.includes(group) ? current.filter(item => item !== group) : [...current, group]));
+  const clearGroups = () => setGroups([]);
+  const applySort = (next: ListSort) => {
+    setSort(next);
+    setDialog(null);
+  };
+  const retry = () => dispatch(loadList());
+  const openAdd = () => setAddOpen(true);
+  const closeAdd = () => setAddOpen(false);
+  const openAddManual = () => navigate('AddSubscription');
 
   return {
-    status: records ? 'ready' : error && !loading ? 'failed' : 'loading',
+    status,
     error,
     today,
-    has_records: all.length > 0,
+    has_records,
     query,
     setQuery,
     groups,
-    toggleGroup: (group: ListGroup) => setGroups(current => (current.includes(group) ? current.filter(item => item !== group) : [...current, group])),
-    clearGroups: () => setGroups([]),
+    toggleGroup,
+    clearGroups,
     sort,
-    sort_label: LIST_SORTS.find(item => item.key === sort)!.label,
-    applySort: (next: ListSort) => {
-      setSort(next);
-      setDialog(null);
-    },
+    sort_label,
+    applySort,
     dialog,
     setDialog,
     counts,
-    matching_count: matching.length,
+    matching_count,
     sections,
     open,
-    retry: () => dispatch(loadList()),
-    openAdd: () => navigate('ComingSoon', { title: 'Add' }),
-    openAddManual: () => navigate('ComingSoon', { title: 'Add subscription' }),
+    add_open,
+    retry,
+    openAdd,
+    closeAdd,
+    openAddManual,
   };
 }
 

@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { ScrollView, View } from 'react-native';
 import { filter_icon, sort_icon } from '../../assets/icons';
+import AddSheet from '../../components/AddSheet';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Header from '../../components/Header';
@@ -113,6 +114,7 @@ export default function ListScreen() {
         </ScrollView>
       )}
       <ListDialogs list={list} />
+      <AddSheet visible={list.add_open} onClose={list.closeAdd} />
     </Container>
   );
 }

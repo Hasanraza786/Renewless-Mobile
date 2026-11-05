@@ -54,7 +54,7 @@ export default function Dropdown<T extends string>(props: Single<T> | Multiple) 
 
   return (
     <View style={styles.wrap}>
-      <CustomText text={props.label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding3} />
+      <CustomText text={props.label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding * 0.3} />
       <Pressable
         ref={control_ref}
         accessibilityRole="button"

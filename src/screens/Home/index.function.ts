@@ -10,6 +10,7 @@ export default function useHome() {
   const { data, loading, error } = useAppSelector(state => state.dashboard);
   const [selected_event, setSelectedEvent] = useState('');
   const [reduce_motion, setReduceMotion] = useState(false);
+  const [add_open, setAddOpen] = useState(false);
 
   // Refresh on every visit; a usable snapshot stays on screen while it reloads.
   useFocusEffect(
@@ -27,27 +28,42 @@ export default function useHome() {
   const events = data?.nearest_events ?? [];
   const selected = events.find(item => item.id === selected_event) ?? events[0];
 
-  // shortcut: destinations whose sections are not built yet open the dev-only ComingSoon screen.
-  const open = (title: string) => navigate('ComingSoon', { title });
+  // Skeleton only before the first snapshot; errors without data offer retry, never an empty account.
+  const status = data ? 'ready' : error && !loading ? 'failed' : 'loading';
+
+  const retry = () => dispatch(loadDashboard());
+  const openAdd = () => setAddOpen(true);
+  const closeAdd = () => setAddOpen(false);
+  const openAddManual = () => navigate('AddSubscription');
+  // shortcut: Connect Gmail is a later section; it opens the dev-only ComingSoon screen until then.
+  const openConnectGmail = () => navigate('ComingSoon', { title: 'Connect Gmail' });
+  const openDetail = (id: string) => navigate('SubscriptionDetail', { id });
+  const openUpcoming = () => navigate('Upcoming');
+  // Paid this month opens account Payments on the snapshot's current month.
+  const openPayments = () => navigate('Payments', data ? { month: data.today.slice(0, 7) } : undefined);
+  const openThisMonth = () => navigate('ThisMonth');
+  const openSpending = () => navigate('SpendingBreakdown');
+  const openPlatform = (platform_id: string, name: string) => navigate('PlatformSubscriptions', { platform_id, name });
 
   return {
     data,
-    // Skeleton only before the first snapshot; errors without data offer retry, never an empty account.
-    status: data ? 'ready' : error && !loading ? 'failed' : 'loading',
+    status,
     error,
     reduce_motion,
     selected,
     selectEvent: setSelectedEvent,
-    retry: () => dispatch(loadDashboard()),
-    openAdd: () => open('Add'),
-    openAddManual: () => open('Add subscription'),
-    openConnectGmail: () => open('Connect Gmail'),
-    openDetail: (id: string) => navigate('SubscriptionDetail', { id }),
-    openUpcoming: () => navigate('Upcoming'),
-    openPayments: () => navigate('Payments'),
-    openThisMonth: () => navigate('ThisMonth'),
-    openSpending: () => navigate('SpendingBreakdown'),
-    openPlatform: (platform_id: string, name: string) => navigate('PlatformSubscriptions', { platform_id, name }),
+    add_open,
+    retry,
+    openAdd,
+    closeAdd,
+    openAddManual,
+    openConnectGmail,
+    openDetail,
+    openUpcoming,
+    openPayments,
+    openThisMonth,
+    openSpending,
+    openPlatform,
   };
 }
 

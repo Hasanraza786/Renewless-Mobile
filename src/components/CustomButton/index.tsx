@@ -9,7 +9,7 @@ type Props = {
   onPress: () => void;
   disabled?: boolean;
   // Omitted = the legacy filled button; the others are the approved prototype buttons.
-  variant?: 'primary' | 'secondary' | 'link' | 'social';
+  variant?: 'primary' | 'secondary' | 'link' | 'social' | 'danger';
   // Size/shape override where a screen's approved button differs from the variant (height, radius).
   style?: StyleProp<ViewStyle>;
   // SVG markup for the leading provider icon of a social button.
@@ -35,7 +35,7 @@ export default function CustomButton({ text, onPress, disabled, variant, style, 
         <CustomText
           text={text}
           weight={variant === 'primary' || variant === 'social' ? FONTS.medium : FONTS.regular}
-          color={variant === 'primary' ? COLORS.background : variant === 'link' ? COLORS.text_secondary : COLORS.text_primary}
+          color={variant === 'primary' ? COLORS.background : variant === 'danger' ? COLORS.on_danger : variant === 'link' ? COLORS.text_secondary : COLORS.text_primary}
           size={SIZES.sm}
           align="center"
         />

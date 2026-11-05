@@ -59,7 +59,7 @@ test('connecting Google signs in, scans, and saving the reviewed selection opens
 
   await act(async () => { press(tree, 'Connect Gmail and Login'); });
   await settle();
-  expect(store.getState().constant.token).toBe('mock-session-token');
+  expect(store.getState().constant.token).toBe('mock-google-mock-user-1');
   expect(texts(tree)).toContain('This may take a moment.');
   // Progress comes only from polled job status; results then open on their own.
   await act(async () => { jest.advanceTimersByTime(SCAN_POLL_MS * 4); });
@@ -100,7 +100,7 @@ test('denied Gmail access keeps the new session but stays on Connect without sca
     const tree = await mount(store);
     await act(async () => { press(tree, 'Connect Gmail and Login'); });
     await settle();
-    expect(store.getState().constant.token).toBe('mock-session-token');
+    expect(store.getState().constant.token).toBe('mock-google-mock-user-1');
     expect(store.getState().onboarding.scan_status).toBe('idle');
     expect(texts(tree)).toEqual(expect.arrayContaining(['You’re signed in. Allow Gmail access to scan, or add subscriptions manually.', 'You’re already signed in. We’ll ask permission to find subscriptions in your Gmail.']));
     await act(async () => { tree.unmount(); });

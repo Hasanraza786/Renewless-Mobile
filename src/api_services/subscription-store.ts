@@ -1,5 +1,5 @@
 import { MOCK_DATA } from '../config/mock-data';
-import type { ReminderPreference, Receipt, ScanCycle, SubscriptionRecord } from '../types';
+import type { PaymentRecord, ReminderPreference, ReminderSettings, Receipt, ScanCycle, SubscriptionRecord } from '../types';
 import { localToday } from '../utils/dates';
 import { addDays } from '../utils/scan';
 import { importedRecords } from './onboarding';
@@ -10,11 +10,14 @@ import { importedRecords } from './onboarding';
 let records: SubscriptionRecord[] | null = null;
 let removed = new Map<string, SubscriptionRecord>();
 let built_for = '';
+let reminder_settings: ReminderSettings | null = null;
 
 type Fixture = (typeof MOCK_DATA.home_subscriptions)[number] & {
   price_history?: readonly { id: string; from_amount: string; to_amount: string; effective_in_days: number; source: 'user' | 'gmail' }[];
   trial?: { start_in_days: number; auto_renew: boolean };
   cancelled_in_days?: number;
+  // Confirmed access end (Expired), days from today.
+  expired_in_days?: number;
 };
 
 const reminderFor = (days: number | null): ReminderPreference => (days ? { mode: 'days', days: [days] } : { mode: 'default' });
@@ -40,9 +43,9 @@ function fromFixture(item: Fixture, today: string): SubscriptionRecord {
     estimated: item.estimated,
     auto_renew: item.auto_renew,
     trial: item.trial && next_date ? { start_date: day(item.trial.start_in_days)!, end_date: next_date, auto_renew: item.trial.auto_renew } : null,
-    status: item.cancelled_in_days !== undefined ? 'cancelled' : 'active',
+    status: item.expired_in_days !== undefined ? 'expired' : item.cancelled_in_days !== undefined ? 'cancelled' : 'active',
     cancelled_on: day(item.cancelled_in_days),
-    access_until: null,
+    access_until: day(item.expired_in_days),
     start_date: day(item.start_in_days),
     source: { kind: item.source as 'manual' | 'gmail', email: inbox.email },
     inbox: { email: inbox.email, last_sync: new Date(Date.now() - inbox.last_sync_hours_ago * 3600000).toISOString() },
@@ -95,7 +98,20 @@ export function resetMockSubscriptions() {
   records = null;
   removed = new Map();
   built_for = '';
+  reminder_settings = null;
 }
+
+// Account reminder preferences, shared by Reminder settings and Detail's account default.
+export function accountReminderSettings(): ReminderSettings {
+  return reminder_settings ?? { push_enabled: true, renewals: true, trials: true, days: [...MOCK_DATA.account_reminder_days], time: '09:00' };
+}
+
+export function setAccountReminderSettings(settings: ReminderSettings) {
+  reminder_settings = { ...settings, days: [...settings.days] };
+  return accountReminderSettings();
+}
+
+export const findRemoved = (id: string) => removed.get(id) ?? null;
 
 export function allRecords(): SubscriptionRecord[] {
   const today = localToday();
@@ -120,6 +136,11 @@ export function updateRecord(id: string, change: (record: SubscriptionRecord) =>
   return list[index];
 }
 
+export function addRecord(record: SubscriptionRecord) {
+  allRecords().push(record);
+  return record;
+}
+
 // Tombstone by stable ID; restoreRecord undoes it without touching receipts.
 export function removeRecord(id: string) {
   const list = allRecords();
@@ -137,15 +158,31 @@ export function restoreRecord(id: string) {
   return record;
 }
 
-// Successful Gmail receipts for the current records.
-export function allReceipts(): Receipt[] {
+function datedReceipts(): Receipt[] {
   const today = localToday();
   const month_start = `${today.slice(0, 7)}-01`;
+  return MOCK_DATA.home_receipts.map(({ paid_days_ago, this_month, ...item }) => {
+    const date = addDays(today, -paid_days_ago);
+    return { ...item, paid_on: this_month && date < month_start ? month_start : date };
+  });
+}
+
+// Successful Gmail receipts for the current records.
+export function allReceipts(): Receipt[] {
   const ids = new Set(allRecords().map(item => item.id));
-  return MOCK_DATA.home_receipts
-    .filter(item => ids.has(item.subscription_id))
-    .map(({ paid_days_ago, this_month, ...item }) => {
-      const date = addDays(today, -paid_days_ago);
-      return { ...item, paid_on: this_month && date < month_start ? month_start : date };
-    });
+  return datedReceipts().filter(item => ids.has(item.subscription_id));
+}
+
+// Confirmed payments, newest first; a removed subscription keeps its payments with the retained snapshot.
+export function allPayments(): PaymentRecord[] {
+  if (MOCK_DATA.payments_scenario === 'none') return [];
+  const current = new Map(allRecords().map(item => [item.id, item]));
+  return datedReceipts()
+    .flatMap(item => {
+      const record = current.get(item.subscription_id) ?? removed.get(item.subscription_id);
+      if (!record) return [];
+      // shortcut: fixtures carry no separate billing anchor, so the billing date is the payment date; the backend sends the real cycle anchor.
+      return [{ ...item, name: record.name, platform_id: record.platform_id, billing_date: item.paid_on, source: 'gmail' as const, inbox_email: MOCK_DATA.home_inbox.email, subscription_available: current.has(item.subscription_id) }];
+    })
+    .sort((a, b) => b.paid_on.localeCompare(a.paid_on) || a.id.localeCompare(b.id));
 }

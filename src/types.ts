@@ -10,6 +10,35 @@ export type Profile = {
   phone: string;
   dateOfBirth: string | null;
   gender: Gender | null;
+  // How the account signs in; social-only accounts have no Renewless password.
+  provider: 'email' | AuthProvider;
+  hasPassword: boolean;
+};
+
+// A Gmail inbox the account connected for receipts; lastSync is an ISO time or null.
+export type ProfileInbox = {
+  id: string;
+  email: string;
+  status: 'synced' | 'paused' | 'reconnect';
+  lastSync: string | null;
+};
+
+// Profile data beyond identity: connected inboxes and all-time confirmed payment totals per currency.
+// Connected inbox detail: authorization/sync state, last success (ISO or null) and imported count.
+export type InboxDetail = ProfileInbox & { imported_count: number };
+
+export type InboxState = {
+  inbox: InboxDetail | null;
+  imported: SubscriptionRecord[] | null;
+  syncing: boolean;
+  sync_error: string;
+  loading: { inbox: boolean; imported: boolean; reconnect: boolean; disconnect: boolean };
+  error: { inbox: string; imported: string; reconnect: string; disconnect: string };
+};
+
+export type ProfileOverview = {
+  inboxes: ProfileInbox[];
+  payment_totals: { currency: string; amount: string }[];
 };
 
 export type AuthResponse = {
@@ -121,6 +150,17 @@ export type PriceChange = {
 
 export type Receipt = { id: string; subscription_id: string; amount: string; currency: string; paid_on: string };
 
+// A confirmed payment as Payments lists it: the receipt plus the retained subscription snapshot and evidence.
+// subscription_available is false once the subscription was removed; the payment record is kept.
+export type PaymentRecord = Receipt & {
+  name: string;
+  platform_id: string;
+  billing_date: string;
+  source: 'gmail' | 'reviewed' | 'manual';
+  inbox_email: string | null;
+  subscription_available: boolean;
+};
+
 // Per-subscription override: follow the account default, Off, or one or more days before the event.
 export type ReminderPreference = { mode: 'default' } | { mode: 'off' } | { mode: 'days'; days: number[] };
 
@@ -163,6 +203,72 @@ export type SubscriptionDetail = {
 };
 
 // The complete tracked collection; null until the first successful load.
+// Add/Edit save payload. A trial replaces Next renewal: its end is start + days unless an exact end is kept.
+export type SubscriptionFormInput = {
+  name: string;
+  platform_id: string | null;
+  price: string;
+  currency: string;
+  cycle: ScanCycle;
+  category: string;
+  start_date: string | null;
+  next_date: string | null;
+  trial: { days: number; end_date: string; auto_renew: boolean } | null;
+  notes: string | null;
+  // Edit only, when amount/currency/cycle changed: why, and from when (today for a correction).
+  price_change: { reason: 'price_changed' | 'correction'; effective_on: string } | null;
+};
+
+// A reminder the server confirms it sent; sent_at is ISO time, event_date the local event date.
+export type SentAlert = {
+  id: string;
+  subscription_id: string;
+  platform_id: string;
+  name: string;
+  kind: 'renewal' | 'trial_end';
+  event_date: string;
+  amount: string;
+  currency: string;
+  sent_at: string;
+  subscription_available: boolean;
+};
+
+// Account reminder preferences. days empty = Off; time is local HH:MM.
+export type ReminderSettings = {
+  push_enabled: boolean;
+  renewals: boolean;
+  trials: boolean;
+  days: number[];
+  time: string;
+};
+
+// Apply the new default to existing subscriptions too; keep_custom spares individually changed ones.
+export type ReminderApply = { existing: boolean; keep_custom: boolean };
+
+export type AlertsState = {
+  alerts: SentAlert[] | null;
+  settings: ReminderSettings | null;
+  loading: { alerts: boolean; settings: boolean; save: boolean };
+  error: { alerts: string; settings: string; save: string };
+};
+
+// One month of scheduled events (renewals and trial endings) with expected charges per currency.
+export type CalendarMonth = { month: string; today: string; events: HomeEvent[]; expected: MoneyTotal[] };
+
+export type CalendarState = {
+  months: Record<string, CalendarMonth>;
+  loading: boolean;
+  error: string;
+};
+
+// Confirmed payments per scope: 'account' or an owned subscription ID.
+export type PaymentsState = {
+  scopes: Record<string, PaymentRecord[]>;
+  today: string;
+  loading: boolean;
+  error: string;
+};
+
 export type ListState = {
   records: SubscriptionRecord[] | null;
   today: string;
@@ -227,6 +333,12 @@ export type ProfileState = {
   user: Profile | null;
   loading: boolean;
   error: string;
+  // null until the first successful load.
+  overview: ProfileOverview | null;
+  overview_loading: boolean;
+  overview_error: string;
+  // One-line app notice (e.g. Profile updated.); shown by the app toast.
+  notice: string | null;
 };
 
 export type DashboardState = {
@@ -284,6 +396,10 @@ export type RootState = {
   dashboard: DashboardState;
   detail: DetailState;
   list: ListState;
+  payments: PaymentsState;
+  calendar: CalendarState;
+  alerts: AlertsState;
+  inbox: InboxState;
   subscriptions: SubscriptionsState;
   notifications: NotificationsState;
   connectors: ConnectorsState;
@@ -350,7 +466,8 @@ export type TabParamList = {
   Home: undefined;
   List: undefined;
   Calendar: undefined;
-  Payments: undefined;
+  // Home Paid this month opens the account view on that YYYY-MM.
+  Payments: { month?: string } | undefined;
   Profile: undefined;
 };
 
@@ -371,6 +488,15 @@ export type AppStackParamList = {
   // From Detail exclude_id hides the current plan; from spending every plan on the platform shows.
   PlatformSubscriptions: { platform_id: string; name: string; exclude_id?: string };
   PriceHistory: { id: string };
+  Alerts: undefined;
+  ReminderSettings: undefined;
+  History: undefined;
+  ConnectedInbox: { id: string };
+  InboxSubscriptions: { id: string };
+  // Calendar date with several events; date is YYYY-MM-DD.
+  CalendarDay: { date: string };
+  // Detail's View payments: the Payments screen scoped to one owned subscription.
+  SubscriptionPayments: { id: string; name: string };
   // shortcut: dev-only stand-in for destinations whose sections are not built yet; each section replaces its use.
   ComingSoon: { title: string };
 };

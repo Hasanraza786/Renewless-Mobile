@@ -80,7 +80,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
             letter_spacing={-0.6}
             text={
               <>
-                <CustomText text={`${view.cost.currency} `} color={COLORS.text_secondary} size={SIZES.sm} />
+                <CustomText text={`${view.cost.currency} `} color={COLORS.text_secondary} size={SIZES.sm} line_height={null} />
                 {view.cost.amount}
               </>
             }
