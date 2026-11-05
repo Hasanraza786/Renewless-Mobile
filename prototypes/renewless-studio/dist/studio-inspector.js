@@ -19,7 +19,7 @@
    return /[\p{L}\p{N}]/u.test(text)||el.matches('input:not([type="checkbox"]):not([type="radio"]),textarea,select,h1,h2,h3,h4');
   });
   // Snapshot before assigning roles so inherited sizes do not change classification mid-pass.
-  const roles=candidates.map(el=>{const size=parseFloat(getComputedStyle(el).fontSize);return [el,el.matches('h1,h2')?'heading':el.matches('h3,h4,.row .body>strong,.spend-label>strong,.spend-heading>strong')?'subheading':el.matches('button,a,input,textarea,select,label')?'body':size>=20?'heading':size>=15?'subheading':'body'];});
+  const roles=candidates.map(el=>{const size=parseFloat(getComputedStyle(el).fontSize);return [el,el.matches('h1,h2')?'heading':el.matches('.subscription-card .body>strong')?'card-name':el.matches('h3,h4,.row .body>strong,.spend-label>strong,.spend-heading>strong')?'subheading':el.matches('button,a,input,textarea,select,label')?'body':size>=20?'heading':size>=15?'subheading':'body'];});
   roles.forEach(([el,role])=>{el.dataset.studioType=role;});
  }
  function updateOutline(){if(!selected?.isConnected){outline.hidden=true;return;}const r=selected.getBoundingClientRect();Object.assign(outline.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px'});outline.hidden=false;}

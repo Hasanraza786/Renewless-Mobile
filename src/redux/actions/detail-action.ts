@@ -12,6 +12,7 @@ import type { ReminderPreference, SubscriptionDetail } from '../../types';
 import { runRequest, type AppThunk } from '../runRequest';
 import { setDetail, setDetailError, setDetailLoading, setPlatformRecords, setRemoved } from '../slices/detail-slice';
 import { loadDashboard } from './dashboard-action';
+import { loadList } from './list-action';
 
 const flag = (key: 'detail' | 'platform' | 'mutation') => ({
   loading: (value: boolean) => setDetailLoading({ key, value }),
@@ -50,6 +51,7 @@ function mutate(request: (token: string) => Promise<SubscriptionDetail | { ok: t
     );
     if (result === undefined) return false;
     dispatch(loadDashboard());
+    dispatch(loadList());
     return true;
   };
 }

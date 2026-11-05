@@ -131,3 +131,10 @@ export async function restoreTracking(token: string, id: string): Promise<{ ok: 
   restoreRecord(id);
   return { ok: true };
 }
+
+// The complete tracked collection for List; filtering/sorting runs over all of it, so counts stay global.
+export async function listTrackedSubscriptions(token: string): Promise<{ records: SubscriptionRecord[]; today: string }> {
+  if (!USE_MOCK_API) return request<{ records: SubscriptionRecord[]; today: string }>('/subscriptions/tracked', { token });
+  await mockDelay();
+  return { records: [...allRecords()], today: localToday() };
+}

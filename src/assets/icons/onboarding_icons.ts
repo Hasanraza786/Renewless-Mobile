@@ -40,6 +40,10 @@ export const edit_icon = `<svg stroke="${COLORS.primary}" width="18" height="18"
 
 export const chevron_right_icon = `<svg stroke="${COLORS.text_secondary}" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m9 6 6 6-6 6" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
+export const sort_icon = `<svg stroke="${COLORS.text_primary}" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14m-3-3 3 3 3-3M15 6h5m-5 6h4m-4 6h3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+export const filter_icon = `<svg stroke="${COLORS.text_primary}" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16M7 12h10M10 18h4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
 export const chevron_down_icon = `<svg stroke="${COLORS.text_primary}" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m6 9 6 6 6-6" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 export const option_check_icon = `<svg stroke="${COLORS.primary}" width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m5 12 4 4 10-10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;

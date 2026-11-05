@@ -6,6 +6,7 @@ export { default as EditProfileScreen } from './EditProfile';
 export { default as EditSubscriptionScreen } from './EditSubscription';
 export { default as ForgotPasswordScreen } from './ForgotPassword';
 export { default as HomeScreen } from './Home';
+export { default as ListScreen } from './List';
 export { default as ComingSoonScreen } from './ComingSoon';
 export { default as UpcomingScreen } from './Upcoming';
 export { default as ThisMonthScreen } from './ThisMonth';

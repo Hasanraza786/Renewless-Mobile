@@ -4,6 +4,8 @@ export {
   calendar_icon,
   chevron_down_icon,
   chevron_right_icon,
+  filter_icon,
+  sort_icon,
   info_icon,
   check_icon,
   check_dark_icon,

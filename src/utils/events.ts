@@ -84,12 +84,16 @@ export function recordCardProps(record: SubscriptionRecord, today: string) {
           ? `Trial ends · ${relative(today, record.trial!.end_date)} · ${dateLabel(record.trial!.end_date)}`
           : record.next_date
             ? `${relative(today, record.next_date)} · ${dateLabel(record.next_date)}`
-            : 'Add renewal date ›';
+            : null;
   return {
     name: record.name,
     platform_id: record.platform_id,
     status: recordStatus(record, today),
-    lines: [timing, ...(record.plan ? [`${record.plan} plan`] : [])],
+    lines: [
+      timing ?? { text: 'Add renewal date ›', color: COLORS.trial },
+      ...(record.plan ? [`${record.plan} plan`] : []),
+      ...(record.estimated && record.status === 'active' && record.next_date && !in_trial ? ['Estimated renewal date'] : []),
+    ],
     amount: amountLabel(record.price, record.currency),
     caption: `${in_trial ? 'After trial · ' : ''}${record.cycle}`,
     accessibility_label: `View ${record.name}${record.plan ? ` ${record.plan}` : ''} subscription`,

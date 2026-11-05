@@ -162,6 +162,14 @@ export type SubscriptionDetail = {
   account_reminder_days: number[];
 };
 
+// The complete tracked collection; null until the first successful load.
+export type ListState = {
+  records: SubscriptionRecord[] | null;
+  today: string;
+  loading: boolean;
+  error: string;
+};
+
 export type DetailState = {
   detail: SubscriptionDetail | null;
   // Just-removed tracking that can still be undone (eight seconds).
@@ -275,6 +283,7 @@ export type RootState = {
   profile: ProfileState;
   dashboard: DashboardState;
   detail: DetailState;
+  list: ListState;
   subscriptions: SubscriptionsState;
   notifications: NotificationsState;
   connectors: ConnectorsState;

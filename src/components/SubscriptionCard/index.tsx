@@ -11,8 +11,8 @@ type Props = {
   name: string;
   platform_id: string;
   status: { label: string; color: string };
-  // Timing, then optional plan/context lines.
-  lines: string[];
+  // Timing, then optional plan/context lines; a line may carry its own colour (e.g. Add renewal date ›).
+  lines: (string | { text: string; color: string })[];
   amount: string;
   caption: string;
   // Opt-in decorative chevron for cards that open Detail (Home, Upcoming).
@@ -31,11 +31,12 @@ export default function SubscriptionCard({ name, platform_id, status, lines, amo
         {logo ? <Icons name={logo} /> : <CustomText text={name.charAt(0)} size={SIZES.sm} />}
       </View>
       <View style={common_styles.flex_1}>
-        <CustomText text={name} size={SIZES.lg} />
+        <CustomText text={name} size={SIZES.md} />
         <CustomText mt={SIZES.padding / 4} text={status.label} weight={FONTS.regular} color={status.color} size={SIZES.sm} />
-        {lines.map(line => (
-          <CustomText key={line} mt={SIZES.padding * 0.15} text={line} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-        ))}
+        {lines.map(line => {
+          const { text, color } = typeof line === 'string' ? { text: line, color: COLORS.text_secondary } : line;
+          return <CustomText key={text} mt={SIZES.padding * 0.15} text={text} weight={FONTS.regular} color={color} size={SIZES.sm} />;
+        })}
       </View>
       <View style={styles.amount}>
         <CustomText text={amount} weight={FONTS.regular} size={SIZES.lg} align="center" />
