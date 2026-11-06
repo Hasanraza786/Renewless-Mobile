@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { pick, types } from '@react-native-documents/picker';
+import { viewDocument } from '@react-native-documents/viewer';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { createSound } from 'react-native-nitro-sound';
 import { navigate } from '../../navigation/service';
@@ -299,6 +300,9 @@ export default function useAiChat() {
   const removeAttachment = () => setAttachment(null);
   const openPreview = (uri: string) => setPreviewUri(uri);
   const closePreview = () => setPreviewUri(null);
+  // Read-only: iOS Quick Look without Markup; Android opens another app with read permission only.
+  const openDocument = (uri: string, name: string) =>
+    viewDocument({ uri, mimeType: 'application/pdf', headerTitle: name, grantPermissions: 'read' }).catch(() => setAttachError('Unable to open this PDF. Please try again.'));
 
   return {
     messages,
@@ -341,6 +345,7 @@ export default function useAiChat() {
     preview_uri,
     openPreview,
     closePreview,
+    openDocument,
   };
 }
 

@@ -81,7 +81,7 @@ function VoiceBubble({ chat, message }: Props & { message: ChatMessage }) {
   );
 }
 
-// Image: preview with View image ↗ (opens the full image); PDF: file tile, name and type.
+// Image: preview with View image ↗ (full-screen preview); PDF: file tile, name and View document ↗ (read-only Quick Look).
 function FileBubble({ chat, message }: Props & { message: ChatMessage }) {
   if (message.input?.kind !== 'file') return null;
   const { uri, name, file_kind } = message.input;
@@ -93,14 +93,13 @@ function FileBubble({ chat, message }: Props & { message: ChatMessage }) {
           <CustomText text={'View image ↗\uFE0E'} weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.xs} style={styles.media_strip} />
         </Pressable>
       ) : (
-        // shortcut: no in-app PDF viewer yet, so the caption omits "View document ↗"; add it with @react-native-documents/viewer.
-        <RowView gap={SIZES.padding / 2} accessibilityLabel={`Sent PDF ${name}`}>
+        <RowView gap={SIZES.padding / 2} accessibilityRole="button" accessibilityLabel={`Preview sent PDF ${name}`} onPress={() => chat.openDocument(uri, name)}>
           <View style={styles.pdf_tile}>
             <Icons name={pdf_icon} />
           </View>
           <View style={common_styles.flex_1}>
             <CustomText text={name} weight={FONTS.medium} color={COLORS.chat_user_text} size={SIZES.sm} />
-            <CustomText mt={SIZES.padding / 4} text="PDF" weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.xs} />
+            <CustomText mt={SIZES.padding / 4} text={'PDF · View document ↗\uFE0E'} weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.xs} />
           </View>
         </RowView>
       )}
