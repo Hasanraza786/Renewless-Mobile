@@ -36,7 +36,7 @@ export default function Header({ title, onBack, onAdd, onDelete, onSettings, acc
         </Pressable>
       ) : null}
       <View style={common_styles.flex_1}>
-        <CustomText text={title} weight={FONTS.medium} size={SIZES.h3} accessibility_role="header" number_of_lines={2} />
+        <CustomText text={title} weight={FONTS.medium} size={SIZES.h4} accessibility_role="header" number_of_lines={2} />
         {subtitle ? <CustomText mt={SIZES.padding3 * 0.75} text={subtitle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
       </View>
       {accessory ? (

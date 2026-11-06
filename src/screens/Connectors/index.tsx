@@ -46,7 +46,7 @@ export default function ConnectorsScreen({ navigation }: Props) {
     <Container>
       <View style={styles.main_view}>
       <RowView gap={0} style={{ marginBottom: SIZES.padding2 }}>
-        <CustomText text="Connectors" size={SIZES.h3} style={common_styles.flex_1} />
+        <CustomText text="Connectors" size={SIZES.h4} style={common_styles.flex_1} />
         <Pressable onPress={() => navigation.navigate('AddConnector')}>
           <CustomText text="Add" color={COLORS.primary} size={SIZES.md} />
         </Pressable>

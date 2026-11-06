@@ -135,6 +135,7 @@ export const SIZES = {
   sm: RFValue(12, 766),
   md: RFValue(14, 766),
   lg: RFValue(16, 766),
+  h4: RFValue(20, 766),
   h3: RFValue(22, 766),
 
   control_height: 44,
