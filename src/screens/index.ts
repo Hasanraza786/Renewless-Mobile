@@ -14,6 +14,7 @@ export { default as AlertsScreen } from './Alerts';
 export { default as HistoryScreen } from './History';
 export { default as ConnectedInboxScreen } from './ConnectedInbox';
 export { default as InboxSubscriptionsScreen } from './InboxSubscriptions';
+export { default as GmailScanScreen } from './GmailScan';
 export { default as ReminderSettingsScreen } from './ReminderSettings';
 export { default as UpcomingScreen } from './Upcoming';
 export { default as ThisMonthScreen } from './ThisMonth';

@@ -35,8 +35,7 @@ export default function useHome() {
   const openAdd = () => setAddOpen(true);
   const closeAdd = () => setAddOpen(false);
   const openAddManual = () => navigate('AddSubscription');
-  // shortcut: Connect Gmail is a later section; it opens the dev-only ComingSoon screen until then.
-  const openConnectGmail = () => navigate('ComingSoon', { title: 'Connect Gmail' });
+  const openConnectGmail = () => navigate('GmailScan');
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });
   const openUpcoming = () => navigate('Upcoming');
   // Paid this month opens account Payments on the snapshot's current month.

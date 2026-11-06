@@ -14,11 +14,11 @@ type Props = {
   onClose: () => void;
 };
 
-// shortcut: AI chat and Connect Gmail are later sections; they open the dev-only ComingSoon screen until then.
+// shortcut: AI chat is the next section; it opens the dev-only ComingSoon screen until then.
 const OPTIONS = [
   { title: 'Add with AI', copy: 'Type, speak, or share a screenshot', icon: sparkle_icon, ai: true, open: () => navigate('ComingSoon', { title: 'Add with AI' }) },
   { title: 'Add manually', copy: 'Enter your subscription details', icon: pencil_icon, ai: false, open: () => navigate('AddSubscription') },
-  { title: 'Connect Gmail', copy: 'Find subscriptions in your inbox', icon: gmail_logo, ai: false, open: () => navigate('ComingSoon', { title: 'Connect Gmail' }) },
+  { title: 'Connect Gmail', copy: 'Find subscriptions in your inbox', icon: gmail_logo, ai: false, open: () => navigate('GmailScan') },
 ];
 
 // Header + on Home, List and Calendar (and an empty Calendar date): exactly three ways to add. Close keeps the screen as it was.

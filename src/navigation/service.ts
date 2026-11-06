@@ -12,9 +12,15 @@ type NavigateArgs<Name extends keyof RootParamList> = undefined extends RootPara
   ? [screen: Name, params?: RootParamList[Name]]
   : [screen: Name, params: RootParamList[Name]];
 
+const TAB_NAMES: readonly string[] = ['Home', 'List', 'Calendar', 'Payments', 'Profile'] satisfies (keyof TabParamList)[];
+
 // Handled by the focused navigator first and bubbles up, like navigation.navigate inside a screen.
+// A tab is reached through the Tabs route, so stack screens (History, Gmail) can open it too.
 export function navigate<Name extends keyof RootParamList>(...[name, params]: NavigateArgs<Name>) {
-  if (navigationRef.isReady()) (navigationRef.navigate as (screen: string, params?: object) => void)(name, params as object | undefined);
+  if (!navigationRef.isReady()) return;
+  const go = navigationRef.navigate as (screen: string, params?: object) => void;
+  if (TAB_NAMES.includes(name)) go('Tabs', { screen: name, params });
+  else go(name, params as object | undefined);
 }
 
 export function goBack() {

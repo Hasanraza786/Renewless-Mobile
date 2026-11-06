@@ -252,6 +252,33 @@ export type AlertsState = {
   error: { alerts: string; settings: string; save: string };
 };
 
+// A Gmail scan result for review: a new plan, an update to a tracked one, or an already-tracked match.
+export type GmailCandidate = {
+  id: string;
+  kind: 'new' | 'update' | 'duplicate';
+  name: string;
+  platform_id: string;
+  plan: string | null;
+  price: string;
+  currency: string;
+  cycle: ScanCycle;
+  category: string;
+  start_date: string | null;
+  next_date: string | null;
+  // Trial: days, exact end from the receipt, and the tracked auto-renew assumption.
+  trial: { days: number; end_date: string; auto_renew: boolean } | null;
+  // Updates: the tracked record and its saved values against the receipt's.
+  target_id: string | null;
+  old: { price: string; next_date: string | null } | null;
+  // Already saved from this scan; no longer selectable.
+  saved: boolean;
+};
+
+export type GmailScanStatus = { status: 'running' | 'completed' | 'failed'; stage: number; candidates: GmailCandidate[]; error: string };
+
+// What the user keeps for one selected candidate (edited fields for new plans; date choice for updates).
+export type GmailSelection = { id: string; price: string; next_date: string | null; start_date: string | null; trial: { days: number; end_date: string; auto_renew: boolean } | null; replace_date: boolean };
+
 // One month of scheduled events (renewals and trial endings) with expected charges per currency.
 export type CalendarMonth = { month: string; today: string; events: HomeEvent[]; expected: MoneyTotal[] };
 
@@ -492,6 +519,8 @@ export type AppStackParamList = {
   ReminderSettings: undefined;
   History: undefined;
   ConnectedInbox: { id: string };
+  // Authenticated Gmail scan and review; without an inbox the first connected one is used.
+  GmailScan: { inbox_id?: string } | undefined;
   InboxSubscriptions: { id: string };
   // Calendar date with several events; date is YYYY-MM-DD.
   CalendarDay: { date: string };

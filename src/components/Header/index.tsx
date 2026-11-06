@@ -17,12 +17,14 @@ type Props = {
   onDelete?: () => void;
   // Alerts itself: the settings gear replaces the bell.
   onSettings?: () => void;
+  // Decorative mark after the title (the Gmail logo in the Gmail scan).
+  accessory?: string;
 };
 
 const HIT_SLOP = SIZES.padding3 / 4;
 
 // Fixed authenticated header: optional Back, title, then the shared Alerts bell and optional Add.
-export default function Header({ title, onBack, onAdd, onDelete, onSettings }: Props) {
+export default function Header({ title, onBack, onAdd, onDelete, onSettings, accessory }: Props) {
   return (
     <RowView gap={SIZES.padding2} style={styles.main_view}>
       {onBack ? (
@@ -31,8 +33,13 @@ export default function Header({ title, onBack, onAdd, onDelete, onSettings }: P
         </Pressable>
       ) : null}
       <View style={common_styles.flex_1}>
-        <CustomText text={title} weight={FONTS.medium} size={SIZES.h3} accessibility_role="header" number_of_lines={1} />
+        <CustomText text={title} weight={FONTS.medium} size={SIZES.h3} accessibility_role="header" number_of_lines={2} />
       </View>
+      {accessory ? (
+        <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+          <Icons name={accessory} icon_height={SIZES.padding * 1.25} icon_width={SIZES.padding * 1.25} />
+        </View>
+      ) : null}
       <RowView gap={SIZES.padding3}>
         {onSettings ? (
           <Pressable accessibilityRole="button" accessibilityLabel="Reminder settings" hitSlop={HIT_SLOP} onPress={onSettings}>

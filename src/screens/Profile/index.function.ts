@@ -7,6 +7,7 @@ import { selectUser, setNotice, setProfileError } from '../../redux/slices/profi
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 
 const UNAVAILABLE = 'This page is currently unavailable. Please try again later.';
+const UNAVAILABLE_GMAIL = 'Gmail connection is unavailable right now. Your saved subscriptions are unchanged.';
 
 export const initials = (name: string) =>
   name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(word => word[0]).join('').toUpperCase() || 'R';
@@ -44,8 +45,8 @@ export default function useProfile() {
   };
 
   const openEdit = () => navigate('EditProfile');
-  // shortcut: Connect Gmail (the authenticated Gmail scan) is a later section (dev-only ComingSoon).
-  const openConnect = () => navigate('ComingSoon', { title: 'Connect Gmail' });
+  // Connecting a new inbox needs Google consent, which is not integrated yet.
+  const openConnect = () => notice(UNAVAILABLE_GMAIL);
   const openInbox = () => inbox && navigate('ConnectedInbox', { id: inbox.id });
   const openHistory = () => navigate('History');
   const openPayments = () => navigate('Payments');

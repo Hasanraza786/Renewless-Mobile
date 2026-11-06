@@ -65,6 +65,9 @@ export const MOCK_DATA = {
     { id: 'alert-spotify', subscription_id: 'sub-spotify', kind: 'trial_end', sent_days_ago: 1, event_in_days: 4, time: '09:00' },
     { id: 'alert-icloud', subscription_id: 'sub-icloud', kind: 'renewal', sent_days_ago: 3, event_in_days: 3, time: '09:00' },
   ] as const,
+  // Authenticated Gmail scan: 'found' returns the review results; 'nothing' finds nothing new; 'interrupted' fails mid-scan.
+  gmail_scan_scenario: 'found' as 'found' | 'nothing' | 'interrupted',
+  gmail_stage_ms: 1000,
   // Payments: 'receipts' lists home_receipts; 'none' reviews Payments · empty.
   payments_scenario: 'receipts' as 'receipts' | 'none',
   // Successful Gmail receipts as days before today; this_month ones are kept inside the current month.
