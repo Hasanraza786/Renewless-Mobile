@@ -157,8 +157,10 @@ export const styles = StyleSheet.create({
   input: {
     color: COLORS.text_primary,
     flex: 1,
-    maxHeight: SIZES.padding * 5,
-    paddingVertical: SIZES.padding * 0.55,
+    // Four 18pt lines plus 24pt padding, biased upward because Raleway sits low.
+    maxHeight: SIZES.padding * 4.8,
+    paddingBottom: SIZES.padding * 0.7,
+    paddingTop: SIZES.padding / 2,
   },
   icon_button: {
     alignItems: 'center',
@@ -186,8 +188,10 @@ export const styles = StyleSheet.create({
   attach_options: {
     gap: SIZES.padding * 0.45,
   },
+  // An explicit line height keeps Raleway centred; without it iOS sits the text low.
   input_text: {
     fontSize: SIZES.sm,
+    lineHeight: SIZES.padding * 0.9,
   },
   live_wave: {
     height: SIZES.padding * 1.2,
