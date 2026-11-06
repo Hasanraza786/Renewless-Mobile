@@ -1,7 +1,7 @@
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppSelector } from '../redux/store';
-import { AiChatScreen, AddConnectorScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, GmailScanScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, CalendarDayScreen, ChangePasswordScreen, ComingSoonScreen, ConnectorsScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, ReviewScreen, SubscriptionDetailScreen } from '../screens';
+import { AiChatScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, GmailScanScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, CalendarDayScreen, ChangePasswordScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, SubscriptionDetailScreen } from '../screens';
 import type { AppStackParamList } from '../types';
 import AuthStack from './AuthStack';
 import { stack_options } from '../config';
@@ -26,14 +26,11 @@ export default function MainNavigator() {
       <AppStack.Navigator initialRouteName={token ? "Tabs" : "AuthStack"} screenOptions={stack_options}>
         <AppStack.Screen name="AuthStack" component={AuthStack} />
         <AppStack.Screen name="Tabs" component={Tabs} />
-        <AppStack.Screen name="Connectors" component={ConnectorsScreen} />
         <AppStack.Screen name="AddSubscription" component={AddSubscriptionScreen} />
         <AppStack.Screen name="SubscriptionDetail" component={SubscriptionDetailScreen} />
         <AppStack.Screen name="EditSubscription" component={AddSubscriptionScreen} />
         <AppStack.Screen name="EditProfile" component={EditProfileScreen} />
         <AppStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
-        <AppStack.Screen name="AddConnector" component={AddConnectorScreen} />
-        <AppStack.Screen name="Review" component={ReviewScreen} />
         <AppStack.Screen name="Upcoming" component={UpcomingScreen} />
         <AppStack.Screen name="ThisMonth" component={ThisMonthScreen} />
         <AppStack.Screen name="SpendingBreakdown" component={SpendingBreakdownScreen} />
@@ -48,7 +45,6 @@ export default function MainNavigator() {
         <AppStack.Screen name="ReminderSettings" component={ReminderSettingsScreen} />
         <AppStack.Screen name="CalendarDay" component={CalendarDayScreen} />
         <AppStack.Screen name="SubscriptionPayments" component={PaymentsScreen} />
-        <AppStack.Screen name="ComingSoon" component={ComingSoonScreen} />
       </AppStack.Navigator>
       <UndoToast />
     </NavigationContainer>

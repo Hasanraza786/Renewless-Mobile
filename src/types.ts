@@ -331,28 +331,6 @@ export type DetailState = {
   error: { detail: string; platform: string; mutation: string };
 };
 
-export type RenewalNotice = {
-  id: string;
-  name: string;
-  date: string;
-  estimated: boolean;
-};
-
-export type Connector = {
-  id: string;
-  email: string;
-  status: string;
-  lastSync: string | null;
-};
-
-export type ReviewItem = {
-  id: string;
-  name: string;
-  price: number;
-  currency: string;
-  nextRenewal: string;
-};
-
 export type ConstantState = {
   token: string | null;
   user: Profile | null;
@@ -395,31 +373,6 @@ export type DashboardState = {
 
 export type SubscriptionRequest = 'list' | 'detail' | 'edit' | 'create' | 'update' | 'delete';
 
-export type SubscriptionsState = {
-  items: Subscription[];
-  current: Subscription | null;
-  loading: Record<SubscriptionRequest, boolean>;
-  error: Record<SubscriptionRequest, string>;
-};
-
-export type NotificationsState = {
-  items: RenewalNotice[];
-  loading: boolean;
-  error: string;
-};
-
-export type ConnectorRequest = 'list' | 'create' | 'review';
-
-export type ConnectorsState = {
-  connectors: Connector[];
-  reviewItems: ReviewItem[];
-  reviewConnectorId: string | null;
-  reviewBusyId: string;
-  reviewActionError: string;
-  loading: Record<ConnectorRequest, boolean>;
-  error: Record<ConnectorRequest, string>;
-};
-
 export type OnboardingState = {
   connect_loading: boolean;
   connect_message: string;
@@ -446,9 +399,6 @@ export type RootState = {
   calendar: CalendarState;
   alerts: AlertsState;
   inbox: InboxState;
-  subscriptions: SubscriptionsState;
-  notifications: NotificationsState;
-  connectors: ConnectorsState;
   onboarding: OnboardingState;
 };
 
@@ -520,14 +470,11 @@ export type TabParamList = {
 export type AppStackParamList = {
   AuthStack: undefined;
   Tabs: undefined;
-  Connectors: undefined;
   AddSubscription: undefined;
   SubscriptionDetail: { id: string };
   EditSubscription: { id: string };
   EditProfile: undefined;
   ChangePassword: undefined;
-  AddConnector: undefined;
-  Review: { connectorId: string; email: string };
   Upcoming: undefined;
   ThisMonth: undefined;
   SpendingBreakdown: undefined;
@@ -546,6 +493,4 @@ export type AppStackParamList = {
   CalendarDay: { date: string };
   // Detail's View payments: the Payments screen scoped to one owned subscription.
   SubscriptionPayments: { id: string; name: string };
-  // shortcut: dev-only stand-in for destinations whose sections are not built yet; each section replaces its use.
-  ComingSoon: { title: string };
 };

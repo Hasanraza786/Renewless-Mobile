@@ -9,6 +9,3 @@ export { default as paymentsReducer } from './payments-slice';
 export { default as calendarReducer } from './calendar-slice';
 export { default as alertsReducer } from './alerts-slice';
 export { default as inboxReducer } from './inbox-slice';
-export { default as subscriptionsReducer } from './subscriptions-slice';
-export { default as notificationsReducer } from './notifications-slice';
-export { default as connectorsReducer } from './connectors-slice';

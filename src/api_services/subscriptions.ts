@@ -1,58 +1,9 @@
 import { USE_MOCK_API } from '../config/api';
 import { MOCK_DATA } from '../config/mock-data';
-import type { Cycle, ReminderPreference, SubscriptionFormInput, RenewalNotice, ScanCycle, Subscription, SubscriptionDetail, SubscriptionRecord } from '../types';
+import type { ReminderPreference, SubscriptionFormInput, ScanCycle, SubscriptionDetail, SubscriptionRecord } from '../types';
 import { localToday } from '../utils/dates';
 import { request } from './http';
 import { accountReminderSettings, addRecord, allReceipts, allRecords, findRecord, removeRecord, restoreRecord, updateRecord } from './subscription-store';
-
-export type SubscriptionInput = {
-  name: string;
-  price: number;
-  currency: string;
-  cycle: Cycle;
-  startDate: string;
-  nextRenewal: string;
-  note?: string;
-};
-
-export function listSubscriptions(token: string) {
-  return request<{ subscriptions: Subscription[] }>('/subscriptions', { token });
-}
-
-export function getSubscription(token: string, id: string) {
-  return request<Subscription>(`/subscriptions/${id}`, { token });
-}
-
-export function createSubscription(token: string, input: SubscriptionInput) {
-  return request<Subscription>('/subscriptions', {
-    method: 'POST',
-    token,
-    body: input,
-  });
-}
-
-export function updateSubscription(
-  token: string,
-  id: string,
-  input: SubscriptionInput,
-) {
-  return request<Subscription>(`/subscriptions/${id}`, {
-    method: 'PATCH',
-    token,
-    body: input,
-  });
-}
-
-export function deleteSubscription(token: string, id: string) {
-  return request<{ ok: true }>(`/subscriptions/${id}`, {
-    method: 'DELETE',
-    token,
-  });
-}
-
-export function listNotifications(token: string) {
-  return request<{ notifications: RenewalNotice[] }>('/notifications', { token });
-}
 
 // ---- Tracked subscription Detail and related operations (mock adapter in development). ----
 

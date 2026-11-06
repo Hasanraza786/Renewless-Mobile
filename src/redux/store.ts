@@ -4,19 +4,16 @@ import { useDispatch, useSelector, type TypedUseSelectorHook } from 'react-redux
 import type { RootState } from '../types';
 import {
   authReducer,
-  connectorsReducer,
   constantReducer,
   onboardingReducer,
   dashboardReducer,
   detailReducer,
   listReducer,
-  notificationsReducer,
   paymentsReducer,
   calendarReducer,
   alertsReducer,
   inboxReducer,
   profileReducer,
-  subscriptionsReducer,
 } from './slices';
 import { redux_storage } from './storage';
 
@@ -31,9 +28,6 @@ const root_reducer = combineReducers({
   calendar: calendarReducer,
   alerts: alertsReducer,
   inbox: inboxReducer,
-  subscriptions: subscriptionsReducer,
-  notifications: notificationsReducer,
-  connectors: connectorsReducer,
   onboarding: onboardingReducer,
 });
 
