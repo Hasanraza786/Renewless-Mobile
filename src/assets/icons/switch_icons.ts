@@ -17,3 +17,16 @@ export const gear_accent_icon = `<svg stroke="${COLORS.primary}" width="21" heig
 
 // Reminder time field (18pt, like the date field's calendar).
 export const clock_icon = `<svg stroke="${COLORS.text_primary}" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8" stroke-width="1.8"/><path d="M12 8v4l2.5 2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+// Loop chat composer and bubbles (prototype glyphs, 24 viewBox).
+const chatGlyph = (paths: string, color: string, size: number, stroke = 1.8, fill = 'none') =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="${fill}" xmlns="http://www.w3.org/2000/svg"><path d="${paths}" stroke="${color}" stroke-width="${stroke}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+export const paperclip_icon = chatGlyph('m21 11-8.6 8.6a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 0 1-2.8-2.8l8.5-8.5', COLORS.primary, 22);
+export const mic_icon = chatGlyph('M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3M9 21h6', COLORS.primary, 22);
+export const mic_active_icon = chatGlyph('M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3M9 21h6', COLORS.background, 22);
+export const send_icon = chatGlyph('M12 19V5M5 12l7-7 7 7', COLORS.background, 20, 2.2);
+export const play_icon = `<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 4.5v15l12-7.5z" fill="${COLORS.chat_user_text}"/></svg>`;
+export const pause_icon = `<svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 4h3.5v16H7zM13.5 4H17v16h-3.5z" fill="${COLORS.chat_user_text}"/></svg>`;
+export const image_icon = chatGlyph('M4 4h16v16H4zM4 16l5-5 4 4 2-2 5 5M15 8h.01', COLORS.primary, 22);
+export const pdf_icon = chatGlyph('M15 3H5v18h14V7l-4-4Zm0 0v5h5M8 12h8M8 16h5', COLORS.primary, 22);
+export const close_small_icon = chatGlyph('m6 6 12 12M18 6 6 18', COLORS.text_secondary, 18);

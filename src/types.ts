@@ -279,6 +279,25 @@ export type GmailScanStatus = { status: 'running' | 'completed' | 'failed'; stag
 // What the user keeps for one selected candidate (edited fields for new plans; date choice for updates).
 export type GmailSelection = { id: string; price: string; next_date: string | null; start_date: string | null; trial: { days: number; end_date: string; auto_renew: boolean } | null; replace_date: boolean };
 
+// The subscription Loop is assembling in chat; missing required fields stay null until the user gives them.
+export type AiDraft = {
+  name: string | null;
+  platform_id: string | null;
+  category: string | null;
+  price: string | null;
+  currency: string | null;
+  cycle: ScanCycle | null;
+  next_date: string | null;
+  start_date: string | null;
+  trial: { days: number | null; end_date: string | null; auto_renew: boolean } | null;
+  notes: string | null;
+};
+
+// What the user sent: text, a recorded voice clip, or one image/PDF.
+export type AiInput = { kind: 'text'; text: string } | { kind: 'voice'; uri: string; duration_ms: number } | { kind: 'file'; uri: string; name: string; file_kind: 'image' | 'pdf' };
+
+export type AiReply = { reply: string; draft: AiDraft | null };
+
 // One month of scheduled events (renewals and trial endings) with expected charges per currency.
 export type CalendarMonth = { month: string; today: string; events: HomeEvent[]; expected: MoneyTotal[] };
 
@@ -521,6 +540,7 @@ export type AppStackParamList = {
   ConnectedInbox: { id: string };
   // Authenticated Gmail scan and review; without an inbox the first connected one is used.
   GmailScan: { inbox_id?: string } | undefined;
+  AiChat: undefined;
   InboxSubscriptions: { id: string };
   // Calendar date with several events; date is YYYY-MM-DD.
   CalendarDay: { date: string };

@@ -1,6 +1,6 @@
 import { Pressable, View } from 'react-native';
 import { back_icon, bell_icon, gear_box_icon, plus_icon, trash_icon } from '../../assets/icons';
-import { FONTS, SIZES } from '../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
@@ -19,12 +19,15 @@ type Props = {
   onSettings?: () => void;
   // Decorative mark after the title (the Gmail logo in the Gmail scan).
   accessory?: string;
+  // AI chat: second line under the title and the brand mark after the bell.
+  subtitle?: string;
+  mark?: string;
 };
 
 const HIT_SLOP = SIZES.padding3 / 4;
 
 // Fixed authenticated header: optional Back, title, then the shared Alerts bell and optional Add.
-export default function Header({ title, onBack, onAdd, onDelete, onSettings, accessory }: Props) {
+export default function Header({ title, onBack, onAdd, onDelete, onSettings, accessory, subtitle, mark }: Props) {
   return (
     <RowView gap={SIZES.padding2} style={styles.main_view}>
       {onBack ? (
@@ -34,6 +37,7 @@ export default function Header({ title, onBack, onAdd, onDelete, onSettings, acc
       ) : null}
       <View style={common_styles.flex_1}>
         <CustomText text={title} weight={FONTS.medium} size={SIZES.h3} accessibility_role="header" number_of_lines={2} />
+        {subtitle ? <CustomText mt={SIZES.padding3 * 0.75} text={subtitle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
       </View>
       {accessory ? (
         <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
@@ -59,6 +63,11 @@ export default function Header({ title, onBack, onAdd, onDelete, onSettings, acc
           <Pressable accessibilityRole="button" accessibilityLabel="Remove tracking" hitSlop={HIT_SLOP} onPress={onDelete}>
             <Icons name={trash_icon} />
           </Pressable>
+        ) : null}
+        {mark ? (
+          <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+            <Icons name={mark} icon_height={SIZES.padding * 1.2} icon_width={SIZES.padding * 1.2} />
+          </View>
         ) : null}
       </RowView>
     </RowView>

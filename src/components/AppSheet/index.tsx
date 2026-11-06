@@ -14,11 +14,13 @@ type Props = {
   title: string;
   subtitle?: string;
   onClose: () => void;
+  // Runs once the modal is fully gone (iOS), e.g. to present a native picker.
+  onDismiss?: () => void;
   children: ReactNode;
 };
 
 // Graphite bottom sheet: dimmed backdrop (no blur), handle, title row with close; outside tap closes.
-export default function AppSheet({ visible, title, subtitle, onClose, children }: Props) {
+export default function AppSheet({ visible, title, subtitle, onClose, onDismiss, children }: Props) {
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const rise = useRef(new Animated.Value(0)).current;
@@ -31,7 +33,7 @@ export default function AppSheet({ visible, title, subtitle, onClose, children }
   }, [rise, visible]);
 
   return (
-    <Modal transparent visible={visible} animationType="fade" onRequestClose={onClose}>
+    <Modal transparent visible={visible} animationType="fade" onRequestClose={onClose} onDismiss={onDismiss}>
       <KeyboardAvoidingView behavior={behavior} style={styles.root}>
         <Pressable accessibilityLabel="Close" onPress={onClose} style={styles.scrim} />
         <Animated.View

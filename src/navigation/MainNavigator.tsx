@@ -1,7 +1,7 @@
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppSelector } from '../redux/store';
-import { AddConnectorScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, GmailScanScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, CalendarDayScreen, ChangePasswordScreen, ComingSoonScreen, ConnectorsScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, ReviewScreen, SubscriptionDetailScreen } from '../screens';
+import { AiChatScreen, AddConnectorScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, GmailScanScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, CalendarDayScreen, ChangePasswordScreen, ComingSoonScreen, ConnectorsScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, ReviewScreen, SubscriptionDetailScreen } from '../screens';
 import type { AppStackParamList } from '../types';
 import AuthStack from './AuthStack';
 import { stack_options } from '../config';
@@ -44,6 +44,7 @@ export default function MainNavigator() {
         <AppStack.Screen name="ConnectedInbox" component={ConnectedInboxScreen} />
         <AppStack.Screen name="InboxSubscriptions" component={InboxSubscriptionsScreen} />
         <AppStack.Screen name="GmailScan" component={GmailScanScreen} />
+        <AppStack.Screen name="AiChat" component={AiChatScreen} />
         <AppStack.Screen name="ReminderSettings" component={ReminderSettingsScreen} />
         <AppStack.Screen name="CalendarDay" component={CalendarDayScreen} />
         <AppStack.Screen name="SubscriptionPayments" component={PaymentsScreen} />

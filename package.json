@@ -13,6 +13,7 @@
   "dependencies": {
     "@invertase/react-native-apple-authentication": "^2.5.1",
     "@react-native-community/datetimepicker": "^9.2.2",
+    "@react-native-documents/picker": "12.0.3",
     "@react-native-google-signin/google-signin": "^17.0.0",
     "@react-navigation/bottom-tabs": "^7.20.0",
     "@react-navigation/native": "^7.5.0",
@@ -25,8 +26,10 @@
     "react-native-confirmation-code-field": "^9.0.0",
     "react-native-country-picker-modal": "^3.0.0",
     "react-native-gesture-handler": "^3.3.0",
+    "react-native-image-picker": "8.3.0",
     "react-native-mmkv": "^4.3.2",
     "react-native-nitro-modules": "^0.36.5",
+    "react-native-nitro-sound": "0.2.20",
     "react-native-permissions": "^5.6.3",
     "react-native-responsive-fontsize": "^0.5.1",
     "react-native-safe-area-context": "^5.10.1",

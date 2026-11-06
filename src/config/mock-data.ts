@@ -68,6 +68,10 @@ export const MOCK_DATA = {
   // Authenticated Gmail scan: 'found' returns the review results; 'nothing' finds nothing new; 'interrupted' fails mid-scan.
   gmail_scan_scenario: 'found' as 'found' | 'nothing' | 'interrupted',
   gmail_stage_ms: 1000,
+  // AI chat: what the mock hears in a voice message, and the subscription it reads from an image or PDF receipt.
+  ai_voice_transcript: 'I pay USD 9.99 monthly for Duolingo. My next renewal is 20 November 2026.',
+  ai_receipt: { name: 'YouTube Premium', price: '13.99', currency: 'USD', cycle: 'Monthly', renews_in_days: 21 },
+  ai_reply_ms: 1200,
   // Payments: 'receipts' lists home_receipts; 'none' reviews Payments · empty.
   payments_scenario: 'receipts' as 'receipts' | 'none',
   // Successful Gmail receipts as days before today; this_month ones are kept inside the current month.

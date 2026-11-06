@@ -51,5 +51,6 @@ export {
   security_icon,
   terms_icon,
 } from './profile_icons';
+export { close_small_icon, image_icon, mic_active_icon, mic_icon, paperclip_icon, pause_icon, pdf_icon, play_icon, send_icon } from './switch_icons';
 export { clock_icon, device_bell_icon, gear_accent_icon, notice_bell_icon, pencil_icon, sparkle_icon, switch_off_icon, switch_on_icon } from './switch_icons';
 export { default as gear_box_icon } from './gear_box_icon';
