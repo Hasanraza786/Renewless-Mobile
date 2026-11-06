@@ -20,14 +20,11 @@ export default function usePlatformSubscriptions(route: Route) {
   }, [dispatch, exclude_id, platform_id]);
 
   const count = records.length;
-  return {
-    title: exclude_id ? `More on ${name}` : name,
-    // From Detail the current plan is excluded, so the rest are "other" subscriptions.
-    summary: `${count}${exclude_id ? ' other' : ''} subscription${count === 1 ? '' : 's'}`,
-    records,
-    today: localToday(),
-    status: loading ? 'loading' : error ? 'failed' : 'ready',
-    error,
-    retry: load,
-  };
+  const title = exclude_id ? `More on ${name}` : name;
+  // From Detail the current plan is excluded, so the rest are "other" subscriptions.
+  const summary = `${count}${exclude_id ? ' other' : ''} subscription${count === 1 ? '' : 's'}`;
+  const today = localToday();
+  const status = loading ? 'loading' : error ? 'failed' : 'ready';
+
+  return { title, summary, records, today, status, error, retry: load };
 }

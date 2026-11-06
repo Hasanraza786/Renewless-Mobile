@@ -27,12 +27,8 @@ export default function useLogin(route: Route) {
     if (await dispatch(signInSocial(provider))) enterApp(intent);
   };
 
-  return {
-    form,
-    loading,
-    onSubmit,
-    onSocial,
-    openForgot: () => navigate('ForgotPassword'),
-    openSignup: () => navigate('Signup', { intent }),
-  };
+  const openForgot = () => navigate('ForgotPassword');
+  const openSignup = () => navigate('Signup', { intent });
+
+  return { form, loading, onSubmit, onSocial, openForgot, openSignup };
 }

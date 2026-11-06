@@ -11,10 +11,8 @@ export default function useHomeSnapshot() {
     if (!data) dispatch(loadDashboard());
   }, [data, dispatch]);
 
-  return {
-    data,
-    status: data ? ('ready' as const) : error && !loading ? ('failed' as const) : ('loading' as const),
-    error,
-    retry: () => dispatch(loadDashboard()),
-  };
+  const status = data ? ('ready' as const) : error && !loading ? ('failed' as const) : ('loading' as const);
+  const retry = () => dispatch(loadDashboard());
+
+  return { data, status, error, retry };
 }

@@ -16,5 +16,7 @@ export default function useForgotPassword() {
     if ((await dispatch(forgotPassword(email))) !== undefined) navigate('Otp', { purpose: 'reset', email });
   };
 
-  return { form, loading, error, onSubmit, onBack: goBack, openLogin: () => popTo('Login') };
+  const openLogin = () => popTo('Login');
+
+  return { form, loading, error, onSubmit, onBack: goBack, openLogin };
 }

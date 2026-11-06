@@ -136,39 +136,50 @@ export default function useOnboarding(route: Route) {
 
   const openDashboard = () => resetRoot([{ name: 'Tabs' }]);
 
+  const stage = ONBOARDING_STEPS[step].stage;
+  const back = back_target ? onBack : undefined;
+  const first_name = user_name.split(' ')[0];
+  const editing = candidates.find(item => item.id === editing_id);
+  const panel_style = { opacity: panel_opacity, transform: [{ translateX: panel_shift }] };
+  const footer_style = { opacity: panel_opacity };
+
+  const toggle = (id: string) => dispatch(toggleCandidate(id));
+  const closeEdit = () => setEditingId('');
+  const saveEdit = (item: ScanCandidate) => {
+    dispatch(updateCandidate(item));
+    setEditingId('');
+  };
+  const openLogin = () => navigate('Login');
+  // Manual entry: the Add form when signed in, otherwise sign up first and continue to it.
+  const openManual = () => (signed_in ? navigate('AddSubscription') : navigate('Signup', { intent: 'add_manual' }));
+  const openLegal = () => Alert.alert('Not available yet', 'Terms and Privacy will be available before release.');
+
   return {
     ...onboarding_state,
     step,
-    stage: ONBOARDING_STEPS[step].stage,
+    stage,
     animating,
     reduce_motion,
-    first_name: user_name.split(' ')[0],
-    onBack: back_target ? onBack : undefined,
+    first_name,
+    onBack: back,
     goTo,
     signed_in,
     connectGoogle,
     retryScan,
-    toggleCandidate: (id: string) => dispatch(toggleCandidate(id)),
-    editing: candidates.find(item => item.id === editing_id),
+    toggleCandidate: toggle,
+    editing,
     openEdit: setEditingId,
-    closeEdit: () => setEditingId(''),
-    saveEdit: (item: ScanCandidate) => {
-      dispatch(updateCandidate(item));
-      setEditingId('');
-    },
+    closeEdit,
+    saveEdit,
     save,
-    openLogin: () => navigate('Login'),
-    // Manual entry: the Add form when signed in, otherwise sign up first and continue to it.
-    openManual: () => (signed_in ? navigate('AddSubscription') : navigate('Signup', { intent: 'add_manual' })),
-    openLegal: () => Alert.alert('Not available yet', 'Terms and Privacy will be available before release.'),
+    openLogin,
+    openManual,
+    openLegal,
     openDashboard,
     // Zero selection: continue to the actual (possibly empty) dashboard without a fake success.
     skipSave: openDashboard,
-    panel_style: {
-      opacity: panel_opacity,
-      transform: [{ translateX: panel_shift }],
-    },
-    footer_style: { opacity: panel_opacity },
+    panel_style,
+    footer_style,
     setPanelWidth,
   };
 }
