@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo, Animated, Easing, Image, View } from 'react-native';
+import { AccessibilityInfo, Animated, Easing, Image, Pressable, View } from 'react-native';
 import { pause_icon, pdf_icon, platform_logos, play_icon } from '../../../assets/icons';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
@@ -81,18 +81,29 @@ function VoiceBubble({ chat, message }: Props & { message: ChatMessage }) {
   );
 }
 
-function FileBubble({ message }: { message: ChatMessage }) {
+// Image: preview with View image ↗ (opens the full image); PDF: file tile, name and type.
+function FileBubble({ chat, message }: Props & { message: ChatMessage }) {
   if (message.input?.kind !== 'file') return null;
   const { uri, name, file_kind } = message.input;
   return (
     <View>
-      <RowView gap={SIZES.padding / 2}>
-        {file_kind === 'image' ? <Image source={{ uri }} style={styles.chip_image} accessibilityIgnoresInvertColors /> : <View style={styles.file_tile}><Icons name={pdf_icon} /></View>}
-        <View style={common_styles.flex_1}>
-          <CustomText text={file_kind === 'image' ? 'Image attached' : 'PDF attached'} weight={FONTS.medium} color={COLORS.chat_user_text} size={SIZES.sm} />
-          <CustomText text={name} weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.sm} number_of_lines={1} />
-        </View>
-      </RowView>
+      {file_kind === 'image' ? (
+        <Pressable accessibilityRole="button" accessibilityLabel="Preview sent image" onPress={() => chat.openPreview(uri)} style={styles.media}>
+          <Image source={{ uri }} style={styles.media_image} accessibilityIgnoresInvertColors />
+          <CustomText text={'View image ↗\uFE0E'} weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.xs} style={styles.media_strip} />
+        </Pressable>
+      ) : (
+        // shortcut: no in-app PDF viewer yet, so the caption omits "View document ↗"; add it with @react-native-documents/viewer.
+        <RowView gap={SIZES.padding / 2} accessibilityLabel={`Sent PDF ${name}`}>
+          <View style={styles.pdf_tile}>
+            <Icons name={pdf_icon} />
+          </View>
+          <View style={common_styles.flex_1}>
+            <CustomText text={name} weight={FONTS.medium} color={COLORS.chat_user_text} size={SIZES.sm} />
+            <CustomText mt={SIZES.padding / 4} text="PDF" weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.xs} />
+          </View>
+        </RowView>
+      )}
       {message.text ? <CustomText mt={SIZES.padding3} text={message.text} weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.sm} /> : null}
     </View>
   );
@@ -100,14 +111,15 @@ function FileBubble({ message }: { message: ChatMessage }) {
 
 export function MessageItem({ chat, message }: Props & { message: ChatMessage }) {
   const user = message.role === 'user';
+  const kind = message.input?.kind === 'file' ? message.input.file_kind : message.input?.kind;
   return (
-    <View style={[styles.wrap, user ? styles.wrap_user : styles.wrap_loop, message.input?.kind === 'voice' && styles.wrap_voice]}>
+    <View style={[styles.wrap, user ? styles.wrap_user : styles.wrap_loop, kind === 'voice' && styles.wrap_voice, kind === 'image' && styles.wrap_image, kind === 'pdf' && styles.wrap_pdf]}>
       <CustomText text={user ? 'You' : 'Loop'} weight={FONTS.regular} color={COLORS.chat_author} size={SIZES.sm} style={styles.author} />
-      <View style={[styles.bubble, user ? styles.bubble_user : styles.bubble_loop, message.input?.kind === 'voice' && styles.bubble_wide]} accessibilityLiveRegion={user ? 'none' : 'polite'}>
+      <View style={[styles.bubble, user ? styles.bubble_user : styles.bubble_loop, (kind === 'voice' || kind === 'image' || kind === 'pdf') && styles.bubble_wide, kind === 'image' && styles.bubble_image]} accessibilityLiveRegion={user ? 'none' : 'polite'}>
         {message.input?.kind === 'voice' ? (
           <VoiceBubble chat={chat} message={message} />
         ) : message.input?.kind === 'file' ? (
-          <FileBubble message={message} />
+          <FileBubble chat={chat} message={message} />
         ) : (
           <CustomText text={message.text} weight={FONTS.regular} color={user ? COLORS.chat_user_text : COLORS.text_primary} size={SIZES.sm} />
         )}

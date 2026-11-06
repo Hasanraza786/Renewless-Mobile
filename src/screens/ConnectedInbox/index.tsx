@@ -100,9 +100,9 @@ export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxR
               size={SIZES.sm}
             />
             <SizedBox height={SIZES.padding * 1.1} />
-            <CustomButton variant="primary" text={inbox.reconnect_needed ? 'Reconnect Gmail' : inbox.syncing ? 'Syncing…' : 'Sync now'} busy={inbox.reconnecting} disabled={busy} onPress={inbox.runMain} />
+            <CustomButton variant="primary" text={inbox.reconnect_needed ? 'Reconnect Gmail' : inbox.syncing ? 'Syncing…' : 'Sync now'} busy={busy} onPress={inbox.runMain} />
           </View>
-          <RowView accessibilityRole="button" disabled={busy} onPress={inbox.openConfirm} style={[styles.disconnect, busy && styles.disabled]}>
+          <RowView accessibilityRole="button" disabled={busy} onPress={inbox.openConfirm} style={styles.disconnect}>
             <CustomText text="Disconnect inbox" weight={FONTS.regular} color={COLORS.danger} size={SIZES.sm} />
           </RowView>
           <CustomText mt={SIZES.padding / 2} text="Your saved subscriptions stay. Only new Gmail updates stop." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

@@ -58,6 +58,7 @@ export default function useAiChat() {
   const [discarded, setDiscarded] = useState(0);
   const [playing, setPlaying] = useState<{ id: string; position_ms: number; duration_ms: number; paused: boolean } | null>(null);
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
+  const [preview_uri, setPreviewUri] = useState<string | null>(null);
   const recorder = useRef(createSound()).current;
   const player = useRef(createSound()).current;
   const mounted = useRef(true);
@@ -296,6 +297,8 @@ export default function useAiChat() {
   };
 
   const removeAttachment = () => setAttachment(null);
+  const openPreview = (uri: string) => setPreviewUri(uri);
+  const closePreview = () => setPreviewUri(null);
 
   return {
     messages,
@@ -335,6 +338,9 @@ export default function useAiChat() {
     pickPdf,
     onAttachDismiss,
     removeAttachment,
+    preview_uri,
+    openPreview,
+    closePreview,
   };
 }
 

@@ -106,6 +106,7 @@ export const COLORS = {
   checkbox_line: '#667276',
   chat_user: '#BDDBA0',
   chat_user_text: '#1A281D',
+  chat_user_soft: '#D8E8C9',
   chat_user_line: '#d0e9b220',
   chat_author: '#9AA59F',
   chat_loop: '#252C2E',

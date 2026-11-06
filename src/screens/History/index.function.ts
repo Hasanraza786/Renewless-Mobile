@@ -22,6 +22,7 @@ export default function useHistory() {
   const all = useMemo(() => historyRecords(records ?? []), [records]);
   const matching = useMemo(() => filterHistory(all, query, statuses), [all, query, statuses]);
   const status = records ? 'ready' : error && !loading ? 'failed' : 'loading';
+  const has_history = all.length > 0;
   const counts = { all: all.length, cancelled: all.filter(item => item.status === 'cancelled').length, expired: all.filter(item => item.status === 'expired').length };
 
   // All clears the selection; a status toggles in or out.
@@ -37,7 +38,7 @@ export default function useHistory() {
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });
   const openList = () => navigate('List');
 
-  return { status, error, has_history: all.length > 0, query, setQuery, statuses, matching, counts, filters_open, toggleStatus, clearAll, openFilters, closeFilters, retry, openDetail, openList };
+  return { status, error, has_history, query, setQuery, statuses, matching, counts, filters_open, toggleStatus, clearAll, openFilters, closeFilters, retry, openDetail, openList };
 }
 
 export type HistoryController = ReturnType<typeof useHistory>;

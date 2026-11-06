@@ -66,9 +66,6 @@ export const styles = StyleSheet.create({
     marginTop: SIZES.padding * 0.85,
     padding: SIZES.padding * 0.7,
   },
-  disabled: {
-    opacity: 0.45,
-  },
   disconnect: {
     borderColor: COLORS.danger_line,
     borderRadius: SIZES.padding2,

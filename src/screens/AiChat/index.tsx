@@ -1,8 +1,10 @@
-import { FlatList, KeyboardAvoidingView, Platform, View } from 'react-native';
+import { FlatList, Image, KeyboardAvoidingView, Modal, Platform, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { logo_mark } from '../../assets/icons';
+import { close_icon, logo_mark } from '../../assets/icons';
+import Icons from '../../components/Icons';
 import Container from '../../components/Container';
 import Header from '../../components/Header';
+import { SIZES } from '../../constants/theme';
 import { goBack } from '../../navigation/service';
 import { common_styles } from '../../utils/common_styles';
 import Composer, { AttachSheet } from './components/Composer';
@@ -43,6 +45,14 @@ export default function AiChatScreen() {
         <Composer chat={chat} />
       </KeyboardAvoidingView>
       <AttachSheet chat={chat} />
+      <Modal visible={!!chat.preview_uri} animationType="fade" onRequestClose={chat.closePreview}>
+        <View style={styles.preview}>
+          {chat.preview_uri ? <Image source={{ uri: chat.preview_uri }} resizeMode="contain" style={styles.preview_image} accessibilityLabel="Sent image" /> : null}
+          <Pressable accessibilityRole="button" accessibilityLabel="Close preview" hitSlop={SIZES.padding3} onPress={chat.closePreview} style={styles.preview_close}>
+            <Icons name={close_icon} />
+          </Pressable>
+        </View>
+      </Modal>
     </Container>
   );
 }

@@ -53,6 +53,50 @@ export const styles = StyleSheet.create({
   wrap_voice: {
     width: '88%',
   },
+  wrap_image: {
+    width: '76%',
+  },
+  wrap_pdf: {
+    width: '85%',
+  },
+  bubble_image: {
+    padding: SIZES.padding * 0.3,
+  },
+  media: {
+    borderRadius: SIZES.padding / 2,
+    overflow: 'hidden',
+  },
+  media_image: {
+    height: SIZES.padding * 7.75,
+    width: '100%',
+  },
+  media_strip: {
+    backgroundColor: COLORS.chat_user_soft,
+    paddingHorizontal: SIZES.padding * 0.45,
+    paddingVertical: SIZES.padding * 0.35,
+  },
+  pdf_tile: {
+    alignItems: 'center',
+    backgroundColor: COLORS.voice_play,
+    borderRadius: SIZES.padding * 0.45,
+    height: SIZES.padding * 2.15,
+    justifyContent: 'center',
+    width: SIZES.padding * 1.75,
+  },
+  preview: {
+    backgroundColor: COLORS.background,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  preview_image: {
+    height: '80%',
+    width: '100%',
+  },
+  preview_close: {
+    position: 'absolute',
+    right: SIZES.padding,
+    top: SIZES.padding * 3,
+  },
   bubble_wide: {
     alignSelf: 'stretch',
   },
