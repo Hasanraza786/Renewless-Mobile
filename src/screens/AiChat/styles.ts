@@ -85,6 +85,12 @@ export const styles = StyleSheet.create({
     gap: SIZES.padding / 10,
     height: SIZES.padding * 1.45,
   },
+  speed: {
+    backgroundColor: COLORS.chat_user_text,
+    borderRadius: SIZES.padding / 2,
+    minHeight: SIZES.padding,
+    paddingHorizontal: SIZES.padding3,
+  },
   wave_bar: {
     borderRadius: SIZES.padding / 10,
     width: SIZES.padding * 0.15,
@@ -183,11 +189,51 @@ export const styles = StyleSheet.create({
   input_text: {
     fontSize: SIZES.sm,
   },
-  record_dot: {
+  live_wave: {
+    height: SIZES.padding * 1.2,
+  },
+  live_bar: {
     backgroundColor: COLORS.due_today,
-    borderRadius: SIZES.padding / 4,
-    height: SIZES.padding / 2,
-    width: SIZES.padding / 2,
+    borderRadius: SIZES.padding / 10,
+    width: SIZES.padding / 10,
+  },
+  lock_hint: {
+    alignItems: 'center',
+    alignSelf: 'center',
+    backgroundColor: COLORS.draft_card,
+    borderColor: COLORS.composer_line,
+    borderRadius: SIZES.padding,
+    borderWidth: 1,
+    bottom: SIZES.padding * 3.4,
+    gap: SIZES.padding / 10,
+    paddingVertical: SIZES.padding3,
+    position: 'absolute',
+    width: SIZES.padding * 2,
+  },
+  locked: {
+    backgroundColor: COLORS.draft_card,
+    borderColor: COLORS.composer_line,
+    borderRadius: SIZES.padding * 0.85,
+    borderWidth: 1,
+    paddingHorizontal: SIZES.padding * 0.6,
+    paddingVertical: SIZES.padding / 4,
+  },
+  locked_actions: {
+    borderTopColor: COLORS.composer_divider,
+    borderTopWidth: 1,
+    paddingTop: SIZES.padding / 4,
+  },
+  // Covers the placeholder while the bin plays.
+  discard: {
+    alignItems: 'center',
+    backgroundColor: COLORS.draft_card,
+    paddingHorizontal: SIZES.padding3,
+    bottom: SIZES.padding / 2,
+    left: SIZES.padding * 0.6,
+    position: 'absolute',
+  },
+  discard_bin: {
+    marginTop: -SIZES.padding / 4,
   },
   chip: {
     backgroundColor: COLORS.draft_card,

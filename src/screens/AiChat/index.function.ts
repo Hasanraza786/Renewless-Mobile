@@ -10,6 +10,12 @@ import { useAppDispatch } from '../../redux/store';
 import type { AiDraft, AiInput, SubscriptionFormInput } from '../../types';
 import { missingQuestion } from '../../utils/ai-draft';
 
+const SPEEDS = [1, 1.5, 2] as const;
+const LIVE_BARS = 32;
+// Metering is dBFS (about -60 quiet to 0 loud); bars keep a small floor so silence still shows.
+const meterLevel = (db?: number) => (db == null ? 0.15 : Math.min(1, Math.max(0.12, (db + 60) / 60)));
+
+export type Recording = { elapsed_ms: number; locked: boolean; paused: boolean; levels: number[] };
 export type ChatMessage = { id: string; role: 'user' | 'loop'; input: AiInput | null; text: string; failed: boolean };
 export type Attachment = { uri: string; name: string; file_kind: 'image' | 'pdf' };
 
@@ -47,8 +53,11 @@ export default function useAiChat() {
   const [attachment, setAttachment] = useState<Attachment | null>(null);
   const [attach_open, setAttachOpen] = useState(false);
   const [attach_error, setAttachError] = useState('');
-  const [recording, setRecording] = useState<{ elapsed_ms: number; cancelling: boolean } | null>(null);
+  const [recording, setRecording] = useState<Recording | null>(null);
+  // Bumped on each slide-to-cancel so the composer plays the bin animation.
+  const [discarded, setDiscarded] = useState(0);
   const [playing, setPlaying] = useState<{ id: string; position_ms: number; duration_ms: number; paused: boolean } | null>(null);
+  const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
   const recorder = useRef(createSound()).current;
   const player = useRef(createSound()).current;
   const mounted = useRef(true);
@@ -127,15 +136,20 @@ export default function useAiChat() {
 
   const viewAdded = () => added_id && navigate('SubscriptionDetail', { id: added_id });
 
-  // Voice: hold to record, release to send, slide left to cancel.
-  // A release can arrive before the recorder has started, so stop waits for the start.
+  // Voice (WhatsApp-style): hold to record, release to send, slide left to discard, slide up to lock
+  // hands-free with Delete / Pause / Send. A release can arrive before the recorder has started,
+  // so every stop waits for the start.
   const record_start = useRef<{ at: number; ready: Promise<boolean> } | null>(null);
   const startRecording = () => {
     if (busy || has_failed || recording) return;
-    recorder.setSubscriptionDuration(0.2);
-    recorder.addRecordBackListener(meta => mounted.current && setRecording(current => (current ? { ...current, elapsed_ms: meta.currentPosition } : current)));
-    setRecording({ elapsed_ms: 0, cancelling: false });
-    const ready = recorder.startRecorder().then(
+    recorder.setSubscriptionDuration(0.1);
+    recorder.addRecordBackListener(meta => {
+      if (!mounted.current) return;
+      const level = meterLevel(meta.currentMetering);
+      setRecording(current => (current && !current.paused ? { ...current, elapsed_ms: meta.currentPosition, levels: [...current.levels, level].slice(-LIVE_BARS) } : current));
+    });
+    setRecording({ elapsed_ms: 0, locked: false, paused: false, levels: [] });
+    const ready = recorder.startRecorder(undefined, undefined, true).then(
       () => true,
       () => {
         setRecording(null);
@@ -146,27 +160,62 @@ export default function useAiChat() {
     record_start.current = { at: Date.now(), ready };
   };
 
-  const setCancelling = (cancelling: boolean) => setRecording(current => (current && current.cancelling !== cancelling ? { ...current, cancelling } : current));
-
-  const finishRecording = async () => {
-    const current = recording;
+  // Stops the recorder and returns the clip, or null when nothing usable was recorded.
+  const stopRecording = async () => {
     const start = record_start.current;
-    if (!current || !start) return;
+    if (!start) return null;
     record_start.current = null;
     setRecording(null);
     recorder.removeRecordBackListener();
-    if (!(await start.ready)) return;
+    if (!(await start.ready)) return null;
+    const uri = await recorder.stopRecorder();
+    return { uri, at: start.at };
+  };
+
+  const finishRecording = async () => {
+    const current = recording;
+    if (!current) return;
     try {
-      const uri = await recorder.stopRecorder();
-      const duration_ms = Date.now() - start.at;
-      if (current.cancelling || duration_ms < 500) return;
-      submit({ kind: 'voice', uri, duration_ms }, '');
+      const clip = await stopRecording();
+      const duration_ms = current.elapsed_ms || (clip ? Date.now() - clip.at : 0);
+      if (!clip || duration_ms < 500) return;
+      submit({ kind: 'voice', uri: clip.uri, duration_ms }, '');
     } catch {
       setAttachError('Unable to send this voice message. Please try again.');
     }
   };
 
+  const cancelRecording = () => {
+    if (!recording) return;
+    stopRecording().catch(() => undefined);
+    setDiscarded(count => count + 1);
+  };
+
+  const lockRecording = () => setRecording(current => (current && !current.locked ? { ...current, locked: true } : current));
+
+  const toggleRecordPause = async () => {
+    if (!recording) return;
+    try {
+      if (recording.paused) await recorder.resumeRecorder();
+      else await recorder.pauseRecorder();
+      setRecording(current => (current ? { ...current, paused: !current.paused } : current));
+    } catch {
+      setAttachError('Unable to record. Allow microphone access in Settings and try again.');
+    }
+  };
+
   // One clip plays at a time; audio state, not a timer, drives progress.
+  const startClip = async (id: string, uri: string, from_ms = 0) => {
+    await player.stopPlayer().catch(() => undefined);
+    player.removePlayBackListener();
+    player.addPlayBackListener(meta => mounted.current && setPlaying(current => (current && current.id === id ? { ...current, position_ms: meta.currentPosition, duration_ms: meta.duration } : current)));
+    player.addPlaybackEndListener(() => mounted.current && setPlaying(null));
+    setPlaying({ id, position_ms: from_ms, duration_ms: 0, paused: false });
+    await player.startPlayer(uri);
+    await player.setPlaybackSpeed(speed);
+    if (from_ms) await player.seekToPlayer(from_ms);
+  };
+
   const togglePlay = async (id: string, uri: string) => {
     try {
       if (playing?.id === id) {
@@ -175,16 +224,28 @@ export default function useAiChat() {
         setPlaying({ ...playing, paused: !playing.paused });
         return;
       }
-      await player.stopPlayer().catch(() => undefined);
-      player.removePlayBackListener();
-      player.addPlayBackListener(meta => mounted.current && setPlaying(current => (current && current.id === id ? { ...current, position_ms: meta.currentPosition, duration_ms: meta.duration } : current)));
-      player.addPlaybackEndListener(() => mounted.current && setPlaying(null));
-      setPlaying({ id, position_ms: 0, duration_ms: 0, paused: false });
-      await player.startPlayer(uri);
+      await startClip(id, uri);
     } catch {
       setPlaying(null);
       setAttachError('Unable to play this voice message. Please try again.');
     }
+  };
+
+  // Tapping or dragging the waveform jumps there; an idle clip starts playing from that point.
+  const seekVoice = async (id: string, uri: string, position_ms: number) => {
+    try {
+      if (playing?.id !== id) return await startClip(id, uri, position_ms);
+      setPlaying({ ...playing, position_ms });
+      await player.seekToPlayer(position_ms);
+    } catch {
+      setAttachError('Unable to play this voice message. Please try again.');
+    }
+  };
+
+  const cycleSpeed = () => {
+    const next = SPEEDS[(SPEEDS.indexOf(speed) + 1) % SPEEDS.length];
+    setSpeed(next);
+    if (playing) player.setPlaybackSpeed(next).catch(() => undefined);
   };
 
   const openAttach = () => {
@@ -258,10 +319,16 @@ export default function useAiChat() {
     retry,
     add,
     viewAdded,
+    discarded,
+    speed,
     startRecording,
-    setCancelling,
     finishRecording,
+    cancelRecording,
+    lockRecording,
+    toggleRecordPause,
     togglePlay,
+    seekVoice,
+    cycleSpeed,
     openAttach,
     closeAttach,
     pickImage,

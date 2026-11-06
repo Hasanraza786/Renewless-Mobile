@@ -30,3 +30,11 @@ export const pause_icon = `<svg width="18" height="18" viewBox="0 0 24 24" xmlns
 export const image_icon = chatGlyph('M4 4h16v16H4zM4 16l5-5 4 4 2-2 5 5M15 8h.01', COLORS.primary, 22);
 export const pdf_icon = chatGlyph('M15 3H5v18h14V7l-4-4Zm0 0v5h5M8 12h8M8 16h5', COLORS.primary, 22);
 export const close_small_icon = chatGlyph('m6 6 12 12M18 6 6 18', COLORS.text_secondary, 18);
+
+// WhatsApp-style recorder: lock hint, discard bin, record pause/resume and the red live mic.
+export const lock_icon = chatGlyph('M7 11V8a5 5 0 0 1 10 0v3M6 11h12v9H6z', COLORS.text_secondary, 18);
+export const chevron_up_icon = chatGlyph('m7 14 5-5 5 5', COLORS.text_secondary, 16);
+export const bin_icon = chatGlyph('M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7', COLORS.text_secondary, 22);
+export const bin_danger_icon = chatGlyph('M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7', COLORS.due_today, 22);
+export const record_pause_icon = chatGlyph('M8 5v14M16 5v14', COLORS.due_today, 22, 2.4);
+export const record_mic_icon = chatGlyph('M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5 11a7 7 0 0 0 14 0M12 18v3M9 21h6', COLORS.due_today, 22);

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, Image, View } from 'react-native';
 import { pause_icon, pdf_icon, platform_logos, play_icon } from '../../../assets/icons';
 import CustomButton from '../../../components/CustomButton';
@@ -19,31 +19,62 @@ const WAVE = Array.from({ length: 34 }, (_, index) => 0.35 + 0.65 * Math.abs(Mat
 const clock = (ms: number) => `${Math.floor(ms / 60000)}:${String(Math.floor((ms % 60000) / 1000)).padStart(2, '0')}`;
 
 function VoiceBubble({ chat, message }: Props & { message: ChatMessage }) {
+  const [width, setWidth] = useState(0);
+  const [scrub, setScrub] = useState<number | null>(null);
   if (message.input?.kind !== 'voice') return null;
   const { uri, duration_ms } = message.input;
   const active = chat.playing?.id === message.id ? chat.playing : null;
   const total = active?.duration_ms || duration_ms;
-  const position = active?.position_ms ?? 0;
+  const position = scrub != null ? scrub * total : active?.position_ms ?? 0;
   const progress = total ? position / total : 0;
+  const fraction = (x: number) => (width ? Math.min(1, Math.max(0, x / width)) : 0);
+  const playing_now = !!active && !active.paused;
   return (
     <RowView gap={SIZES.padding / 2}>
       <RowView
         justify_content="center"
         accessibilityRole="button"
-        accessibilityLabel={active && !active.paused ? 'Pause voice message' : 'Play voice message'}
+        accessibilityLabel={playing_now ? 'Pause voice message' : 'Play voice message'}
         onPress={() => chat.togglePlay(message.id, uri)}
         style={styles.voice_play}>
-        <Icons name={active && !active.paused ? pause_icon : play_icon} />
+        <Icons name={playing_now ? pause_icon : play_icon} />
       </RowView>
       <View style={common_styles.flex_1}>
-        <RowView gap={SIZES.padding / 10} style={styles.wave} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        {/* Tap or drag the waveform to seek, like WhatsApp. */}
+        <RowView
+          gap={SIZES.padding / 10}
+          style={styles.wave}
+          onLayout={event => setWidth(event.nativeEvent.layout.width)}
+          onStartShouldSetResponder={() => true}
+          onMoveShouldSetResponder={() => true}
+          onResponderTerminationRequest={() => false}
+          onResponderGrant={event => setScrub(fraction(event.nativeEvent.locationX))}
+          onResponderMove={event => setScrub(fraction(event.nativeEvent.locationX))}
+          onResponderRelease={() => {
+            if (scrub != null) chat.seekVoice(message.id, uri, Math.round(scrub * total));
+            setScrub(null);
+          }}
+          accessibilityRole="adjustable"
+          accessibilityLabel="Voice message position"
+          accessibilityValue={{ text: `${clock(position)} of ${clock(total)}` }}
+          onAccessibilityAction={event => {
+            const step = event.nativeEvent.actionName === 'increment' ? 5000 : -5000;
+            chat.seekVoice(message.id, uri, Math.min(total, Math.max(0, position + step)));
+          }}
+          accessibilityActions={[{ name: 'increment' }, { name: 'decrement' }]}>
           {WAVE.map((height, index) => (
-            <View key={index} style={[styles.wave_bar, { height: `${height * 100}%`, backgroundColor: index / WAVE.length < progress ? COLORS.chat_user_text : COLORS.voice_wave }]} />
+            <View key={index} pointerEvents="none" style={[styles.wave_bar, { height: `${height * 100}%`, backgroundColor: index / WAVE.length < progress ? COLORS.chat_user_text : COLORS.voice_wave }]} />
           ))}
         </RowView>
         <RowView justify_content="space-between">
-          <CustomText text="Voice message" weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.sm} />
-          <CustomText text={`${clock(position)} / ${clock(total)}`} weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.sm} />
+          {active ? (
+            <RowView justify_content="center" accessibilityRole="button" accessibilityLabel={`Playback speed ${chat.speed}×`} onPress={chat.cycleSpeed} hitSlop={SIZES.padding2} style={styles.speed}>
+              <CustomText text={`${chat.speed}×`} weight={FONTS.medium} color={COLORS.chat_user} size={SIZES.xs} />
+            </RowView>
+          ) : (
+            <CustomText text="Voice message" weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.sm} />
+          )}
+          <CustomText text={active || scrub != null ? clock(position) : clock(total)} weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.sm} />
         </RowView>
       </View>
     </RowView>
