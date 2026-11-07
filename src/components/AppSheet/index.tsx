@@ -16,11 +16,15 @@ type Props = {
   onClose: () => void;
   // Runs once the modal is fully gone (iOS), e.g. to present a native picker.
   onDismiss?: () => void;
+  // Opens to just below the status bar (long lists such as Select country).
+  full?: boolean;
+  // Stays above the scrolling content, e.g. a search field.
+  header?: ReactNode;
   children: ReactNode;
 };
 
 // Graphite bottom sheet: dimmed backdrop (no blur), handle, title row with close; outside tap closes.
-export default function AppSheet({ visible, title, subtitle, onClose, onDismiss, children }: Props) {
+export default function AppSheet({ visible, title, subtitle, onClose, onDismiss, full, header, children }: Props) {
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const rise = useRef(new Animated.Value(0)).current;
@@ -41,6 +45,7 @@ export default function AppSheet({ visible, title, subtitle, onClose, onDismiss,
           style={[
             styles.sheet,
             { paddingBottom: Math.max(insets.bottom, SIZES.padding * 1.5) },
+            full && { height: height - insets.top - SIZES.padding / 2, maxHeight: undefined },
             { transform: [{ translateY: rise.interpolate({ inputRange: [0, 1], outputRange: [height, 0] }) }] },
           ]}>
           <View style={styles.handle} />
@@ -55,7 +60,8 @@ export default function AppSheet({ visible, title, subtitle, onClose, onDismiss,
               <Icons name={close_icon} />
             </Pressable>
           </RowView>
-          <ScrollView bounces={false} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+          {header}
+          <ScrollView bounces={false} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} style={full ? common_styles.flex_1 : undefined}>
             {children}
           </ScrollView>
         </Animated.View>

@@ -161,6 +161,13 @@ struct QuietView: View {
 
 struct RenewlessWidgetView: View {
   let entry: RenewlessEntry
+  @Environment(\.accessibilityReduceMotion) private var reduce_motion
+
+  // Changes when the shown event, its date or the state changes; iOS animates the swap (at most ~2 s).
+  private var stateKey: String {
+    guard let event = entry.event else { return "quiet" }
+    return "\(event.subscription_id)|\(event.date)|\(event.amount)|\(entry.more)"
+  }
 
   var body: some View {
     Group {
@@ -179,12 +186,15 @@ struct RenewlessWidgetView: View {
             }
             Text(event.name).font(raleway(12, medium: true)).tracking(-0.3).foregroundColor(.primaryText).lineLimit(1)
           }.padding(.top, 5)
-          Text(copy.amount).font(raleway(copy.amount.count > 12 ? 14 : 22, medium: true)).tracking(-0.7).foregroundColor(.primaryText).lineLimit(1).minimumScaleFactor(0.7).padding(.top, 7)
+          Text(copy.amount).contentTransition(.numericText()).font(raleway(copy.amount.count > 12 ? 14 : 22, medium: true)).tracking(-0.7).foregroundColor(.primaryText).lineLimit(1).minimumScaleFactor(0.7).padding(.top, 7)
           Text(copy.line).font(raleway(12)).foregroundColor(.timingText).lineLimit(1).minimumScaleFactor(0.8).padding(.top, 5)
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(copy.label)
         .widgetURL(URL(string: "renewless://subscription/\(event.subscription_id)"))
+        // Data-update motion in place of the prototype knock: the new event pushes in from below.
+        .id(stateKey)
+        .transition(.push(from: .bottom))
       } else if entry.event != nil {
         QuietView(mascot: "LoopNeutral", title: "Time to check in.", line: "Open Renewless", note: "to see what’s next.")
           .accessibilityElement(children: .ignore)
@@ -197,6 +207,7 @@ struct RenewlessWidgetView: View {
         .widgetURL(URL(string: "renewless://home"))
       }
     }
+    .animation(reduce_motion ? nil : .smooth(duration: 0.6), value: stateKey)
     .padding(15)
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     .containerBackground(for: .widget) {
