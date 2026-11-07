@@ -2,8 +2,8 @@ import { Linking, NativeModules } from 'react-native';
 import { navigate } from '../navigation/service';
 import type { HomeEvent, HomeSnapshot } from '../types';
 
-// iOS widget bridge (ios/Renewless/WidgetBridge.swift); absent on Android and in tests, so every call is a no-op there.
-const bridge: { setSnapshot(json: string): void; clear(): void; isInstalled(): Promise<boolean> } | undefined = NativeModules.RenewlessWidget;
+// Widget bridge: ios/Renewless/WidgetBridge.swift and android RenewlessWidgetModule.kt; absent in tests, so every call is a no-op there.
+const bridge: { setSnapshot(json: string): void; clear(): void; isInstalled(): Promise<boolean>; requestPin?(): Promise<boolean> } | undefined = NativeModules.RenewlessWidget;
 
 // The widget shows the earliest upcoming renewal or trial end, the same order as Home, and how many more share its date.
 export function widgetEvent(home: HomeSnapshot): { event: HomeEvent | null; more: number } {
@@ -48,9 +48,14 @@ export function clearWidgetSnapshot() {
   bridge?.clear();
 }
 
-// null when the platform cannot tell (Android for now).
+// null when the platform cannot tell.
 export function widgetInstalled(): Promise<boolean | null> {
   return bridge ? bridge.isInstalled().catch(() => null) : Promise.resolve(null);
+}
+
+// Android only: the launcher's own Add widget dialog. False when unsupported (then the steps still apply).
+export function pinWidget(): Promise<boolean> {
+  return bridge?.requestPin ? bridge.requestPin().catch(() => false) : Promise.resolve(false);
 }
 
 // Widget taps: renewless://subscription/<id> opens Detail, renewless://home opens Home. Signed out, the URL is ignored.

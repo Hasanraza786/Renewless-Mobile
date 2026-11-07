@@ -5,7 +5,7 @@ import { loadDashboard } from '../../redux/actions/dashboard-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { navigate } from '../../navigation/service';
 import { setWidgetPromptSeen } from '../../redux/slices/constant-slice';
-import { widgetEvent, widgetInstalled } from '../../utils/widget';
+import { pinWidget, widgetEvent, widgetInstalled } from '../../utils/widget';
 
 export default function useHome() {
   const dispatch = useAppDispatch();
@@ -63,6 +63,11 @@ export default function useHome() {
     dispatch(setWidgetPromptSeen());
     setWidgetPrompt('closed');
   };
+  // Android: Add widget opens the launcher's pin dialog, then the prompt closes for good.
+  const addWidget = () => {
+    pinWidget();
+    closeWidgetPrompt();
+  };
   const openWidgetVideo = () => setWidgetPrompt('video');
   const closeWidgetVideo = () => setWidgetPrompt('prompt');
 
@@ -88,6 +93,7 @@ export default function useHome() {
     widget_prompt,
     widget_preview,
     closeWidgetPrompt,
+    addWidget,
     openWidgetVideo,
     closeWidgetVideo,
   };

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Renewless</string>
+    <string name="widget_description">Your next renewal or trial ending.</string>
 </resources>

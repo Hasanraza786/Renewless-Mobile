@@ -22,6 +22,19 @@
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />
         </intent-filter>
+        <!-- Widget taps: renewless://subscription/<id> and renewless://home. -->
+        <intent-filter>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="renewless" />
+        </intent-filter>
       </activity>
+      <receiver android:name=".RenewlessWidgetProvider" android:exported="false" android:label="Renewless">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data android:name="android.appwidget.provider" android:resource="@xml/renewless_widget_info" />
+      </receiver>
     </application>
 </manifest>

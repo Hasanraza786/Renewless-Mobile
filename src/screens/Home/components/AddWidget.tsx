@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Animated, Easing, View } from 'react-native';
+import { Animated, Easing, Platform, View } from 'react-native';
 import { benefit_check_icon, demo_app_icons, logo_mark, platform_logos, play_circle_icon } from '../../../assets/icons';
 import ConfirmDialog from '../../../components/ConfirmDialog';
 import CustomButton from '../../../components/CustomButton';
@@ -20,6 +20,8 @@ const CAPTIONS = ['1 · Touch and hold', '2 · Tap +', '3 · Search Renewless', 
 // Prototype app-icon tints: mail, photos, camera, clock, notes, music, settings, compass.
 const DEMO_TILES = [COLORS.muted_teal, COLORS.muted_tan, COLORS.muted_grey, COLORS.muted_green, COLORS.muted_olive, COLORS.muted_rose, COLORS.muted_grey, COLORS.muted_teal];
 const CLIP_MS = 12000;
+// Android adds the widget through the launcher's own dialog, so the primary action does it directly.
+const ANDROID = Platform.OS === 'android';
 
 const Strong = ({ text }: { text: string }) => <CustomText text={text} weight={FONTS.medium} color={COLORS.sage_text} size={SIZES.sm} />;
 
@@ -148,11 +150,10 @@ export default function AddWidget({ home }: { home: HomeController }) {
         ))}
       </View>
       <View style={styles.steps}>
-        {[
-          <>1. Touch and hold an empty area of your Home Screen.</>,
-          <>2. Tap <Strong text="+" />, then search for Renewless.</>,
-          <>3. Choose the widget and tap <Strong text="Add Widget" />.</>,
-        ].map((step, index) => (
+        {(ANDROID
+          ? [<>1. Touch and hold an empty area of your Home Screen.</>, <>2. Tap <Strong text="Widgets" />, then find Renewless.</>, <>3. Drag the widget onto your Home Screen.</>]
+          : [<>1. Touch and hold an empty area of your Home Screen.</>, <>2. Tap <Strong text="+" />, then search for Renewless.</>, <>3. Choose the widget and tap <Strong text="Add Widget" />.</>]
+        ).map((step, index) => (
           <CustomText key={index} text={step} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 1.1} />
         ))}
       </View>
@@ -162,7 +163,7 @@ export default function AddWidget({ home }: { home: HomeController }) {
       </RowView>
       <RowView gap={SIZES.padding * 0.6}>
         <CustomButton variant="secondary" text="Not now" onPress={home.closeWidgetPrompt} style={common_styles.flex_1} />
-        <CustomButton variant="primary" text="Got it" onPress={home.closeWidgetPrompt} style={common_styles.flex_1} />
+        <CustomButton variant="primary" text={ANDROID ? 'Add widget' : 'Got it'} onPress={ANDROID ? home.addWidget : home.closeWidgetPrompt} style={common_styles.flex_1} />
       </RowView>
     </ConfirmDialog>
   );

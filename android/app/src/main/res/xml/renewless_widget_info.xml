@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Small widget only; refreshes about every 3 hours so Today / In N days stays right without the app. -->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:description="@string/widget_description"
+    android:initialLayout="@layout/renewless_widget"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:resizeMode="none"
+    android:updatePeriodMillis="10800000"
+    android:previewLayout="@layout/renewless_widget"
+    android:widgetCategory="home_screen" />
