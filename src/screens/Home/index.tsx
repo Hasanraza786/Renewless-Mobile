@@ -20,7 +20,7 @@ export default function HomeScreen() {
   const { data, status } = home;
 
   return (
-    <Container style={styles.main_view}>
+    <Container tab_bar style={styles.main_view}>
       <Header title="Home" onAdd={home.openAdd} />
       {status === 'loading' ? (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content} scrollEnabled={false}>

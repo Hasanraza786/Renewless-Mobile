@@ -52,7 +52,7 @@ export default function CalendarScreen() {
   const openPicker = () => heading_ref.current?.measureInWindow((x, y, _width, height) => calendar.openPicker({ x, y, height }));
 
   return (
-    <Container style={styles.main_view}>
+    <Container tab_bar style={styles.main_view}>
       <Header title="Calendar" onAdd={calendar.openAdd} />
       <ScrollView showsVerticalScrollIndicator={false} bounces={false} contentInsetAdjustmentBehavior="scrollableAxes" contentContainerStyle={styles.content}>
         <RowView gap={SIZES.padding * 0.35} style={styles.nav}>

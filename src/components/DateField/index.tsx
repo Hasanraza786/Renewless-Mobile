@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { View } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import { Platform, View } from 'react-native';
+import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { calendar_icon, clock_icon } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import AppSheet from '../AppSheet';
@@ -39,6 +39,23 @@ export default function DateField({ label, value, minimum, maximum, onChange, va
   const time = mode === 'time';
   const toPicker = (iso: string) => (time ? new Date(`2000-01-01T${iso}:00`) : toDate(iso));
   const fromPicker = (date: Date) => (time ? `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}` : toIso(date));
+  // Android has no inline or sheet picker: the field opens the system date/time dialog directly.
+  const openAndroid = () =>
+    DateTimePickerAndroid.open({
+      mode,
+      display: variant === 'form' ? 'spinner' : 'default',
+      value: value ? toPicker(value) : maximum ? toDate(maximum) : new Date(),
+      minimumDate: minimum ? toDate(minimum) : undefined,
+      maximumDate: maximum ? toDate(maximum) : undefined,
+      positiveButton: { textColor: COLORS.primary },
+      negativeButton: { textColor: COLORS.primary },
+      onValueChange: (_, date) => onChange(fromPicker(date)),
+    });
+  const onPress = () => {
+    if (Platform.OS === 'android') openAndroid();
+    else if (variant === 'form') setDraft(value ? toPicker(value) : maximum ? toDate(maximum) : new Date());
+    else setOpen(current => !current);
+  };
   const shown = value ? (time ? toPicker(value).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : toDate(value).toLocaleDateString('en-GB')) : time ? '--:-- --' : 'dd/mm/yyyy';
 
   return (
@@ -48,7 +65,7 @@ export default function DateField({ label, value, minimum, maximum, onChange, va
         accessibilityRole="button"
         accessibilityLabel={`${label}, ${value ? shown : 'not set'}`}
         accessibilityState={{ expanded: open || !!draft }}
-        onPress={() => (variant === 'form' ? setDraft(value ? toPicker(value) : maximum ? toDate(maximum) : new Date()) : setOpen(current => !current))}
+        onPress={onPress}
         style={[styles.field, variant === 'form' && styles.field_form, !!error && styles.field_error, (open || !!draft) && styles.field_open]}>
         <CustomText text={shown} weight={FONTS.regular} color={value ? COLORS.text_primary : COLORS.text_secondary} size={SIZES.sm} />
         <Icons name={time ? clock_icon : calendar_icon} />

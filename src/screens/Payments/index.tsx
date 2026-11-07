@@ -58,7 +58,7 @@ export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
   const intro = `${payments.scoped ? `${payments.scoped.name} · ` : ''}Based on receipts found in Gmail.`;
 
   return (
-    <Container style={styles.main_view}>
+    <Container tab_bar style={styles.main_view}>
       <Header title="Payments" onBack={payments.scoped ? goBack : undefined} />
       {payments.status !== 'ready' ? (
         <StateView status={payments.status === 'failed' ? 'failed' : 'loading'} message={payments.status === 'failed' ? payments.error : 'Loading payments.'} onRetry={payments.retry} />

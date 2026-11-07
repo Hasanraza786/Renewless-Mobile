@@ -15,6 +15,8 @@ export default function Tabs() {
         headerShown: false,
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.text_secondary,
+        // Android: every tab keeps its label, as in the prototype (Material hides inactive labels by default).
+        tabBarLabelVisibilityMode: 'labeled',
       }}>
       <TabsStack.Screen name="Home" component={HomeScreen} options={{ tabBarIcon: tab_icon(require('../assets/images/tabs/tab_home.png')) }} />
       <TabsStack.Screen name="List" component={ListScreen} options={{ tabBarIcon: tab_icon(require('../assets/images/tabs/tab_list.png')) }} />

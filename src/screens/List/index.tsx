@@ -48,7 +48,7 @@ export default function ListScreen() {
   const list = useList();
 
   return (
-    <Container style={styles.main_view}>
+    <Container tab_bar style={styles.main_view}>
       <Header title="Subscriptions" onAdd={list.openAdd} />
       {list.status !== 'ready' ? (
         <StateView status={list.status === 'failed' ? 'failed' : 'loading'} message={list.status === 'failed' ? list.error : 'Loading subscriptions.'} onRetry={list.retry} />

@@ -74,7 +74,7 @@ export default function ProfileScreen() {
   const { user, inbox } = profile;
 
   return (
-    <Container style={styles.main_view}>
+    <Container tab_bar style={styles.main_view}>
       <Header title="Profile" />
       {/* scrollableAxes: the floating tab bar inset at the bottom, no second top inset under the fixed header. */}
       <ScrollView showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="scrollableAxes" contentContainerStyle={styles.content}>

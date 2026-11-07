@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- App dialog surface (COLORS.dialog) with the 18dp corners used by in-app dialogs. -->
+<inset xmlns:android="http://schemas.android.com/apk/res/android" android:inset="16dp">
+    <shape android:shape="rectangle">
+        <solid android:color="#25282C" />
+        <corners android:radius="18dp" />
+    </shape>
+</inset>
