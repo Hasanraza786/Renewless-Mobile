@@ -6,6 +6,7 @@ import CustomText from '../../components/CustomText';
 import Header from '../../components/Header';
 import Mascot from '../../components/Mascot';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import AddWidget from './components/AddWidget';
 import Forecast from './components/Forecast';
 import HomeSkeleton from './components/HomeSkeleton';
 import MonthCard from './components/MonthCard';
@@ -51,6 +52,7 @@ export default function HomeScreen() {
         </ScrollView>
       )}
       <AddSheet visible={home.add_open} onClose={home.closeAdd} />
+      <AddWidget home={home} />
     </Container>
   );
 }

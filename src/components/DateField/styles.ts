@@ -18,6 +18,10 @@ export const styles = StyleSheet.create({
   field_error: {
     borderColor: COLORS.expired,
   },
+  // The native date wheel keeps its own width, so centre it in the sheet.
+  wheel: {
+    alignItems: 'center',
+  },
   field_open: {
     borderColor: COLORS.primary,
   },

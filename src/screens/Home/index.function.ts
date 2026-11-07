@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { loadDashboard } from '../../redux/actions/dashboard-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { navigate } from '../../navigation/service';
+import { setWidgetPromptSeen } from '../../redux/slices/constant-slice';
+import { widgetEvent, widgetInstalled } from '../../utils/widget';
 
 export default function useHome() {
   const dispatch = useAppDispatch();
@@ -11,6 +13,9 @@ export default function useHome() {
   const [selected_event, setSelectedEvent] = useState('');
   const [reduce_motion, setReduceMotion] = useState(false);
   const [add_open, setAddOpen] = useState(false);
+  const widget_prompt_seen = useAppSelector(state => state.constant.widget_prompt_seen);
+  const [widget_prompt, setWidgetPrompt] = useState<'closed' | 'prompt' | 'video'>('closed');
+  const widget_checked = useRef(false);
 
   // Refresh on every visit; a usable snapshot stays on screen while it reloads.
   useFocusEffect(
@@ -24,6 +29,15 @@ export default function useHome() {
     const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
     return () => subscription.remove();
   }, []);
+
+  const has_subscriptions = !!data?.has_subscriptions;
+
+  // One-time prompt: only with a tracked subscription and only when the platform reports the widget is not placed.
+  useEffect(() => {
+    if (!has_subscriptions || widget_prompt_seen || widget_checked.current) return;
+    widget_checked.current = true;
+    widgetInstalled().then(installed => installed === false && setWidgetPrompt('prompt'));
+  }, [has_subscriptions, widget_prompt_seen]);
 
   const events = data?.nearest_events ?? [];
   const selected = events.find(item => item.id === selected_event) ?? events[0];
@@ -43,6 +57,14 @@ export default function useHome() {
   const openThisMonth = () => navigate('ThisMonth');
   const openSpending = () => navigate('SpendingBreakdown');
   const openPlatform = (platform_id: string, name: string) => navigate('PlatformSubscriptions', { platform_id, name });
+  const widget_preview = data ? widgetEvent(data) : { event: null, more: 0 };
+  // Any close (button, ×, scrim) ends the prompt for good on this device.
+  const closeWidgetPrompt = () => {
+    dispatch(setWidgetPromptSeen());
+    setWidgetPrompt('closed');
+  };
+  const openWidgetVideo = () => setWidgetPrompt('video');
+  const closeWidgetVideo = () => setWidgetPrompt('prompt');
 
   return {
     data,
@@ -63,6 +85,11 @@ export default function useHome() {
     openThisMonth,
     openSpending,
     openPlatform,
+    widget_prompt,
+    widget_preview,
+    closeWidgetPrompt,
+    openWidgetVideo,
+    closeWidgetVideo,
   };
 }
 

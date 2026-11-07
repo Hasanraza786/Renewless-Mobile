@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppSelector } from '../redux/store';
@@ -9,6 +10,7 @@ import Tabs from './Tabs';
 import { COLORS } from '../constants/theme';
 import { navigationRef } from './service';
 import UndoToast from '../components/UndoToast';
+import { listenForWidgetUrls } from '../utils/widget';
 
 const AppStack = createNativeStackNavigator<AppStackParamList>();
 
@@ -20,9 +22,15 @@ const theme: Theme = {
 
 export default function MainNavigator() {
   const token = useAppSelector(state => state.constant.token);
+  const token_ref = useRef(token);
+  token_ref.current = token;
+  const [ready, setReady] = useState(false);
+
+  // Widget taps open their subscription once navigation is mounted.
+  useEffect(() => (ready ? listenForWidgetUrls(() => !!token_ref.current) : undefined), [ready]);
 
   return (
-    <NavigationContainer ref={navigationRef} theme={theme}>
+    <NavigationContainer ref={navigationRef} theme={theme} onReady={() => setReady(true)}>
       <AppStack.Navigator initialRouteName={token ? "Tabs" : "AuthStack"} screenOptions={stack_options}>
         <AppStack.Screen name="AuthStack" component={AuthStack} />
         <AppStack.Screen name="Tabs" component={Tabs} />

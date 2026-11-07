@@ -7,30 +7,76 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		03D74D9B5E87B6EB066D6FF4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5EA485B4B552CA20E3957D99 /* Foundation.framework */; };
+		0707D40AC0CB83D561E175A8 /* RenewlessWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0662470383A6D73D445C27E1 /* RenewlessWidget.swift */; };
 		0C80B921A6F3F58F76C31292 /* libPods-Renewless.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-Renewless.a */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+		173F33A0AE48A1EC74D41EBD /* WidgetBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B342DAEE2BE860AA88370C8 /* WidgetBridge.swift */; };
+		5356968F62176765A221EF20 /* RenewlessWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 94F94A7208E229D0345C2F2A /* RenewlessWidget.appex */; settings = {ATTRIBUTES = (RemoveHeaderOnCopy, ); }; };
+		56D9FC7CA1DCBC0B27E6A279 /* Raleway-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6A7A7BDF4CBEA7A2E9A5CD9A /* Raleway-Medium.ttf */; };
 		56DD18AC081ED86A71D7AA64 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		761780F12CA45674006654F2 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780F02CA45674006654F1 /* SceneDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		836AFBA0C7C650194660A493 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AC40F7EE8608EFCA21FB9EAA /* WidgetKit.framework */; };
 		8CCE363C309CBB310028D272 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CCE363B309CBB310028D272 /* GoogleService-Info.plist */; };
+		9138C2DE8E20E6DA3F0770BF /* WidgetBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 13073AB5AEE57222F3A57EF3 /* WidgetBridge.m */; };
+		ACDA7C848CFFB58017AD7EDF /* Raleway-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1115903CE22B499EBB212942 /* Raleway-Regular.ttf */; };
+		E473112726B5FE1D991E4BEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4A91D3AFFE8055E0F61CEAE /* Assets.xcassets */; };
+		F02E73E046B5D01E0B3BB5F9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EE57B0EA27F6C36BE557DAD /* SwiftUI.framework */; };
 		F0E7A13A2CA4567400665403 /* Raleway-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0E7A11A2CA4567400665401 /* Raleway-Regular.ttf */; };
 		F0E7A14A2CA4567400665404 /* Raleway-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0E7A12A2CA4567400665402 /* Raleway-Medium.ttf */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		D5FA03D0039ABAF817706A31 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5B4A7FC6C44F3F58F5BC18CB;
+			remoteInfo = RenewlessWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2BD44FEE7D4AE46DE8E6669B /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5356968F62176765A221EF20 /* RenewlessWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		0662470383A6D73D445C27E1 /* RenewlessWidget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RenewlessWidget.swift; sourceTree = "<group>"; };
+		1115903CE22B499EBB212942 /* Raleway-Regular.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = "Raleway-Regular.ttf"; path = "../Renewless/Fonts/Raleway-Regular.ttf"; sourceTree = "<group>"; };
+		13073AB5AEE57222F3A57EF3 /* WidgetBridge.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = WidgetBridge.m; path = Renewless/WidgetBridge.m; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Renewless.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Renewless.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Renewless/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Renewless/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = Renewless/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		1AB66C5195AFCF7BB4988822 /* RenewlessWidget.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = RenewlessWidget.entitlements; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Renewless.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Renewless.debug.xcconfig"; path = "Target Support Files/Pods-Renewless/Pods-Renewless.debug.xcconfig"; sourceTree = "<group>"; };
+		3EE57B0EA27F6C36BE557DAD /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
 		5709B34CF0A7D63546082F79 /* Pods-Renewless.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Renewless.release.xcconfig"; path = "Target Support Files/Pods-Renewless/Pods-Renewless.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-Renewless.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Renewless.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5EA485B4B552CA20E3957D99 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		6A7A7BDF4CBEA7A2E9A5CD9A /* Raleway-Medium.ttf */ = {isa = PBXFileReference; includeInIndex = 1; name = "Raleway-Medium.ttf"; path = "../Renewless/Fonts/Raleway-Medium.ttf"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Renewless/AppDelegate.swift; sourceTree = "<group>"; };
 		761780F02CA45674006654F1 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = Renewless/SceneDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Renewless/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		88746CD67AC67C8970AA0806 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		8B342DAEE2BE860AA88370C8 /* WidgetBridge.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WidgetBridge.swift; path = Renewless/WidgetBridge.swift; sourceTree = "<group>"; };
 		8CCE363B309CBB310028D272 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8CCE363D309CBB6F0028D272 /* Renewless.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Renewless.entitlements; path = Renewless/Renewless.entitlements; sourceTree = "<group>"; };
+		94F94A7208E229D0345C2F2A /* RenewlessWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = RenewlessWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC40F7EE8608EFCA21FB9EAA /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/WidgetKit.framework; sourceTree = DEVELOPER_DIR; };
+		D4A91D3AFFE8055E0F61CEAE /* Assets.xcassets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F0E7A11A2CA4567400665401 /* Raleway-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Raleway-Regular.ttf"; path = "Renewless/Fonts/Raleway-Regular.ttf"; sourceTree = "<group>"; };
 		F0E7A12A2CA4567400665402 /* Raleway-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Raleway-Medium.ttf"; path = "Renewless/Fonts/Raleway-Medium.ttf"; sourceTree = "<group>"; };
@@ -42,6 +88,16 @@
 			buildActionMask = 2147483647;
 			files = (
 				0C80B921A6F3F58F76C31292 /* libPods-Renewless.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		608B48C12DDD42363EEAF791 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				03D74D9B5E87B6EB066D6FF4 /* Foundation.framework in Frameworks */,
+				836AFBA0C7C650194660A493 /* WidgetKit.framework in Frameworks */,
+				F02E73E046B5D01E0B3BB5F9 /* SwiftUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,6 +116,8 @@
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 				F0E7A11A2CA4567400665401 /* Raleway-Regular.ttf */,
 				F0E7A12A2CA4567400665402 /* Raleway-Medium.ttf */,
+				8B342DAEE2BE860AA88370C8 /* WidgetBridge.swift */,
+				13073AB5AEE57222F3A57EF3 /* WidgetBridge.m */,
 			);
 			name = Renewless;
 			sourceTree = "<group>";
@@ -69,8 +127,23 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				5DCACB8F33CDC322A6C60F78 /* libPods-Renewless.a */,
+				92E2B549AD797A6D57B13514 /* iOS */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3F7E5752B18A4DEE4B416DEA /* RenewlessWidget */ = {
+			isa = PBXGroup;
+			children = (
+				0662470383A6D73D445C27E1 /* RenewlessWidget.swift */,
+				D4A91D3AFFE8055E0F61CEAE /* Assets.xcassets */,
+				1115903CE22B499EBB212942 /* Raleway-Regular.ttf */,
+				6A7A7BDF4CBEA7A2E9A5CD9A /* Raleway-Medium.ttf */,
+				88746CD67AC67C8970AA0806 /* Info.plist */,
+				1AB66C5195AFCF7BB4988822 /* RenewlessWidget.entitlements */,
+			);
+			name = RenewlessWidget;
+			path = RenewlessWidget;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -89,6 +162,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				3F7E5752B18A4DEE4B416DEA /* RenewlessWidget */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -99,8 +173,19 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* Renewless.app */,
+				94F94A7208E229D0345C2F2A /* RenewlessWidget.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		92E2B549AD797A6D57B13514 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				5EA485B4B552CA20E3957D99 /* Foundation.framework */,
+				AC40F7EE8608EFCA21FB9EAA /* WidgetKit.framework */,
+				3EE57B0EA27F6C36BE557DAD /* SwiftUI.framework */,
+			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
@@ -126,15 +211,34 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				00EEFC60759A1932668264C0 /* [CP] Embed Pods Frameworks */,
 				E235C05ADACE081382539298 /* [CP] Copy Pods Resources */,
+				2BD44FEE7D4AE46DE8E6669B /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				31121F2A1FA87D1BBB3A412F /* PBXTargetDependency */,
 			);
 			name = Renewless;
 			productName = Renewless;
 			productReference = 13B07F961A680F5B00A75B9A /* Renewless.app */;
 			productType = "com.apple.product-type.application";
+		};
+		5B4A7FC6C44F3F58F5BC18CB /* RenewlessWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D10CC0F6ADC642DF40F1B79C /* Build configuration list for PBXNativeTarget "RenewlessWidget" */;
+			buildPhases = (
+				77F86E50CC960AB0A2474B01 /* Sources */,
+				608B48C12DDD42363EEAF791 /* Frameworks */,
+				974E5AB42934F645CAEF82E4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RenewlessWidget;
+			productName = RenewlessWidget;
+			productReference = 94F94A7208E229D0345C2F2A /* RenewlessWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -163,6 +267,7 @@
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* Renewless */,
+				5B4A7FC6C44F3F58F5BC18CB /* RenewlessWidget */,
 			);
 		};
 /* End PBXProject section */
@@ -178,6 +283,16 @@
 				F0E7A13A2CA4567400665403 /* Raleway-Regular.ttf in Resources */,
 				F0E7A14A2CA4567400665404 /* Raleway-Medium.ttf in Resources */,
 				8CCE363C309CBB310028D272 /* GoogleService-Info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		974E5AB42934F645CAEF82E4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E473112726B5FE1D991E4BEA /* Assets.xcassets in Resources */,
+				ACDA7C848CFFB58017AD7EDF /* Raleway-Regular.ttf in Resources */,
+				56D9FC7CA1DCBC0B27E6A279 /* Raleway-Medium.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,10 +380,29 @@
 			files = (
 				761780ED2CA45674006654EE /* AppDelegate.swift in Sources */,
 				761780F12CA45674006654F2 /* SceneDelegate.swift in Sources */,
+				173F33A0AE48A1EC74D41EBD /* WidgetBridge.swift in Sources */,
+				9138C2DE8E20E6DA3F0770BF /* WidgetBridge.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		77F86E50CC960AB0A2474B01 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0707D40AC0CB83D561E175A8 /* RenewlessWidget.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		31121F2A1FA87D1BBB3A412F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = RenewlessWidget;
+			target = 5B4A7FC6C44F3F58F5BC18CB /* RenewlessWidget */;
+			targetProxy = D5FA03D0039ABAF817706A31 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
@@ -332,6 +466,33 @@
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
+		};
+		54FAC0336DFC448B4B1793F2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = RenewlessWidget/RenewlessWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7K3NY3SR6K;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RenewlessWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.renewless.RenewlessWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
 		};
 		83CBBA201A601CBA00E9B192 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -489,6 +650,34 @@
 			};
 			name = Release;
 		};
+		B0CAED1A75B0E53F1D449B08 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_ENTITLEMENTS = RenewlessWidget/RenewlessWidget.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 7K3NY3SR6K;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = RenewlessWidget/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.renewless.RenewlessWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -506,6 +695,15 @@
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
 				83CBBA211A601CBA00E9B192 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D10CC0F6ADC642DF40F1B79C /* Build configuration list for PBXNativeTarget "RenewlessWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B0CAED1A75B0E53F1D449B08 /* Release */,
+				54FAC0336DFC448B4B1793F2 /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

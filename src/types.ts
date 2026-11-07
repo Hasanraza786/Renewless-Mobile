@@ -335,6 +335,8 @@ export type ConstantState = {
   token: string | null;
   user: Profile | null;
   splash_seen: boolean;
+  // The one-time Home prompt to add the widget was closed on this device.
+  widget_prompt_seen: boolean;
 };
 
 export type AuthRequest =

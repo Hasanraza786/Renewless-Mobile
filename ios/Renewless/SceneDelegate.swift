@@ -1,4 +1,5 @@
 import UIKit
+import React
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow?
@@ -19,10 +20,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     window.backgroundColor = UIColor(named: "AppBackground")
     self.window = window
 
+    // A cold start from the widget carries its URL in the scene options.
+    var launchOptions = appDelegate.launchOptions ?? [:]
+    if let url = connectionOptions.urlContexts.first?.url { launchOptions[.url] = url }
+
     factory.startReactNative(
       withModuleName: "Renewless",
       in: window,
-      launchOptions: appDelegate.launchOptions
+      launchOptions: launchOptions
     )
+  }
+
+  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    guard let url = URLContexts.first?.url else { return }
+    RCTLinkingManager.application(UIApplication.shared, open: url, options: [:])
   }
 }

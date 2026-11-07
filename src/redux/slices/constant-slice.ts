@@ -5,6 +5,7 @@ const initial_state: ConstantState = {
   token: null,
   user: null,
   splash_seen: false,
+  widget_prompt_seen: false,
 };
 
 const constantSlice = createSlice({
@@ -25,9 +26,12 @@ const constantSlice = createSlice({
     setSplashSeen(state) {
       state.splash_seen = true;
     },
+    setWidgetPromptSeen(state) {
+      state.widget_prompt_seen = true;
+    },
   },
 });
 
-export const { setSession, setUser, clearSession, setSplashSeen } = constantSlice.actions;
+export const { setSession, setUser, clearSession, setSplashSeen, setWidgetPromptSeen } = constantSlice.actions;
 
 export default constantSlice.reducer;

@@ -57,15 +57,17 @@ export default function DateField({ label, value, minimum, maximum, onChange, va
       {variant === 'form' ? (
         <AppSheet visible={!!draft} title={label.split(/ · | {2}/)[0]} onClose={() => setDraft(null)}>
           {draft ? (
-            <DateTimePicker
-              mode={mode}
-              display="spinner"
-              themeVariant="dark"
-              value={draft}
-              minimumDate={minimum ? toDate(minimum) : undefined}
-              maximumDate={maximum ? toDate(maximum) : undefined}
-              onValueChange={(_, date) => setDraft(date)}
-            />
+            <View style={time ? undefined : styles.wheel}>
+              <DateTimePicker
+                mode={mode}
+                display="spinner"
+                themeVariant="dark"
+                value={draft}
+                minimumDate={minimum ? toDate(minimum) : undefined}
+                maximumDate={maximum ? toDate(maximum) : undefined}
+                onValueChange={(_, date) => setDraft(date)}
+              />
+            </View>
           ) : null}
           <CustomButton variant="primary" text="Done" onPress={() => { if (draft) onChange(fromPicker(draft)); setDraft(null); }} />
         </AppSheet>

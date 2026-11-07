@@ -124,6 +124,22 @@ export const COLORS = {
   error_text: '#FFACAC',
   error_line: '#ff8a8a28',
   error_wash: '#ff8a8a06',
+  // Home Screen widget tile and its how-to clip (graphite tile, sage text, light system sheet).
+  graphite: '#202628',
+  sage_text: '#EDF1E8',
+  sage_soft: '#C6D0C3',
+  sage_muted: '#9DAAA3',
+  sage_label: '#D0D9CC',
+  wallpaper_sage: '#33423A',
+  system_sheet: '#F4F4F1',
+  system_field: '#E7E8E3',
+  system_blue: '#2F7BF6',
+  muted_teal: '#5F8587',
+  muted_tan: '#BDA27C',
+  muted_grey: '#7A8886',
+  muted_olive: '#9C9E77',
+  muted_rose: '#A4777C',
+  muted_green: '#293A36',
 };
 
 export const SIZES = {

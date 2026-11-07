@@ -1,6 +1,7 @@
 import type { UnknownAction } from '@reduxjs/toolkit';
 import type { ThunkAction } from '@reduxjs/toolkit';
 import type { RootState } from '../types';
+import { clearWidgetSnapshot } from '../utils/widget';
 import { resetAuth } from './slices/auth-slice';
 import { clearSession } from './slices/constant-slice';
 import { resetDashboard } from './slices/dashboard-slice';
@@ -14,6 +15,7 @@ import { resetProfile } from './slices/profile-slice';
 
 export function endSession(): ThunkAction<void, RootState, undefined, UnknownAction> {
   return dispatch => {
+    clearWidgetSnapshot();
     dispatch(clearSession());
     dispatch(resetProfile());
     dispatch(resetDashboard());

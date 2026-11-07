@@ -1,4 +1,5 @@
 import { getHome } from '../../api_services/home';
+import { saveWidgetSnapshot } from '../../utils/widget';
 import { runRequest, type AppThunk } from '../runRequest';
 import {
   setDashboardData,
@@ -16,6 +17,7 @@ export function loadDashboard(): AppThunk {
         loading: setDashboardLoading,
         error: setDashboardError,
         success: setDashboardData,
+        onDone: saveWidgetSnapshot,
       }),
     );
   };
