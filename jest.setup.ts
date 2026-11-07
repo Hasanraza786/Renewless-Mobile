@@ -10,6 +10,8 @@ jest.mock('react-native-country-picker-modal', () => {
   };
 });
 
+jest.mock('react-native-haptic-feedback', () => ({ __esModule: true, default: { trigger: jest.fn() } }));
+
 jest.mock('react-native-confirmation-code-field', () => {
   const React = require('react');
   const { TextInput } = require('react-native');

@@ -7,6 +7,7 @@ import { endSession } from '../endSession';
 import { runRequest, type AppThunk } from '../runRequest';
 import { setSession } from '../slices/constant-slice';
 import { setNotice, setOverview, setOverviewError, setOverviewLoading, setProfileError, setProfileLoading, setProfileUser } from '../slices/profile-slice';
+import { successHaptic } from '../../utils/haptics';
 
 export function loadProfileOverview(): AppThunk {
   return async (dispatch, getState) => {
@@ -37,6 +38,7 @@ export function updateProfile(input: ProfileInput): AppThunk<boolean> {
       }),
     );
     if (!result) return false;
+    successHaptic();
     dispatch(setNotice('Profile updated.'));
     return true;
   };

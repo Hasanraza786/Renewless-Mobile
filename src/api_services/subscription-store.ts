@@ -168,7 +168,9 @@ function datedReceipts(): Receipt[] {
 }
 
 // Successful Gmail receipts for the current records.
+// The 'none' payments scenario has no confirmed receipts anywhere (Home, Detail, Payments).
 export function allReceipts(): Receipt[] {
+  if (MOCK_DATA.payments_scenario === 'none') return [];
   const ids = new Set(allRecords().map(item => item.id));
   return datedReceipts().filter(item => ids.has(item.subscription_id));
 }

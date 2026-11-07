@@ -16,6 +16,7 @@ import { runRequest, type AppThunk } from '../runRequest';
 import { authError, authLoading } from '../slices/auth-slice';
 import { setNotice, setProfileUser } from '../slices/profile-slice';
 import { setSession } from '../slices/constant-slice';
+import { successHaptic } from '../../utils/haptics';
 
 const startSession = (session: AuthResponse) => [setSession(session), setProfileUser(session.user)];
 
@@ -115,6 +116,7 @@ export function changePassword(current_password: string, password: string): AppT
       }),
     );
     if (!result) return false;
+    successHaptic();
     dispatch(setNotice('Password updated.'));
     return true;
   };

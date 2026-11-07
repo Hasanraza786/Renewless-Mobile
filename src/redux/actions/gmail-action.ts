@@ -6,6 +6,7 @@ import { setNotice } from '../slices/profile-slice';
 import { loadDashboard } from './dashboard-action';
 import { loadList } from './list-action';
 import { loadProfileOverview } from './profile-action';
+import { successHaptic } from '../../utils/haptics';
 
 // The scan draft lives in the Gmail screen; these thunks only call the service and report outcomes.
 export function fetchGmailInboxes(): AppThunk<ProfileInbox[] | null> {
@@ -54,6 +55,7 @@ export function saveGmailSelections(job_id: string, selections: GmailSelection[]
       dispatch(loadDashboard());
       dispatch(loadList());
       dispatch(loadProfileOverview());
+      successHaptic();
       dispatch(setNotice('Selected subscriptions and updates saved.'));
       return result;
     } catch (caught) {

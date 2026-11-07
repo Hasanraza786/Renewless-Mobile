@@ -4,6 +4,7 @@ import { runRequest, type AppThunk } from '../runRequest';
 import { setAlerts, setAlertsError, setAlertsLoading, setReminderSettings } from '../slices/alerts-slice';
 import { setNotice } from '../slices/profile-slice';
 import { loadDetail } from './detail-action';
+import { successHaptic } from '../../utils/haptics';
 
 const flag = (key: 'alerts' | 'settings' | 'save') => ({
   loading: (value: boolean) => setAlertsLoading({ key, value }),
@@ -36,6 +37,7 @@ export function saveReminders(settings: ReminderSettings, apply: ReminderApply):
     // A cached Detail shows the account default; refresh it.
     const open_detail = getState().detail.detail?.record.id;
     if (open_detail) dispatch(loadDetail(open_detail));
+    successHaptic();
     dispatch(setNotice('Reminder settings saved.'));
     return true;
   };

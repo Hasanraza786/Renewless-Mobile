@@ -16,6 +16,7 @@ import { setDetail, setDetailError, setDetailLoading, setPlatformRecords, setRem
 import { setNotice } from '../slices/profile-slice';
 import { loadDashboard } from './dashboard-action';
 import { loadList } from './list-action';
+import { successHaptic } from '../../utils/haptics';
 
 const flag = (key: 'detail' | 'platform' | 'mutation') => ({
   loading: (value: boolean) => setDetailLoading({ key, value }),
@@ -68,7 +69,10 @@ export const saveNotes = (id: string, notes: string) => mutate(token => setNotes
 export function saveSubscription(id: string, input: SubscriptionFormInput): AppThunk<boolean> {
   return async dispatch => {
     const ok = await dispatch(mutate(token => updateTracked(token, id, input)));
-    if (ok) dispatch(setNotice('Changes saved.'));
+    if (ok) {
+      successHaptic();
+      dispatch(setNotice('Changes saved.'));
+    }
     return ok;
   };
 }
@@ -82,6 +86,7 @@ export function addSubscription(input: SubscriptionFormInput): AppThunk<string |
     if (!record) return null;
     dispatch(loadDashboard());
     dispatch(loadList());
+    successHaptic();
     dispatch(setNotice('Subscription added.'));
     return record.id;
   };

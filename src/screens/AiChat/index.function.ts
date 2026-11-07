@@ -10,6 +10,7 @@ import { addSubscription } from '../../redux/actions/detail-action';
 import { useAppDispatch } from '../../redux/store';
 import type { AiDraft, AiInput, SubscriptionFormInput } from '../../types';
 import { missingQuestion } from '../../utils/ai-draft';
+import { tapHaptic } from '../../utils/haptics';
 
 const SPEEDS = [1, 1.5, 2] as const;
 const LIVE_BARS = 32;
@@ -150,6 +151,7 @@ export default function useAiChat() {
       const level = meterLevel(meta.currentMetering);
       setRecording(current => (current && !current.paused ? { ...current, elapsed_ms: meta.currentPosition, levels: [...current.levels, level].slice(-LIVE_BARS) } : current));
     });
+    tapHaptic();
     setRecording({ elapsed_ms: 0, locked: false, paused: false, levels: [] });
     const ready = recorder.startRecorder(undefined, undefined, true).then(
       () => true,
@@ -181,6 +183,7 @@ export default function useAiChat() {
       const clip = await stopRecording();
       const duration_ms = current.elapsed_ms || (clip ? Date.now() - clip.at : 0);
       if (!clip || duration_ms < 500) return;
+      tapHaptic();
       submit({ kind: 'voice', uri: clip.uri, duration_ms }, '');
     } catch {
       setAttachError('Unable to send this voice message. Please try again.');
@@ -189,11 +192,16 @@ export default function useAiChat() {
 
   const cancelRecording = () => {
     if (!recording) return;
+    tapHaptic();
     stopRecording().catch(() => undefined);
     setDiscarded(count => count + 1);
   };
 
-  const lockRecording = () => setRecording(current => (current && !current.locked ? { ...current, locked: true } : current));
+  const lockRecording = () => {
+    if (!recording || recording.locked) return;
+    tapHaptic();
+    setRecording(current => (current && !current.locked ? { ...current, locked: true } : current));
+  };
 
   const toggleRecordPause = async () => {
     if (!recording) return;
