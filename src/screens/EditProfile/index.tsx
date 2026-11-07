@@ -6,6 +6,7 @@ import DateField from '../../components/DateField';
 import Dropdown from '../../components/Dropdown';
 import Header from '../../components/Header';
 import InputField from '../../components/InputField';
+import PhoneInputField from '../../components/PhoneInputField';
 import SizedBox from '../../components/SizedBox';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { goBack } from '../../navigation/service';
@@ -39,14 +40,12 @@ export default function EditProfileScreen() {
             <CustomText mt={SIZES.padding * 0.35} text={form.user?.email ?? ''} size={SIZES.sm} />
             <CustomText mt={SIZES.padding * 0.35} text="Email changes require verification." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           </View>
-          <InputField
-            variant="form"
+          <PhoneInputField
             label="Phone · Optional"
-            value={form.form_data.phone}
-            onChangeText={value => form.update('phone', value)}
-            keyboardType="phone-pad"
-            autoComplete="tel"
-            textContentType="telephoneNumber"
+            country={form.form_data.phone_country}
+            national={form.form_data.phone}
+            onChangeCountry={value => form.update('phone_country', value)}
+            onChangeNational={value => form.update('phone', value)}
             editable={!form.saving}
           />
           <SizedBox height={SIZES.padding * 0.7} />

@@ -1,15 +1,4 @@
 /* global jest */
-jest.mock('react-native-country-picker-modal', () => {
-  const React = require('react');
-  const { View } = require('react-native');
-  return {
-    __esModule: true,
-    default: () => React.createElement(View),
-    FlagType: { EMOJI: 'emoji' },
-    getAllCountries: async () => [],
-  };
-});
-
 jest.mock('react-native-haptic-feedback', () => ({ __esModule: true, default: { trigger: jest.fn() } }));
 
 jest.mock('react-native-confirmation-code-field', () => {
