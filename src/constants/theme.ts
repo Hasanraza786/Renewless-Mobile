@@ -26,6 +26,8 @@ export const COLORS = {
   expired: '#FF8A8A',
   disabled_fill: '#30353A',
   renewing_soon: '#E8BE78',
+  // Low free-message count in AI chat.
+  warning_text: '#E8C37A',
   due_today: '#F29B8F',
   trial: '#9EBCE0',
   dialog: '#25282C',

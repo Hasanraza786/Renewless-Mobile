@@ -1,5 +1,5 @@
-import { sendAiMessage } from '../../api_services/ai-chat';
-import type { AiDraft, AiInput, AiReply } from '../../types';
+import { getAiUsage, sendAiMessage } from '../../api_services/ai-chat';
+import type { AiDraft, AiInput, AiReply, AiUsage } from '../../types';
 import { errorMessage } from '../../utils/errors';
 import type { AppThunk } from '../runRequest';
 
@@ -12,6 +12,19 @@ export function sendAiTurn(input: AiInput, draft: AiDraft | null): AppThunk<AiRe
       return await sendAiMessage(token, input, draft);
     } catch (caught) {
       return { error: errorMessage(caught) };
+    }
+  };
+}
+
+// Free messages left this month; null when it cannot be read (the composer stays usable and the server enforces the limit).
+export function loadAiUsage(): AppThunk<AiUsage | null> {
+  return async (_dispatch, getState) => {
+    const token = getState().constant.token;
+    if (!token) return null;
+    try {
+      return await getAiUsage(token);
+    } catch {
+      return null;
     }
   };
 }

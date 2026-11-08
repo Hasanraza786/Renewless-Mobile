@@ -72,6 +72,8 @@ export const MOCK_DATA = {
   ai_voice_transcript: 'I pay USD 9.99 monthly for Duolingo. My next renewal is 20 November 2026.',
   ai_receipt: { name: 'YouTube Premium', price: '13.99', currency: 'USD', cycle: 'Monthly', renews_in_days: 21 },
   ai_reply_ms: 1200,
+  // Free AI messages already used this month (limit 50): 12 → 38 left, 47 → low, 50 → limit reached.
+  ai_usage_used: 12,
   // Payments: 'receipts' lists home_receipts; 'none' reviews Payments · empty.
   payments_scenario: 'receipts' as 'receipts' | 'none',
   // Successful Gmail receipts as days before today; this_month ones are kept inside the current month.

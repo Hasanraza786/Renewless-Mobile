@@ -296,7 +296,10 @@ export type AiDraft = {
 // What the user sent: text, a recorded voice clip, or one image/PDF.
 export type AiInput = { kind: 'text'; text: string } | { kind: 'voice'; uri: string; duration_ms: number } | { kind: 'file'; uri: string; name: string; file_kind: 'image' | 'pdf' };
 
-export type AiReply = { reply: string; draft: AiDraft | null };
+// Free AI messages this calendar month (backend `usage`); resetsOn is the local YYYY-MM-DD of the next reset.
+export type AiUsage = { used: number; limit: number; remaining: number; resetsOn: string };
+
+export type AiReply = { reply: string; draft: AiDraft | null; usage: AiUsage };
 
 // One month of scheduled events (renewals and trial endings) with expected charges per currency.
 export type CalendarMonth = { month: string; today: string; events: HomeEvent[]; expected: MoneyTotal[] };

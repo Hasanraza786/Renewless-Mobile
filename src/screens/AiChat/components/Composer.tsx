@@ -114,7 +114,8 @@ export default function Composer({ chat }: Props) {
             <TextInput
               value={chat.text}
               onChangeText={chat.changeText}
-              placeholder="Message Loop…"
+              placeholder={chat.limit_reached ? `Free messages renew on ${chat.resets_label}` : 'Message Loop…'}
+              editable={!chat.limit_reached}
               placeholderTextColor={COLORS.text_secondary}
               multiline
               maxLength={2000}
@@ -125,7 +126,7 @@ export default function Composer({ chat }: Props) {
           {idle || recording ? (
             <RowView gap={SIZES.padding / 10}>
               {recording ? null : (
-                <RowView justify_content="center" accessibilityRole="button" accessibilityLabel="Attach an image or PDF" onPress={chat.openAttach} style={styles.icon_button}>
+                <RowView justify_content="center" accessibilityRole="button" accessibilityLabel="Attach an image or PDF" accessibilityState={{ disabled: chat.limit_reached }} disabled={chat.limit_reached} onPress={chat.openAttach} style={[styles.icon_button, chat.limit_reached && styles.send_disabled]}>
                   <Icons name={paperclip_icon} />
                 </RowView>
               )}
@@ -135,7 +136,8 @@ export default function Composer({ chat }: Props) {
                   accessibilityRole="button"
                   accessibilityLabel="Hold to record a voice message"
                   accessibilityHint="Release to send, slide left to cancel, slide up to lock"
-                  style={[styles.icon_button, recording && styles.mic_held, { transform: [{ translateX: drag.x }, { translateY: drag.y }, { scale: mic_scale }] }]}
+                  accessibilityState={{ disabled: chat.limit_reached }}
+                  style={[styles.icon_button, recording && styles.mic_held, chat.limit_reached && styles.send_disabled, { transform: [{ translateX: drag.x }, { translateY: drag.y }, { scale: mic_scale }] }]}
                   {...hold.panHandlers}>
                   <Icons name={recording ? mic_active_icon : mic_icon} />
                 </Animated.View>

@@ -266,6 +266,7 @@ Run each suite on at least: iPhone SE, iPhone 18 Pro Max, Pixel 8 and Pixel 8 at
 - Image (PNG/JPG/WebP ≤ 10 MB) and PDF (≤ 20 MB): attach sheet, chip, Remove, send.
   - Image preview opens full screen.
   - The PDF opens **view-only**. On iOS there must be no Markup and no "Lock PDF"; only Search, Share, Save to Files and Print. On Android it opens read-only in another app.
+- Free-message usage: the line under the header shows N of 50 left and drops by one per answered message (not for a failed send or its Retry); 10 or fewer turns amber; at 0 the line is coral, the composer is disabled with Free messages renew on [date], and Retry, the draft and Add still work. Real data: the server returns 429 `AI_MONTHLY_LIMIT` and resets on the 1st in the user's timezone.
 - Keyboard: the composer stays above the keyboard on iOS **and Android** (fixed 8 Nov). Test the multi-line composer up to 4 lines.
 - **Consent (App Store 5.1.2(i)):** on a fresh sign-in, opening AI chat shows Before you chat with Loop. Not now returns to the Add sheet on Home, List or Calendar and nothing is sent; How we use your data › shows the privacy notice; Agree and continue opens the chat. Turn off Settings › Use Google Gemini: AI chat asks again. Sign out and in with another account: it asks again. With real data, confirm no request reaches the AI endpoint before Agree.
 

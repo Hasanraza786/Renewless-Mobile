@@ -10,6 +10,16 @@ export const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingBottom: SIZES.padding * 0.75,
   },
+  // With the usage line the divider moves below it.
+  header_usage: {
+    borderBottomWidth: 0,
+    paddingBottom: SIZES.padding * 0.45,
+  },
+  usage: {
+    borderBottomColor: COLORS.composer_divider,
+    borderBottomWidth: 1,
+    paddingBottom: SIZES.padding / 2,
+  },
   list: {
     // Inverted list: flex-end keeps a short conversation at the top like the prototype.
     flexGrow: 1,

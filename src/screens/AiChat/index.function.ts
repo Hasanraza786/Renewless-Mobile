@@ -5,11 +5,11 @@ import { viewDocument } from '@react-native-documents/viewer';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { createSound } from 'react-native-nitro-sound';
 import { focusedTab, goBack, navigate } from '../../navigation/service';
-import { sendAiTurn } from '../../redux/actions/ai-action';
+import { loadAiUsage, sendAiTurn } from '../../redux/actions/ai-action';
 import { addSubscription } from '../../redux/actions/detail-action';
 import { setAiConsent } from '../../redux/slices/constant-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { AiDraft, AiInput, SubscriptionFormInput } from '../../types';
+import type { AiDraft, AiInput, AiUsage, SubscriptionFormInput } from '../../types';
 import { missingQuestion } from '../../utils/ai-draft';
 import { tapHaptic } from '../../utils/haptics';
 
@@ -44,6 +44,12 @@ const draftInput = (draft: AiDraft): SubscriptionFormInput => ({
   price_change: null,
 });
 
+// "1 Dec" from the local YYYY-MM-DD reset date.
+const usageDate = (iso: string) => {
+  const [year, month, day] = iso.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+};
+
 // Loop: one free chat for text, voice and one image/PDF. Nothing is saved until Add subscription.
 export default function useAiChat() {
   const dispatch = useAppDispatch();
@@ -64,6 +70,7 @@ export default function useAiChat() {
   const [playing, setPlaying] = useState<{ id: string; position_ms: number; duration_ms: number; paused: boolean } | null>(null);
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
   const [preview_uri, setPreviewUri] = useState<string | null>(null);
+  const [usage, setUsage] = useState<AiUsage | null>(null);
   const recorder = useRef(createSound()).current;
   const player = useRef(createSound()).current;
   const mounted = useRef(true);
@@ -80,9 +87,18 @@ export default function useAiChat() {
     };
   }, [player, recorder]);
 
+  // Free messages left this month (shown under the header); refreshed from every reply.
+  useEffect(() => {
+    dispatch(loadAiUsage()).then(value => mounted.current && value && setUsage(value));
+  }, [dispatch]);
+
   const has_failed = messages.some(message => message.failed);
   const busy = thinking || saving;
-  const can_send = !busy && !has_failed && (text.trim().length > 0 || !!attachment);
+  // No free messages left: new text, voice and files are blocked; Retry, the draft and Add keep working.
+  const limit_reached = usage?.remaining === 0;
+  const resets_label = usage ? usageDate(usage.resetsOn) : '';
+  const usage_state = !usage ? null : limit_reached ? 'out' : usage.remaining <= 10 ? 'low' : 'ok';
+  const can_send = !busy && !has_failed && !limit_reached && (text.trim().length > 0 || !!attachment);
   const missing = draft ? missingQuestion(draft) : null;
   const draft_status = added_id ? 'Added to your subscriptions' : saving ? 'Adding…' : thinking ? 'Updating details…' : missing ? 'A few details to finish' : 'Ready to add';
   const can_add = !!draft && !missing && !busy && !has_failed && !added_id;
@@ -97,8 +113,11 @@ export default function useAiChat() {
     setThinking(false);
     if ('error' in result) {
       setMessages(current => current.map(item => (item.id === message.id ? { ...item, failed: true } : item)));
+      // The send may have failed on the monthly limit; read the count again.
+      dispatch(loadAiUsage()).then(value => mounted.current && value && setUsage(value));
       return;
     }
+    setUsage(result.usage);
     setMessages(current => [...current.map(item => (item.id === message.id ? { ...item, failed: false } : item)), { id: messageId(), role: 'loop', input: null, text: result.reply, failed: false }]);
     if (result.draft) {
       // A new service after an added one starts a separate draft.
@@ -147,7 +166,7 @@ export default function useAiChat() {
   // so every stop waits for the start.
   const record_start = useRef<{ at: number; ready: Promise<boolean> } | null>(null);
   const startRecording = () => {
-    if (busy || has_failed || recording) return;
+    if (busy || has_failed || limit_reached || recording) return;
     recorder.setSubscriptionDuration(0.1);
     recorder.addRecordBackListener(meta => {
       if (!mounted.current) return;
@@ -262,6 +281,7 @@ export default function useAiChat() {
   };
 
   const openAttach = () => {
+    if (limit_reached) return;
     setAttachError('');
     setAttachOpen(true);
   };
@@ -326,6 +346,10 @@ export default function useAiChat() {
 
   return {
     ai_consent,
+    usage,
+    usage_state,
+    resets_label,
+    limit_reached,
     agreeConsent,
     declineConsent,
     openPrivacy,
