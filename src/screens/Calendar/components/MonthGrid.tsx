@@ -21,7 +21,8 @@ type Props = {
 // Distance-based, so a slow drag counts too; vertical drags stay with the scroll view.
 const SWIPE_DISTANCE = SIZES.padding * 2.5;
 
-const GAP = SIZES.padding / 4;
+// 8pt between day cells (widened from 5pt, user scoped unlock 7 November 2026).
+const GAP = SIZES.padding3;
 
 function WeekdayHeader() {
   return (
@@ -80,9 +81,10 @@ const styles = StyleSheet.create({
   cell_width: {
     flex: 1,
   },
+  // 46pt so the event label clears the bottom edge (was 42pt, 7 November 2026).
   cell: {
     flex: 1,
-    height: SIZES.padding * 2.1,
+    height: SIZES.padding * 2.3,
   },
   day: {
     backgroundColor: COLORS.surface_sunken,

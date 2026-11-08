@@ -18,6 +18,8 @@ export {
   google_icon,
   hint_icon,
   inbox_badge_icon,
+  nav_next_icon,
+  nav_prev_icon,
   offline_badge_icon,
   option_check_icon,
   remember_icon,

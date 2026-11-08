@@ -1,7 +1,7 @@
 import { useRef, type ComponentRef } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
-import { chevron_down_icon } from '../../assets/icons';
+import { chevron_down_icon, nav_next_icon, nav_prev_icon } from '../../assets/icons';
 import AddSheet from '../../components/AddSheet';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
@@ -56,8 +56,8 @@ export default function CalendarScreen() {
       <Header title="Calendar" onAdd={calendar.openAdd} />
       <ScrollView showsVerticalScrollIndicator={false} bounces={false} contentInsetAdjustmentBehavior="scrollableAxes" contentContainerStyle={styles.content}>
         <RowView gap={SIZES.padding * 0.35} style={styles.nav}>
-          <RowView justify_content="center" accessibilityRole="button" accessibilityLabel="Previous month" onPress={calendar.showPrevious} style={styles.nav_button}>
-            <CustomText text="‹" weight={FONTS.regular} size={SIZES.h3} line_height={null} />
+          <RowView justify_content="center" accessibilityRole="button" accessibilityLabel="Previous month" hitSlop={SIZES.padding3 / 2} onPress={calendar.showPrevious} style={styles.nav_button}>
+            <Icons name={nav_prev_icon} />
           </RowView>
           <View ref={heading_ref} collapsable={false} style={common_styles.flex_1}>
             <RowView justify_content="space-between" accessibilityRole="button" accessibilityLabel={`Choose month and year, ${monthTitle(calendar.month)}`} onPress={openPicker} style={styles.heading}>
@@ -65,10 +65,10 @@ export default function CalendarScreen() {
               <Icons name={chevron_down_icon} />
             </RowView>
           </View>
-          <RowView justify_content="center" accessibilityRole="button" accessibilityLabel="Next month" onPress={calendar.showNext} style={styles.nav_button}>
-            <CustomText text="›" weight={FONTS.regular} size={SIZES.h3} line_height={null} />
+          <RowView justify_content="center" accessibilityRole="button" accessibilityLabel="Next month" hitSlop={SIZES.padding3 / 2} onPress={calendar.showNext} style={styles.nav_button}>
+            <Icons name={nav_next_icon} />
           </RowView>
-          <RowView justify_content="center" accessibilityRole="button" accessibilityLabel="Today" onPress={calendar.showToday} style={[styles.nav_button, styles.today_button]}>
+          <RowView justify_content="center" accessibilityRole="button" accessibilityLabel="Today" hitSlop={SIZES.padding3 / 2} onPress={calendar.showToday} style={[styles.nav_button, styles.today_button]}>
             <CustomText text="Today" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
           </RowView>
         </RowView>
@@ -77,9 +77,9 @@ export default function CalendarScreen() {
           <StateView status={calendar.status === 'failed' ? 'failed' : 'loading'} message={calendar.status === 'failed' ? calendar.error : 'Loading calendar.'} onRetry={calendar.retry} />
         ) : (
           <>
-            <RowView gap={SIZES.padding2} style={styles.summary}>
+            <RowView gap={SIZES.padding3} style={styles.summary}>
               <SummaryWash />
-              <View style={common_styles.flex_1}>
+              <View>
                 <InfoTooltip
                   label="Expected this month"
                   paragraphs={[
@@ -87,13 +87,27 @@ export default function CalendarScreen() {
                     'Amounts in different currencies are shown separately. Records without renewal dates are excluded; estimated dates and future charges may change.',
                   ]}
                 />
-                <CustomText mt={SIZES.padding / 4} text={calendar.expected_text} weight={FONTS.medium} size={SIZES.h3} letter_spacing={-0.6} />
               </View>
-              <View style={styles.count}>
-                <CustomText text={String(calendar.event_count)} weight={FONTS.medium} color={COLORS.primary} size={SIZES.h3} letter_spacing={-0.6} />
-                <CustomText mt={SIZES.padding / 5} text={calendar.event_count === 1 ? 'event' : 'events'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-              </View>
+              <CustomText text={calendar.expected_text} weight={FONTS.medium} size={SIZES.lg} letter_spacing={-0.4} number_of_lines={1} align="right" style={common_styles.flex_1} />
+              <RowView gap={SIZES.padding / 5} style={styles.count}>
+                <CustomText text={String(calendar.event_count)} weight={FONTS.medium} color={COLORS.primary} size={SIZES.md} />
+                <CustomText text={calendar.event_count === 1 ? 'event' : 'events'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+              </RowView>
             </RowView>
+
+            <View style={styles.next}>
+              <RowView justify_content="space-between">
+                <CustomText text={nearest ? nearest.heading : 'All clear'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} letter_spacing={0.7} transform="uppercase" accessibility_role="header" />
+                {nearest ? <CustomText text={dateLabel(nearest.event.date)} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
+              </RowView>
+              {nearest ? (
+                <View style={styles.next_card}>
+                  <SubscriptionCard {...eventCardProps(nearest.event, calendar.today)} onPress={() => calendar.openDetail(nearest.event.subscription_id)} />
+                </View>
+              ) : (
+                <CustomText mt={SIZES.padding / 2} text="No upcoming renewals in this month." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} style={styles.all_clear} />
+              )}
+            </View>
 
             <View style={styles.board} accessibilityLabel={`${monthTitle(calendar.month)} renewal calendar`}>
               <MonthGrid month={calendar.month} today={calendar.today} events={calendar.events} onPressDate={calendar.pressDate} onSwipe={calendar.swipeMonth} />
@@ -112,19 +126,6 @@ export default function CalendarScreen() {
               </RowView>
             </RowView>
 
-            <View style={styles.next}>
-              <RowView justify_content="space-between">
-                <CustomText text={nearest ? nearest.heading : 'All clear'} size={SIZES.lg} accessibility_role="header" />
-                {nearest ? <CustomText text={dateLabel(nearest.event.date)} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
-              </RowView>
-              {nearest ? (
-                <View style={styles.next_card}>
-                  <SubscriptionCard {...eventCardProps(nearest.event, calendar.today)} onPress={() => calendar.openDetail(nearest.event.subscription_id)} />
-                </View>
-              ) : (
-                <CustomText mt={SIZES.padding / 2} text="No upcoming renewals in this month." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} style={styles.all_clear} />
-              )}
-            </View>
           </>
         )}
       </ScrollView>

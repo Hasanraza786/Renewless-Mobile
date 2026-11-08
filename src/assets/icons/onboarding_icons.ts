@@ -49,3 +49,7 @@ export const chevron_down_icon = `<svg stroke="${COLORS.text_primary}" width="18
 export const option_check_icon = `<svg stroke="${COLORS.primary}" width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m5 12 4 4 10-10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 export const calendar_icon = `<svg stroke="${COLORS.text_primary}" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="5" width="16" height="15" rx="2" stroke-width="1.8"/><path d="M4 10h16M8 3v4M16 3v4" stroke-width="1.8" stroke-linecap="round"/></svg>`;
+
+// Calendar month arrows (previous / next), drawn like the other chevrons so they sit centred on every platform.
+export const nav_prev_icon = `<svg stroke="${COLORS.text_primary}" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m15 6-6 6 6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+export const nav_next_icon = `<svg stroke="${COLORS.text_primary}" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="m9 6 6 6-6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
