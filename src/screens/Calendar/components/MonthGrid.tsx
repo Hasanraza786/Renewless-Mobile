@@ -60,7 +60,15 @@ function MonthGrid({ month, today, events, onPressDate, onSwipe }: Props) {
         onPress={() => onPressDate(date.dateString)}
         style={({ pressed }) => [styles.cell, styles.day, !!marker && styles.day_event, is_today && styles.day_today, pressed && common_styles.pressed]}>
         <CustomText text={String(date.day)} weight={FONTS.regular} size={SIZES.sm} />
-        <CustomText text={marker ? marker.label : '—'} weight={FONTS.regular} color={marker ? marker.color : COLORS.text_ghost} size={SIZES.xs} line_height={null} number_of_lines={1} />
+        <CustomText
+          text={marker ? marker.label : '—'}
+          weight={FONTS.regular}
+          color={marker ? marker.color : COLORS.text_ghost}
+          size={SIZES.xs}
+          line_height={null}
+          number_of_lines={1}
+          fit_width
+        />
       </Pressable>
     );
   };
@@ -92,8 +100,9 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.padding / 2,
     borderWidth: 1,
     justifyContent: 'space-between',
-    paddingHorizontal: SIZES.padding / 4,
-    paddingVertical: SIZES.padding * 0.3,
+    paddingHorizontal: SIZES.padding2 / 2,
+    paddingVertical: SIZES.padding3 / 2,
+    height: SIZES.padding * 2.5
   },
   day_event: {
     backgroundColor: COLORS.surface_accent,

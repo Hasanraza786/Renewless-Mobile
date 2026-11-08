@@ -26,6 +26,8 @@ type Props = {
   transform?: TextStyle['textTransform'];
   letter_spacing?: number;
   accessibility_role?: TextProps['accessibilityRole'];
+  // Single-line text shrinks (down to 70%) instead of truncating when its box is too narrow.
+  fit_width?: boolean;
 };
 
 function CustomText({
@@ -47,6 +49,7 @@ function CustomText({
   transform,
   letter_spacing,
   accessibility_role,
+  fit_width,
 }: Props) {
   const font_size = size ?? SIZES.md;
   const base_style = useMemo(
@@ -70,6 +73,8 @@ function CustomText({
   return (
     <Text
       numberOfLines={number_of_lines}
+      adjustsFontSizeToFit={fit_width}
+      minimumFontScale={fit_width ? 0.7 : undefined}
       accessibilityRole={accessibility_role}
       style={[base_style, style]}
       onLayout={onLayout}
