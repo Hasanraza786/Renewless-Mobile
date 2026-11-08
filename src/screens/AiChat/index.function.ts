@@ -162,28 +162,37 @@ export default function useAiChat() {
   const viewAdded = () => added_id && navigate('SubscriptionDetail', { id: added_id });
 
   // Voice (WhatsApp-style): hold to record, release to send, slide left to discard, slide up to lock
-  // hands-free with Delete / Pause / Send. A release can arrive before the recorder has started,
-  // so every stop waits for the start.
-  const record_start = useRef<{ at: number; ready: Promise<boolean> } | null>(null);
+  // hands-free with Delete / Pause / Send. Gesture callbacks can run before React re-renders, so the
+  // active recording lives in a ref; every stop waits for the start.
+  const record_start = useRef<{ at: number; started: boolean; elapsed_ms: number; ready: Promise<boolean> } | null>(null);
   const startRecording = () => {
-    if (busy || has_failed || limit_reached || recording) return;
+    if (busy || has_failed || limit_reached || record_start.current) return;
     recorder.setSubscriptionDuration(0.1);
     recorder.addRecordBackListener(meta => {
       if (!mounted.current) return;
       const level = meterLevel(meta.currentMetering);
-      setRecording(current => (current && !current.paused ? { ...current, elapsed_ms: meta.currentPosition, levels: [...current.levels, level].slice(-LIVE_BARS) } : current));
+      setRecording(current => {
+        if (!current || current.paused) return current;
+        if (record_start.current) record_start.current.elapsed_ms = meta.currentPosition;
+        return { ...current, elapsed_ms: meta.currentPosition, levels: [...current.levels, level].slice(-LIVE_BARS) };
+      });
     });
     tapHaptic();
     setRecording({ elapsed_ms: 0, locked: false, paused: false, levels: [] });
-    const ready = recorder.startRecorder(undefined, undefined, true).then(
-      () => true,
+    const start = { at: Date.now(), started: false, elapsed_ms: 0, ready: Promise.resolve(false) };
+    start.ready = recorder.startRecorder(undefined, undefined, true).then(
       () => {
+        start.started = true;
+        return true;
+      },
+      () => {
+        if (record_start.current === start) record_start.current = null;
         setRecording(null);
         setAttachError('Unable to record. Allow microphone access in Settings and try again.');
         return false;
       },
     );
-    record_start.current = { at: Date.now(), ready };
+    record_start.current = start;
   };
 
   // Stops the recorder and returns the clip, or null when nothing usable was recorded.
@@ -199,11 +208,16 @@ export default function useAiChat() {
   };
 
   const finishRecording = async () => {
-    const current = recording;
-    if (!current) return;
+    const start = record_start.current;
+    if (!start) return;
+    // Released before the recorder started (e.g. the microphone prompt took the gesture): discard, a fresh hold records.
+    if (!start.started) {
+      stopRecording().catch(() => undefined);
+      return;
+    }
     try {
       const clip = await stopRecording();
-      const duration_ms = current.elapsed_ms || (clip ? Date.now() - clip.at : 0);
+      const duration_ms = start.elapsed_ms || (clip ? Date.now() - clip.at : 0);
       if (!clip || duration_ms < 500) return;
       tapHaptic();
       submit({ kind: 'voice', uri: clip.uri, duration_ms }, '');
@@ -213,14 +227,14 @@ export default function useAiChat() {
   };
 
   const cancelRecording = () => {
-    if (!recording) return;
+    if (!record_start.current) return;
     tapHaptic();
     stopRecording().catch(() => undefined);
     setDiscarded(count => count + 1);
   };
 
   const lockRecording = () => {
-    if (!recording || recording.locked) return;
+    if (!record_start.current || recording?.locked) return;
     tapHaptic();
     setRecording(current => (current && !current.locked ? { ...current, locked: true } : current));
   };

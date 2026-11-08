@@ -221,9 +221,9 @@ export function RecoveryView({ gmail }: Props) {
         title={interrupted ? 'Your scan was interrupted.' : 'No new subscriptions found.'}
         copy={interrupted ? 'We couldn’t finish checking this inbox. Try again when your connection is ready.' : 'We didn’t find any new subscriptions or changes in this inbox.'}
       />
-      <CustomText mt={SIZES.padding2} text="Your saved subscriptions haven’t changed." weight={FONTS.regular} size={SIZES.sm} />
+      <CustomText mt={SIZES.padding2} text="Your saved subscriptions haven’t changed." weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
       <RowView accessibilityRole="button" onPress={interrupted ? gmail.openInboxes : gmail.addManually} style={styles.link}>
-        <CustomText text={interrupted ? 'Choose another inbox ›' : 'Add manually ›'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+        <CustomText text={interrupted ? 'Choose another inbox ›' : 'Add manually ›'} weight={FONTS.regular} size={SIZES.md} />
       </RowView>
     </>
   );

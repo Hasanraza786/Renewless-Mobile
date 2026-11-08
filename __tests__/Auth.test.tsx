@@ -107,6 +107,11 @@ test('password reset verifies a code, sets the new password and returns to Login
   const store = makeStore();
   const { navigation } = navigationMock();
   const forgot = await render(ForgotPasswordScreen, store, navigation);
+  // An unknown email stays on Forgot password with the field error.
+  await act(async () => { type(forgot, 'Email', 'nobody@example.com'); });
+  await act(async () => { press(forgot, 'Send code'); });
+  expect(navigation.navigate).not.toHaveBeenCalled();
+  expect(store.getState().auth.error.forgot).toBe('No account found with this email.');
   await act(async () => { type(forgot, 'Email', 'alex@example.com'); });
   await act(async () => { press(forgot, 'Send code'); });
   expect(navigation.navigate).toHaveBeenCalledWith('Otp', { purpose: 'reset', email: 'alex@example.com' });

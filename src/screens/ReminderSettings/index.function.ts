@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Linking } from 'react-native';
+import { useEffect, useRef, useState, type ComponentRef } from 'react';
+import { Linking, TextInput } from 'react-native';
 import { requestNotifications } from 'react-native-permissions';
 import { goBack } from '../../navigation/service';
 import { loadReminderSettings, previewApply, saveReminders } from '../../redux/actions/alerts-action';
@@ -20,6 +20,7 @@ export default function useReminderSettings() {
   const { permission, refresh } = useNotificationPermission();
   const [draft, setDraft] = useState<Draft | null>(null);
   const [custom_error, setCustomError] = useState('');
+  const custom_ref = useRef<ComponentRef<typeof TextInput>>(null);
   const [confirm, setConfirm] = useState<{ keep_custom: boolean; count: number | null } | null>(null);
 
   useEffect(() => {
@@ -78,6 +79,8 @@ export default function useReminderSettings() {
     const custom_days = Number(draft.custom);
     if (draft.push_enabled && draft.values.includes('custom') && (!/^\d+$/.test(draft.custom) || custom_days < 1 || custom_days > 365)) {
       setCustomError('Enter a whole number from 1 to 365 days.');
+      // First invalid field takes focus, which scrolls it above the pinned Save.
+      custom_ref.current?.focus();
       return;
     }
     if (draft.push_enabled && draft.scope === SCOPES[1]) {
@@ -108,6 +111,7 @@ export default function useReminderSettings() {
     timezone,
     device,
     custom_error,
+    custom_ref,
     confirm,
     update,
     toggleValue,

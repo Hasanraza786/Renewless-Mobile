@@ -3,12 +3,15 @@ import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 import { eye_icon, eye_off_icon } from '../../assets/icons';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
+import RowView from '../RowView';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import { styles } from './styles';
 
 type Props = TextInputProps & {
   label: string;
+  // Sheet variant: right-aligned note on the label line (e.g. USD · Monthly).
+  label_end?: string;
   error?: string;
   // Help text under the field, above any error (e.g. Use at least 8 characters.).
   hint?: string;
@@ -22,6 +25,7 @@ type Props = TextInputProps & {
 
 export default function InputField({
   label,
+  label_end,
   value,
   onChangeText,
   error,
@@ -41,13 +45,10 @@ export default function InputField({
   return (
     <View style={variant ? undefined : styles.wrap}>
       {variant ? (
-        <CustomText
-          text={label}
-          weight={FONTS.regular}
-          color={COLORS.text_secondary}
-          size={SIZES.sm}
-          mb={variant === 'auth' ? SIZES.padding * 0.45 : SIZES.padding * 0.3}
-        />
+        <RowView justify_content="space-between" style={variant === 'auth' ? styles.label_auth : styles.label_sheet}>
+          <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          {label_end ? <CustomText text={label_end} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
+        </RowView>
       ) : (
         <CustomText text={label} weight={FONTS.regular} size={SIZES.sm} mb={SIZES.padding3} />
       )}

@@ -135,7 +135,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
               <CustomText text={`Receipt inbox · ${record.inbox.email}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
               <CustomText
                 mt={SIZES.padding / 4}
-                text={`Last successful sync · ${new Date(record.inbox.last_sync).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · ${new Date(record.inbox.last_sync).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`}
+                text={record.inbox.disconnected ? 'Disconnected · no longer read' : `Last successful sync · ${new Date(record.inbox.last_sync).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · ${new Date(record.inbox.last_sync).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`}
                 weight={FONTS.regular}
                 color={COLORS.text_secondary}
                 size={SIZES.sm}
@@ -167,6 +167,9 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
         </RowView>
         <CustomText mt={SIZES.padding3} text={record.notes ?? 'No notes added yet.'} weight={FONTS.regular} color={record.notes ? COLORS.text_primary : COLORS.text_secondary} size={SIZES.sm} />
       </View>
+      {record.status === 'cancelled' ? (
+        <CustomText mt={SIZES.padding2} text="Recorded in Renewless. Your subscription must be cancelled with the service." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} />
+      ) : null}
     </ScrollView>
   );
 }

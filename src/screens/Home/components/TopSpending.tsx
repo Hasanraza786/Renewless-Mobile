@@ -12,7 +12,7 @@ export default function TopSpending({ home }: { home: HomeController }) {
     <View style={styles.panel}>
       <RowView justify_content="space-between">
         <CustomText text="Top spending" size={SIZES.lg} />
-        <Pressable accessibilityRole="button" accessibilityLabel="View all spending" onPress={home.openSpending} style={styles.view_all}>
+        <Pressable accessibilityRole="button" accessibilityLabel="View all spending" hitSlop={SIZES.padding3} onPress={home.openSpending} style={styles.view_all}>
           <CustomText text="View all ›" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
         </Pressable>
       </RowView>

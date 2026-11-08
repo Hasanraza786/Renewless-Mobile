@@ -29,7 +29,9 @@ export default function PaymentChart({ currency, year, months, inspect, page_sta
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ disabled }}
-      onPress={disabled ? undefined : () => onPage(start)}
+      // Always a Pressable, so the disabled arrow keeps its label and button role.
+      disabled={disabled}
+      onPress={() => onPage(start)}
       style={[styles.arrow, !disabled && styles.arrow_enabled]}>
       <CustomText text={glyph} weight={FONTS.regular} color={disabled ? COLORS.text_faint : COLORS.text_primary} size={SIZES.h3} line_height={null} />
     </RowView>

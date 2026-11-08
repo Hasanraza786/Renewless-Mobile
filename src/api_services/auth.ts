@@ -2,6 +2,7 @@ import { USE_MOCK_API } from '../config/api';
 import { MOCK_DATA } from '../config/mock-data';
 import type { AuthProvider, AuthResponse, Gender, Profile } from '../types';
 import { request } from './http';
+import { setMockAccount } from './subscription-store';
 
 // Development mock adapter: an isolated in-memory account repository; resetMockAuth restores it.
 type MockAccount = { id: string; name: string; email: string; password: string; verified: boolean; phone?: string; dateOfBirth?: string | null; gender?: Gender | null };
@@ -29,10 +30,13 @@ const mockUser = (account: MockAccount, provider: Profile['provider']): Profile 
   provider,
   hasPassword: provider === 'email',
 });
-const mockSession = (account: MockAccount, provider: Profile['provider'] = 'email'): AuthResponse => ({
-  token: `mock-${provider}-${account.id}`,
-  user: mockUser(account, provider),
-});
+const mockSession = (account: MockAccount, provider: Profile['provider'] = 'email'): AuthResponse => {
+  setMockAccount(account.id);
+  return {
+    token: `mock-${provider}-${account.id}`,
+    user: mockUser(account, provider),
+  };
+};
 function sessionAccount(token: string) {
   const [, provider, ...id] = token.split('-');
   const account = accounts.find(item => item.id === id.join('-'));
@@ -74,6 +78,8 @@ export async function verifySignupCode(email: string, code: string): Promise<Aut
 // Always succeeds for a well-formed email so the response never reveals whether an account exists.
 export async function forgotPassword(email: string): Promise<{ ok: true }> {
   if (!USE_MOCK_API) return request<{ ok: true }>('/auth/forgot-password', { method: 'POST', body: { email } });
+  // Decided 3 Nov 2026: an unknown email gets a field error (rate limits protect against probing).
+  if (!accounts.some(item => sameEmail(item.email, email))) throw new Error('No account found with this email.');
   code_sent_at[email.trim().toLowerCase()] = Date.now();
   return { ok: true };
 }

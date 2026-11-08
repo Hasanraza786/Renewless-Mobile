@@ -103,7 +103,7 @@ export function monthEvents(items: MockRecord[], month: string): HomeEvent[] {
     if (!item.next_date) continue;
     if (item.trial) {
       if (monthOf(item.next_date) === month) list.push(event(item, item.next_date, 'trial_end'));
-      continue;
+      if (!item.trial.auto_renew) continue;
     }
     // Start one cycle before the first occurrence that can fall in this month.
     const first =
@@ -115,6 +115,8 @@ export function monthEvents(items: MockRecord[], month: string): HomeEvent[] {
       if (date > month_end) break;
       if (monthOf(date) !== month) continue;
       if (index < 0 && (item.start_date ? date < item.start_date : index < -1)) continue;
+      // An auto-renewing trial charges at its end (the trial_end event), then renews every cycle after.
+      if (item.trial && index < 1) continue;
       list.push(event(item, date, 'renewal'));
     }
   }

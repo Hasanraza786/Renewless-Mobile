@@ -2,6 +2,9 @@ import { StyleSheet } from 'react-native';
 import { COLORS, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
+  label_row: {
+    marginBottom: SIZES.padding * 0.3,
+  },
   field: {
     backgroundColor: COLORS.card,
     borderColor: COLORS.field_border,

@@ -12,6 +12,8 @@ import RowView from '../RowView';
 
 type Props = {
   label: string;
+  // Right-aligned note on the label line (e.g. Optional).
+  label_end?: string;
   // Local calendar date as YYYY-MM-DD; null when not set.
   value: string | null;
   minimum?: string;
@@ -22,6 +24,7 @@ type Props = {
   error?: string;
   // 'time' picks a local HH:MM (form variant only); the value and onChange use HH:MM.
   mode?: 'date' | 'time';
+  disabled?: boolean;
 };
 
 const toDate = (iso: string) => {
@@ -32,7 +35,7 @@ const toIso = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 // Date input: sheets expand the native inline calendar below the field; the form variant opens a wheel sheet.
-export default function DateField({ label, value, minimum, maximum, onChange, variant, error, mode = 'date' }: Props) {
+export default function DateField({ label, label_end, value, minimum, maximum, onChange, variant, error, mode = 'date', disabled }: Props) {
   const [open, setOpen] = useState(false);
   // The form variant picks in a sheet and commits on Done; closing the sheet discards the draft.
   const [draft, setDraft] = useState<Date | null>(null);
@@ -60,11 +63,15 @@ export default function DateField({ label, value, minimum, maximum, onChange, va
 
   return (
     <View>
-      <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding * 0.3} />
+      <RowView justify_content="space-between" style={styles.label_row}>
+        <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        {label_end ? <CustomText text={label_end} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
+      </RowView>
       <RowView justify_content="space-between"
         accessibilityRole="button"
         accessibilityLabel={`${label}, ${value ? shown : 'not set'}`}
-        accessibilityState={{ expanded: open || !!draft }}
+        accessibilityState={{ expanded: open || !!draft, disabled: !!disabled }}
+        disabled={disabled}
         onPress={onPress}
         style={[styles.field, variant === 'form' && styles.field_form, !!error && styles.field_error, (open || !!draft) && styles.field_open]}>
         <CustomText text={shown} weight={FONTS.regular} color={value ? COLORS.text_primary : COLORS.text_secondary} size={SIZES.sm} />

@@ -19,6 +19,12 @@ const current = () => {
   return state;
 };
 
+// The mock connector as Detail sees it, so sync/disconnect show on every surface.
+export function mockInboxLink() {
+  const inbox = current();
+  return { email: MOCK_DATA.home_inbox.email, last_sync: inbox.last_sync, connected: inbox.connected };
+}
+
 export function resetMockInbox() {
   state = null;
 }

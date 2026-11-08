@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Image, PanResponder, TextInput, View } from 'react-native';
-import { close_small_icon, image_icon, mic_active_icon, mic_icon, paperclip_icon, pdf_icon, send_icon } from '../../../assets/icons';
+import { chevron_right_icon, close_small_icon, image_icon, mic_active_icon, mic_icon, paperclip_icon, pdf_icon, send_icon } from '../../../assets/icons';
 import AppSheet from '../../../components/AppSheet';
 import CustomText from '../../../components/CustomText';
 import Icons from '../../../components/Icons';
@@ -18,17 +18,23 @@ const LOCK_DISTANCE = SIZES.padding * 4;
 
 // Exactly two choices; the native pickers scope access to the one chosen file.
 export function AttachSheet({ chat }: Props) {
-  const option = (label: string, icon: string, onPress: () => void) => (
-    <RowView gap={SIZES.padding2} accessibilityRole="button" onPress={onPress} style={styles.attach_option}>
-      <Icons name={icon} />
-      <CustomText text={label} weight={FONTS.medium} size={SIZES.md} />
+  const option = (label: string, note: string, icon: string, onPress: () => void) => (
+    <RowView gap={SIZES.padding2} accessibilityRole="button" accessibilityLabel={`${label}. ${note}`} onPress={onPress} style={styles.attach_option}>
+      <View style={styles.attach_tile}>
+        <Icons name={icon} />
+      </View>
+      <View style={common_styles.flex_1}>
+        <CustomText text={label} weight={FONTS.medium} size={SIZES.md} />
+        <CustomText mt={SIZES.padding / 4} text={note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} />
+      </View>
+      <Icons name={chevron_right_icon} />
     </RowView>
   );
   return (
-    <AppSheet visible={chat.attach_open} title="Attach a file" onClose={chat.closeAttach} onDismiss={chat.onAttachDismiss}>
+    <AppSheet visible={chat.attach_open} title="Attach a file" subtitle="Share a receipt, invoice or bank statement." onClose={chat.closeAttach} onDismiss={chat.onAttachDismiss}>
       <View style={styles.attach_options}>
-        {option('Image', image_icon, chat.pickImage)}
-        {option('PDF document', pdf_icon, chat.pickPdf)}
+        {option('Image', 'Choose a photo or screenshot', image_icon, chat.pickImage)}
+        {option('PDF document', 'Receipts, invoices and bank statements', pdf_icon, chat.pickPdf)}
       </View>
     </AppSheet>
   );
@@ -42,6 +48,8 @@ export default function Composer({ chat }: Props) {
   const drag = useRef(new Animated.ValueXY()).current;
   const mic_scale = useRef(new Animated.Value(1)).current;
   const handled = useRef(false);
+  // iOS keeps a multiline input tall after it is cleared, so its height follows the content.
+  const [input_height, setInputHeight] = useState(0);
   const holding = !!chat.recording && !chat.recording.locked;
 
   useEffect(() => {
@@ -78,15 +86,17 @@ export default function Composer({ chat }: Props) {
         handled.current = true;
         settle();
       },
+      // A lost gesture (system prompt, call) discards instead of sending.
       onPanResponderTerminate: () => {
-        if (!handled.current) latest.current.finishRecording();
+        if (!handled.current) latest.current.cancelRecording();
         handled.current = true;
         settle();
       },
       onPanResponderTerminationRequest: () => false,
     });
   }, [drag]);
-  const idle = !chat.text.trim() && !chat.attachment;
+  // At the limit a half-typed draft is set aside so the renew placeholder and disabled icons show.
+  const idle = chat.limit_reached || (!chat.text.trim() && !chat.attachment);
   const recording = chat.recording;
 
   return (
@@ -112,7 +122,7 @@ export default function Composer({ chat }: Props) {
             <HoldBar chat={chat} drag_x={drag.x} />
           ) : (
             <TextInput
-              value={chat.text}
+              value={chat.limit_reached ? '' : chat.text}
               onChangeText={chat.changeText}
               placeholder={chat.limit_reached ? `Free messages renew on ${chat.resets_label}` : 'Message Loop…'}
               editable={!chat.limit_reached}
@@ -120,7 +130,8 @@ export default function Composer({ chat }: Props) {
               multiline
               maxLength={2000}
               accessibilityLabel="Message Loop"
-              style={[styles.input, styles.input_text, { fontFamily: FONTS.regular }]}
+              onContentSizeChange={event => setInputHeight(event.nativeEvent.contentSize.height)}
+              style={[styles.input, styles.input_text, { fontFamily: FONTS.regular }, input_height ? { height: input_height } : null]}
             />
           )}
           {idle || recording ? (

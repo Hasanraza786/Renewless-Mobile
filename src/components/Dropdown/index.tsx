@@ -14,6 +14,7 @@ type Single<T extends string> = {
   options: readonly T[];
   onChange: (value: T) => void;
   multiple?: false;
+  disabled?: boolean;
 };
 
 // Multi-select keeps the menu open; the screen owns the selection rules (exclusive/preset values).
@@ -25,6 +26,7 @@ type Multiple = {
   // Trigger text summarising the selection.
   display: string;
   onToggle: (value: string) => void;
+  disabled?: boolean;
 };
 
 type Frame = { x: number; y: number; width: number; height: number };
@@ -59,7 +61,8 @@ export default function Dropdown<T extends string>(props: Single<T> | Multiple) 
         ref={control_ref}
         accessibilityRole="button"
         accessibilityLabel={`${props.label}, ${display}`}
-        accessibilityState={{ expanded: !!frame }}
+        accessibilityState={{ expanded: !!frame, disabled: !!props.disabled }}
+        disabled={props.disabled}
         onPress={open}
         style={styles.control}>
         <CustomText text={display} weight={FONTS.regular} size={SIZES.sm} number_of_lines={1} />

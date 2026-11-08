@@ -24,7 +24,7 @@ export default function OtpScreen({ route }: Props) {
       <View style={styles.destination}>
         <CustomText text="Code sent to" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         <CustomText mt={SIZES.padding3} text={otp.email} size={SIZES.sm} />
-        <Pressable accessibilityRole="button" onPress={otp.onBack} style={styles.change_email}>
+        <Pressable accessibilityRole="button" hitSlop={SIZES.padding3} onPress={otp.onBack} style={styles.change_email}>
           <CustomText text="Change email" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
         </Pressable>
       </View>

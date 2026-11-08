@@ -33,7 +33,8 @@ export default function GmailScanScreen({ route }: { route: GmailScanRoute }) {
         <StateView status="loading" message="Getting your inbox ready." />
       ) : (
         <>
-          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
+          {/* Keyed by phase so each state (e.g. Review after scanning) opens at the top. */}
+          <ScrollView key={gmail.phase} showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
             <InboxSwitch gmail={gmail} />
             {gmail.phase === 'scanning' ? <ScanningView gmail={gmail} /> : gmail.phase === 'review' ? <ReviewView gmail={gmail} /> : <RecoveryView gmail={gmail} />}
           </ScrollView>

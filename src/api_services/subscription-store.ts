@@ -11,6 +11,12 @@ let records: SubscriptionRecord[] | null = null;
 let removed = new Map<string, SubscriptionRecord>();
 let built_for = '';
 let reminder_settings: ReminderSettings | null = null;
+// Only the fixture account owns the fixture dataset; any other mock account starts empty.
+let account_id: string = MOCK_DATA.auth_accounts[0].id;
+
+export function setMockAccount(id: string) {
+  account_id = id;
+}
 
 type Fixture = (typeof MOCK_DATA.home_subscriptions)[number] & {
   price_history?: readonly { id: string; from_amount: string; to_amount: string; effective_in_days: number; source: 'user' | 'gmail' }[];
@@ -116,9 +122,10 @@ export const findRemoved = (id: string) => removed.get(id) ?? null;
 export function allRecords(): SubscriptionRecord[] {
   const today = localToday();
   const imported = importedRecords().length;
-  const key = `${today}:${imported}`;
+  const key = `${today}:${imported}:${account_id}`;
   if (!records || built_for !== key) {
-    records = imported ? fromImported(today) : MOCK_DATA.home_scenario === 'empty' ? [] : (MOCK_DATA.home_subscriptions as readonly Fixture[]).map(item => fromFixture(item, today));
+    const fixture_owner = account_id === MOCK_DATA.auth_accounts[0].id;
+    records = imported ? fromImported(today) : MOCK_DATA.home_scenario === 'empty' || !fixture_owner ? [] : (MOCK_DATA.home_subscriptions as readonly Fixture[]).map(item => fromFixture(item, today));
     built_for = key;
   }
   return records;

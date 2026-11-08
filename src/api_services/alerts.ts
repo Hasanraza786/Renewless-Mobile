@@ -7,6 +7,8 @@ import { request } from './http';
 import { accountReminderSettings, allRecords, findRemoved, setAccountReminderSettings, updateRecord } from './subscription-store';
 
 const mockDelay = () => new Promise<void>(resolve => setTimeout(resolve, 350));
+// A sent alert keeps the amount it was sent with, even if the price changes later.
+const sent_amounts = new Map<string, { amount: string; currency: string }>();
 
 // Only server-confirmed sent reminders, newest first.
 export async function listAlerts(token: string): Promise<SentAlert[]> {
@@ -21,7 +23,11 @@ export async function listAlerts(token: string): Promise<SentAlert[]> {
     const [hours, minutes] = item.time.split(':').map(Number);
     const sent = new Date(`${addDays(today, -item.sent_days_ago)}T00:00:00`);
     sent.setHours(hours, minutes);
-    return [{ id: item.id, subscription_id: record.id, platform_id: record.platform_id, name: record.name, kind: item.kind, event_date: addDays(today, item.event_in_days), amount: record.price, currency: record.currency, sent_at: sent.toISOString(), subscription_available: current.has(record.id) }];
+    // Not sent yet (e.g. today's 09:00 before 09:00).
+    if (sent.getTime() > Date.now()) return [];
+    if (!sent_amounts.has(item.id)) sent_amounts.set(item.id, { amount: record.price, currency: record.currency });
+    const { amount, currency } = sent_amounts.get(item.id)!;
+    return [{ id: item.id, subscription_id: record.id, platform_id: record.platform_id, name: record.name, kind: item.kind, event_date: addDays(today, item.event_in_days), amount, currency, sent_at: sent.toISOString(), subscription_available: current.has(record.id) }];
   });
 }
 

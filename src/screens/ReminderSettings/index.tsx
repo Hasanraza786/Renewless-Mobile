@@ -1,3 +1,4 @@
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
 import { check_dark_icon, device_bell_icon, switch_off_icon, switch_on_icon } from '../../assets/icons';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -20,10 +21,11 @@ import useReminderSettings, { SCOPES, type ReminderSettingsController } from './
 import { styles } from './styles';
 
 const DEVICE = {
-  allowed: { text: 'Allowed on this device', action: 'Manage ↗\uFE0E' },
-  blocked: { text: 'Off · permission needed', action: 'Enable ↗\uFE0E' },
-  not_asked: { text: 'Not allowed yet', action: 'Enable ↗\uFE0E' },
-  unavailable: { text: 'Not available on this device', action: '' },
+  allowed: { text: 'Allowed on this device', action: 'Manage ↗\uFE0E', action_label: 'Open device notification settings' },
+  blocked: { text: 'Off · permission needed', action: 'Enable ↗\uFE0E', action_label: 'Open device notification settings' },
+  // Not asked yet: Enable shows the system permission prompt, not Settings.
+  not_asked: { text: 'Not allowed yet', action: 'Enable ↗\uFE0E', action_label: 'Allow notifications' },
+  unavailable: { text: 'Not available on this device', action: '', action_label: '' },
 };
 
 function Toggle({ label, copy, value, disabled, divider, onPress }: { label: string; copy: string; value: boolean; disabled?: boolean; divider?: boolean; onPress: () => void }) {
@@ -74,6 +76,8 @@ function ApplyDialog({ settings }: { settings: ReminderSettingsController }) {
 // Account reminder defaults; the master switch pauses everything without erasing schedules or history.
 export default function ReminderSettingsScreen() {
   const settings = useReminderSettings();
+  // The keyboard offset is measured from the safe area, below the status bar.
+  const insets = useSafeAreaInsets();
   const draft = settings.draft;
   const off = !!draft && !draft.push_enabled;
   const device = settings.device ? DEVICE[settings.device] : null;
@@ -84,7 +88,7 @@ export default function ReminderSettingsScreen() {
       {settings.status !== 'ready' || !draft ? (
         <StateView status={settings.status === 'failed' ? 'failed' : 'loading'} message={settings.status === 'failed' ? settings.load_error : 'Loading reminder settings.'} onRetry={settings.retry} />
       ) : (
-        <KeyboardAvoidingView behavior="padding" style={common_styles.flex_1}>
+        <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={insets.top} style={common_styles.flex_1}>
           <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={styles.content}>
             <CustomText text="A little heads-up, on your terms." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
             <View style={[styles.group, styles.first_group]}>
@@ -97,18 +101,18 @@ export default function ReminderSettingsScreen() {
             </View>
             <SectionLabel text="YOUR DEFAULTS" />
             <View pointerEvents={off ? 'none' : 'auto'} style={[styles.group, styles.defaults, off && styles.disabled]}>
-              <Dropdown multiple label="Remind me" values={draft.values} items={ACCOUNT_REMINDER_ITEMS} display={settings.display} onToggle={settings.toggleValue} />
+              <Dropdown multiple disabled={off} label="Remind me" values={draft.values} items={ACCOUNT_REMINDER_ITEMS} display={settings.display} onToggle={settings.toggleValue} />
               {draft.values.includes('custom') ? (
                 <>
                   <SizedBox height={SIZES.padding * 0.65} />
-                  <InputField variant="form" label="Days before the event" value={draft.custom} onChangeText={settings.updateCustom} keyboardType="number-pad" error={settings.custom_error || undefined} />
+                  <InputField ref={settings.custom_ref} variant="form" label="Days before the event" value={draft.custom} editable={!off} onChangeText={settings.updateCustom} keyboardType="number-pad" error={settings.custom_error || undefined} />
                 </>
               ) : null}
               <SizedBox height={SIZES.padding * 0.65} />
-              <DateField variant="form" mode="time" label="Reminder time" value={draft.time} onChange={value => settings.update('time', value)} />
+              <DateField variant="form" mode="time" disabled={off} label="Reminder time" value={draft.time} onChange={value => settings.update('time', value)} />
               <CustomText mt={SIZES.padding * 0.35} text={`Local time · ${settings.timezone}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
               <SizedBox height={SIZES.padding * 0.6} />
-              <Dropdown label="Apply default timing to" value={draft.scope} options={SCOPES} onChange={value => settings.update('scope', value)} />
+              <Dropdown disabled={off} label="Apply default timing to" value={draft.scope} options={SCOPES} onChange={value => settings.update('scope', value)} />
               <CustomText mt={SIZES.padding / 2} text="Custom subscription reminders stay as you set them." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
             </View>
             {device ? (
@@ -119,7 +123,7 @@ export default function ReminderSettingsScreen() {
                   <CustomText mt={SIZES.padding / 4} text={device.text} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
                 </View>
                 {device.action ? (
-                  <RowView accessibilityRole="button" accessibilityLabel="Open device notification settings" onPress={settings.openDevice} style={styles.device_action}>
+                  <RowView accessibilityRole="button" accessibilityLabel={device.action_label} onPress={settings.openDevice} style={styles.device_action}>
                     <CustomText text={device.action} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
                   </RowView>
                 ) : null}

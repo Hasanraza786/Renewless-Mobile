@@ -3,6 +3,7 @@ import { MOCK_DATA } from '../config/mock-data';
 import type { ReminderPreference, SubscriptionFormInput, ScanCycle, SubscriptionDetail, SubscriptionRecord } from '../types';
 import { localToday } from '../utils/dates';
 import { request } from './http';
+import { mockInboxLink } from './inbox';
 import { accountReminderSettings, addRecord, allReceipts, allRecords, findRecord, removeRecord, restoreRecord, updateRecord } from './subscription-store';
 
 // ---- Tracked subscription Detail and related operations (mock adapter in development). ----
@@ -14,8 +15,10 @@ function detailFor(record: SubscriptionRecord): SubscriptionDetail {
   const receipts = allReceipts().filter(item => item.subscription_id === record.id && item.paid_on <= today);
   const totals = new Map<string, number>();
   for (const item of receipts) totals.set(item.currency, (totals.get(item.currency) ?? 0) + Math.round(Number(item.amount) * 100));
+  const link = mockInboxLink();
+  const inbox = record.inbox && record.inbox.email === link.email ? { ...record.inbox, last_sync: link.last_sync ?? record.inbox.last_sync, disconnected: !link.connected } : record.inbox;
   return {
-    record,
+    record: { ...record, inbox },
     today,
     receipts: { totals: [...totals].map(([currency, amount]) => ({ currency, amount: (amount / 100).toFixed(2) })), count: receipts.length },
     annual_estimate: ((Math.round(Number(record.price) * 100) * ANNUAL_FACTOR[record.cycle]) / 100).toFixed(2),

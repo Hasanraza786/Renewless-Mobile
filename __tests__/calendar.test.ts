@@ -39,3 +39,12 @@ test('month events clamp month ends and stop at the start date', () => {
   expect(monthEvents(items, '2026-10').map(item => item.id)).toEqual(['unknown-start:2026-10-10']);
   expect(monthEvents(items, '2026-09')).toEqual([]);
 });
+
+test('an auto-renewing trial ends, then renews every cycle; a trial without auto-renew only ends', () => {
+  const base = { platform_id: 'x', name: 'x', plan: null, price: '11.99', currency: 'USD', estimated: false, cycle: 'Monthly' as const, next_date: '2026-11-13', start_date: '2026-10-14' };
+  const on = { ...base, id: 'on', trial: { auto_renew: true } };
+  const off = { ...base, id: 'off', trial: { auto_renew: false } };
+  expect(monthEvents([on, off], '2026-11').map(item => `${item.id}:${item.kind}`)).toEqual(['off:2026-11-13:trial_end', 'on:2026-11-13:trial_end']);
+  expect(monthEvents([on, off], '2026-12').map(item => `${item.id}:${item.kind}`)).toEqual(['on:2026-12-13:renewal']);
+  expect(monthEvents([on, off], '2026-10')).toEqual([]);
+});

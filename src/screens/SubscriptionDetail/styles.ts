@@ -85,8 +85,13 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding * 0.75,
     paddingVertical: SIZES.padding * 0.65,
   },
+  // The divider spans the full width, past the screen's edge padding.
   actions: {
+    borderTopColor: COLORS.line_faint,
+    borderTopWidth: 1,
+    marginHorizontal: -SIZES.padding,
     paddingBottom: SIZES.padding2,
+    paddingHorizontal: SIZES.padding,
     paddingTop: SIZES.padding2,
   },
   action: {

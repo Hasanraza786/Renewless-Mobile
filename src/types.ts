@@ -184,7 +184,8 @@ export type SubscriptionRecord = {
   access_until: string | null;
   start_date: string | null;
   source: { kind: 'manual' | 'gmail'; email: string };
-  inbox: { email: string; last_sync: string } | null;
+  // disconnected: the inbox was disconnected; the source still names it (Profile contract).
+  inbox: { email: string; last_sync: string; disconnected?: boolean } | null;
   reminder: ReminderPreference;
   notes: string | null;
   manage_url: string | null;

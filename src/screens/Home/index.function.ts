@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AccessibilityInfo } from 'react-native';
+import { AccessibilityInfo, AppState } from 'react-native';
 import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { loadDashboard } from '../../redux/actions/dashboard-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -20,10 +20,20 @@ export default function useHome(route: HomeRoute) {
   const [widget_prompt, setWidgetPrompt] = useState<'closed' | 'prompt' | 'video'>('closed');
   const widget_checked = useRef(false);
 
-  // Refresh on every visit; a usable snapshot stays on screen while it reloads.
+  // Refresh on every visit, on returning to the app and at local midnight (dates are relative to today);
+  // a usable snapshot stays on screen while it reloads.
   useFocusEffect(
     useCallback(() => {
-      dispatch(loadDashboard());
+      const reload = () => dispatch(loadDashboard());
+      reload();
+      const app_state = AppState.addEventListener('change', state => state === 'active' && reload());
+      const now = new Date();
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1).getTime() - now.getTime();
+      const timer = setTimeout(reload, midnight + 1000);
+      return () => {
+        app_state.remove();
+        clearTimeout(timer);
+      };
     }, [dispatch]),
   );
 

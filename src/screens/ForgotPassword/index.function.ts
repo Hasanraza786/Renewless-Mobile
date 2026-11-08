@@ -9,7 +9,7 @@ export default function useForgotPassword() {
   const error = useAppSelector(state => state.auth.error.forgot);
   const form = useAuthForm(['email']);
 
-  // The response is the same whether or not the account exists.
+  // An unknown email stays here with the error under Email.
   const onSubmit = async () => {
     if (loading || !form.validateAll()) return;
     const email = form.form_data.email.trim();

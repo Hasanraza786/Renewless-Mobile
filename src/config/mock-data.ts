@@ -60,10 +60,11 @@ export const MOCK_DATA = {
   // Alerts: 'sent' lists sent_alerts; 'empty' reviews Alerts · empty.
   alerts_scenario: 'sent' as 'sent' | 'empty',
   // Reminders the server sent: days before today and the local send time, with the event day offset from today.
+  // Event offsets match the records' schedules (Netflix: the previous cycle, 30 days before its next renewal).
   sent_alerts: [
-    { id: 'alert-netflix', subscription_id: 'sub-netflix-standard', kind: 'renewal', sent_days_ago: 0, event_in_days: 0, time: '09:00' },
+    { id: 'alert-netflix', subscription_id: 'sub-netflix-standard', kind: 'renewal', sent_days_ago: 24, event_in_days: -21, time: '09:00' },
     { id: 'alert-spotify', subscription_id: 'sub-spotify', kind: 'trial_end', sent_days_ago: 1, event_in_days: 4, time: '09:00' },
-    { id: 'alert-icloud', subscription_id: 'sub-icloud', kind: 'renewal', sent_days_ago: 3, event_in_days: 3, time: '09:00' },
+    { id: 'alert-icloud', subscription_id: 'sub-icloud', kind: 'renewal', sent_days_ago: 2, event_in_days: 5, time: '09:00' },
   ] as const,
   // Authenticated Gmail scan: 'found' returns the review results; 'nothing' finds nothing new; 'interrupted' fails mid-scan.
   gmail_scan_scenario: 'found' as 'found' | 'nothing' | 'interrupted',

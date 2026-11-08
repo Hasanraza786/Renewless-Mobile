@@ -103,7 +103,7 @@ function CancelSheet({ view, detail }: Props) {
     <AppSheet visible title={`Mark ${name} as cancelled?`} subtitle="Record your cancellation details." onClose={detail.close}>
       <DateField label="Cancellation date" value={cancelled_on} maximum={detail.today} onChange={value => { setCancelledOn(value); setError(''); }} />
       <SizedBox height={SIZES.padding2} />
-      <DateField label="Access until · Optional" value={access_until} minimum={cancelled_on} onChange={value => { setAccessUntil(value); setError(''); }} />
+      <DateField label="Access until" label_end="Optional" value={access_until} minimum={cancelled_on} onChange={value => { setAccessUntil(value); setError(''); }} />
       {error ? <CustomText mt={SIZES.padding * 0.35} text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} /> : null}
       {access_until && daysBetween(detail.today, access_until) >= 0 ? (
         <RowView gap={SIZES.padding2} accessibilityRole="checkbox" accessibilityState={{ checked: remind }} onPress={() => setRemind(!remind)} style={styles.check_row}>
@@ -166,8 +166,8 @@ function ResumeSheet({ view, detail }: Props) {
   };
 
   return (
-    <AppSheet visible title={record.plan ? `${record.name} · ${record.plan}` : record.name} subtitle="Track this subscription again." onClose={detail.close}>
-      <InputField variant="sheet" label={`Amount · ${record.currency} · ${record.cycle}`} value={price} onChangeText={value => { setPrice(value); setErrors({ ...errors, price: undefined }); }} keyboardType="decimal-pad" error={errors.price} />
+    <AppSheet visible title={`Track ${record.name} again`} subtitle="Review your details before resuming." onClose={detail.close}>
+      <InputField variant="sheet" label="Amount" label_end={`${record.currency} · ${record.cycle}`} value={price} onChangeText={value => { setPrice(value); setErrors({ ...errors, price: undefined }); }} keyboardType="decimal-pad" error={errors.price} />
       <SizedBox height={SIZES.padding2} />
       <DateField label="Next renewal" value={next_date} minimum={detail.today} onChange={value => { setNextDate(value); setErrors({ ...errors, date: undefined }); }} />
       {errors.date ? <CustomText mt={SIZES.padding * 0.35} text={errors.date} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} /> : null}
@@ -177,6 +177,7 @@ function ResumeSheet({ view, detail }: Props) {
           <Dropdown label="Reminder" value={timing} options={options} onChange={setReminder} />
         </>
       ) : null}
+      <CustomText mt={SIZES.padding2} text={`This resumes tracking in Renewless. Reactivate your subscription with ${record.name} separately.`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       <SaveError detail={detail} />
       <CustomButton variant="primary" text="Resume tracking" busy={detail.saving} disabled={detail.saving} onPress={save} style={styles.sheet_button} />
     </AppSheet>

@@ -2,6 +2,12 @@ import { StyleSheet } from 'react-native';
 import { COLORS, fonts, SIZES } from '../../constants/theme';
 
 export const styles = StyleSheet.create({
+  label_auth: {
+    marginBottom: SIZES.padding * 0.45,
+  },
+  label_sheet: {
+    marginBottom: SIZES.padding * 0.3,
+  },
   wrap: {
     marginBottom: SIZES.padding3 * 2,
   },

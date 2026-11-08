@@ -25,6 +25,8 @@ export default function CustomButton({ text, onPress, disabled, variant, style, 
         accessibilityState={{ disabled: !!disabled, busy: !!busy }}
         disabled={disabled || busy}
         onPress={onPress}
+        // Text links stay visually compact but get a 44pt touch target.
+        hitSlop={variant === 'link' ? SIZES.padding2 : undefined}
         style={({ pressed }) => [
           styles[variant],
           style,

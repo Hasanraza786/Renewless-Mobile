@@ -60,7 +60,8 @@ export function detailView({ record, today, receipts, annual_estimate, related_c
     event,
     billing_title: in_trial || trial_ended ? 'Trial & billing' : 'Renewal & billing',
     trial_end: record.trial ? dateLabel(record.trial.end_date) : null,
-    auto_renew: record.auto_renew === null ? 'Not set' : record.auto_renew ? 'On' : 'Off',
+    // Inactive records (cancelled, expired, trial ended) no longer renew.
+    auto_renew: cancelled || trial_ended ? 'Off' : record.auto_renew === null ? 'Not set' : record.auto_renew ? 'On' : 'Off',
     reminder,
     remaining,
     event_date,
@@ -77,7 +78,7 @@ export function detailView({ record, today, receipts, annual_estimate, related_c
       ? `${latest.currency} ${latest.from_amount} · ${latest.from_cycle} → ${latest.currency} ${latest.to_amount} · ${latest.to_cycle}`
       : 'No price changes recorded',
     source: record.source.kind === 'gmail'
-      ? { title: 'Scanned inbox', badge: 'Found in Gmail', caption: 'The connected inbox this subscription was found in.' }
+      ? { title: 'Scanned inbox', badge: 'Found in Gmail', caption: record.inbox?.disconnected ? 'The inbox this subscription was found in. It is now disconnected.' : 'The connected inbox this subscription was found in.' }
       : { title: 'Added under', badge: 'Added manually', caption: 'Your Renewless account when this subscription was added.' },
     related: related_count ? `${related_count} other subscription${related_count === 1 ? '' : 's'}` : null,
     related_count,

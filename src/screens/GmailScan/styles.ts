@@ -145,10 +145,16 @@ export const styles = StyleSheet.create({
   duplicate_row: {
     paddingVertical: SIZES.padding3,
   },
+  // Bordered secondary action on the recovery screens.
   link: {
     alignSelf: 'flex-start',
+    backgroundColor: COLORS.surface_quiet_button,
+    borderColor: COLORS.line_quiet_button,
+    borderRadius: SIZES.padding2,
+    borderWidth: 1,
     marginTop: SIZES.padding * 0.8,
     minHeight: SIZES.padding * 2.2,
+    paddingHorizontal: SIZES.padding * 0.9,
   },
   footer: {
     borderTopColor: COLORS.line_quiet,

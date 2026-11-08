@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
   link: {
     alignSelf: 'center',
     paddingHorizontal: SIZES.padding * 0.3,
-    paddingVertical: 1,
+    paddingVertical: SIZES.padding / 20,
   },
   pressed_variant: {
     opacity: 0.85,

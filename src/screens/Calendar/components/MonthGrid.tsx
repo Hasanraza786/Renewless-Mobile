@@ -52,11 +52,14 @@ function MonthGrid({ month, today, events, onPressDate, onSwipe }: Props) {
     const on_date = events.filter(event => event.date === date.dateString);
     const marker = dayMarker(on_date, date.dateString, today);
     const is_today = date.dateString === today;
-    const trial = on_date.some(event => event.kind === 'trial_end');
+    // Spoken like the cell: trials say trial, other events say due.
+    const trials = on_date.filter(event => event.kind === 'trial_end').length;
+    const due = on_date.length - trials;
+    const spoken = [due ? `${due} due` : '', trials ? `${trials} trial${trials === 1 ? '' : 's'} ending` : ''].filter(Boolean).join(', ') || 'nothing due';
     return (
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={`${dateLabel(date.dateString)}, ${on_date.length} renewal${on_date.length === 1 ? '' : 's'}${trial ? ', includes trial ending' : ''}${is_today ? ', today' : ''}`}
+        accessibilityLabel={`${dateLabel(date.dateString)}, ${spoken}${is_today ? ', today' : ''}`}
         onPress={() => onPressDate(date.dateString)}
         style={({ pressed }) => [styles.cell, styles.day, !!marker && styles.day_event, is_today && styles.day_today, pressed && common_styles.pressed]}>
         <CustomText text={String(date.day)} weight={FONTS.regular} size={SIZES.sm} />
