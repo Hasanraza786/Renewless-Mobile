@@ -1,4 +1,4 @@
-import { FlatList, Image, KeyboardAvoidingView, Modal, Platform, Pressable, View } from 'react-native';
+import { FlatList, Image, KeyboardAvoidingView, Modal, Pressable, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { close_icon, logo_mark } from '../../assets/icons';
 import Icons from '../../components/Icons';
@@ -23,7 +23,7 @@ export default function AiChatScreen() {
       <View style={styles.header}>
         <Header title="Loop" subtitle="Your subscription assistant" onBack={goBack} mark={logo_mark} />
       </View>
-      <KeyboardAvoidingView style={common_styles.flex_1} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={insets.top}>
+      <KeyboardAvoidingView style={common_styles.flex_1} behavior="padding" keyboardVerticalOffset={insets.top}>
         {/* KAV measures itself relative to its parent, which starts below the top safe area. */}
         {/* Inverted so the newest turn sits above the composer and the list follows new messages. */}
         <FlatList

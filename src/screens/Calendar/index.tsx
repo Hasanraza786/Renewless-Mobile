@@ -88,7 +88,7 @@ export default function CalendarScreen() {
                   ]}
                 />
               </View>
-              <CustomText text={calendar.expected_text} weight={FONTS.medium} size={SIZES.lg} letter_spacing={-0.4} number_of_lines={1} align="right" style={common_styles.flex_1} />
+              <CustomText text={calendar.expected_text} weight={FONTS.medium} size={SIZES.lg} letter_spacing={-0.4} number_of_lines={1} fit_width align="right" style={common_styles.flex_1} />
               <RowView gap={SIZES.padding / 5} style={styles.count}>
                 <CustomText text={String(calendar.event_count)} weight={FONTS.medium} color={COLORS.primary} size={SIZES.md} />
                 <CustomText text={calendar.event_count === 1 ? 'event' : 'events'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
