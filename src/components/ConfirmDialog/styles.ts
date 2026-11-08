@@ -23,6 +23,11 @@ export const styles = StyleSheet.create({
   body: {
     padding: SIZES.padding * 0.8,
   },
+  art: {
+    alignItems: 'center',
+    marginBottom: SIZES.padding / 2,
+    marginTop: SIZES.padding / 5,
+  },
   close: {
     alignItems: 'center',
     backgroundColor: COLORS.line_hint,

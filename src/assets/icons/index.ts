@@ -39,7 +39,7 @@ export { default as notification_icon } from './notification_icon';
 export { default as profile_icon } from './profile_icon';
 export { default as edit_box_icon } from './edit_box_icon';
 export {
-  delete_icon,
+  delete_tile_icon,
   eye_icon,
   eye_off_icon,
   help_icon,
@@ -51,7 +51,9 @@ export {
   refresh_icon,
   security_accent_icon,
   security_icon,
+  settings_icon,
   terms_icon,
+  widget_icon,
 } from './profile_icons';
 export { bin_danger_icon, bin_icon, chevron_up_icon, lock_icon, record_mic_icon, record_pause_icon } from './switch_icons';
 export { close_small_icon, image_icon, mic_active_icon, mic_icon, paperclip_icon, pause_icon, pdf_icon, play_icon, send_icon } from './switch_icons';

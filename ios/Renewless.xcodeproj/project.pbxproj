@@ -22,6 +22,7 @@
 		8CCE363C309CBB310028D272 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8CCE363B309CBB310028D272 /* GoogleService-Info.plist */; };
 		9138C2DE8E20E6DA3F0770BF /* WidgetBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 13073AB5AEE57222F3A57EF3 /* WidgetBridge.m */; };
 		ACDA7C848CFFB58017AD7EDF /* Raleway-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1115903CE22B499EBB212942 /* Raleway-Regular.ttf */; };
+		DBFCCED62CEAB32884424BAD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 47BA8D2EFA6C23E382117FC4 /* PrivacyInfo.xcprivacy */; };
 		E473112726B5FE1D991E4BEA /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D4A91D3AFFE8055E0F61CEAE /* Assets.xcassets */; };
 		F02E73E046B5D01E0B3BB5F9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EE57B0EA27F6C36BE557DAD /* SwiftUI.framework */; };
 		F0E7A13A2CA4567400665403 /* Raleway-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0E7A11A2CA4567400665401 /* Raleway-Regular.ttf */; };
@@ -63,6 +64,7 @@
 		1AB66C5195AFCF7BB4988822 /* RenewlessWidget.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = RenewlessWidget.entitlements; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Renewless.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Renewless.debug.xcconfig"; path = "Target Support Files/Pods-Renewless/Pods-Renewless.debug.xcconfig"; sourceTree = "<group>"; };
 		3EE57B0EA27F6C36BE557DAD /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/SwiftUI.framework; sourceTree = DEVELOPER_DIR; };
+		47BA8D2EFA6C23E382117FC4 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-Renewless.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Renewless.release.xcconfig"; path = "Target Support Files/Pods-Renewless/Pods-Renewless.release.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-Renewless.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Renewless.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EA485B4B552CA20E3957D99 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
@@ -141,6 +143,7 @@
 				6A7A7BDF4CBEA7A2E9A5CD9A /* Raleway-Medium.ttf */,
 				88746CD67AC67C8970AA0806 /* Info.plist */,
 				1AB66C5195AFCF7BB4988822 /* RenewlessWidget.entitlements */,
+				47BA8D2EFA6C23E382117FC4 /* PrivacyInfo.xcprivacy */,
 			);
 			name = RenewlessWidget;
 			path = RenewlessWidget;
@@ -293,6 +296,7 @@
 				E473112726B5FE1D991E4BEA /* Assets.xcassets in Resources */,
 				ACDA7C848CFFB58017AD7EDF /* Raleway-Regular.ttf in Resources */,
 				56D9FC7CA1DCBC0B27E6A279 /* Raleway-Medium.ttf in Resources */,
+				DBFCCED62CEAB32884424BAD /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

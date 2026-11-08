@@ -304,4 +304,26 @@ export const styles = StyleSheet.create({
     minHeight: SIZES.padding * 3,
     paddingHorizontal: SIZES.padding2,
   },
+  consent_rows: {
+    backgroundColor: COLORS.surface_sunken,
+    borderColor: COLORS.line_soft,
+    borderRadius: SIZES.padding * 0.7,
+    borderWidth: 1,
+    marginTop: SIZES.padding * 0.7,
+    paddingHorizontal: SIZES.padding * 0.7,
+    paddingVertical: SIZES.padding / 5,
+  },
+  consent_row: {
+    paddingVertical: SIZES.padding / 2,
+  },
+  consent_divider: {
+    borderBottomColor: COLORS.line_soft,
+    borderBottomWidth: 1,
+  },
+  consent_link: {
+    justifyContent: 'center',
+    marginBottom: SIZES.padding2,
+    marginTop: SIZES.padding / 5,
+    minHeight: SIZES.padding * 2,
+  },
 });

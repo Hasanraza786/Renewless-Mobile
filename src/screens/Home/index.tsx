@@ -12,11 +12,11 @@ import HomeSkeleton from './components/HomeSkeleton';
 import MonthCard from './components/MonthCard';
 import NextEvent from './components/NextEvent';
 import TopSpending from './components/TopSpending';
-import useHome from './index.function';
+import useHome, { type HomeRoute } from './index.function';
 import { styles } from './styles';
 
-export default function HomeScreen() {
-  const home = useHome();
+export default function HomeScreen({ route }: { route: HomeRoute }) {
+  const home = useHome(route);
   const { data, status } = home;
 
   return (

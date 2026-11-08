@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { navigate } from '../../navigation/service';
 import { loadCalendarMonth } from '../../redux/actions/calendar-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { HomeEvent } from '../../types';
+import type { HomeEvent, TabParamList } from '../../types';
 import { nearestEvent, shiftMonth } from '../../utils/calendar';
 import { localToday } from '../../utils/dates';
 
@@ -12,12 +12,19 @@ const EMPTY: HomeEvent[] = [];
 export type PickerAnchor = { x: number; y: number; height: number };
 
 // The viewed month and picker state stay while the user opens Detail, the day list or Add and comes back.
-export default function useCalendar() {
+export type CalendarRoute = RouteProp<TabParamList, 'Calendar'>;
+
+export default function useCalendar(route: CalendarRoute) {
   const dispatch = useAppDispatch();
   const { months, loading, error } = useAppSelector(state => state.calendar);
   const [month, setMonth] = useState(() => localToday().slice(0, 7));
   const [picker_anchor, setPickerAnchor] = useState<PickerAnchor | null>(null);
   const [add_open, setAddOpen] = useState(false);
+  // AI chat consent Not now: reopen the Add sheet that opened AI chat.
+  const add_sheet = route.params?.add_sheet;
+  useEffect(() => {
+    if (add_sheet) setAddOpen(true);
+  }, [add_sheet]);
 
   // Refresh on every visit so Detail/Add changes show; each month is fetched when it is viewed.
   useFocusEffect(

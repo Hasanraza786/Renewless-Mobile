@@ -14,10 +14,12 @@ export const security_icon = glyph('M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 
 export const help_icon = glyph('M9.1 9a3 3 0 0 1 5.8 1c0 2-3 2-3 4M12 17h.01', COLORS.icon_soft, 17, 1.65, HELP_RING);
 export const privacy_icon = glyph('M5 10h14v11H5zM8 10V7a4 4 0 0 1 8 0v3', COLORS.icon_soft, 17);
 export const terms_icon = glyph('M6 3h9l4 4v14H6zM14 3v5h5M9 12h7M9 16h7', COLORS.icon_soft, 17);
+export const settings_icon = glyph('M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19 12l2-1-2-4-2 1-2-1-1-2h-4l-1 2-2 1-2-1-2 4 2 1v0l-2 1 2 4 2-1 2 1 1 2h4l1-2 2-1 2 1 2-4z', COLORS.icon_soft, 17);
+export const widget_icon = glyph('M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z', COLORS.icon_soft, 17);
+export const delete_tile_icon = glyph('M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7', COLORS.danger, 17);
 
 export const mail_icon = glyph('M3 5h18v14H3zM3 6l9 7 9-7', COLORS.text_secondary, 19);
 export const logout_icon = glyph('M9 4H4v16h5M14 8l4 4-4 4M8 12h10', COLORS.danger, 19);
-export const delete_icon = glyph('M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7', COLORS.danger, 19);
 
 // Change password intro mark (23pt accent).
 export const security_accent_icon = glyph('M12 3 4 6v6c0 5 8 9 8 9s8-4 8-9V6zM9 12l2 2 4-4', COLORS.primary, 23, 1.6);

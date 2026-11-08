@@ -1,12 +1,14 @@
-import { useCallback, useMemo, useState } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { navigate } from '../../navigation/service';
 import { loadList } from '../../redux/actions/list-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { SubscriptionRecord } from '../../types';
+import type { SubscriptionRecord, TabParamList } from '../../types';
 import { LIST_SORTS, filterRecords, groupCounts, listGroup, sortRecords, type ListGroup, type ListSort } from '../../utils/list';
 
-export default function useList() {
+export type ListRoute = RouteProp<TabParamList, 'List'>;
+
+export default function useList(route: ListRoute) {
   const dispatch = useAppDispatch();
   const { records, today, loading, error } = useAppSelector(state => state.list);
   const [query, setQuery] = useState('');
@@ -14,6 +16,11 @@ export default function useList() {
   const [sort, setSort] = useState<ListSort>('next');
   const [dialog, setDialog] = useState<'sort' | 'filters' | null>(null);
   const [add_open, setAddOpen] = useState(false);
+  // AI chat consent Not now: reopen the Add sheet that opened AI chat.
+  const add_sheet = route.params?.add_sheet;
+  useEffect(() => {
+    if (add_sheet) setAddOpen(true);
+  }, [add_sheet]);
 
   // Refresh on every visit; query, filters and sort stay as the user left them.
   useFocusEffect(

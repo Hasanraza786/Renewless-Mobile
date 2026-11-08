@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { loadDashboard } from '../../redux/actions/dashboard-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { navigate } from '../../navigation/service';
 import { setWidgetPromptSeen } from '../../redux/slices/constant-slice';
+import type { TabParamList } from '../../types';
 import { pinWidget, widgetEvent, widgetInstalled } from '../../utils/widget';
 
-export default function useHome() {
+export type HomeRoute = RouteProp<TabParamList, 'Home'>;
+
+export default function useHome(route: HomeRoute) {
   const dispatch = useAppDispatch();
   const { data, loading, error } = useAppSelector(state => state.dashboard);
   const [selected_event, setSelectedEvent] = useState('');
@@ -38,6 +41,17 @@ export default function useHome() {
     widget_checked.current = true;
     widgetInstalled().then(installed => installed === false && setWidgetPrompt('prompt'));
   }, [has_subscriptions, widget_prompt_seen]);
+
+  const add_widget = route.params?.add_widget;
+  const add_sheet = route.params?.add_sheet;
+  // Settings › Add the widget: open the prompt again, even after it was closed once.
+  useEffect(() => {
+    if (add_widget) setWidgetPrompt('prompt');
+  }, [add_widget]);
+  // AI chat consent Not now: reopen the Add sheet that opened AI chat.
+  useEffect(() => {
+    if (add_sheet) setAddOpen(true);
+  }, [add_sheet]);
 
   const events = data?.nearest_events ?? [];
   const selected = events.find(item => item.id === selected_event) ?? events[0];

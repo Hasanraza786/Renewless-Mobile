@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { pick, types } from '@react-native-documents/picker';
 import { viewDocument } from '@react-native-documents/viewer';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { createSound } from 'react-native-nitro-sound';
-import { navigate } from '../../navigation/service';
+import { focusedTab, goBack, navigate } from '../../navigation/service';
 import { sendAiTurn } from '../../redux/actions/ai-action';
 import { addSubscription } from '../../redux/actions/detail-action';
-import { useAppDispatch } from '../../redux/store';
+import { setAiConsent } from '../../redux/slices/constant-slice';
+import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AiDraft, AiInput, SubscriptionFormInput } from '../../types';
 import { missingQuestion } from '../../utils/ai-draft';
 import { tapHaptic } from '../../utils/haptics';
@@ -46,6 +47,8 @@ const draftInput = (draft: AiDraft): SubscriptionFormInput => ({
 // Loop: one free chat for text, voice and one image/PDF. Nothing is saved until Add subscription.
 export default function useAiChat() {
   const dispatch = useAppDispatch();
+  // Nothing is sent to Google Gemini until the user agrees (App Store 5.1.2(i)); Settings can withdraw it.
+  const ai_consent = useAppSelector(state => state.constant.ai_consent);
   const [messages, setMessages] = useState<ChatMessage[]>([{ id: messageId(), role: 'loop', input: null, text: OPENING, failed: false }]);
   const [draft, setDraft] = useState<AiDraft | null>(null);
   const [added_id, setAddedId] = useState<string | null>(null);
@@ -312,7 +315,20 @@ export default function useAiChat() {
   const openDocument = (uri: string, name: string) =>
     viewDocument({ uri, mimeType: 'application/pdf', headerTitle: name, grantPermissions: 'read' }).catch(() => setAttachError('Unable to open this PDF. Please try again.'));
 
+  const agreeConsent = () => dispatch(setAiConsent(true));
+  // Not now: back to the Add sheet on the tab that opened AI chat.
+  const declineConsent = () => {
+    const tab = focusedTab();
+    if (tab === 'Home' || tab === 'List' || tab === 'Calendar') navigate(tab, { add_sheet: Date.now() });
+    else goBack();
+  };
+  const openPrivacy = () => Alert.alert('Not available yet', 'Terms and Privacy will be available before release.');
+
   return {
+    ai_consent,
+    agreeConsent,
+    declineConsent,
+    openPrivacy,
     messages,
     draft,
     show_draft,

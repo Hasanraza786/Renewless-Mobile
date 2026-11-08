@@ -18,7 +18,7 @@ import { eventCardProps } from '../../utils/events';
 import { dateLabel } from '../../utils/scan';
 import MonthGrid from './components/MonthGrid';
 import MonthPicker from './components/MonthPicker';
-import useCalendar from './index.function';
+import useCalendar, { type CalendarRoute } from './index.function';
 import { styles } from './styles';
 
 const LEGEND = [
@@ -44,8 +44,8 @@ function SummaryWash() {
 }
 
 // Calendar tab: month controls, expected charges, the date grid, legend and the nearest event. No inline day list.
-export default function CalendarScreen() {
-  const calendar = useCalendar();
+export default function CalendarScreen({ route }: { route: CalendarRoute }) {
+  const calendar = useCalendar(route);
   const heading_ref = useRef<ComponentRef<typeof View>>(null);
   const nearest = calendar.nearest;
 

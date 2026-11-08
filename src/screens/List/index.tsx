@@ -15,7 +15,7 @@ import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { recordCardProps } from '../../utils/events';
 import { dateLabel } from '../../utils/scan';
 import ListDialogs from './components/ListDialogs';
-import useList, { type ListController } from './index.function';
+import useList, { type ListController, type ListRoute } from './index.function';
 import { styles } from './styles';
 import SizedBox from '../../components/SizedBox';
 
@@ -44,8 +44,8 @@ function Empty({ list, account }: { list: ListController; account: boolean }) {
   );
 }
 
-export default function ListScreen() {
-  const list = useList();
+export default function ListScreen({ route }: { route: ListRoute }) {
+  const list = useList(route);
 
   return (
     <Container tab_bar style={styles.main_view}>

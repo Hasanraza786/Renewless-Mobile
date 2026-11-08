@@ -1,62 +1,18 @@
 import { Pressable, ScrollView, View } from 'react-native';
-import {
-  chevron_right_icon,
-  delete_icon,
-  edit_box_icon,
-  gmail_logo,
-  help_icon,
-  history_icon,
-  logout_icon,
-  mail_icon,
-  payments_icon,
-  privacy_icon,
-  refresh_icon,
-  security_icon,
-  terms_icon,
-} from '../../assets/icons';
+import { chevron_right_icon, edit_box_icon, gmail_logo, help_icon, history_icon, logout_icon, mail_icon, payments_icon, settings_icon } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Header from '../../components/Header';
 import Icons from '../../components/Icons';
+import MenuGroup from '../../components/MenuGroup';
 import RowView from '../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import ProfileDialogs from './components/ProfileDialogs';
-import useProfile, { initials } from './index.function';
+import useProfile, { PROVIDER_LABEL, initials } from './index.function';
 import { styles } from './styles';
 
-const PROVIDER_LABEL = { email: 'Email', google: 'Google', apple: 'Apple' } as const;
 const APP_VERSION = '0.0.1';
-
-type MenuItem = { label: string; icon: string; subtitle?: string; onPress: () => void };
-
-function Menu({ title, items }: { title: string; items: MenuItem[] }) {
-  return (
-    <View style={styles.section}>
-      <CustomText text={title} color={COLORS.text_secondary} size={SIZES.lg} accessibility_role="header" />
-      <View style={styles.group}>
-        {items.map((item, index) => (
-          <RowView
-            key={item.label}
-            accessibilityRole="button"
-            accessibilityLabel={item.subtitle ? `${item.label}, ${item.subtitle}` : item.label}
-            gap={SIZES.padding / 2}
-            onPress={item.onPress}
-            style={[styles.menu_row, index < items.length - 1 && styles.divider]}>
-            <View style={styles.menu_icon}>
-              <Icons name={item.icon} />
-            </View>
-            <View style={common_styles.flex_1}>
-              <CustomText text={item.label} size={SIZES.sm} />
-              {item.subtitle ? <CustomText mt={SIZES.padding / 4} text={item.subtitle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
-            </View>
-            <Icons name={chevron_right_icon} />
-          </RowView>
-        ))}
-      </View>
-    </View>
-  );
-}
 
 function DangerButton({ label, icon, onPress }: { label: string; icon: string; onPress: () => void }) {
   return (
@@ -75,7 +31,7 @@ export default function ProfileScreen() {
 
   return (
     <Container tab_bar style={styles.main_view}>
-      <Header title="Profile" />
+      <Header title="Profile" onAppSettings={profile.openSettings} />
       {/* scrollableAxes: the floating tab bar inset at the bottom, no second top inset under the fixed header. */}
       <ScrollView showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="scrollableAxes" contentContainerStyle={styles.content}>
         {user ? (
@@ -137,35 +93,22 @@ export default function ProfileScreen() {
           )}
         </View>
 
-        <Menu
+        <MenuGroup
           title="Your activity"
           items={[
             { label: 'History', icon: history_icon, subtitle: 'Cancelled & expired subscriptions', onPress: profile.openHistory },
             { label: 'Payment history', icon: payments_icon, subtitle: profile.payment_text, onPress: profile.openPayments },
           ]}
         />
-        <Menu
-          title="Preferences & security"
+        <MenuGroup
+          title="More"
           items={[
-            { label: 'Reminder settings', icon: refresh_icon, onPress: profile.openReminders },
-            user?.hasPassword === false
-              ? { label: 'Sign-in method', icon: security_icon, subtitle: `${PROVIDER_LABEL[user.provider]} account`, onPress: profile.showProvider }
-              : { label: 'Change password', icon: security_icon, onPress: profile.openChangePassword },
-          ]}
-        />
-        <Menu
-          title="Help & legal"
-          items={[
+            { label: 'Settings', icon: settings_icon, subtitle: 'Reminders, AI assistant, account', onPress: profile.openSettings },
             { label: 'Help & support', icon: help_icon, onPress: profile.showSupport },
-            { label: 'Privacy Policy', icon: privacy_icon, onPress: profile.showUnavailable },
-            { label: 'Terms of Service', icon: terms_icon, onPress: profile.showUnavailable },
           ]}
         />
 
-        <View style={styles.actions}>
-          <DangerButton label="Log out" icon={logout_icon} onPress={() => profile.setDialog('logout')} />
-          <DangerButton label="Delete account" icon={delete_icon} onPress={() => profile.setDialog('delete')} />
-        </View>
+        <DangerButton label="Log out" icon={logout_icon} onPress={() => profile.setDialog('logout')} />
         <CustomText mt={SIZES.padding * 0.65} text={`Renewless · Version ${APP_VERSION}`} weight={FONTS.regular} color={COLORS.text_faint} size={SIZES.sm} align="center" />
       </ScrollView>
       <ProfileDialogs profile={profile} />

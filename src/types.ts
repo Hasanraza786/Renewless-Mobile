@@ -337,6 +337,8 @@ export type ConstantState = {
   splash_seen: boolean;
   // The one-time Home prompt to add the widget was closed on this device.
   widget_prompt_seen: boolean;
+  // AI chat consent (Google Gemini) given on this device for the signed-in account; cleared on sign-out.
+  ai_consent: boolean;
 };
 
 export type AuthRequest =
@@ -461,9 +463,11 @@ export type AuthIntent = 'add_manual';
 export type AuthProvider = 'google' | 'apple';
 
 export type TabParamList = {
-  Home: undefined;
-  List: undefined;
-  Calendar: undefined;
+  // Settings › Add the widget opens the add-widget prompt; the value is a timestamp so each tap reopens it.
+  // add_sheet: AI chat consent Not now reopens the Add sheet that opened it (a timestamp, so each time counts).
+  Home: { add_widget?: number; add_sheet?: number } | undefined;
+  List: { add_sheet?: number } | undefined;
+  Calendar: { add_sheet?: number } | undefined;
   // Home Paid this month opens the account view on that YYYY-MM.
   Payments: { month?: string } | undefined;
   Profile: undefined;
@@ -485,6 +489,7 @@ export type AppStackParamList = {
   PriceHistory: { id: string };
   Alerts: undefined;
   ReminderSettings: undefined;
+  Settings: undefined;
   History: undefined;
   ConnectedInbox: { id: string };
   // Authenticated Gmail scan and review; without an inbox the first connected one is used.

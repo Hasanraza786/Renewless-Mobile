@@ -14,6 +14,7 @@ export { default as InboxSubscriptionsScreen } from './InboxSubscriptions';
 export { default as GmailScanScreen } from './GmailScan';
 export { default as AiChatScreen } from './AiChat';
 export { default as ReminderSettingsScreen } from './ReminderSettings';
+export { default as SettingsScreen } from './Settings';
 export { default as UpcomingScreen } from './Upcoming';
 export { default as ThisMonthScreen } from './ThisMonth';
 export { default as SpendingBreakdownScreen } from './SpendingBreakdown';

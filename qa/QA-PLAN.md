@@ -267,7 +267,7 @@ Run each suite on at least: iPhone SE, iPhone 18 Pro Max, Pixel 8 and Pixel 8 at
   - Image preview opens full screen.
   - The PDF opens **view-only**. On iOS there must be no Markup and no "Lock PDF"; only Search, Share, Save to Files and Print. On Android it opens read-only in another app.
 - Keyboard: the composer stays above the keyboard on iOS **and Android** (fixed 8 Nov). Test the multi-line composer up to 4 lines.
-- **Compliance (App Store 5.1.2(i)):** before any personal data goes to a third-party AI, the app must say so and get consent. **There is no consent screen in the current design.** Raise it with the user as a release blocker (section 8).
+- **Consent (App Store 5.1.2(i)):** on a fresh sign-in, opening AI chat shows Before you chat with Loop. Not now returns to the Add sheet on Home, List or Calendar and nothing is sent; How we use your data › shows the privacy notice; Agree and continue opens the chat. Turn off Settings › Use Google Gemini: AI chat asks again. Sign out and in with another account: it asks again. With real data, confirm no request reaches the AI endpoint before Agree.
 
 ### 6.9 Profile
 - Edit profile:
@@ -279,7 +279,9 @@ Run each suite on at least: iPhone SE, iPhone 18 Pro Max, Pixel 8 and Pixel 8 at
   - Back discards changes.
 - Change password: validation, wrong current password, success, social-only accounts.
 - Connected inbox: Sync now (syncing, error, reconnect), Imported subscriptions, Disconnect confirm → "Inbox disconnected. Your saved subscriptions stay." Real data: no further Gmail reads after disconnect (backend check).
-- Log out dialog; Delete account flow (6.1).
+- Header gear and More › Settings both open Settings.
+- Settings: Reminder settings, Use Google Gemini switch (note text changes), Add the widget → Home prompt (also after it was closed once), Change password or Sign-in method, Delete account, Privacy Policy and Terms.
+- Log out dialog; Delete account flow from Settings (6.1).
 
 ### 6.10 Widgets
 iOS Small and Android 2×2:
@@ -344,10 +346,10 @@ Researched 8 Nov 2026. Items marked **[verify]** come from secondary sources or 
 - Uploads must use Xcode 26+ with the iOS 26 SDK (required since 28 Apr 2026). <https://developer.apple.com/news/upcoming-requirements/?id=04282026a>
 - **4.8:** the app offers Google sign-in, so Sign in with Apple is required. It is present.
 - **5.1.1(v):** in-app account deletion that removes data and revokes Sign in with Apple tokens. <https://developer.apple.com/support/offering-account-deletion-in-your-app/>
-- **5.1.2(i):** disclose, and get consent, before personal data goes to a third-party AI. **Missing in the design** (section 8). <https://developer.apple.com/app-store/review/guidelines/>
+- **5.1.2(i):** disclose, and get consent, before personal data goes to a third-party AI. Done in the app (AI chat consent, Settings switch, 8 Nov); the backend still needs to record consent (section 8). <https://developer.apple.com/app-store/review/guidelines/>
 - **Privacy manifest:**
   - the app has `ios/Renewless/PrivacyInfo.xcprivacy`;
-  - **the widget extension has none**, and it reads `UserDefaults(suiteName:)`, a required-reason API. Add one to `ios/RenewlessWidget/` before upload (ITMS-91053);
+  - the widget extension has `ios/RenewlessWidget/PrivacyInfo.xcprivacy` (UserDefaults 1C8F.1, no tracking, no collection; added 8 Nov), and the app declares 1C8F.1 for the shared App Group;
   - check that every pod ships its own manifest.
 - Nutrition labels must match what the app actually collects (email, name, user ID, email content, audio, photos, other content, crash data).
 - **Usage strings:**
@@ -387,8 +389,8 @@ Researched 8 Nov 2026. Items marked **[verify]** come from secondary sources or 
 | # | Item | Severity | Owner / next step |
 |---|---|---|---|
 | 1 | Debug builds always use mocks (`USE_MOCK_API = __DEV__`). There is no way to point a dev build at staging | Blocks real-data QA | Ask the user: test release builds, or approve an `.env` flag |
-| 2 | No AI data-sharing consent screen (App Store 5.1.2(i)) | Release blocker (iOS review) | New design scope; needs user approval |
-| 3 | Widget extension has no `PrivacyInfo.xcprivacy` | Upload blocker | Add a manifest declaring UserDefaults (CA92.1 / 1C8F.1) |
+| 2 | AI consent is device-local only (App Store 5.1.2(i) UI done 8 Nov) | Must fix before release | Backend records consent per account and AI endpoints refuse without it |
+| 3 | Widget privacy manifest | Resolved 8 Nov | Check the archive in Xcode's privacy report before upload |
 | 4 | Haptics and the signed-build App Group not checked on a real iPhone | Must test | Real-device run (6.4, 6.8, 6.10) |
 | 5 | Play account-deletion web page does not exist yet | Play blocker | Backend and website work |
 | 6 | Platform logos bundled for only 7 platforms (app and widget) | Cosmetic | Needs the backend platform catalog |
@@ -396,6 +398,7 @@ Researched 8 Nov 2026. Items marked **[verify]** come from secondary sources or 
 | 8 | Android widget uses the system font, not Raleway (launcher limitation) | Accepted | None |
 | 9 | Push delivery, Gmail OAuth and the AI provider are not integrated; all such flows are mock-only | Blocks real-data QA | Backend integration |
 | 10 | Mock AI always returns the same receipt draft for any image or PDF | Mock only | Real extraction on staging |
+| 11 | AI provider is Google Gemini via API key. **[verify]** On the unpaid tier Google may use content to improve its products; Gmail Limited Use forbids that for Gmail data | Release blocker if Gmail content reaches Gemini | Use the paid (billing-enabled) Gemini API tier and confirm current terms; then the consent dialog can also say it is not used for training |
 
 ---
 

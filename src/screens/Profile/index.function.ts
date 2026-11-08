@@ -9,6 +9,8 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 const UNAVAILABLE = 'This page is currently unavailable. Please try again later.';
 const UNAVAILABLE_GMAIL = 'Gmail connection is unavailable right now. Your saved subscriptions are unchanged.';
 
+export const PROVIDER_LABEL = { email: 'Email', google: 'Google', apple: 'Apple' } as const;
+
 export const initials = (name: string) =>
   name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(word => word[0]).join('').toUpperCase() || 'R';
 
@@ -51,6 +53,7 @@ export default function useProfile() {
   const openHistory = () => navigate('History');
   const openPayments = () => navigate('Payments');
   const openReminders = () => navigate('ReminderSettings');
+  const openSettings = () => navigate('Settings');
   const openChangePassword = () => navigate('ChangePassword');
   const showProvider = () => notice(`You sign in with ${provider_name}. Manage your password through your ${provider_name} account.`);
   const showSupport = () => notice('Support is currently unavailable. Please try again later.');
@@ -88,6 +91,7 @@ export default function useProfile() {
     openHistory,
     openPayments,
     openReminders,
+    openSettings,
     openChangePassword,
     showProvider,
     showSupport,
