@@ -17,6 +17,11 @@ const constantSlice = createSlice({
       state.token = action.payload.token;
       state.user = action.payload.user;
     },
+    // App start: the token read back from the Keychain (null when signed out).
+    restoreToken(state, action: PayloadAction<string | null>) {
+      state.token = action.payload;
+      if (!action.payload) state.user = null;
+    },
     setUser(state, action: PayloadAction<Profile>) {
       state.user = action.payload;
     },
@@ -37,6 +42,6 @@ const constantSlice = createSlice({
   },
 });
 
-export const { setSession, setUser, clearSession, setSplashSeen, setWidgetPromptSeen, setAiConsent } = constantSlice.actions;
+export const { setSession, restoreToken, setUser, clearSession, setSplashSeen, setWidgetPromptSeen, setAiConsent } = constantSlice.actions;
 
 export default constantSlice.reducer;

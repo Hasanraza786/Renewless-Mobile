@@ -2,6 +2,8 @@ import type { UnknownAction } from '@reduxjs/toolkit';
 import type { ThunkAction } from '@reduxjs/toolkit';
 import type { RootState } from '../types';
 import { clearWidgetSnapshot } from '../utils/widget';
+import { clearSessionToken } from '../utils/session-token';
+import { resetRoot } from '../navigation/service';
 import { resetAuth } from './slices/auth-slice';
 import { clearSession } from './slices/constant-slice';
 import { resetDashboard } from './slices/dashboard-slice';
@@ -16,6 +18,7 @@ import { resetProfile } from './slices/profile-slice';
 export function endSession(): ThunkAction<void, RootState, undefined, UnknownAction> {
   return dispatch => {
     clearWidgetSnapshot();
+    clearSessionToken();
     dispatch(clearSession());
     dispatch(resetProfile());
     dispatch(resetDashboard());
@@ -26,5 +29,7 @@ export function endSession(): ThunkAction<void, RootState, undefined, UnknownAct
     dispatch(resetAlerts());
     dispatch(resetInbox());
     dispatch(resetAuth());
+    // Signed out (logout, deletion or an expired token): back to Login.
+    resetRoot([{ name: 'AuthStack' }]);
   };
 }

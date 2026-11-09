@@ -3,7 +3,7 @@ import { AccessibilityInfo, Alert, Animated, BackHandler, Easing } from 'react-n
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   connectOnboardingGoogle,
-  pollOnboardingScan,
+  getOnboardingScan,
   saveOnboardingFinds,
   startOnboardingScan,
 } from '../../redux/actions/onboarding-action';
@@ -89,7 +89,7 @@ export default function useOnboarding(route: Route) {
   // Poll only while Discovering is visible and the job is still running.
   useEffect(() => {
     if (step !== 'discovering' || scan_status !== 'running') return;
-    const timer = setInterval(() => dispatch(pollOnboardingScan()), SCAN_POLL_MS);
+    const timer = setInterval(() => dispatch(getOnboardingScan()), SCAN_POLL_MS);
     return () => clearInterval(timer);
   }, [dispatch, scan_status, step]);
 

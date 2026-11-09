@@ -37,10 +37,10 @@ export default function useChangePassword() {
     if (request_error) dispatch(setAuthError({ key: 'password', value: '' }));
   };
 
-  const onSubmit = async () => {
+  const onSubmit = () => {
     setSubmitted(true);
     if (Object.keys(passwordErrors(form_data)).length || updating) return;
-    if (await dispatch(changePassword(form_data.current_password, form_data.new_password))) goBack();
+    dispatch(changePassword(form_data.current_password, form_data.new_password, goBack));
   };
 
   // Social-only accounts get provider guidance instead of password inputs.

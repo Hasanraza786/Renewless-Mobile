@@ -1,114 +1,201 @@
-import {
-  cancelTracking,
-  createTracked,
-  getSubscriptionDetail,
-  listPlatformSubscriptions,
-  removeTracking,
-  restoreTracking,
-  resumeTracking,
-  setNotes,
-  setReminder,
-  updateTracked,
-} from '../../api_services/subscriptions';
-import type { ReminderPreference, SubscriptionDetail, SubscriptionFormInput } from '../../types';
-import { runRequest, type AppThunk } from '../runRequest';
+import { fromReminder, toDetail, toSubscriptionBody } from '../../api_services/adapters';
+import type { DetailDto } from '../../api_services/dto';
+import apiServices from '../../api_services/request-handler';
+import type { ReminderPreference, SubscriptionFormInput, SubscriptionRecord } from '../../types';
+import { successHaptic } from '../../utils/haptics';
+import { requestHandler, type AppThunk } from '../request-handler';
 import { setDetail, setDetailError, setDetailLoading, setPlatformRecords, setRemoved } from '../slices/detail-slice';
 import { setNotice } from '../slices/profile-slice';
-import { loadDashboard } from './dashboard-action';
-import { loadList } from './list-action';
-import { successHaptic } from '../../utils/haptics';
+import { getDashboard } from './dashboard-action';
+import { getAllSubscriptions, getCategoryList, getSubscriptions } from './list-action';
 
 const flag = (key: 'detail' | 'platform' | 'mutation') => ({
-  loading: (value: boolean) => setDetailLoading({ key, value }),
-  error: (value: string) => setDetailError({ key, value }),
+  setLoading: (value: boolean) => setDetailLoading({ key, value }),
+  setError: (value: string) => setDetailError({ key, value }),
 });
 
-export function loadDetail(id: string): AppThunk {
+// Backend platform IDs are ObjectIds; bundled catalog slugs (e.g. "netflix") are resolved by name.
+const isServerId = (value: string | null) => !!value && /^[a-f0-9]{24}$/.test(value);
+
+// Detail, its price changes and the account reminder default, read together.
+async function getDetailData({ id }: { id: string }) {
+  await getCategoryList();
+  const [detail, history, settings] = await Promise.all([apiServices.getSubscription({ id }), apiServices.getPriceHistory({ id }), apiServices.getReminderSettings()]);
+  return toDetail(detail, history, settings);
+}
+
+export function getSubscriptionDetail(id: string): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return;
     if (getState().detail.detail?.record.id !== id) dispatch(setDetail(null));
-    await dispatch(runRequest({ request: () => getSubscriptionDetail(token, id), ...flag('detail'), success: setDetail }));
+    await dispatch(requestHandler({ apiService: getDetailData, param_data: { id }, ...flag('detail'), onDone: detail => dispatch(setDetail(detail)) }));
   };
 }
 
 // The list on screen, so Undo can refresh it in place.
 let shown_platform: { platform_id: string; exclude_id?: string } | null = null;
 
-export function loadPlatform(platform_id: string, exclude_id?: string): AppThunk {
-  return async (dispatch, getState) => {
+export function getPlatformSubscriptions(platform_id: string, exclude_id?: string): AppThunk {
+  return async dispatch => {
     shown_platform = { platform_id, exclude_id };
-    const token = getState().constant.token;
-    if (!token) return;
     dispatch(setPlatformRecords([]));
-    await dispatch(runRequest({ request: () => listPlatformSubscriptions(token, platform_id, exclude_id), ...flag('platform'), success: setPlatformRecords }));
-  };
-}
-
-// Mutations update Detail and refresh Home's projection; resolve true on success.
-function mutate(request: (token: string) => Promise<SubscriptionDetail | { ok: true }>): AppThunk<boolean> {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return false;
-    const result = await dispatch(
-      runRequest({
-        request: () => request(token),
-        ...flag('mutation'),
-        success: value => ('record' in value ? setDetail(value) : setDetail(null)),
+    await dispatch(
+      requestHandler({
+        apiService: getAllSubscriptions,
+        param_data: { platformId: platform_id, exclude: exclude_id },
+        ...flag('platform'),
+        onDone: records => dispatch(setPlatformRecords(records)),
       }),
     );
-    if (result === undefined) return false;
-    dispatch(loadDashboard());
-    dispatch(loadList());
-    return true;
   };
 }
 
-export const cancelSubscription = (id: string, input: { cancelled_on: string; access_until: string | null }) => mutate(token => cancelTracking(token, id, input));
-export const resumeSubscription = (id: string, input: { price: string; next_date: string; reminder: ReminderPreference }) => mutate(token => resumeTracking(token, id, input));
-export const saveReminder = (id: string, reminder: ReminderPreference) => mutate(token => setReminder(token, id, reminder));
-export const saveNotes = (id: string, notes: string) => mutate(token => setNotes(token, id, notes));
+// The record on Detail; every change sends its revision so a stale edit is refused, not overwritten.
+const current = (state: { detail: { detail: { record: SubscriptionRecord } | null } }, id: string) =>
+  state.detail.detail?.record.id === id ? state.detail.detail.record : null;
+
+// Mutations refresh Detail, Home and List, then let the screen close its sheet.
+function saveChange<Param>(id: string, apiService: (param_data: Param) => Promise<unknown>, param_data: Param, onSaved: () => void, notice?: string): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService,
+        param_data,
+        ...flag('mutation'),
+        onDone: () => {
+          dispatch(getSubscriptionDetail(id));
+          dispatch(getDashboard());
+          dispatch(getSubscriptions());
+          if (notice) {
+            successHaptic();
+            dispatch(setNotice(notice));
+          }
+          onSaved();
+        },
+      }),
+    );
+  };
+}
+
+export function cancelSubscription(id: string, input: { cancelled_on: string; access_until: string | null }, onSaved: () => void): AppThunk {
+  return async (dispatch, getState) => {
+    const record = current(getState(), id);
+    await dispatch(saveChange(id, apiServices.cancelSubscription, { id, revision: record?.revision ?? 0, cancelledAt: input.cancelled_on, accessUntil: input.access_until }, onSaved));
+  };
+}
+
+// "Account default" resumes with the account's default days; Off sends no reminder days.
+export function resumeSubscription(id: string, input: { price: string; next_date: string; reminder: ReminderPreference }, onSaved: () => void): AppThunk {
+  return async (dispatch, getState) => {
+    const state = getState();
+    const record = current(state, id);
+    const days = input.reminder.mode === 'days' ? input.reminder.days : input.reminder.mode === 'default' ? (state.detail.detail?.account_reminder_days ?? []) : [];
+    await dispatch(
+      saveChange(
+        id,
+        apiServices.resumeSubscription,
+        { id, revision: record?.revision ?? 0, price: { currency: record?.currency ?? 'USD', amount: input.price }, anchorDate: input.next_date, reminderOffsets: days },
+        onSaved,
+      ),
+    );
+  };
+}
+
+export function updateReminder(id: string, reminder: ReminderPreference, onSaved: () => void): AppThunk {
+  return async (dispatch, getState) => {
+    await dispatch(saveChange(id, apiServices.setSubscriptionReminder, { id, revision: current(getState(), id)?.revision ?? 0, ...fromReminder(reminder) }, onSaved));
+  };
+}
+
+export function updateNotes(id: string, notes: string, onSaved: () => void): AppThunk {
+  return async (dispatch, getState) => {
+    await dispatch(saveChange(id, apiServices.updateSubscription, { id, revision: current(getState(), id)?.revision ?? 0, note: notes.trim() || null }, onSaved));
+  };
+}
+
+// A typed catalog name links its backend platform; unknown names are saved as entered.
+async function getPlatformId(input: SubscriptionFormInput) {
+  if (isServerId(input.platform_id)) return input.platform_id;
+  const { platforms } = await apiServices.getPlatforms({ q: input.name });
+  return platforms.find(item => item.name.toLowerCase() === input.name.toLowerCase())?.id ?? null;
+}
+
+// Edit: only what the form changed. An unchanged trial keeps its exact end date.
+async function updateFromForm({ id, input, record }: { id: string; input: SubscriptionFormInput; record: SubscriptionRecord }) {
+  await getCategoryList();
+  const body: Record<string, unknown> = { ...toSubscriptionBody(input, await getPlatformId(input)), id, revision: record.revision };
+  const same_trial = record.trial && input.trial && record.trial.start_date === input.start_date && record.trial.end_date === input.trial.end_date;
+  if (same_trial) delete body.trial;
+  return apiServices.updateSubscription(body as { id: string });
+}
 
 // Edit: save, then Changes saved.
-export function saveSubscription(id: string, input: SubscriptionFormInput): AppThunk<boolean> {
-  return async dispatch => {
-    const ok = await dispatch(mutate(token => updateTracked(token, id, input)));
-    if (ok) {
-      successHaptic();
-      dispatch(setNotice('Changes saved.'));
-    }
-    return ok;
-  };
-}
-
-// Add form: resolves the new subscription's ID once the server confirms, or null.
-export function addSubscription(input: SubscriptionFormInput): AppThunk<string | null> {
+export function updateSubscription(id: string, input: SubscriptionFormInput, onSaved: () => void): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return null;
-    const record = await dispatch(runRequest({ request: () => createTracked(token, input), ...flag('mutation') }));
-    if (!record) return null;
-    dispatch(loadDashboard());
-    dispatch(loadList());
-    successHaptic();
-    dispatch(setNotice('Subscription added.'));
-    return record.id;
-  };
-}
-// Remove tracking, then offer Undo for eight seconds.
-export function removeSubscription(id: string, name: string): AppThunk<boolean> {
-  return async dispatch => {
-    const ok = await dispatch(mutate(token => removeTracking(token, id)));
-    if (ok) dispatch(setRemoved({ id, name }));
-    return ok;
+    const record = current(getState(), id);
+    if (!record) return;
+    await dispatch(saveChange(id, updateFromForm, { id, input, record }, onSaved, 'Changes saved.'));
   };
 }
 
-export function restoreSubscription(id: string): AppThunk<boolean> {
+async function createFromForm(input: SubscriptionFormInput) {
+  await getCategoryList();
+  return apiServices.createSubscription(toSubscriptionBody(input, await getPlatformId(input)));
+}
+
+// Add form: hands the new subscription's ID to the screen once the server confirms it.
+export function createSubscription(input: SubscriptionFormInput, onAdded: (id: string) => void): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: createFromForm,
+        param_data: input,
+        ...flag('mutation'),
+        onDone: (created: DetailDto) => {
+          dispatch(getDashboard());
+          dispatch(getSubscriptions());
+          successHaptic();
+          dispatch(setNotice('Subscription added.'));
+          onAdded(created.id);
+        },
+      }),
+    );
+  };
+}
+
+// Remove tracking, then offer Undo for eight seconds.
+export function deleteSubscription(id: string, name: string, onRemoved: () => void): AppThunk {
+  return async (dispatch, getState) => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.removeSubscription,
+        param_data: { id, revision: current(getState(), id)?.revision ?? 0 },
+        ...flag('mutation'),
+        onDone: ({ undoToken }) => {
+          dispatch(setRemoved({ id, name, undo_token: undoToken }));
+          dispatch(setDetail(null));
+          dispatch(getDashboard());
+          dispatch(getSubscriptions());
+          onRemoved();
+        },
+      }),
+    );
+  };
+}
+
+export function restoreSubscription(id: string, undo_token: string): AppThunk {
   return async dispatch => {
     dispatch(setRemoved(null));
-    const restored = await dispatch(mutate(token => restoreTracking(token, id)));
-    if (restored && shown_platform) dispatch(loadPlatform(shown_platform.platform_id, shown_platform.exclude_id));
-    return restored;
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.restoreSubscription,
+        param_data: { id, undoToken: undo_token },
+        ...flag('mutation'),
+        onDone: () => {
+          dispatch(getDashboard());
+          dispatch(getSubscriptions());
+          if (shown_platform) dispatch(getPlatformSubscriptions(shown_platform.platform_id, shown_platform.exclude_id));
+        },
+      }),
+    );
   };
 }

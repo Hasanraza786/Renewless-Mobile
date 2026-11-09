@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { loadDashboard } from '../redux/actions/dashboard-action';
+import { getDashboard } from '../redux/actions/dashboard-action';
 import { useAppDispatch, useAppSelector } from '../redux/store';
 
 // The Home drill-downs read the same snapshot as Home; opened directly they load it themselves.
@@ -8,11 +8,11 @@ export default function useHomeSnapshot() {
   const { data, loading, error } = useAppSelector(state => state.dashboard);
 
   useEffect(() => {
-    if (!data) dispatch(loadDashboard());
+    if (!data) dispatch(getDashboard());
   }, [data, dispatch]);
 
   const status = data ? ('ready' as const) : error && !loading ? ('failed' as const) : ('loading' as const);
-  const retry = () => dispatch(loadDashboard());
+  const retry = () => dispatch(getDashboard());
 
   return { data, status, error, retry };
 }

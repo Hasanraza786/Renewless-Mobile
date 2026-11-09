@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { goBack, navigate } from '../../navigation/service';
-import { beginGmailScan, fetchGmailInboxes, readGmailScan, saveGmailSelections } from '../../redux/actions/gmail-action';
+import { startGmailScan, getGmailInboxes, getGmailScan, saveGmailResults } from '../../redux/actions/gmail-action';
 import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch } from '../../redux/store';
 import type { AppStackParamList, GmailCandidate, GmailSelection, ProfileInbox } from '../../types';
@@ -42,12 +42,12 @@ export default function useGmailScan(route: GmailScanRoute) {
       setStage(0);
       setCandidates([]);
       setSaveError('');
-      const job = await dispatch(beginGmailScan(target.id));
+      const job = await dispatch(startGmailScan(target.id));
       if (token !== scan_token.current) return;
       if (!job) return setPhase('interrupted');
       setJobId(job);
       while (token === scan_token.current) {
-        const status = await dispatch(readGmailScan(job));
+        const status = await dispatch(getGmailScan(job));
         if (token !== scan_token.current) return;
         setStage(status.stage);
         if (status.status === 'failed') return setPhase('interrupted');
@@ -65,7 +65,7 @@ export default function useGmailScan(route: GmailScanRoute) {
 
   useEffect(() => {
     (async () => {
-      const list = (await dispatch(fetchGmailInboxes())) ?? [];
+      const list = (await dispatch(getGmailInboxes())) ?? [];
       setInboxes(list);
       const first = list.find(item => item.id === route.params?.inbox_id) ?? list[0];
       if (!first) {
@@ -142,7 +142,7 @@ export default function useGmailScan(route: GmailScanRoute) {
       const value = view(item);
       return { id: item.id, price: value.price, next_date: value.next_date, start_date: value.start_date, trial: value.trial, replace_date: item.kind === 'update' && replace_date };
     });
-    const result = await dispatch(saveGmailSelections(job_id, selections));
+    const result = await dispatch(saveGmailResults(job_id, selections));
     setSaving(false);
     if ('error' in result) return setSaveError(result.error);
     navigate('List');

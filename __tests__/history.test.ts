@@ -2,7 +2,7 @@ import type { SubscriptionRecord } from '../src/types';
 import { filterHistory, historyCardProps, historyRecords } from '../src/utils/history';
 
 const base = { platform_id: 'x', plan: null, category: 'Entertainment', price: '13.99', currency: 'USD', cycle: 'Monthly', next_date: null, estimated: false, auto_renew: false, trial: null,
-  start_date: null, source: { kind: 'manual', email: '' }, inbox: null, reminder: { mode: 'default' }, notes: null, manage_url: null, price_history: [] };
+  start_date: null, source: { kind: 'manual', email: '' }, inbox: null, reminder: { mode: 'default' }, notes: null, manage_url: null, price_history: [], revision: 0 };
 const r = (id: string, status: SubscriptionRecord['status'], cancelled_on: string | null, access_until: string | null) => ({ ...base, id, name: id, status, cancelled_on, access_until }) as SubscriptionRecord;
 
 const records = [r('active', 'active', null, null), r('figma', 'cancelled', '2026-10-25', '2026-11-01'), r('netflix', 'expired', null, '2026-10-20'), r('old', 'cancelled', null, null)];

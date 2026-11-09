@@ -40,7 +40,7 @@ export default function useEditProfile() {
     setErrors(current => ({ ...current, [key]: undefined }));
   };
 
-  const onSubmit = async () => {
+  const onSubmit = () => {
     const name = form_data.name.trim();
     const next = {
       name: name ? undefined : 'Enter your name.',
@@ -48,8 +48,7 @@ export default function useEditProfile() {
     };
     setErrors(next);
     if (next.name || next.date_of_birth) return;
-    const saved = await dispatch(updateProfile({ name, phone: joinPhone(form_data.phone_country, form_data.phone), dateOfBirth: form_data.date_of_birth, gender: GENDER_VALUE[form_data.gender] }));
-    if (saved) goBack();
+    dispatch(updateProfile({ name, phone: joinPhone(form_data.phone_country, form_data.phone), dateOfBirth: form_data.date_of_birth, gender: GENDER_VALUE[form_data.gender] }, goBack));
   };
 
   return { user, form_data, update, errors, today, saving, request_error, onSubmit };

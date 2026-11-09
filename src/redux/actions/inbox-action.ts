@@ -1,67 +1,66 @@
-import { disconnectInbox, getInbox, listInboxSubscriptions, reconnectInbox, syncInbox } from '../../api_services/inbox';
-import { runRequest, type AppThunk } from '../runRequest';
-import { setImported, setInbox, setInboxError, setInboxLoading, setSyncError, setSyncing } from '../slices/inbox-slice';
+import { toInbox } from '../../api_services/adapters';
+import apiServices from '../../api_services/request-handler';
+import { requestHandler, type AppThunk } from '../request-handler';
+import { setImported, setInbox, setInboxError, setInboxLoading, setSyncError } from '../slices/inbox-slice';
 import { setNotice } from '../slices/profile-slice';
-import { loadDashboard } from './dashboard-action';
-import { loadList } from './list-action';
-import { loadProfileOverview } from './profile-action';
+import { getAllSubscriptions } from './list-action';
+import { getProfileOverview } from './profile-action';
+
+// Gmail sync and reconnect need Google sign-in, which is not integrated yet.
+const GMAIL_UNAVAILABLE = 'Gmail sync isn’t available yet. Your saved subscriptions are unchanged.';
 
 const flag = (key: 'inbox' | 'imported' | 'reconnect' | 'disconnect') => ({
-  loading: (value: boolean) => setInboxLoading({ key, value }),
-  error: (value: string) => setInboxError({ key, value }),
+  setLoading: (value: boolean) => setInboxLoading({ key, value }),
+  setError: (value: string) => setInboxError({ key, value }),
 });
 
-export function loadInbox(id: string): AppThunk {
+// The connector plus how many subscriptions it originally imported.
+async function getInboxData({ id }: { id: string }) {
+  const [connector, imported] = await Promise.all([apiServices.getConnector({ id }), getAllSubscriptions({ connectorId: id })]);
+  return { ...toInbox(connector), imported_count: imported.length };
+}
+
+export function getInbox(id: string): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return;
     if (getState().inbox.inbox?.id !== id) dispatch(setInbox(null));
-    await dispatch(runRequest({ request: () => getInbox(token, id), ...flag('inbox'), success: setInbox }));
+    await dispatch(requestHandler({ apiService: getInboxData, param_data: { id }, ...flag('inbox'), onDone: inbox => dispatch(setInbox(inbox)) }));
   };
 }
 
-export function loadImported(id: string): AppThunk {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return;
+export function getImportedSubscriptions(id: string): AppThunk {
+  return async dispatch => {
     dispatch(setImported(null));
-    await dispatch(runRequest({ request: () => listInboxSubscriptions(token, id), ...flag('imported'), success: setImported }));
+    await dispatch(requestHandler({ apiService: getAllSubscriptions, param_data: { connectorId: id }, ...flag('imported'), onDone: records => dispatch(setImported(records)) }));
   };
 }
 
-// One job at a time: a second tap while syncing is ignored. Failure keeps saved data and shows its own copy.
-export function syncNow(id: string): AppThunk {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token || getState().inbox.syncing) return;
-    const result = await dispatch(runRequest({ request: () => syncInbox(token, id), loading: setSyncing, error: setSyncError, success: setInbox }));
-    if (result) {
-      dispatch(loadDashboard());
-      dispatch(loadList());
-      dispatch(loadProfileOverview());
-    }
+export function syncInbox(_id: string): AppThunk {
+  return async dispatch => {
+    dispatch(setSyncError(GMAIL_UNAVAILABLE));
   };
 }
 
-export function reconnect(id: string): AppThunk {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return;
-    const result = await dispatch(runRequest({ request: () => reconnectInbox(token, id), ...flag('reconnect'), success: setInbox }));
-    if (result) dispatch(loadProfileOverview());
+export function reconnectInbox(_id: string): AppThunk {
+  return async dispatch => {
+    dispatch(setInboxError({ key: 'reconnect', value: GMAIL_UNAVAILABLE }));
   };
 }
 
-// Resolves true once the server disconnected the inbox; saved subscriptions stay.
-export function disconnect(id: string): AppThunk<boolean> {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return false;
-    const result = await dispatch(runRequest({ request: () => disconnectInbox(token, id), ...flag('disconnect') }));
-    if (!result) return false;
-    dispatch(setInbox(null));
-    dispatch(loadProfileOverview());
-    dispatch(setNotice('Inbox disconnected. Your saved subscriptions stay.'));
-    return true;
+// Disconnect keeps every saved subscription; the screen closes once the server confirms.
+export function disconnectInbox(id: string, onDisconnected: () => void): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.disconnectConnector,
+        param_data: { id },
+        ...flag('disconnect'),
+        onDone: () => {
+          dispatch(setInbox(null));
+          dispatch(getProfileOverview());
+          dispatch(setNotice('Inbox disconnected. Your saved subscriptions stay.'));
+          onDisconnected();
+        },
+      }),
+    );
   };
 }

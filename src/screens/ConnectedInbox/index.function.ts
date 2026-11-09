@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { goBack, navigate } from '../../navigation/service';
-import { disconnect, loadInbox, reconnect, syncNow } from '../../redux/actions/inbox-action';
+import { disconnectInbox, getInbox, reconnectInbox, syncInbox } from '../../redux/actions/inbox-action';
 import { setInboxError, setSyncError } from '../../redux/slices/inbox-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
@@ -34,7 +34,7 @@ export default function useConnectedInbox(route: ConnectedInboxRoute) {
   useFocusEffect(
     useCallback(() => {
       dispatch(setSyncError(''));
-      dispatch(loadInbox(id));
+      dispatch(getInbox(id));
     }, [dispatch, id]),
   );
 
@@ -46,19 +46,19 @@ export default function useConnectedInbox(route: ConnectedInboxRoute) {
   const status_label = STATUS[state];
   const last_sync = syncLabel(view?.lastSync ?? null);
 
-  const retry = () => dispatch(loadInbox(id));
+  const retry = () => dispatch(getInbox(id));
   const openImported = () => navigate('InboxSubscriptions', { id });
-  const runMain = () => (reconnect_needed ? dispatch(reconnect(id)) : dispatch(syncNow(id)));
+  const runMain = () => (reconnect_needed ? dispatch(reconnectInbox(id)) : dispatch(syncInbox(id)));
   const openConfirm = () => {
     dispatch(setInboxError({ key: 'disconnect', value: '' }));
     setConfirmOpen(true);
   };
   const closeConfirm = () => setConfirmOpen(false);
-  const confirmDisconnect = async () => {
-    if (!(await dispatch(disconnect(id)))) return;
+  const onDisconnected = () => {
     setConfirmOpen(false);
     goBack();
   };
+  const confirmDisconnect = () => dispatch(disconnectInbox(id, onDisconnected));
 
   return {
     view,

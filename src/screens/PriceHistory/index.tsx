@@ -11,7 +11,7 @@ import RowView from '../../components/RowView';
 import StateView from '../../components/StateView';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { goBack } from '../../navigation/service';
-import { loadDetail } from '../../redux/actions/detail-action';
+import { getSubscriptionDetail } from '../../redux/actions/detail-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
 import { common_styles } from '../../utils/common_styles';
@@ -29,14 +29,14 @@ export default function PriceHistoryScreen({ route }: Props) {
   const record = detail?.record.id === id ? detail.record : null;
 
   useEffect(() => {
-    if (!record) dispatch(loadDetail(id));
+    if (!record) dispatch(getSubscriptionDetail(id));
   }, [dispatch, id, record]);
 
   return (
     <Container style={styles.main_view}>
       <Header title="Price history" onBack={goBack} />
       {!record ? (
-        <StateView status={error.detail && !loading.detail ? 'failed' : 'loading'} message={error.detail || 'Loading price history.'} onRetry={() => dispatch(loadDetail(id))} />
+        <StateView status={error.detail && !loading.detail ? 'failed' : 'loading'} message={error.detail || 'Loading price history.'} onRetry={() => dispatch(getSubscriptionDetail(id))} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <RowView gap={SIZES.padding2} style={styles.panel}>

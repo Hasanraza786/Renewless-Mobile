@@ -5,8 +5,8 @@ import { viewDocument } from '@react-native-documents/viewer';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { createSound } from 'react-native-nitro-sound';
 import { focusedTab, goBack, navigate } from '../../navigation/service';
-import { loadAiUsage, sendAiTurn } from '../../redux/actions/ai-action';
-import { addSubscription } from '../../redux/actions/detail-action';
+import { getAiUsage, sendAiMessage } from '../../redux/actions/ai-action';
+import { createSubscription } from '../../redux/actions/detail-action';
 import { setAiConsent } from '../../redux/slices/constant-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AiDraft, AiInput, AiUsage, SubscriptionFormInput } from '../../types';
@@ -89,7 +89,7 @@ export default function useAiChat() {
 
   // Free messages left this month (shown under the header); refreshed from every reply.
   useEffect(() => {
-    dispatch(loadAiUsage()).then(value => mounted.current && value && setUsage(value));
+    dispatch(getAiUsage()).then(value => mounted.current && value && setUsage(value));
   }, [dispatch]);
 
   const has_failed = messages.some(message => message.failed);
@@ -108,13 +108,13 @@ export default function useAiChat() {
   const run = async (message: ChatMessage) => {
     if (!message.input) return;
     setThinking(true);
-    const result = await dispatch(sendAiTurn(message.input, added_id ? null : draft));
+    const result = await dispatch(sendAiMessage(message.input, added_id ? null : draft));
     if (!mounted.current) return;
     setThinking(false);
     if ('error' in result) {
       setMessages(current => current.map(item => (item.id === message.id ? { ...item, failed: true } : item)));
       // The send may have failed on the monthly limit; read the count again.
-      dispatch(loadAiUsage()).then(value => mounted.current && value && setUsage(value));
+      dispatch(getAiUsage()).then(value => mounted.current && value && setUsage(value));
       return;
     }
     setUsage(result.usage);
@@ -148,15 +148,17 @@ export default function useAiChat() {
     if (message && !busy) run(message);
   };
 
+  const onAdded = (id: string) => {
+    if (!mounted.current) return;
+    setAddedId(id);
+    navigate('SubscriptionDetail', { id });
+  };
+
   const add = async () => {
     if (!draft || !can_add) return;
     setSaving(true);
-    const id = await dispatch(addSubscription(draftInput(draft)));
-    if (!mounted.current) return;
-    setSaving(false);
-    if (!id) return;
-    setAddedId(id);
-    navigate('SubscriptionDetail', { id });
+    await dispatch(createSubscription(draftInput(draft), onAdded));
+    if (mounted.current) setSaving(false);
   };
 
   const viewAdded = () => added_id && navigate('SubscriptionDetail', { id: added_id });

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFocusEffect, useNavigation, type RouteProp } from '@react-navigation/native';
 import { goBack, navigate } from '../../navigation/service';
-import { loadPayments } from '../../redux/actions/payments-action';
+import { getPayments } from '../../redux/actions/payments-action';
 import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, PaymentRecord, TabParamList } from '../../types';
@@ -31,7 +31,7 @@ export default function usePayments(route: PaymentsRoute) {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(loadPayments(scope));
+      dispatch(getPayments(scope));
     }, [dispatch, scope]),
   );
 
@@ -76,7 +76,7 @@ export default function usePayments(route: PaymentsRoute) {
   // Paging inspects the first month of the new page; the list period never changes.
   const showPage = (start: number) => setInspectChoice(String(start + 1).padStart(2, '0'));
 
-  const retry = () => dispatch(loadPayments(scope));
+  const retry = () => dispatch(getPayments(scope));
 
   const openList = () => navigate('List');
 

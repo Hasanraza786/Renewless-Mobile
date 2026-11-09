@@ -1,13 +1,12 @@
-import { USE_MOCK_API } from '../config/api';
 import { MOCK_DATA } from '../config/mock-data';
 import type { GoogleConnection, ScanCandidate, ScanStatus } from '../types';
 import { localToday } from '../utils/dates';
 import { addDays } from '../utils/scan';
 
-// shortcut: only the development mock adapter exists; the real Google sign-in + Gmail consent and the
-// scan/import API replace these once the backend contract is agreed.
+// Google sign-in + Gmail consent and the scan/import API are not integrated yet; Splash skips Onboarding.
+// shortcut: these fail as unavailable until the Google/Gmail integration replaces them.
 function requireMock(feature: string) {
-  if (!USE_MOCK_API) throw new Error(`${feature} is not available yet.`);
+  throw new Error(`${feature} is not available yet.`);
 }
 
 // Isolated in-memory repository; resetMockOnboarding restores it.
@@ -26,14 +25,7 @@ function fixtureCandidates(): ScanCandidate[] {
 
 export async function connectGoogle(): Promise<GoogleConnection> {
   requireMock('Google sign-in');
-  if (MOCK_DATA.connect_scenario === 'cancelled') return { status: 'cancelled' };
-  const { email, session } = MOCK_DATA.google_account;
-  return {
-    status: 'signed_in',
-    session: { token: session.token, user: { ...session.user } },
-    gmail_granted: MOCK_DATA.connect_scenario === 'granted',
-    inbox_email: email,
-  };
+  return { status: 'cancelled' };
 }
 
 export async function startScan(): Promise<{ job_id: string }> {

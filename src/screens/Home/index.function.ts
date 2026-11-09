@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, AppState } from 'react-native';
 import { useFocusEffect, type RouteProp } from '@react-navigation/native';
-import { loadDashboard } from '../../redux/actions/dashboard-action';
+import { getDashboard } from '../../redux/actions/dashboard-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { navigate } from '../../navigation/service';
 import { setWidgetPromptSeen } from '../../redux/slices/constant-slice';
@@ -24,7 +24,7 @@ export default function useHome(route: HomeRoute) {
   // a usable snapshot stays on screen while it reloads.
   useFocusEffect(
     useCallback(() => {
-      const reload = () => dispatch(loadDashboard());
+      const reload = () => dispatch(getDashboard());
       reload();
       const app_state = AppState.addEventListener('change', state => state === 'active' && reload());
       const now = new Date();
@@ -69,7 +69,7 @@ export default function useHome(route: HomeRoute) {
   // Skeleton only before the first snapshot; errors without data offer retry, never an empty account.
   const status = data ? 'ready' : error && !loading ? 'failed' : 'loading';
 
-  const retry = () => dispatch(loadDashboard());
+  const retry = () => dispatch(getDashboard());
   const openAdd = () => setAddOpen(true);
   const closeAdd = () => setAddOpen(false);
   const openAddManual = () => navigate('AddSubscription');

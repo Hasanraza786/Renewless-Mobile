@@ -1,57 +1,82 @@
-import { getReminderSettings, listAlerts, previewReminderApply, saveReminderSettings } from '../../api_services/alerts';
+import { fromReminderSettings, toAlert, toReminderSettings } from '../../api_services/adapters';
+import type { AlertDto } from '../../api_services/dto';
+import apiServices from '../../api_services/request-handler';
 import type { ReminderApply, ReminderSettings } from '../../types';
-import { runRequest, type AppThunk } from '../runRequest';
+import { successHaptic } from '../../utils/haptics';
+import { requestHandler, type AppThunk } from '../request-handler';
 import { setAlerts, setAlertsError, setAlertsLoading, setReminderSettings } from '../slices/alerts-slice';
 import { setNotice } from '../slices/profile-slice';
-import { loadDetail } from './detail-action';
-import { successHaptic } from '../../utils/haptics';
+import { getSubscriptionDetail } from './detail-action';
 
 const flag = (key: 'alerts' | 'settings' | 'save') => ({
-  loading: (value: boolean) => setAlertsLoading({ key, value }),
-  error: (value: string) => setAlertsError({ key, value }),
+  setLoading: (value: boolean) => setAlertsLoading({ key, value }),
+  setError: (value: string) => setAlertsError({ key, value }),
 });
 
-export function loadAlerts(): AppThunk {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return;
-    await dispatch(runRequest({ request: () => listAlerts(token), ...flag('alerts'), success: setAlerts }));
+async function getAllAlerts() {
+  const items: AlertDto[] = [];
+  let cursor: string | undefined;
+  do {
+    const page = await apiServices.getAlerts({ cursor, limit: 100 });
+    items.push(...page.items);
+    cursor = page.nextCursor ?? undefined;
+  } while (cursor);
+  return items.map(toAlert);
+}
+
+export function getAlerts(): AppThunk {
+  return async dispatch => {
+    await dispatch(requestHandler({ apiService: getAllAlerts, ...flag('alerts'), onDone: alerts => dispatch(setAlerts(alerts)) }));
   };
 }
 
-export function loadReminderSettings(): AppThunk {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return;
-    await dispatch(runRequest({ request: () => getReminderSettings(token), ...flag('settings'), success: setReminderSettings }));
+export function getReminderSettings(): AppThunk {
+  return async dispatch => {
+    await dispatch(requestHandler({ apiService: apiServices.getReminderSettings, ...flag('settings'), onDone: settings => dispatch(setReminderSettings(toReminderSettings(settings))) }));
   };
 }
 
-// Resolves true once the server saved the settings (and any chosen existing-subscription timing).
-export function saveReminders(settings: ReminderSettings, apply: ReminderApply): AppThunk<boolean> {
+// Save the defaults; "Existing subscriptions too" then applies them to the eligible records counted now.
+async function saveSettingsAndApply({ settings, apply }: { settings: ReminderSettings; apply: ReminderApply }) {
+  const saved = await apiServices.saveReminderSettings(fromReminderSettings(settings));
+  if (apply.existing) {
+    const { affectedCount } = await apiServices.previewReminderApply({ preserveCustom: apply.keep_custom });
+    if (affectedCount) await apiServices.applyReminderDefault({ revision: saved.revision, preserveCustom: apply.keep_custom, expectedCount: affectedCount });
+  }
+  return saved;
+}
+
+export function saveReminderSettings(settings: ReminderSettings, apply: ReminderApply, onSaved: () => void): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return false;
-    const saved = await dispatch(runRequest({ request: () => saveReminderSettings(token, settings, apply), ...flag('save'), success: setReminderSettings }));
-    if (!saved) return false;
-    // A cached Detail shows the account default; refresh it.
-    const open_detail = getState().detail.detail?.record.id;
-    if (open_detail) dispatch(loadDetail(open_detail));
-    successHaptic();
-    dispatch(setNotice('Reminder settings saved.'));
-    return true;
+    await dispatch(
+      requestHandler({
+        apiService: saveSettingsAndApply,
+        param_data: { settings, apply },
+        ...flag('save'),
+        onDone: saved => {
+          dispatch(setReminderSettings(toReminderSettings(saved)));
+          // A cached Detail shows the account default; refresh it.
+          const open_detail = getState().detail.detail?.record.id;
+          if (open_detail) dispatch(getSubscriptionDetail(open_detail));
+          successHaptic();
+          dispatch(setNotice('Reminder settings saved.'));
+          onSaved();
+        },
+      }),
+    );
   };
 }
 
 // Affected-subscription count for the confirmation dialog, or null if it can't be read.
-export function previewApply(keep_custom: boolean): AppThunk<number | null> {
-  return async (_dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return null;
-    try {
-      return (await previewReminderApply(token, keep_custom)).count;
-    } catch {
-      return null;
-    }
+export function getApplyCount(keep_custom: boolean, onCount: (count: number | null) => void): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.previewReminderApply,
+        param_data: { preserveCustom: keep_custom },
+        onDone: ({ affectedCount }) => onCount(affectedCount),
+        onError: () => onCount(null),
+      }),
+    );
   };
 }

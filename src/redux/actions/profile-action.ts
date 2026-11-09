@@ -1,64 +1,62 @@
-import { deleteAccount as deleteAccountRequest, updateProfile as updateProfileRequest, type ProfileInput } from '../../api_services/auth';
-import { getProfileOverview } from '../../api_services/profile';
-import { resetMockInbox } from '../../api_services/inbox';
-import { resetMockSubscriptions } from '../../api_services/subscription-store';
-import { USE_MOCK_API } from '../../config/api';
-import { endSession } from '../endSession';
-import { runRequest, type AppThunk } from '../runRequest';
-import { setSession } from '../slices/constant-slice';
-import { setNotice, setOverview, setOverviewError, setOverviewLoading, setProfileError, setProfileLoading, setProfileUser } from '../slices/profile-slice';
+import { toInbox, toProfile } from '../../api_services/adapters';
+import apiServices from '../../api_services/request-handler';
+import type { ProfileInput } from '../../types';
 import { successHaptic } from '../../utils/haptics';
+import { endSession } from '../endSession';
+import { requestHandler, type AppThunk } from '../request-handler';
+import { setUser } from '../slices/constant-slice';
+import { setNotice, setOverview, setOverviewError, setOverviewLoading, setProfileError, setProfileLoading, setProfileUser } from '../slices/profile-slice';
 
-export function loadProfileOverview(): AppThunk {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return;
-    await dispatch(
-      runRequest({
-        request: () => getProfileOverview(token),
-        loading: setOverviewLoading,
-        error: setOverviewError,
-        success: setOverview,
-      }),
-    );
+// Connected inboxes and all-time confirmed payment totals per currency.
+async function getProfileData() {
+  const [{ connectors }, summary] = await Promise.all([apiServices.getConnectors(), apiServices.getPaymentsSummary()]);
+  return { inboxes: connectors.map(toInbox), payment_totals: summary.totals };
+}
+
+export function getProfileOverview(): AppThunk {
+  return async dispatch => {
+    await dispatch(requestHandler({ apiService: getProfileData, setLoading: setOverviewLoading, setError: setOverviewError, onDone: overview => dispatch(setOverview(overview)) }));
   };
 }
 
-// Resolves true when saved; a failure keeps the draft on screen with the error.
-export function updateProfile(input: ProfileInput): AppThunk<boolean> {
+// Saved → back to Profile with a notice; a failure keeps the draft on screen with the error.
+export function updateProfile(input: ProfileInput, onSaved: () => void): AppThunk {
   return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return false;
-    const result = await dispatch(
-      runRequest({
-        request: () => updateProfileRequest(token, input),
-        loading: setProfileLoading,
-        error: setProfileError,
-        success: response => [setSession(response), setProfileUser(response.user)],
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.updateMe,
+        param_data: { revision: getState().constant.user?.revision ?? 0, name: input.name, phone: input.phone || null, dateOfBirth: input.dateOfBirth, gender: input.gender },
+        setLoading: setProfileLoading,
+        onDone: ({ user }) => {
+          const profile = toProfile(user);
+          dispatch(setUser(profile));
+          dispatch(setProfileUser(profile));
+          successHaptic();
+          dispatch(setNotice('Profile updated.'));
+          onSaved();
+        },
+        onError: error => dispatch(setProfileError(Object.values(error.field_errors)[0] ?? error.message)),
       }),
     );
-    if (!result) return false;
-    successHaptic();
-    dispatch(setNotice('Profile updated.'));
-    return true;
   };
 }
 
 // Deletion ends the session locally only after the server confirms it.
-export function deleteAccount(): AppThunk<boolean> {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return false;
-    const result = await dispatch(
-      runRequest({ request: () => deleteAccountRequest(token), loading: setProfileLoading, error: setProfileError, endOnUnauthorized: false }),
+// shortcut: the approved dialog asks for DELETE, not the password the backend requires; send it once the dialog collects it.
+export function deleteAccount(password: string): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.deleteMe,
+        param_data: { password },
+        setLoading: setProfileLoading,
+        setError: setProfileError,
+        endOnUnauthorized: false,
+        onDone: () => {
+          dispatch(endSession());
+          dispatch(setNotice('Account deleted.'));
+        },
+      }),
     );
-    if (!result) return false;
-    if (USE_MOCK_API) {
-      resetMockSubscriptions();
-      resetMockInbox();
-    }
-    dispatch(endSession());
-    dispatch(setNotice('Account deleted.'));
-    return true;
   };
 }

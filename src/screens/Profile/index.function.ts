@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { navigate, resetRoot } from '../../navigation/service';
-import { logout } from '../../redux/actions/auth-action';
-import { deleteAccount, loadProfileOverview } from '../../redux/actions/profile-action';
+import { navigate } from '../../navigation/service';
+import { logoutUser } from '../../redux/actions/auth-action';
+import { deleteAccount, getProfileOverview } from '../../redux/actions/profile-action';
 import { selectUser, setNotice, setProfileError } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 
@@ -26,7 +26,7 @@ export default function useProfile() {
   // Inboxes and payment totals refresh on every visit.
   useFocusEffect(
     useCallback(() => {
-      dispatch(loadProfileOverview());
+      dispatch(getProfileOverview());
     }, [dispatch]),
   );
 
@@ -60,17 +60,16 @@ export default function useProfile() {
   const showSupport = () => notice('Support is currently unavailable. Please try again later.');
   const showUnavailable = () => notice(UNAVAILABLE);
 
-  const confirmLogout = async () => {
-    await dispatch(logout());
+  // Logout and deletion end the session, which returns to Login.
+  const confirmLogout = () => {
     setDialog(null);
-    resetRoot([{ name: 'AuthStack' }]);
+    dispatch(logoutUser());
   };
 
-  const confirmDelete = async () => {
+  // shortcut: the approved dialog collects "DELETE", but the backend asks for the account password; this sends the typed text until the dialog is updated.
+  const confirmDelete = () => {
     if (delete_text.trim() !== 'DELETE') return;
-    if (!(await dispatch(deleteAccount()))) return;
-    setDialog(null);
-    resetRoot([{ name: 'AuthStack' }]);
+    dispatch(deleteAccount(delete_text.trim()));
   };
 
   return {

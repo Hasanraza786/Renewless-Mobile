@@ -68,7 +68,7 @@ export function connectOnboardingGoogle(): AppThunk<OnboardingStep | null> {
   };
 }
 
-export function pollOnboardingScan(): AppThunk {
+export function getOnboardingScan(): AppThunk {
   return async (dispatch, getState) => {
     const job_id = getState().onboarding.scan_job_id;
     if (!job_id) return;

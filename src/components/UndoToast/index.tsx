@@ -38,7 +38,7 @@ export default function UndoToast() {
       <RowView accessibilityRole="alert" justify_content="space-between" gap={SIZES.padding2} style={styles.toast}>
         <CustomText text={removed ? `Removed ${removed.name} from Renewless.` : notice!} weight={FONTS.regular} size={SIZES.sm} style={styles.text} />
         {removed ? (
-          <Pressable accessibilityRole="button" accessibilityLabel={`Undo removing ${removed.name}`} hitSlop={SIZES.padding2} onPress={() => dispatch(restoreSubscription(removed.id))}>
+          <Pressable accessibilityRole="button" accessibilityLabel={`Undo removing ${removed.name}`} hitSlop={SIZES.padding2} onPress={() => dispatch(restoreSubscription(removed.id, removed.undo_token))}>
             <CustomText text="Undo" color={COLORS.primary} size={SIZES.sm} />
           </Pressable>
         ) : null}

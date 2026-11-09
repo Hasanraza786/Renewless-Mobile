@@ -1,13 +1,12 @@
-import { USE_MOCK_API } from '../config/api';
 import { MOCK_DATA } from '../config/mock-data';
 import type { AiDraft, AiInput, AiReply, AiUsage } from '../types';
 import { EMPTY_DRAFT, applyMessage, findService } from '../utils/ai-draft';
 import { localToday } from '../utils/dates';
 import { addDays } from '../utils/scan';
-import { request } from './http';
 
 // One turn of the Loop conversation: the server reads the message (text, voice or one image/PDF) against the
 // current draft and returns Loop's reply with the updated draft. Media is discarded after extraction.
+// AI chat is not integrated with the backend yet; it runs on this mock in every build.
 // shortcut: the mock parses text deterministically, hears a fixed transcript and reads a fixed receipt; the backend does real extraction.
 const MOCK_LIMIT = 50;
 let mock_used = MOCK_DATA.ai_usage_used;
@@ -25,13 +24,11 @@ export function resetMockAi() {
 }
 
 // Free messages left this month, shown under the chat header before the first send.
-export async function getAiUsage(token: string): Promise<AiUsage> {
-  if (!USE_MOCK_API) return request<AiUsage>('/ai/usage', { token });
+export async function getAiUsage(_token: string): Promise<AiUsage> {
   return mockUsage();
 }
 
-export async function sendAiMessage(token: string, input: AiInput, draft: AiDraft | null): Promise<AiReply> {
-  if (!USE_MOCK_API) return request<AiReply>('/ai/messages', { method: 'POST', token, body: { input, draft } });
+export async function sendAiMessage(_token: string, input: AiInput, draft: AiDraft | null): Promise<AiReply> {
   await new Promise<void>(resolve => setTimeout(resolve, MOCK_DATA.ai_reply_ms));
   if (mock_used >= MOCK_LIMIT) throw Object.assign(new Error('No free messages left this month.'), { status: 429, code: 'AI_MONTHLY_LIMIT' });
   // Counted once, when the message is answered; a failed send and its Retry are not counted twice.

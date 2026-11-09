@@ -17,8 +17,11 @@ import {
 } from './slices';
 import { redux_storage } from './storage';
 
+// The login token is never written to storage here; it lives in the Keychain (utils/session-token).
+const constant_reducer = persistReducer({ key: 'constant', storage: redux_storage, blacklist: ['token'] }, constantReducer);
+
 const root_reducer = combineReducers({
-  constant: constantReducer,
+  constant: constant_reducer,
   auth: authReducer,
   profile: profileReducer,
   dashboard: dashboardReducer,
@@ -35,7 +38,7 @@ const persisted_reducer = persistReducer(
   {
     key: 'root',
     storage: redux_storage,
-    whitelist: ['constant'],
+    whitelist: [],
   },
   root_reducer,
 );

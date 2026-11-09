@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { Linking, TextInput } from 'react-native';
 import { requestNotifications } from 'react-native-permissions';
 import { goBack } from '../../navigation/service';
-import { loadReminderSettings, previewApply, saveReminders } from '../../redux/actions/alerts-action';
+import { getReminderSettings, getApplyCount, saveReminderSettings } from '../../redux/actions/alerts-action';
 import { setAlertsError } from '../../redux/slices/alerts-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { accountDisplay, accountValues, nextAccountValues } from '../../utils/alerts';
@@ -25,7 +25,7 @@ export default function useReminderSettings() {
 
   useEffect(() => {
     dispatch(setAlertsError({ key: 'save', value: '' }));
-    dispatch(loadReminderSettings());
+    dispatch(getReminderSettings());
   }, [dispatch]);
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function useReminderSettings() {
     update('custom', value.replace(/\D/g, '').slice(0, 3));
     setCustomError('');
   };
-  const retry = () => dispatch(loadReminderSettings());
+  const retry = () => dispatch(getReminderSettings());
 
   // Settings opens the app's page in iOS Settings; a not-yet-asked permission shows the system prompt instead.
   const openDevice = async () => {
@@ -59,22 +59,24 @@ export default function useReminderSettings() {
     } else Linking.openSettings();
   };
 
-  const commit = async (existing: boolean, keep_custom: boolean) => {
-    if (!draft) return;
-    const custom_days = draft.values.includes('custom') ? Number(draft.custom) : null;
-    const saved = await dispatch(
-      saveReminders(
-        { push_enabled: draft.push_enabled, renewals: draft.renewals, trials: draft.trials, days: normalizeOffsets(draft.values, custom_days), time: draft.time },
-        { existing, keep_custom },
-      ),
-    );
-    if (saved) {
-      setConfirm(null);
-      goBack();
-    }
+  const onSaved = () => {
+    setConfirm(null);
+    goBack();
   };
 
-  const onSave = async () => {
+  const commit = (existing: boolean, keep_custom: boolean) => {
+    if (!draft || !settings) return;
+    const custom_days = draft.values.includes('custom') ? Number(draft.custom) : null;
+    dispatch(
+      saveReminderSettings(
+        { push_enabled: draft.push_enabled, renewals: draft.renewals, trials: draft.trials, days: normalizeOffsets(draft.values, custom_days), time: draft.time, revision: settings.revision },
+        { existing, keep_custom },
+        onSaved,
+      ),
+    );
+  };
+
+  const onSave = () => {
     if (!draft || loading.save) return;
     const custom_days = Number(draft.custom);
     if (draft.push_enabled && draft.values.includes('custom') && (!/^\d+$/.test(draft.custom) || custom_days < 1 || custom_days > 365)) {
@@ -84,18 +86,18 @@ export default function useReminderSettings() {
       return;
     }
     if (draft.push_enabled && draft.scope === SCOPES[1]) {
-      setConfirm({ keep_custom: true, count: await dispatch(previewApply(true)) });
+      setConfirm({ keep_custom: true, count: null });
+      dispatch(getApplyCount(true, count => setConfirm(current => (current?.keep_custom ? { keep_custom: true, count } : current))));
       return;
     }
-    await commit(false, true);
+    commit(false, true);
   };
 
-  const toggleKeepCustom = async () => {
+  const toggleKeepCustom = () => {
     if (!confirm) return;
     const keep_custom = !confirm.keep_custom;
     setConfirm({ keep_custom, count: confirm.count });
-    const count = await dispatch(previewApply(keep_custom));
-    setConfirm(current => (current && current.keep_custom === keep_custom ? { keep_custom, count } : current));
+    dispatch(getApplyCount(keep_custom, count => setConfirm(current => (current && current.keep_custom === keep_custom ? { keep_custom, count } : current))));
   };
 
   const closeConfirm = () => setConfirm(null);

@@ -1,8 +1,8 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { login, signInSocial } from '../../redux/actions/auth-action';
+import { login, socialLogin } from '../../redux/actions/auth-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthProvider, AuthStackParamList } from '../../types';
-import { enterApp, useAuthForm } from '../../utils/auth-form';
+import { useAuthForm } from '../../utils/auth-form';
 import { navigate } from '../../navigation/service';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'Login'>['route'];
@@ -13,18 +13,17 @@ export default function useLogin(route: Route) {
   const loading = useAppSelector(state => state.auth.loading.login || state.auth.loading.social);
   const form = useAuthForm(['email', 'password']);
 
-  const onSubmit = async () => {
+  // Credential failures stay generic, under the password field.
+  const onFieldError = (field: 'email' | 'password', message: string) => form.setErrors({ [field]: message });
+
+  const onSubmit = () => {
     if (loading || !form.validateAll()) return;
     const { email, password } = form.form_data;
-    const result = await dispatch(login(email, password));
-    if (result === 'session') enterApp(intent);
-    else if (result === 'verify') navigate('Otp', { purpose: 'signup', email: email.trim(), intent });
-    // Credential failures stay generic, under the password field.
-    else form.setErrors({ password: 'Wrong email or password. Please try again.' });
+    dispatch(login(email, password, intent, onFieldError));
   };
 
-  const onSocial = async (provider: AuthProvider) => {
-    if (await dispatch(signInSocial(provider))) enterApp(intent);
+  const onSocial = (_provider: AuthProvider) => {
+    dispatch(socialLogin());
   };
 
   const openForgot = () => navigate('ForgotPassword');

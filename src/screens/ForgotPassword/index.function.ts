@@ -3,7 +3,7 @@ import { forgotPassword } from '../../redux/actions/auth-action';
 import { authError } from '../../redux/slices/auth-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { useAuthForm } from '../../utils/auth-form';
-import { goBack, navigate, popTo } from '../../navigation/service';
+import { goBack, popTo } from '../../navigation/service';
 
 export default function useForgotPassword() {
   const dispatch = useAppDispatch();
@@ -18,10 +18,9 @@ export default function useForgotPassword() {
   }, [dispatch, email_value]);
 
   // An unknown email stays here with the error under Email.
-  const onSubmit = async () => {
+  const onSubmit = () => {
     if (loading || !form.validateAll()) return;
-    const email = form.form_data.email.trim();
-    if ((await dispatch(forgotPassword(email))) !== undefined) navigate('Otp', { purpose: 'reset', email });
+    dispatch(forgotPassword(form.form_data.email));
   };
 
   const openLogin = () => popTo('Login');

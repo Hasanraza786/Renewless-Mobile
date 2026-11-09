@@ -3,7 +3,7 @@ import { AppState, Linking } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { checkNotifications, type PermissionStatus } from 'react-native-permissions';
 import { navigate } from '../../navigation/service';
-import { loadAlerts, loadReminderSettings } from '../../redux/actions/alerts-action';
+import { getAlerts, getReminderSettings } from '../../redux/actions/alerts-action';
 import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { SentAlert } from '../../types';
@@ -35,8 +35,8 @@ export default function useAlerts() {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(loadAlerts());
-      dispatch(loadReminderSettings());
+      dispatch(getAlerts());
+      dispatch(getReminderSettings());
     }, [dispatch]),
   );
 
@@ -45,7 +45,7 @@ export default function useAlerts() {
   // Blocked device permission wins; otherwise an app-level pause shows its own notice.
   const banner = permission === 'blocked' ? 'blocked' : settings && !settings.push_enabled ? 'paused' : null;
 
-  const retry = () => dispatch(loadAlerts());
+  const retry = () => dispatch(getAlerts());
   const openSettings = () => navigate('ReminderSettings');
   const openDeviceSettings = () => Linking.openSettings();
   const openAlert = (alert: SentAlert) =>

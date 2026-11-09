@@ -1,11 +1,9 @@
 import { useState } from 'react';
-import { Alert } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { resendCode, verifyCode } from '../../redux/actions/auth-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList } from '../../types';
-import { enterApp } from '../../utils/auth-form';
-import { goBack, navigate } from '../../navigation/service';
+import { goBack } from '../../navigation/service';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'Otp'>['route'];
 
@@ -13,30 +11,28 @@ export const CODE_LENGTH = 6;
 
 export default function useOtp(route: Route) {
   const { purpose, email, intent } = route.params;
+  // Resend issues a new challenge; the newest one is the one to verify.
   const dispatch = useAppDispatch();
   const loading = useAppSelector(state => state.auth.loading.otp);
   const [code, setCode] = useState('');
   const [code_error, setCodeError] = useState('');
+  const [challenge_id, setChallengeId] = useState(route.params.challenge_id);
 
   const onChangeCode = (value: string) => {
     setCode(value.replace(/\D/g, '').slice(0, CODE_LENGTH));
     setCodeError('');
   };
 
-  const onSubmit = async () => {
+  // Signup verification signs in; reset verification only authorizes choosing a new password.
+  const onSubmit = () => {
     if (loading) return;
     if (code.length !== CODE_LENGTH) return setCodeError('Enter the complete 6-digit code.');
-    const result = await dispatch(verifyCode(purpose, email, code));
-    if (!result) return setCodeError('That code is incorrect or has expired.');
-    // Signup verification signs in; reset verification only authorizes choosing a new password.
-    if ('reset_token' in result) navigate('ResetPassword', { reset_token: result.reset_token });
-    else enterApp(intent);
+    dispatch(verifyCode(purpose, challenge_id, code, intent, setCodeError));
   };
 
   // shortcut: resend feedback uses a system alert; replace if a shared toast/notice is designed.
-  const onResend = async () => {
-    const sent = await dispatch(resendCode(email));
-    Alert.alert(sent === undefined ? 'You can request a new code after 2 minutes.' : 'We sent you a new code.');
+  const onResend = () => {
+    dispatch(resendCode(challenge_id, setChallengeId));
   };
 
   return {

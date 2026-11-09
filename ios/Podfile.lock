@@ -1970,6 +1970,28 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - RNKeychain (11.0.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - RNPermissions (5.6.3):
     - hermes-engine
     - RCTRequired
@@ -2210,6 +2232,7 @@ DEPENDENCIES:
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - "RNGoogleSignin (from `../node_modules/@react-native-google-signin/google-signin`)"
+  - RNKeychain (from `../node_modules/react-native-keychain`)
   - RNPermissions (from `../node_modules/react-native-permissions`)
   - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNScreens (from `../node_modules/react-native-screens`)
@@ -2422,6 +2445,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNGoogleSignin:
     :path: "../node_modules/@react-native-google-signin/google-signin"
+  RNKeychain:
+    :path: "../node_modules/react-native-keychain"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
   RNReactNativeHapticFeedback:
@@ -2541,6 +2566,7 @@ SPEC CHECKSUMS:
   RNDateTimePicker: e2d1fa58ac2faa1e318fd4b1e86633c8ab4bdc73
   RNGestureHandler: 25c45091b113a1985be3cce8e84fa41fcdf4c619
   RNGoogleSignin: 4437d2b34d3015b2bcc63771bf140ad574f606c8
+  RNKeychain: adb06962df5ecb5253ad8265de3b2cec95edab56
   RNPermissions: d995d919dd8f83848f2ceb18377e329d0ddff676
   RNReactNativeHapticFeedback: 7f0e5435fa5153de77f2e61796cbbba5eb131a87
   RNScreens: fd649b2059b4c136530f10e8001464b69cb634f4

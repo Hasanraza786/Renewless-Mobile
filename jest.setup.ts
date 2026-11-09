@@ -28,3 +28,20 @@ jest.mock('react-native-mmkv', () => {
     }),
   };
 });
+
+// The session token lives in the Keychain; tests keep it in memory.
+jest.mock('react-native-keychain', () => {
+  let saved: { username: string; password: string } | false = false;
+  return {
+    ACCESSIBLE: { AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY: 'AfterFirstUnlockThisDeviceOnly' },
+    getGenericPassword: jest.fn(async () => saved),
+    setGenericPassword: jest.fn(async (username: string, password: string) => {
+      saved = { username, password };
+      return true;
+    }),
+    resetGenericPassword: jest.fn(async () => {
+      saved = false;
+      return true;
+    }),
+  };
+});

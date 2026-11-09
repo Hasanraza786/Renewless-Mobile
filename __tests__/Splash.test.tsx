@@ -31,7 +31,7 @@ test('Reduced Motion renders both completed strokes and completes once', async (
   await act(async () => { tree = ReactTestRenderer.create(<Splash />); });
   const reveal = tree!.root.findByType(Icons).props.reveal;
   expect(reveal.progress.map((value: { __getValue: () => number }) => value.__getValue())).toEqual([1, 1]);
-  expect(on_complete).toHaveBeenCalledWith('Onboarding');
+  expect(on_complete).toHaveBeenCalledWith('Login');
   expect(mock_dispatch).toHaveBeenCalledWith(setSplashSeen());
   expect(on_complete).toHaveBeenCalledTimes(1);
   await act(async () => { tree!.update(<Splash />); });

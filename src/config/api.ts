@@ -7,6 +7,3 @@ if (!configured_url) {
 }
 
 export const API_BASE_URL = configured_url;
-
-// Development builds use the mock service adapters; release builds never fall back to mocks.
-export const USE_MOCK_API = __DEV__;

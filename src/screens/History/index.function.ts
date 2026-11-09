@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { navigate } from '../../navigation/service';
-import { loadList } from '../../redux/actions/list-action';
+import { getSubscriptions } from '../../redux/actions/list-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { filterHistory, historyRecords, type HistoryStatus } from '../../utils/history';
 
@@ -15,7 +15,7 @@ export default function useHistory() {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(loadList());
+      dispatch(getSubscriptions());
     }, [dispatch]),
   );
 
@@ -34,7 +34,7 @@ export default function useHistory() {
   };
   const openFilters = () => setFiltersOpen(true);
   const closeFilters = () => setFiltersOpen(false);
-  const retry = () => dispatch(loadList());
+  const retry = () => dispatch(getSubscriptions());
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });
   const openList = () => navigate('List');
 

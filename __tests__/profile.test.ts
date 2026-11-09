@@ -1,4 +1,3 @@
-import { changePassword, login, resetMockAuth, updateProfile } from '../src/api_services/auth';
 import { passwordErrors } from '../src/screens/ChangePassword/index.function';
 import { initials } from '../src/screens/Profile/index.function';
 
@@ -23,17 +22,4 @@ test('initials use the first two words', () => {
   expect(initials('Alex Morgan')).toBe('AM');
   expect(initials('  cher ')).toBe('C');
   expect(initials('')).toBe('R');
-});
-
-test('mock profile edits persist and only email accounts change passwords', async () => {
-  resetMockAuth();
-  const session = await login('alex@example.com', 'sample123');
-  if (!('token' in session)) throw new Error('expected a session');
-  expect(session.user).toMatchObject({ provider: 'email', hasPassword: true });
-  const saved = await updateProfile(session.token, { name: ' Alex M ', phone: '+1 202 555 0143', dateOfBirth: '1993-03-14', gender: 'female' });
-  expect(saved.user).toMatchObject({ name: 'Alex M', phone: '+1 202 555 0143', dateOfBirth: '1993-03-14', gender: 'female' });
-  await expect(changePassword(session.token, 'wrong', 'newpass12')).rejects.toThrow('Your current password is incorrect.');
-  await changePassword(session.token, 'sample123', 'newpass12');
-  expect('token' in (await login('alex@example.com', 'newpass12'))).toBe(true);
-  await expect(changePassword('mock-google-mock-user-1', 'x', 'newpass12')).rejects.toThrow('You sign in with Google');
 });

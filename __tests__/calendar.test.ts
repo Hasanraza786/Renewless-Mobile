@@ -1,4 +1,3 @@
-import { monthEvents } from '../src/api_services/home';
 import type { HomeEvent } from '../src/types';
 import { dayMarker, nearestEvent, shiftMonth } from '../src/utils/calendar';
 
@@ -25,26 +24,4 @@ test('the nearest card skips past events and names the event', () => {
   expect(nearestEvent([ev('a', '2026-10-02'), ev('b', today)], today)!.heading).toBe('Due today');
   expect(nearestEvent([ev('a', '2026-10-31', 'trial_end')], today)!.heading).toBe('Trial ending');
   expect(nearestEvent([ev('a', '2026-10-02')], today)).toBeNull();
-});
-
-test('month events clamp month ends and stop at the start date', () => {
-  const base = { platform_id: 'x', name: 'x', plan: null, price: '5.00', currency: 'USD', estimated: false };
-  const items = [
-    { ...base, id: 'monthly', cycle: 'Monthly' as const, next_date: '2027-01-31', start_date: '2026-11-30' },
-    { ...base, id: 'unknown-start', cycle: 'Monthly' as const, next_date: '2026-11-10', start_date: null },
-  ];
-  expect(monthEvents(items, '2027-02').map(item => item.date)).toEqual(['2027-02-10', '2027-02-28']);
-  expect(monthEvents(items, '2026-12').map(item => item.id)).toEqual(['unknown-start:2026-12-10', 'monthly:2026-12-31']);
-  // Before the start date nothing projects; with no start only the previous cycle does.
-  expect(monthEvents(items, '2026-10').map(item => item.id)).toEqual(['unknown-start:2026-10-10']);
-  expect(monthEvents(items, '2026-09')).toEqual([]);
-});
-
-test('an auto-renewing trial ends, then renews every cycle; a trial without auto-renew only ends', () => {
-  const base = { platform_id: 'x', name: 'x', plan: null, price: '11.99', currency: 'USD', estimated: false, cycle: 'Monthly' as const, next_date: '2026-11-13', start_date: '2026-10-14' };
-  const on = { ...base, id: 'on', trial: { auto_renew: true } };
-  const off = { ...base, id: 'off', trial: { auto_renew: false } };
-  expect(monthEvents([on, off], '2026-11').map(item => `${item.id}:${item.kind}`)).toEqual(['off:2026-11-13:trial_end', 'on:2026-11-13:trial_end']);
-  expect(monthEvents([on, off], '2026-12').map(item => `${item.id}:${item.kind}`)).toEqual(['on:2026-12-13:renewal']);
-  expect(monthEvents([on, off], '2026-10')).toEqual([]);
 });

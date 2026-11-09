@@ -77,12 +77,13 @@ export function useSplashReveal(onComplete?: () => void) {
   return { upper_progress, lower_progress, settle_progress, name_progress, tagline_progress };
 }
 
-// First-launch only: once the reveal finishes, remember it and continue to Onboarding.
+// First-launch only: once the reveal finishes, remember it and continue to Login.
+// Onboarding (Google + Gmail scan) is skipped until that integration is built.
 export default function useSplash() {
   const dispatch = useAppDispatch();
   const onComplete = useCallback(() => {
     dispatch(setSplashSeen());
-    replace('Onboarding');
+    replace('Login');
   }, [dispatch]);
   return useSplashReveal(onComplete);
 }

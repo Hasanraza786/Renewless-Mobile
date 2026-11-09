@@ -1,139 +1,189 @@
-import {
-  changePassword as changePasswordRequest,
-  forgotPassword as forgotPasswordRequest,
-  login as loginRequest,
-  logout as logoutRequest,
-  resendCode as resendCodeRequest,
-  resetPassword as resetPasswordRequest,
-  signInWithProvider,
-  signup as signupRequest,
-  verifyResetCode,
-  verifySignupCode,
-} from '../../api_services/auth';
-import type { AuthProvider, AuthResponse } from '../../types';
-import { endSession } from '../endSession';
-import { runRequest, type AppThunk } from '../runRequest';
-import { authError, authLoading } from '../slices/auth-slice';
-import { setNotice, setProfileUser } from '../slices/profile-slice';
-import { setSession } from '../slices/constant-slice';
+import { Alert } from 'react-native';
+import { toProfile } from '../../api_services/adapters';
+import type { SessionDto } from '../../api_services/dto';
+import type { ApiError } from '../../api_services/http-provider';
+import apiServices from '../../api_services/request-handler';
+import { navigate, popTo } from '../../navigation/service';
+import type { AuthIntent } from '../../types';
+import { enterApp } from '../../utils/auth-form';
 import { successHaptic } from '../../utils/haptics';
+import { saveSessionToken } from '../../utils/session-token';
+import { endSession } from '../endSession';
+import { requestHandler, type AppThunk } from '../request-handler';
+import { authError, authLoading } from '../slices/auth-slice';
+import { setSession } from '../slices/constant-slice';
+import { setNotice, setProfileUser } from '../slices/profile-slice';
 
-const startSession = (session: AuthResponse) => [setSession(session), setProfileUser(session.user)];
+const timezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
-// Resolves to 'session', 'verify' (the account still needs its signup code) or undefined on failure.
-export function login(email: string, password: string): AppThunk<'session' | 'verify' | undefined> {
+// Keychain first, then the store, then into the app.
+function startSession(session: SessionDto, intent?: AuthIntent): AppThunk {
   return async dispatch => {
-    const result = await dispatch(
-      runRequest({
-        request: () => loginRequest(email.trim(), password),
-        loading: authLoading('login'),
-        error: authError('login'),
-        success: value => ('token' in value ? startSession(value) : []),
-        endOnUnauthorized: false,
-      }),
-    );
-    if (!result) return undefined;
-    return 'token' in result ? 'session' : 'verify';
+    await saveSessionToken(session.token);
+    const user = toProfile(session.user);
+    dispatch(setSession({ token: session.token, user }));
+    dispatch(setProfileUser(user));
+    // Reminders are sent in the account timezone; keep it in step with the phone.
+    if (session.user.timezone !== timezone()) dispatch(requestHandler({ apiService: apiServices.updateDevice, param_data: { timezone: timezone() } }));
+    enterApp(intent);
   };
 }
 
-// Resolves to '' when the code was sent, otherwise the error to show under Email.
-export function signup(input: { name: string; email: string; password: string }): AppThunk<string> {
-  return async (dispatch, getState) => {
-    const sent = await dispatch(
-      runRequest({
-        request: async () => {
-          await signupRequest(input);
-          return true;
+// Wrong credentials stay under Password; an unverified account goes to its code screen.
+export function login(email: string, password: string, intent: AuthIntent | undefined, onFieldError: (field: 'email' | 'password', message: string) => void): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.login,
+        param_data: { email: email.trim(), password },
+        setLoading: authLoading('login'),
+        endOnUnauthorized: false,
+        onDone: session => dispatch(startSession(session, intent)),
+        onError: (error: ApiError) => {
+          if (error.code === 'EMAIL_NOT_VERIFIED') navigate('Otp', { purpose: 'signup', email: email.trim(), challenge_id: String(error.extra.challengeId), intent });
+          else if (error.field_errors.email) onFieldError('email', error.field_errors.email);
+          else onFieldError('password', error.field_errors.password ?? error.message);
         },
-        loading: authLoading('signup'),
-        error: authError('signup'),
+      }),
+    );
+  };
+}
+
+// The account gets a session only after its email code is verified.
+export function signup(input: { name: string; email: string; password: string }, intent: AuthIntent | undefined, onFieldError: (field: 'name' | 'email' | 'password', message: string) => void): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.signup,
+        param_data: { ...input, timezone: timezone() },
+        setLoading: authLoading('signup'),
         endOnUnauthorized: false,
+        onDone: challenge => navigate('Otp', { purpose: 'signup', email: challenge.email, challenge_id: challenge.challengeId, intent }),
+        onError: error => {
+          const field = (['name', 'password'] as const).find(key => error.field_errors[key]);
+          if (field) onFieldError(field, error.field_errors[field]);
+          else onFieldError('email', error.field_errors.email ?? error.message);
+        },
       }),
     );
-    return sent ? '' : getState().auth.error.signup;
   };
 }
 
-export function signInSocial(provider: AuthProvider) {
-  return runRequest({
-    request: () => signInWithProvider(provider),
-    loading: authLoading('social'),
-    error: authError('social'),
-    success: startSession,
-    endOnUnauthorized: false,
-  });
-}
-
-export function forgotPassword(email: string) {
-  return runRequest({
-    request: () => forgotPasswordRequest(email.trim()),
-    loading: authLoading('forgot'),
-    error: authError('forgot'),
-    endOnUnauthorized: false,
-  });
-}
-
-// Signup verification starts a session; reset verification returns only a reset authorization.
-export function verifyCode(purpose: 'signup' | 'reset', email: string, code: string) {
-  return runRequest<AuthResponse | { reset_token: string }>({
-    request: () => (purpose === 'signup' ? verifySignupCode(email, code) : verifyResetCode(email, code)),
-    loading: authLoading('otp'),
-    error: authError('otp'),
-    success: value => ('token' in value ? startSession(value) : []),
-    endOnUnauthorized: false,
-  });
-}
-
-export function resendCode(email: string) {
-  return runRequest({
-    request: () => resendCodeRequest(email),
-    loading: authLoading('resend'),
-    error: authError('resend'),
-    endOnUnauthorized: false,
-  });
-}
-
-export function resetPassword(reset_token: string, password: string) {
-  return runRequest({
-    request: () => resetPasswordRequest(reset_token, password),
-    loading: authLoading('reset'),
-    error: authError('reset'),
-    endOnUnauthorized: false,
-  });
-}
-
-// Resolves true when the server accepted the new password; a failure keeps the entered draft for retry.
-export function changePassword(current_password: string, password: string): AppThunk<boolean> {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return false;
-    const result = await dispatch(
-      runRequest({
-        request: () => changePasswordRequest(token, current_password, password),
-        loading: authLoading('password'),
-        error: authError('password'),
-      }),
-    );
-    if (!result) return false;
-    successHaptic();
-    dispatch(setNotice('Password updated.'));
-    return true;
+// Google/Apple sign-in is not integrated yet; the buttons explain that instead of signing in.
+export function socialLogin(): AppThunk {
+  return async () => {
+    Alert.alert('Google and Apple sign-in aren’t available yet.', 'Use your email and password for now.');
   };
 }
 
-export function logout(): AppThunk {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    dispatch(authLoading('logout')(true));
-    if (token) {
-      try {
-        await logoutRequest(token);
-      } catch {
-        // Leave the app either way. The session is cleared below.
-      }
+// An unknown email (or a Google/Apple-only account) stays here with the error under Email.
+export function forgotPassword(email: string): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.forgotPassword,
+        param_data: { email: email.trim() },
+        setLoading: authLoading('forgot'),
+        setError: authError('forgot'),
+        endOnUnauthorized: false,
+        onDone: challenge => navigate('Otp', { purpose: 'reset', email: challenge.email, challenge_id: challenge.challengeId }),
+      }),
+    );
+  };
+}
+
+// Signup verification signs in; reset verification only authorizes choosing a new password.
+export function verifyCode(purpose: 'signup' | 'reset', challenge_id: string, code: string, intent: AuthIntent | undefined, onCodeError: (message: string) => void): AppThunk {
+  const onError = (error: ApiError) => onCodeError(error.field_errors.code ?? error.message);
+  const param_data = { challengeId: challenge_id, code };
+  return async dispatch => {
+    if (purpose === 'reset') {
+      await dispatch(
+        requestHandler({
+          apiService: apiServices.verifyReset,
+          param_data,
+          setLoading: authLoading('otp'),
+          endOnUnauthorized: false,
+          onDone: ({ resetToken }) => navigate('ResetPassword', { reset_token: resetToken }),
+          onError,
+        }),
+      );
+      return;
     }
-    dispatch(endSession());
-    dispatch(setNotice('You’re logged out.'));
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.verifySignup,
+        param_data,
+        setLoading: authLoading('otp'),
+        endOnUnauthorized: false,
+        onDone: session => dispatch(startSession(session, intent)),
+        onError,
+      }),
+    );
+  };
+}
+
+// A new code replaces the old challenge; the screen keeps the new ID for verification.
+export function resendCode(challenge_id: string, onSent: (challenge_id: string) => void): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.resendCode,
+        param_data: { challengeId: challenge_id },
+        setLoading: authLoading('resend'),
+        endOnUnauthorized: false,
+        onDone: challenge => {
+          onSent(challenge.challengeId);
+          Alert.alert('We sent you a new code.');
+        },
+        onError: error => Alert.alert(error.message),
+      }),
+    );
+  };
+}
+
+// A successful reset returns to Login; the user signs in with the new password.
+export function resetPassword(reset_token: string, password: string): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.resetPassword,
+        param_data: { resetToken: reset_token, password },
+        setLoading: authLoading('reset'),
+        setError: authError('reset'),
+        endOnUnauthorized: false,
+        onDone: () => popTo('Login'),
+      }),
+    );
+  };
+}
+
+// A wrong current password shows as the request error; success returns to Profile with a notice.
+export function changePassword(current_password: string, password: string, onDone: () => void): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.changePassword,
+        param_data: { currentPassword: current_password, password },
+        setLoading: authLoading('password'),
+        onDone: () => {
+          successHaptic();
+          dispatch(setNotice('Password updated.'));
+          onDone();
+        },
+        onError: error => dispatch(authError('password')(error.field_errors.currentPassword ?? error.field_errors.password ?? error.message)),
+      }),
+    );
+  };
+}
+
+// Leave the app either way: the local session is cleared even if the server call fails.
+export function logoutUser(): AppThunk {
+  return async dispatch => {
+    const leave = () => {
+      dispatch(endSession());
+      dispatch(setNotice('You’re logged out.'));
+    };
+    await dispatch(requestHandler({ apiService: apiServices.logout, setLoading: authLoading('logout'), endOnUnauthorized: false, onDone: leave, onError: leave }));
   };
 }

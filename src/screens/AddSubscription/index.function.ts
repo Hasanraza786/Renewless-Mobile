@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { RouteProp } from '@react-navigation/native';
 import { goBack, replace } from '../../navigation/service';
-import { addSubscription, loadDetail, saveSubscription } from '../../redux/actions/detail-action';
+import { createSubscription, getSubscriptionDetail, updateSubscription } from '../../redux/actions/detail-action';
 import { setDetailError } from '../../redux/slices/detail-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
@@ -27,7 +27,7 @@ export default function useSubscriptionForm(route: SubscriptionFormRoute) {
   // A stale save error from another screen never shows on a fresh form.
   useEffect(() => {
     dispatch(setDetailError({ key: 'mutation', value: '' }));
-    if (edit_id && detail?.record.id !== edit_id) dispatch(loadDetail(edit_id));
+    if (edit_id && detail?.record.id !== edit_id) dispatch(getSubscriptionDetail(edit_id));
     // Only on open: later Detail refreshes must not reset the draft.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, edit_id]);
@@ -53,20 +53,18 @@ export default function useSubscriptionForm(route: SubscriptionFormRoute) {
   const pickService = (name: string, platform_id: string, category: string) =>
     setDraft(current => (current ? { ...current, name, platform_id, category } : current));
 
-  const retry = () => edit_id && dispatch(loadDetail(edit_id));
+  const retry = () => edit_id && dispatch(getSubscriptionDetail(edit_id));
 
-  const onSubmit = async () => {
+  // Replace the form so Back from the new Detail returns to where Add started.
+  const openAdded = (id: string) => replace('SubscriptionDetail', { id });
+
+  const onSubmit = () => {
     if (!draft || saving) return;
     setSubmitted(true);
     if (Object.keys(validateDraft(draft, record, today)).length) return;
     const input = draftToInput(draft, origin, record, today);
-    if (edit_id) {
-      if (await dispatch(saveSubscription(edit_id, input))) goBack();
-      return;
-    }
-    const id = await dispatch(addSubscription(input));
-    // Replace the form so Back from the new Detail returns to where Add started.
-    if (id) replace('SubscriptionDetail', { id });
+    if (edit_id) dispatch(updateSubscription(edit_id, input, goBack));
+    else dispatch(createSubscription(input, openAdded));
   };
 
   return { draft, origin, errors, show_price_change, status, load_error, title, action, today, saving, request_error, update, pickService, retry, onSubmit };

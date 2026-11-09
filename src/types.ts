@@ -13,6 +13,8 @@ export type Profile = {
   // How the account signs in; social-only accounts have no Renewless password.
   provider: 'email' | AuthProvider;
   hasPassword: boolean;
+  // Server revision, sent back with profile edits.
+  revision: number;
 };
 
 // A Gmail inbox the account connected for receipts; lastSync is an ISO time or null.
@@ -40,6 +42,9 @@ export type ProfileOverview = {
   inboxes: ProfileInbox[];
   payment_totals: { currency: string; amount: string }[];
 };
+
+// Edit profile save payload; phone is "+<code> <number>" or empty.
+export type ProfileInput = { name: string; phone: string; dateOfBirth: string | null; gender: Gender | null };
 
 export type AuthResponse = {
   token: string;
@@ -190,6 +195,8 @@ export type SubscriptionRecord = {
   notes: string | null;
   manage_url: string | null;
   price_history: PriceChange[];
+  // Server revision, sent back with every change to this record.
+  revision: number;
 };
 
 // Detail: the record plus server-computed spending and relations.
@@ -241,6 +248,7 @@ export type ReminderSettings = {
   trials: boolean;
   days: number[];
   time: string;
+  revision: number;
 };
 
 // Apply the new default to existing subscriptions too; keep_custom spares individually changed ones.
@@ -329,7 +337,7 @@ export type ListState = {
 export type DetailState = {
   detail: SubscriptionDetail | null;
   // Just-removed tracking that can still be undone (eight seconds).
-  removed: { id: string; name: string } | null;
+  removed: { id: string; name: string; undo_token: string } | null;
   platform: SubscriptionRecord[];
   loading: { detail: boolean; platform: boolean; mutation: boolean };
   error: { detail: string; platform: string; mutation: string };
@@ -458,7 +466,7 @@ export type AuthStackParamList = {
   Signup: { intent?: AuthIntent } | undefined;
   ForgotPassword: undefined;
   // One verification screen for both purposes: signup creates a session, reset only authorizes a new password.
-  Otp: { purpose: 'signup' | 'reset'; email: string; intent?: AuthIntent };
+  Otp: { purpose: 'signup' | 'reset'; email: string; challenge_id: string; intent?: AuthIntent };
   ResetPassword: { reset_token: string };
 };
 

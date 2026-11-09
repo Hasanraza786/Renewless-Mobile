@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { navigate } from '../../navigation/service';
-import { loadList } from '../../redux/actions/list-action';
+import { getSubscriptions } from '../../redux/actions/list-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { SubscriptionRecord, TabParamList } from '../../types';
 import { LIST_SORTS, filterRecords, groupCounts, listGroup, sortRecords, type ListGroup, type ListSort } from '../../utils/list';
@@ -25,7 +25,7 @@ export default function useList(route: ListRoute) {
   // Refresh on every visit; query, filters and sort stay as the user left them.
   useFocusEffect(
     useCallback(() => {
-      dispatch(loadList());
+      dispatch(getSubscriptions());
     }, [dispatch]),
   );
 
@@ -49,7 +49,7 @@ export default function useList(route: ListRoute) {
     setSort(next);
     setDialog(null);
   };
-  const retry = () => dispatch(loadList());
+  const retry = () => dispatch(getSubscriptions());
   const openAdd = () => setAddOpen(true);
   const closeAdd = () => setAddOpen(false);
   const openAddManual = () => navigate('AddSubscription');

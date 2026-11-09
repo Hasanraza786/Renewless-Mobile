@@ -1,8 +1,8 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { signInSocial, signup } from '../../redux/actions/auth-action';
+import { socialLogin, signup } from '../../redux/actions/auth-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthProvider, AuthStackParamList } from '../../types';
-import { enterApp, useAuthForm } from '../../utils/auth-form';
+import { useAuthForm } from '../../utils/auth-form';
 import { navigate } from '../../navigation/service';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'Signup'>['route'];
@@ -13,17 +13,17 @@ export default function useSignup(route: Route) {
   const loading = useAppSelector(state => state.auth.loading.signup || state.auth.loading.social);
   const form = useAuthForm(['name', 'email', 'password', 'confirm']);
 
-  const onSubmit = async () => {
+  const onFieldError = (field: 'name' | 'email' | 'password', message: string) => form.setErrors({ [field]: message });
+
+  // The account gets a session only after its email code is verified.
+  const onSubmit = () => {
     if (loading || !form.validateAll()) return;
     const { name, email, password } = form.form_data;
-    // The account gets a session only after its email code is verified.
-    const error = await dispatch(signup({ name: name.trim(), email: email.trim(), password }));
-    if (error) form.setErrors({ email: error });
-    else navigate('Otp', { purpose: 'signup', email: email.trim(), intent });
+    dispatch(signup({ name: name.trim(), email: email.trim(), password }, intent, onFieldError));
   };
 
-  const onSocial = async (provider: AuthProvider) => {
-    if (await dispatch(signInSocial(provider))) enterApp(intent);
+  const onSocial = (_provider: AuthProvider) => {
+    dispatch(socialLogin());
   };
 
   const openLogin = () => navigate('Login', { intent });

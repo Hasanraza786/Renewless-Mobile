@@ -11,12 +11,49 @@ import ResetPasswordScreen from '../src/screens/ResetPassword';
 import constantReducer from '../src/redux/slices/constant-slice';
 import authReducer from '../src/redux/slices/auth-slice';
 import profileReducer from '../src/redux/slices/profile-slice';
-import { resetMockAuth } from '../src/api_services/auth';
 import { navigate, popTo, resetRoot } from '../src/navigation/service';
 
 jest.mock('../src/navigation/service', () => ({ navigate: jest.fn(), popTo: jest.fn(), goBack: jest.fn(), resetRoot: jest.fn() }));
 
-jest.mock('../src/config/api', () => ({ API_BASE_URL: '', USE_MOCK_API: true }));
+jest.mock('../src/config/api', () => ({ API_BASE_URL: '' }));
+
+// A small fake backend behind apiServices: one verified account, code 123456, a 2-minute resend cooldown.
+const mockBackend = { password: 'sample123' };
+jest.mock('../src/api_services/request-handler', () => {
+  const { ApiError } = require('../src/api_services/http-provider');
+  const user = (name: string, email: string) => ({ id: `u-${email}`, name, email, emailVerified: true, providers: ['password'], hasPassword: true, phone: null, dateOfBirth: null, gender: null, timezone: 'UTC', onboardingCompleted: true, revision: 0 });
+  const challenge = (email: string, id: string) => ({ challengeId: id, email, expiresAt: '', resendAfter: '' });
+  const badCode = () => new ApiError(400, 'OTP_INVALID', 'Check the highlighted fields.', { code: 'That code is incorrect or has expired.' });
+  return {
+    __esModule: true,
+    default: {
+      login: jest.fn(async ({ email, password }: { email: string; password: string }) => {
+        if (email === 'alex@example.com' && password === mockBackend.password) return { token: 'token-alex', user: user('Alex Morgan', email) };
+        throw new ApiError(401, 'INVALID_CREDENTIALS', 'Wrong email or password. Please try again.');
+      }),
+      signup: jest.fn(async ({ email }: { email: string }) => challenge(email, 'signup-1')),
+      verifySignup: jest.fn(async ({ challengeId, code }: { challengeId: string; code: string }) => {
+        if (challengeId !== 'signup-1' || code !== '123456') throw badCode();
+        return { token: 'token-sam', user: user('Sam Lee', 'sam@example.com') };
+      }),
+      resendCode: jest.fn(async () => {
+        throw new ApiError(429, 'RATE_LIMITED', 'You can request a new code in 90 seconds.');
+      }),
+      forgotPassword: jest.fn(async ({ email }: { email: string }) => {
+        if (email !== 'alex@example.com') throw new ApiError(404, 'ACCOUNT_NOT_FOUND', 'No account found with this email.');
+        return challenge(email, 'reset-1');
+      }),
+      verifyReset: jest.fn(async ({ code }: { code: string }) => {
+        if (code !== '123456') throw badCode();
+        return { resetToken: 'rt-1' };
+      }),
+      resetPassword: jest.fn(async ({ password }: { password: string }) => {
+        mockBackend.password = password;
+      }),
+      updateDevice: jest.fn(async () => undefined),
+    },
+  };
+});
 jest.mock('react-native-safe-area-context', () => ({ SafeAreaView: require('react-native').View, useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }) }));
 jest.mock('react-native-svg', () => {
   const NativeView = require('react-native').View;
@@ -47,7 +84,9 @@ const render = async (Screen: React.ComponentType<any>, store: ReturnType<typeof
   return tree!;
 };
 
-beforeEach(() => resetMockAuth());
+beforeEach(() => {
+  mockBackend.password = 'sample123';
+});
 
 test('login validates, keeps credential errors generic, and enters Home on success', async () => {
   const store = makeStore();
@@ -64,7 +103,7 @@ test('login validates, keeps credential errors generic, and enters Home on succe
 
   await act(async () => { type(tree, 'Password', 'sample123'); });
   await act(async () => { press(tree, 'Log in'); });
-  expect(store.getState().constant.token).toBe('mock-email-mock-user-1');
+  expect(store.getState().constant.token).toBe('token-alex');
   expect(root.reset).toHaveBeenCalledWith([{ name: 'Tabs' }]);
   await act(async () => { tree.unmount(); });
 });
@@ -84,14 +123,14 @@ test('sign up verifies the email code before the session, then continues to the 
   await act(async () => { type(signup, 'Confirm password', 'secret12'); });
   await act(async () => { press(signup, 'Create account'); });
   expect(store.getState().constant.token).toBeNull();
-  expect(navigation.navigate).toHaveBeenCalledWith('Otp', { purpose: 'signup', email: 'sam@example.com', intent: 'add_manual' });
+  expect(navigation.navigate).toHaveBeenCalledWith('Otp', { purpose: 'signup', email: 'sam@example.com', challenge_id: 'signup-1', intent: 'add_manual' });
   await act(async () => { signup.unmount(); });
 
-  const otp = await render(OtpScreen, store, navigation, { purpose: 'signup', email: 'sam@example.com', intent: 'add_manual' });
+  const otp = await render(OtpScreen, store, navigation, { purpose: 'signup', email: 'sam@example.com', challenge_id: 'signup-1', intent: 'add_manual' });
   await act(async () => { type(otp, 'Verification code', '111111'); });
   await act(async () => { press(otp, 'Verify email'); });
   expect(texts(otp)).toContain('That code is incorrect or has expired.');
-  await act(async () => { type(otp, 'Verification code', '481926'); });
+  await act(async () => { type(otp, 'Verification code', '123456'); });
   await act(async () => { press(otp, 'Verify email'); });
   expect(store.getState().profile.user?.name).toBe('Sam Lee');
   expect(root.reset).toHaveBeenCalledWith([{ name: 'Tabs' }, { name: 'AddSubscription' }]);
@@ -99,7 +138,7 @@ test('sign up verifies the email code before the session, then continues to the 
   // Resend respects the cooldown.
   const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   await act(async () => { press(otp, 'Resend code'); });
-  expect(alert).toHaveBeenCalledWith('You can request a new code after 2 minutes.');
+  expect(alert).toHaveBeenCalledWith('You can request a new code in 90 seconds.');
   await act(async () => { otp.unmount(); });
 });
 
@@ -114,11 +153,11 @@ test('password reset verifies a code, sets the new password and returns to Login
   expect(store.getState().auth.error.forgot).toBe('No account found with this email.');
   await act(async () => { type(forgot, 'Email', 'alex@example.com'); });
   await act(async () => { press(forgot, 'Send code'); });
-  expect(navigation.navigate).toHaveBeenCalledWith('Otp', { purpose: 'reset', email: 'alex@example.com' });
+  expect(navigation.navigate).toHaveBeenCalledWith('Otp', { purpose: 'reset', email: 'alex@example.com', challenge_id: 'reset-1' });
   await act(async () => { forgot.unmount(); });
 
-  const otp = await render(OtpScreen, store, navigation, { purpose: 'reset', email: 'alex@example.com' });
-  await act(async () => { type(otp, 'Verification code', '481926'); });
+  const otp = await render(OtpScreen, store, navigation, { purpose: 'reset', email: 'alex@example.com', challenge_id: 'reset-1' });
+  await act(async () => { type(otp, 'Verification code', '123456'); });
   await act(async () => { press(otp, 'Verify code'); });
   // Reset verification never signs in.
   expect(store.getState().constant.token).toBeNull();
@@ -134,6 +173,6 @@ test('password reset verifies a code, sets the new password and returns to Login
   const login = await render(LoginScreen, store, navigationMock().navigation);
   await act(async () => { type(login, 'Email', 'alex@example.com'); type(login, 'Password', 'newpass1'); });
   await act(async () => { press(login, 'Log in'); });
-  expect(store.getState().constant.token).toBe('mock-email-mock-user-1');
+  expect(store.getState().constant.token).toBe('token-alex');
   await act(async () => { login.unmount(); });
 });

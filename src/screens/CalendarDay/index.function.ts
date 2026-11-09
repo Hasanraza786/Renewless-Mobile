@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { navigate } from '../../navigation/service';
-import { loadCalendarMonth } from '../../redux/actions/calendar-action';
+import { getCalendarMonth } from '../../redux/actions/calendar-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 
 // One date's events from the same month snapshot as the Calendar tab.
@@ -13,7 +13,7 @@ export default function useCalendarDay(date: string) {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(loadCalendarMonth(month));
+      dispatch(getCalendarMonth(month));
     }, [dispatch, month]),
   );
 
@@ -25,7 +25,7 @@ export default function useCalendarDay(date: string) {
   // "2 scheduled · USD 27.98"; a direct link to an empty date gets fallback copy.
   const note = events.length ? [`${events.length} scheduled`, ...[...totals].map(([currency, cents]) => `${currency} ${(cents / 100).toFixed(2)}`)].join(' · ') : 'Nothing is scheduled on this date.';
 
-  const retry = () => dispatch(loadCalendarMonth(month));
+  const retry = () => dispatch(getCalendarMonth(month));
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });
 
   return { events, today, status, error, note, retry, openDetail };

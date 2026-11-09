@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { navigate } from '../../navigation/service';
-import { loadCalendarMonth } from '../../redux/actions/calendar-action';
+import { getCalendarMonth } from '../../redux/actions/calendar-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { HomeEvent, TabParamList } from '../../types';
 import { nearestEvent, shiftMonth } from '../../utils/calendar';
@@ -29,7 +29,7 @@ export default function useCalendar(route: CalendarRoute) {
   // Refresh on every visit so Detail/Add changes show; each month is fetched when it is viewed.
   useFocusEffect(
     useCallback(() => {
-      dispatch(loadCalendarMonth(month));
+      dispatch(getCalendarMonth(month));
     }, [dispatch, month]),
   );
 
@@ -52,7 +52,7 @@ export default function useCalendar(route: CalendarRoute) {
   const showMonth = (value: string) => setMonth(value);
   // Stable, so the grid's swipe responder isn't rebuilt mid-gesture.
   const swipeMonth = useCallback((direction: -1 | 1) => setMonth(current => shiftMonth(current, direction)), []);
-  const retry = () => dispatch(loadCalendarMonth(month));
+  const retry = () => dispatch(getCalendarMonth(month));
   const openAdd = () => setAddOpen(true);
   const closeAdd = () => setAddOpen(false);
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });

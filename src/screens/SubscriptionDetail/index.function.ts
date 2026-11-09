@@ -4,7 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { COLORS } from '../../constants/theme';
 import { goBack, navigate } from '../../navigation/service';
-import { cancelSubscription, loadDetail, removeSubscription, resumeSubscription, saveNotes, saveReminder } from '../../redux/actions/detail-action';
+import { cancelSubscription, getSubscriptionDetail, deleteSubscription, resumeSubscription, updateNotes, updateReminder } from '../../redux/actions/detail-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, ReminderPreference, SubscriptionDetail } from '../../types';
 import { amountLabel, daysBetween, recordStatus } from '../../utils/events';
@@ -102,14 +102,13 @@ export default function useSubscriptionDetail(route: Route) {
   // Refresh on every visit so returning from Edit or Platform shows the latest record.
   useFocusEffect(
     useCallback(() => {
-      dispatch(loadDetail(id));
+      dispatch(getSubscriptionDetail(id));
     }, [dispatch, id]),
   );
 
   const view = detail && detail.record.id === id ? detailView(detail) : null;
   const close = () => setSheet(null);
-  const done = (ok: boolean, text = '') => {
-    if (!ok) return;
+  const done = (text = '') => () => {
     setSheet(null);
     setMessage(text);
   };
@@ -117,21 +116,21 @@ export default function useSubscriptionDetail(route: Route) {
   const status = view ? 'ready' : error.detail && !loading.detail ? 'failed' : 'loading';
   const today = detail?.today ?? '';
 
-  const retry = () => dispatch(loadDetail(id));
+  const retry = () => dispatch(getSubscriptionDetail(id));
   const openEdit = () => navigate('EditSubscription', { id });
   const openPayments = () => view && navigate('SubscriptionPayments', { id, name: view.record.name });
   const openPriceHistory = () => navigate('PriceHistory', { id });
   const openRelated = () => view && navigate('PlatformSubscriptions', { platform_id: view.record.platform_id, name: view.record.name, exclude_id: id });
   const openManage = () => view?.record.manage_url && Linking.openURL(view.record.manage_url);
-  const saveReminderPreference = async (reminder: ReminderPreference) => done(await dispatch(saveReminder(id, reminder)));
-  const saveNoteText = async (notes: string) => done(await dispatch(saveNotes(id, notes)));
-  const confirmCancel = async (input: { cancelled_on: string; access_until: string | null }) => done(await dispatch(cancelSubscription(id, input)));
-  const resume = async (input: { price: string; next_date: string; reminder: ReminderPreference }) => done(await dispatch(resumeSubscription(id, input)), 'Tracking resumed in Renewless.');
-  const remove = async () => {
-    if (!(await dispatch(removeSubscription(id, view?.record.name ?? 'Subscription')))) return;
+  const saveReminderPreference = (reminder: ReminderPreference) => dispatch(updateReminder(id, reminder, done()));
+  const saveNoteText = (notes: string) => dispatch(updateNotes(id, notes, done()));
+  const confirmCancel = (input: { cancelled_on: string; access_until: string | null }) => dispatch(cancelSubscription(id, input, done()));
+  const resume = (input: { price: string; next_date: string; reminder: ReminderPreference }) => dispatch(resumeSubscription(id, input, done('Tracking resumed in Renewless.')));
+  const onRemoved = () => {
     setSheet(null);
     goBack();
   };
+  const remove = () => dispatch(deleteSubscription(id, view?.record.name ?? 'Subscription', onRemoved));
 
   return {
     view,

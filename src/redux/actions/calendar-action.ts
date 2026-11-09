@@ -1,11 +1,18 @@
-import { getCalendarMonth } from '../../api_services/calendar';
-import { runRequest, type AppThunk } from '../runRequest';
+import { toCalendarMonth } from '../../api_services/adapters';
+import apiServices from '../../api_services/request-handler';
+import { requestHandler, type AppThunk } from '../request-handler';
 import { setCalendarError, setCalendarLoading, setCalendarMonth } from '../slices/calendar-slice';
 
-export function loadCalendarMonth(month: string): AppThunk {
-  return async (dispatch, getState) => {
-    const token = getState().constant.token;
-    if (!token) return;
-    await dispatch(runRequest({ request: () => getCalendarMonth(token, month), loading: setCalendarLoading, error: setCalendarError, success: setCalendarMonth }));
+export function getCalendarMonth(month: string): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.getCalendar,
+        param_data: { month },
+        setLoading: setCalendarLoading,
+        setError: setCalendarError,
+        onDone: calendar => dispatch(setCalendarMonth(toCalendarMonth(calendar))),
+      }),
+    );
   };
 }

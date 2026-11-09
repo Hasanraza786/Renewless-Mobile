@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { navigate } from '../../navigation/service';
-import { loadImported } from '../../redux/actions/inbox-action';
+import { getImportedSubscriptions } from '../../redux/actions/inbox-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
 import { localToday } from '../../utils/dates';
@@ -17,7 +17,7 @@ export default function useInboxSubscriptions(route: InboxSubscriptionsRoute) {
 
   useFocusEffect(
     useCallback(() => {
-      dispatch(loadImported(id));
+      dispatch(getImportedSubscriptions(id));
     }, [dispatch, id]),
   );
 
@@ -27,7 +27,7 @@ export default function useInboxSubscriptions(route: InboxSubscriptionsRoute) {
   const today = localToday();
   const count_text = `${records.length} subscription${records.length === 1 ? '' : 's'} imported from this inbox.`;
 
-  const retry = () => dispatch(loadImported(id));
+  const retry = () => dispatch(getImportedSubscriptions(id));
   const openDetail = (record_id: string) => navigate('SubscriptionDetail', { id: record_id });
 
   return { records, status, error: error.imported, email, today, count_text, retry, openDetail };

@@ -29,6 +29,7 @@ test('edit keeps an exact trial end until start or duration changes, and asks wh
     id: 'sub-1', platform_id: 'spotify', name: 'Spotify', plan: null, category: 'Entertainment', price: '11.99', currency: 'USD', cycle: 'Monthly', next_date: null, estimated: false,
     auto_renew: true, trial: { start_date: '2026-10-24', end_date: '2026-10-31', auto_renew: true }, status: 'active', cancelled_on: null, access_until: null, start_date: '2026-10-24',
     source: { kind: 'gmail', email: '' }, inbox: null, reminder: { mode: 'default' }, notes: null, manage_url: null, price_history: [],
+  revision: 0,
   } as SubscriptionRecord;
   const { draft, origin } = draftFromRecord(record, today);
   expect(draft.trial).toBe('7 days');
