@@ -400,6 +400,7 @@ Researched 8 Nov 2026. Items marked **[verify]** come from secondary sources or 
 | 9 | Push delivery, Gmail OAuth and the AI provider are not integrated; all such flows are mock-only | Blocks real-data QA | Backend integration |
 | 10 | Mock AI always returns the same receipt draft for any image or PDF | Mock only | Real extraction on staging |
 | 11 | AI provider is Google Gemini via API key. **[verify]** On the unpaid tier Google may use content to improve its products; Gmail Limited Use forbids that for Gmail data | Release blocker if Gmail content reaches Gemini | Use the paid (billing-enabled) Gemini API tier and confirm current terms; then the consent dialog can also say it is not used for training |
+| 12 | Prototype 600/700 text (13 places) renders in Raleway Medium; Bold/SemiBold are not bundled | Accepted (9 Nov) | None: the prototype only loads Regular and Medium, so its bold is synthesized |
 
 ---
 

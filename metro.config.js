@@ -1,11 +1,16 @@
 const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
+const defaults = getDefaultConfig(__dirname);
+
 /**
  * Metro configuration
  * https://reactnative.dev/docs/metro
  *
  * @type {import('@react-native/metro-config').MetroConfig}
  */
-const config = {};
+// QA run screenshots and reports are written while the app runs; watching them would reload the app.
+const config = {
+  resolver: { blockList: [defaults.resolver.blockList, /\/qa\/runs\/.*/] },
+};
 
-module.exports = mergeConfig(getDefaultConfig(__dirname), config);
+module.exports = mergeConfig(defaults, config);

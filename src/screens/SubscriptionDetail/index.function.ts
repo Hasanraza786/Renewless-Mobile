@@ -58,7 +58,8 @@ export function detailView({ record, today, receipts, annual_estimate, related_c
     status: { ...status, fill: STATUS_FILL[status.color] ?? COLORS.status_muted_bg },
     cost: { currency: record.currency, amount: Number(record.price).toFixed(2), caption: `${in_trial ? 'After trial · ' : ''}${record.cycle}` },
     event,
-    billing_title: in_trial || trial_ended ? 'Trial & billing' : 'Renewal & billing',
+    // Only an active trial uses the trial title; an ended trial is back to renewal billing.
+    billing_title: in_trial ? 'Trial & billing' : 'Renewal & billing',
     trial_end: record.trial ? dateLabel(record.trial.end_date) : null,
     // Inactive records (cancelled, expired, trial ended) no longer renew.
     auto_renew: cancelled || trial_ended ? 'Off' : record.auto_renew === null ? 'Not set' : record.auto_renew ? 'On' : 'Off',

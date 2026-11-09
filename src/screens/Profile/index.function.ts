@@ -6,7 +6,8 @@ import { deleteAccount, loadProfileOverview } from '../../redux/actions/profile-
 import { selectUser, setNotice, setProfileError } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 
-const UNAVAILABLE = 'This page is currently unavailable. Please try again later.';
+// Settings › How we use your data, Privacy Policy and Terms: the pages don't exist yet, so retrying can't help.
+const UNAVAILABLE = 'This page isn’t available yet.';
 const UNAVAILABLE_GMAIL = 'Gmail connection is unavailable right now. Your saved subscriptions are unchanged.';
 
 export const PROVIDER_LABEL = { email: 'Email', google: 'Google', apple: 'Apple' } as const;

@@ -129,7 +129,7 @@ export default function Composer({ chat }: Props) {
               placeholderTextColor={COLORS.text_secondary}
               multiline
               maxLength={2000}
-              accessibilityLabel="Message Loop"
+              // No separate label: VoiceOver reads the placeholder, which already names the field.
               onContentSizeChange={event => setInputHeight(event.nativeEvent.contentSize.height)}
               style={[styles.input, styles.input_text, { fontFamily: FONTS.regular }, input_height ? { height: input_height } : null]}
             />

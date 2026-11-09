@@ -10,6 +10,7 @@ import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { goBack } from '../../navigation/service';
 import { common_styles } from '../../utils/common_styles';
 import useSubscriptionForm, { type SubscriptionFormRoute } from './index.function';
+import { useKeyboardScroll } from '../../utils/keyboard-scroll';
 import { styles } from './styles';
 
 // Add form and Edit share this screen; the action stays pinned above the keyboard and safe area.
@@ -17,6 +18,7 @@ export default function AddSubscriptionScreen({ route }: { route: SubscriptionFo
   const form = useSubscriptionForm(route);
   // The keyboard offset is measured from the safe area, below the status bar.
   const insets = useSafeAreaInsets();
+  const keyboard = useKeyboardScroll();
 
   return (
     <Container is_auth style={styles.main_view}>
@@ -25,7 +27,7 @@ export default function AddSubscriptionScreen({ route }: { route: SubscriptionFo
         <StateView status={form.status === 'failed' ? 'failed' : 'loading'} message={form.status === 'failed' ? form.load_error : 'Loading subscription.'} onRetry={form.retry} />
       ) : (
         <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={insets.top} style={common_styles.flex_1}>
-          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={styles.content}>
+          <ScrollView ref={keyboard.scroll_ref} onScroll={keyboard.onScroll} scrollEventThrottle={16} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={styles.content}>
             <SubscriptionFields
               draft={form.draft}
               errors={form.errors}

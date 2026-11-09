@@ -32,8 +32,12 @@ export function loadDetail(id: string): AppThunk {
   };
 }
 
+// The list on screen, so Undo can refresh it in place.
+let shown_platform: { platform_id: string; exclude_id?: string } | null = null;
+
 export function loadPlatform(platform_id: string, exclude_id?: string): AppThunk {
   return async (dispatch, getState) => {
+    shown_platform = { platform_id, exclude_id };
     const token = getState().constant.token;
     if (!token) return;
     dispatch(setPlatformRecords([]));
@@ -103,6 +107,8 @@ export function removeSubscription(id: string, name: string): AppThunk<boolean> 
 export function restoreSubscription(id: string): AppThunk<boolean> {
   return async dispatch => {
     dispatch(setRemoved(null));
-    return dispatch(mutate(token => restoreTracking(token, id)));
+    const restored = await dispatch(mutate(token => restoreTracking(token, id)));
+    if (restored && shown_platform) dispatch(loadPlatform(shown_platform.platform_id, shown_platform.exclude_id));
+    return restored;
   };
 }

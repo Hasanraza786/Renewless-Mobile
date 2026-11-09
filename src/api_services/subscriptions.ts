@@ -94,7 +94,8 @@ export async function listTrackedSubscriptions(token: string): Promise<{ records
 }
 
 // Fields Add/Edit own; source, inbox, reminder and history stay with the record.
-function formFields(input: SubscriptionFormInput, platform_id: string) {
+// Edit passes the saved record so fields the form does not change (auto-renew, date confidence) are kept.
+function formFields(input: SubscriptionFormInput, platform_id: string, saved?: SubscriptionRecord) {
   return {
     name: input.name,
     platform_id,
@@ -104,10 +105,10 @@ function formFields(input: SubscriptionFormInput, platform_id: string) {
     cycle: input.cycle,
     start_date: input.start_date,
     next_date: input.next_date,
-    // A manual date is explicit, so it is no longer an estimate.
-    estimated: false,
+    // A date the user sets is explicit, so it is no longer an estimate; an unchanged date keeps its confidence.
+    estimated: saved && saved.next_date === input.next_date ? saved.estimated : false,
     trial: input.trial && input.start_date ? { start_date: input.start_date, end_date: input.trial.end_date, auto_renew: input.trial.auto_renew } : null,
-    auto_renew: input.trial ? input.trial.auto_renew : true,
+    auto_renew: input.trial ? input.trial.auto_renew : saved ? saved.auto_renew : true,
     notes: input.notes,
   };
 }
@@ -140,7 +141,7 @@ export async function updateTracked(token: string, id: string, input: Subscripti
   return detailFor(
     updateRecord(id, record => ({
       ...record,
-      ...formFields(input, input.platform_id ?? record.platform_id),
+      ...formFields(input, input.platform_id ?? record.platform_id, record),
       price_history: input.price_change
         ? [
             {

@@ -168,7 +168,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
         <CustomText mt={SIZES.padding3} text={record.notes ?? 'No notes added yet.'} weight={FONTS.regular} color={record.notes ? COLORS.text_primary : COLORS.text_secondary} size={SIZES.sm} />
       </View>
       {record.status === 'cancelled' ? (
-        <CustomText mt={SIZES.padding2} text="Recorded in Renewless. Your subscription must be cancelled with the service." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} />
+        <CustomText mt={SIZES.padding2} text="Recorded in Renewless. Your subscription must be cancelled with the service." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={SIZES.padding * 0.9} />
       ) : null}
     </ScrollView>
   );

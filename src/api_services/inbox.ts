@@ -2,7 +2,7 @@ import { USE_MOCK_API } from '../config/api';
 import { MOCK_DATA } from '../config/mock-data';
 import type { InboxDetail, ProfileInbox, SubscriptionRecord } from '../types';
 import { request } from './http';
-import { allRecords } from './subscription-store';
+import { allRecords, isFixtureAccount } from './subscription-store';
 
 // Development connector state; resetMockInbox restores the fixture.
 let state: { status: ProfileInbox['status']; last_sync: string | null; connected: boolean } | null = null;
@@ -33,10 +33,10 @@ const INBOX_ID = 'inbox-1';
 const mockDelay = (ms = 350) => new Promise<void>(resolve => setTimeout(resolve, ms));
 const imported = () => allRecords().filter(record => record.source.kind === 'gmail' && record.source.email === MOCK_DATA.home_inbox.email);
 
-// The account's connected inboxes for Profile; empty once disconnected.
+// The account's connected inboxes for Profile; empty once disconnected, and for any non-fixture account.
 export function mockInboxes(): ProfileInbox[] {
   const inbox = current();
-  return inbox.connected ? [{ id: INBOX_ID, email: MOCK_DATA.home_inbox.email, status: inbox.status, lastSync: inbox.last_sync }] : [];
+  return inbox.connected && isFixtureAccount() ? [{ id: INBOX_ID, email: MOCK_DATA.home_inbox.email, status: inbox.status, lastSync: inbox.last_sync }] : [];
 }
 
 function detail(): InboxDetail {

@@ -18,6 +18,7 @@ import { goBack } from '../../navigation/service';
 import { ACCOUNT_REMINDER_ITEMS } from '../../utils/alerts';
 import { common_styles } from '../../utils/common_styles';
 import useReminderSettings, { SCOPES, type ReminderSettingsController } from './index.function';
+import { useKeyboardScroll } from '../../utils/keyboard-scroll';
 import { styles } from './styles';
 
 const DEVICE = {
@@ -36,7 +37,9 @@ function Toggle({ label, copy, value, disabled, divider, onPress }: { label: str
       accessibilityRole="switch"
       accessibilityLabel={label}
       accessibilityState={{ checked: value, disabled }}
-      onPress={disabled ? undefined : onPress}
+      // Always a Pressable, so a disabled switch stays one element for VoiceOver.
+      disabled={disabled}
+      onPress={onPress}
       style={[styles.toggle, divider && styles.divider, disabled && styles.disabled]}>
       <View style={common_styles.flex_1}>
         <CustomText text={label} weight={FONTS.medium} size={SIZES.sm} />
@@ -78,6 +81,7 @@ export default function ReminderSettingsScreen() {
   const settings = useReminderSettings();
   // The keyboard offset is measured from the safe area, below the status bar.
   const insets = useSafeAreaInsets();
+  const keyboard = useKeyboardScroll();
   const draft = settings.draft;
   const off = !!draft && !draft.push_enabled;
   const device = settings.device ? DEVICE[settings.device] : null;
@@ -89,7 +93,7 @@ export default function ReminderSettingsScreen() {
         <StateView status={settings.status === 'failed' ? 'failed' : 'loading'} message={settings.status === 'failed' ? settings.load_error : 'Loading reminder settings.'} onRetry={settings.retry} />
       ) : (
         <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={insets.top} style={common_styles.flex_1}>
-          <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={styles.content}>
+          <ScrollView ref={keyboard.scroll_ref} onScroll={keyboard.onScroll} scrollEventThrottle={16} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={styles.content}>
             <CustomText text="A little heads-up, on your terms." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
             <View style={[styles.group, styles.first_group]}>
               <Toggle label="Push reminders" copy="Pause or resume all push reminders." value={draft.push_enabled} onPress={() => settings.update('push_enabled', !draft.push_enabled)} />

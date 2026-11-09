@@ -3,6 +3,7 @@ import AuthLayout from '../../components/AuthLayout';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
 import InputField from '../../components/InputField';
+import SizedBox from '../../components/SizedBox';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import type { AuthStackParamList } from '../../types';
 import useResetPassword from './index.function';
@@ -12,13 +13,15 @@ type Props = Pick<NativeStackScreenProps<AuthStackParamList, 'ResetPassword'>, '
 
 export default function ResetPasswordScreen({ route }: Props) {
   const { form, loading, error, onSubmit, onBack } = useResetPassword(route);
+  const password = form.fieldProps('password');
   const confirm = form.fieldProps('confirm');
 
   return (
     <AuthLayout onBack={onBack} title="Set a new password" copy="Choose a new password to keep your account secure.">
-      <InputField variant="auth" label="New password" onSubmitEditing={form.focusField('confirm')} submitBehavior="submit" secureTextEntry autoComplete="new-password" textContentType="newPassword" returnKeyType="next" {...form.fieldProps('password')} />
+      <InputField variant="auth" label="New password" onSubmitEditing={form.focusField('confirm')} submitBehavior="submit" secureTextEntry autoComplete="new-password" textContentType="newPassword" returnKeyType="next" {...password} />
 
-      <CustomText mt={SIZES.padding * 0.55} text="Use at least 8 characters." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding * 1.15} />
+      {/* The helper gives way to the error, which says the same thing. */}
+      {password.error ? <SizedBox height={SIZES.padding * 1.15} /> : <CustomText mt={SIZES.padding * 0.55} text="Use at least 8 characters." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding * 1.15} />}
 
       <InputField
         variant="auth"

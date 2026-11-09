@@ -7,6 +7,7 @@ import {
   removeTracking,
   restoreTracking,
   resumeTracking,
+  updateTracked,
 } from '../src/api_services/subscriptions';
 import { resetMockSubscriptions } from '../src/api_services/subscription-store';
 import { localToday } from '../src/utils/dates';
@@ -39,4 +40,13 @@ test('remove is undoable by stable ID', async () => {
   await restoreTracking('t', 'sub-figma');
   expect((await getSubscriptionDetail('t', 'sub-figma')).record.id).toBe('sub-figma');
   await expect(restoreTracking('t', 'sub-figma')).rejects.toThrow('can no longer be restored');
+});
+
+test('saving Edit unchanged keeps auto-renew "Not set" and the estimated date', async () => {
+  const { record } = await getSubscriptionDetail('t', 'sub-netflix-standard');
+  expect(record).toMatchObject({ auto_renew: null, estimated: true });
+  const input = { name: record.name, platform_id: record.platform_id, price: record.price, currency: record.currency, cycle: record.cycle, category: record.category, start_date: record.start_date, next_date: record.next_date, trial: null, notes: record.notes, price_change: null };
+  expect((await updateTracked('t', record.id, input)).record).toMatchObject({ auto_renew: null, estimated: true });
+  // A new date set by the user is explicit, no longer an estimate.
+  expect((await updateTracked('t', record.id, { ...input, next_date: localToday() })).record.estimated).toBe(false);
 });

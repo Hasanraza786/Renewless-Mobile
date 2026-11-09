@@ -18,6 +18,8 @@ export function setMockAccount(id: string) {
   account_id = id;
 }
 
+export const isFixtureAccount = () => account_id === MOCK_DATA.auth_accounts[0].id;
+
 type Fixture = (typeof MOCK_DATA.home_subscriptions)[number] & {
   price_history?: readonly { id: string; from_amount: string; to_amount: string; effective_in_days: number; source: 'user' | 'gmail' }[];
   trial?: { start_in_days: number; auto_renew: boolean };
@@ -124,7 +126,7 @@ export function allRecords(): SubscriptionRecord[] {
   const imported = importedRecords().length;
   const key = `${today}:${imported}:${account_id}`;
   if (!records || built_for !== key) {
-    const fixture_owner = account_id === MOCK_DATA.auth_accounts[0].id;
+    const fixture_owner = isFixtureAccount();
     records = imported ? fromImported(today) : MOCK_DATA.home_scenario === 'empty' || !fixture_owner ? [] : (MOCK_DATA.home_subscriptions as readonly Fixture[]).map(item => fromFixture(item, today));
     built_for = key;
   }
