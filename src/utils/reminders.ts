@@ -30,7 +30,13 @@ export function effectiveDays(pref: ReminderPreference, account_days: number[], 
   return days.filter(day => day <= remaining);
 }
 
+// The account default is on but none of its days fit before this event: it isn't Off, it starts with the next one.
+export function defaultTooClose(pref: ReminderPreference, account_days: number[], remaining: number) {
+  return pref.mode === 'default' && account_days.length > 0 && !effectiveDays(pref, account_days, remaining).length;
+}
+
 export function reminderText(pref: ReminderPreference, account_days: number[], remaining: number) {
+  if (defaultTooClose(pref, account_days, remaining)) return `Default · ${daysText(account_days)}`;
   const text = daysText(effectiveDays(pref, account_days, remaining));
   return pref.mode === 'default' ? `Default · ${text}` : text;
 }

@@ -48,7 +48,7 @@ export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxR
     <Container is_auth style={styles.main_view}>
       <Header title="Connected inbox" onBack={goBack} />
       {inbox.status !== 'ready' || !view ? (
-        <StateView status={inbox.status === 'failed' ? 'failed' : 'loading'} message={inbox.status === 'failed' ? inbox.error : 'Loading inbox.'} onRetry={inbox.retry} />
+        <StateView status={inbox.status === 'failed' ? 'failed' : 'loading'} message={inbox.status === 'failed' ? inbox.error : 'Loop is checking your inbox…'} onRetry={inbox.retry} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <View style={styles.identity}>

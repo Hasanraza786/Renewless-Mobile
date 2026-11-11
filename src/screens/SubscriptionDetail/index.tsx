@@ -99,6 +99,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
         {view.trial_end ? <Field label="Trial ends" value={view.trial_end} /> : null}
         <Field label="Auto-renew tracking" value={view.auto_renew} />
         <Field label="Reminder" value={view.reminder.text} onPress={view.reminder.actionable ? () => detail.setSheet('reminder') : undefined} />
+        {view.reminder.note ? <CustomText mt={SIZES.padding3} text={view.reminder.note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
         {view.estimated_note ? <CustomText mt={SIZES.padding3} text="Estimated date. You can update it in Edit." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
         <CustomText mt={SIZES.padding3} text="Tracking doesn’t confirm a charge or change your service settings." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </View>
@@ -182,7 +183,7 @@ export default function SubscriptionDetailScreen({ route }: Props) {
     <Container style={styles.main_view} edges={['left', 'top', 'right', 'bottom']}>
       <Header title="Subscription" onBack={goBack} onDelete={view ? () => detail.setSheet('delete') : undefined} />
       {!view ? (
-        <StateView status={detail.status === 'failed' ? 'failed' : 'loading'} message={detail.status === 'failed' ? detail.error : 'Loading subscription.'} onRetry={detail.retry} />
+        <StateView status={detail.status === 'failed' ? 'failed' : 'loading'} message={detail.status === 'failed' ? detail.error : 'Loop is opening your subscription…'} onRetry={detail.retry} />
       ) : (
         <>
           <Body view={view} detail={detail} />

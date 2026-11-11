@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { Animated, Easing, StyleSheet } from 'react-native';
+import { AccessibilityInfo, Animated, Easing, StyleSheet } from 'react-native';
 import Svg, { Ellipse, Path } from 'react-native-svg';
 import { LOOP_FACES, LOOP_OUTLINE, LOOP_OUTLINE_LENGTH } from '../../assets/icons';
 import { COLORS, SIZES } from '../../constants/theme';
@@ -10,6 +10,8 @@ type Props = {
   label: string;
   // Draw-in entrance: the outline draws over 800 ms, the face appears at 650 ms, then a small settle.
   draw?: boolean;
+  // Loading: the outline keeps drawing in and out until unmounted (static under Reduce Motion).
+  loop?: boolean;
 };
 
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -25,7 +27,7 @@ function Face({ expression, size }: Pick<Props, 'expression' | 'size'>) {
   );
 }
 
-export default function Mascot({ expression, size, label, draw }: Props) {
+export default function Mascot({ expression, size, label, draw, loop }: Props) {
   const outline = useRef(new Animated.Value(draw ? LOOP_OUTLINE_LENGTH : 0)).current;
   const face = useRef(new Animated.Value(draw ? 0 : 1)).current;
   const settle = useRef(new Animated.Value(0)).current;
@@ -40,6 +42,25 @@ export default function Mascot({ expression, size, label, draw }: Props) {
     run.start();
     return () => run.stop();
   }, [draw, face, outline, settle]);
+
+  useEffect(() => {
+    if (!loop) return;
+    const run = Animated.loop(
+      Animated.sequence([
+        Animated.timing(outline, { toValue: LOOP_OUTLINE_LENGTH, duration: 0, useNativeDriver: false }),
+        Animated.timing(outline, { toValue: 0, duration: 800, easing: Easing.inOut(Easing.ease), useNativeDriver: false }),
+        Animated.delay(250),
+        Animated.timing(outline, { toValue: -LOOP_OUTLINE_LENGTH, duration: 800, easing: Easing.inOut(Easing.ease), useNativeDriver: false }),
+      ]),
+    );
+    let active = true;
+    AccessibilityInfo.isReduceMotionEnabled().then(reduce => active && !reduce && run.start(), () => active && run.start());
+    return () => {
+      active = false;
+      run.stop();
+      outline.setValue(0);
+    };
+  }, [loop, outline]);
 
   return (
     <Animated.View

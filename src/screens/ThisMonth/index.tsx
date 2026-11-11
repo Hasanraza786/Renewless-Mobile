@@ -51,7 +51,7 @@ export default function ThisMonthScreen() {
     <Container style={styles.main_view}>
       <Header title="This month" onBack={goBack} />
       {!data ? (
-        <StateView status={status === 'failed' ? 'failed' : 'loading'} message={status === 'failed' ? error : 'Loading this month.'} onRetry={retry} />
+        <StateView status={status === 'failed' ? 'failed' : 'loading'} message={status === 'failed' ? error : 'Loop is checking this month…'} onRetry={retry} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <CustomText

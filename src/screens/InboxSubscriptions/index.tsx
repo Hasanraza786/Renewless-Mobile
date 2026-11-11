@@ -18,7 +18,7 @@ export default function InboxSubscriptionsScreen({ route }: { route: InboxSubscr
     <Container is_auth style={styles.main_view}>
       <Header title="Imported subscriptions" onBack={goBack} />
       {imports.status !== 'ready' ? (
-        <StateView status={imports.status === 'failed' ? 'failed' : 'loading'} message={imports.status === 'failed' ? imports.error : 'Loading imported subscriptions.'} onRetry={imports.retry} />
+        <StateView status={imports.status === 'failed' ? 'failed' : 'loading'} message={imports.status === 'failed' ? imports.error : 'Loop is finding your imported subscriptions…'} onRetry={imports.retry} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <CustomText text={imports.email} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

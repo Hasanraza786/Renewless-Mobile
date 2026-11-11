@@ -74,7 +74,7 @@ export default function CalendarScreen({ route }: { route: CalendarRoute }) {
         </RowView>
 
         {calendar.status !== 'ready' ? (
-          <StateView status={calendar.status === 'failed' ? 'failed' : 'loading'} message={calendar.status === 'failed' ? calendar.error : 'Loading calendar.'} onRetry={calendar.retry} />
+          <StateView status={calendar.status === 'failed' ? 'failed' : 'loading'} message={calendar.status === 'failed' ? calendar.error : 'Loop is checking your calendar…'} onRetry={calendar.retry} />
         ) : (
           <>
             <RowView gap={SIZES.padding3} style={styles.summary}>

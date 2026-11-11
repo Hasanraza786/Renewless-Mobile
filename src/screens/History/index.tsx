@@ -77,7 +77,7 @@ export default function HistoryScreen() {
     <Container is_auth style={styles.main_view}>
       <Header title="History" onBack={goBack} />
       {history.status !== 'ready' ? (
-        <StateView status={history.status === 'failed' ? 'failed' : 'loading'} message={history.status === 'failed' ? history.error : 'Loading history.'} onRetry={history.retry} />
+        <StateView status={history.status === 'failed' ? 'failed' : 'loading'} message={history.status === 'failed' ? history.error : 'Loop is finding your history…'} onRetry={history.retry} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>
           <CustomText text="Your cancelled and expired subscriptions." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

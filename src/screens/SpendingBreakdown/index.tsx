@@ -17,7 +17,7 @@ export default function SpendingBreakdownScreen() {
     <Container style={styles.main_view}>
       <Header title="Spending breakdown" onBack={goBack} />
       {!data ? (
-        <StateView status={status === 'failed' ? 'failed' : 'loading'} message={status === 'failed' ? error : 'Loading spending.'} onRetry={retry} />
+        <StateView status={status === 'failed' ? 'failed' : 'loading'} message={status === 'failed' ? error : 'Loop is adding up your spending…'} onRetry={retry} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <CustomText text="Platforms ranked by estimated monthly spend. Quarterly and yearly plans are averaged per month; currencies stay separate." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

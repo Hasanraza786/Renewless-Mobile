@@ -90,7 +90,7 @@ export default function ReminderSettingsScreen() {
     <Container is_auth style={styles.main_view}>
       <Header title="Reminder settings" onBack={goBack} />
       {settings.status !== 'ready' || !draft ? (
-        <StateView status={settings.status === 'failed' ? 'failed' : 'loading'} message={settings.status === 'failed' ? settings.load_error : 'Loading reminder settings.'} onRetry={settings.retry} />
+        <StateView status={settings.status === 'failed' ? 'failed' : 'loading'} message={settings.status === 'failed' ? settings.load_error : 'Loop is getting your reminder settings…'} onRetry={settings.retry} />
       ) : (
         <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={insets.top} style={common_styles.flex_1}>
           <ScrollView ref={keyboard.scroll_ref} onScroll={keyboard.onScroll} scrollEventThrottle={16} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={styles.content}>

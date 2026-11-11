@@ -24,7 +24,7 @@ export default function AddSubscriptionScreen({ route }: { route: SubscriptionFo
     <Container is_auth style={styles.main_view}>
       <Header title={form.title} onBack={goBack} />
       {form.status !== 'ready' || !form.draft ? (
-        <StateView status={form.status === 'failed' ? 'failed' : 'loading'} message={form.status === 'failed' ? form.load_error : 'Loading subscription.'} onRetry={form.retry} />
+        <StateView status={form.status === 'failed' ? 'failed' : 'loading'} message={form.status === 'failed' ? form.load_error : 'Loop is opening your subscription…'} onRetry={form.retry} />
       ) : (
         <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={insets.top} style={common_styles.flex_1}>
           <ScrollView ref={keyboard.scroll_ref} onScroll={keyboard.onScroll} scrollEventThrottle={16} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" keyboardDismissMode="on-drag" contentContainerStyle={styles.content}>

@@ -23,7 +23,7 @@ export default function UpcomingScreen() {
     <Container style={styles.main_view}>
       <Header title="Upcoming" onBack={goBack} />
       {!data ? (
-        <StateView status={status === 'failed' ? 'failed' : 'loading'} message={status === 'failed' ? error : 'Loading upcoming renewals.'} onRetry={retry} />
+        <StateView status={status === 'failed' ? 'failed' : 'loading'} message={status === 'failed' ? error : 'Loop is finding your upcoming renewals…'} onRetry={retry} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <CustomText text={`Next renewal or trial end for each subscription · through ${dateLabel(data.upcoming_until)}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

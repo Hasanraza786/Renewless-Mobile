@@ -23,7 +23,7 @@ export default function CalendarDayScreen({ route }: Props) {
     <Container style={styles.main_view}>
       <Header title={dateLabel(route.params.date)} onBack={goBack} />
       {day.status !== 'ready' ? (
-        <StateView status={day.status === 'failed' ? 'failed' : 'loading'} message={day.status === 'failed' ? day.error : 'Loading this date.'} onRetry={day.retry} />
+        <StateView status={day.status === 'failed' ? 'failed' : 'loading'} message={day.status === 'failed' ? day.error : 'Loop is checking this date…'} onRetry={day.retry} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <CustomText text={day.note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

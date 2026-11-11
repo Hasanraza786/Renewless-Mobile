@@ -36,7 +36,7 @@ export default function PriceHistoryScreen({ route }: Props) {
     <Container style={styles.main_view}>
       <Header title="Price history" onBack={goBack} />
       {!record ? (
-        <StateView status={error.detail && !loading.detail ? 'failed' : 'loading'} message={error.detail || 'Loading price history.'} onRetry={() => dispatch(getSubscriptionDetail(id))} />
+        <StateView status={error.detail && !loading.detail ? 'failed' : 'loading'} message={error.detail || 'Loop is finding your price history…'} onRetry={() => dispatch(getSubscriptionDetail(id))} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <RowView gap={SIZES.padding2} style={styles.panel}>

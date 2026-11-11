@@ -61,7 +61,7 @@ export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
     <Container tab_bar style={styles.main_view}>
       <Header title="Payments" onBack={payments.scoped ? goBack : undefined} />
       {payments.status !== 'ready' ? (
-        <StateView status={payments.status === 'failed' ? 'failed' : 'loading'} message={payments.status === 'failed' ? payments.error : 'Loading payments.'} onRetry={payments.retry} />
+        <StateView status={payments.status === 'failed' ? 'failed' : 'loading'} message={payments.status === 'failed' ? payments.error : 'Loop is checking your payments…'} onRetry={payments.retry} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentInsetAdjustmentBehavior="scrollableAxes" contentContainerStyle={styles.content}>
           <CustomText text={intro} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} style={styles.intro} />

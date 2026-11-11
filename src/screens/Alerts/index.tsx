@@ -54,7 +54,7 @@ export default function AlertsScreen() {
     <Container is_auth style={styles.main_view}>
       <Header title="Alerts" onBack={goBack} onSettings={alerts.openSettings} />
       {alerts.status !== 'ready' ? (
-        <StateView status={alerts.status === 'failed' ? 'failed' : 'loading'} message={alerts.status === 'failed' ? alerts.error : 'Loading alerts.'} onRetry={alerts.retry} />
+        <StateView status={alerts.status === 'failed' ? 'failed' : 'loading'} message={alerts.status === 'failed' ? alerts.error : 'Loop is checking your alerts…'} onRetry={alerts.retry} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <CustomText text={'Your renewal and trial reminders,\nin one place.'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

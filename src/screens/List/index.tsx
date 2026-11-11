@@ -51,7 +51,7 @@ export default function ListScreen({ route }: { route: ListRoute }) {
     <Container tab_bar style={styles.main_view}>
       <Header title="Subscriptions" onAdd={list.openAdd} />
       {list.status !== 'ready' ? (
-        <StateView status={list.status === 'failed' ? 'failed' : 'loading'} message={list.status === 'failed' ? list.error : 'Loading subscriptions.'} onRetry={list.retry} />
+        <StateView status={list.status === 'failed' ? 'failed' : 'loading'} message={list.status === 'failed' ? list.error : 'Loop is finding your subscriptions…'} onRetry={list.retry} />
       ) : !list.has_records ? (
         <Empty list={list} account />
       ) : (

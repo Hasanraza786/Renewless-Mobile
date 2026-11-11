@@ -54,6 +54,7 @@ export const COLORS = {
   line_menu: '#ffffff1b',
   line_sheet: '#ffffff18',
   sheet_scrim: '#10141290',
+  graphite_overlay: '#1E2124EB',
   donut_mid: '#53694C',
   donut_end: '#849B76',
   accent_line: '#b9e58c15',

@@ -10,6 +10,7 @@ import Tabs from './Tabs';
 import { COLORS } from '../constants/theme';
 import { navigationRef } from './service';
 import UndoToast from '../components/UndoToast';
+import LoaderModal from '../components/LoaderModal';
 import { listenForWidgetUrls } from '../utils/widget';
 
 const AppStack = createNativeStackNavigator<AppStackParamList>();
@@ -56,6 +57,7 @@ export default function MainNavigator() {
         <AppStack.Screen name="SubscriptionPayments" component={PaymentsScreen} />
       </AppStack.Navigator>
       <UndoToast />
+      <LoaderModal />
     </NavigationContainer>
   );
 }

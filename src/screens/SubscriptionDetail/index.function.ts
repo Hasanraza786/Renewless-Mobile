@@ -8,7 +8,7 @@ import { cancelSubscription, getSubscriptionDetail, deleteSubscription, resumeSu
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, ReminderPreference, SubscriptionDetail } from '../../types';
 import { amountLabel, daysBetween, recordStatus } from '../../utils/events';
-import { reminderText } from '../../utils/reminders';
+import { defaultTooClose, reminderText } from '../../utils/reminders';
 import { dateLabel } from '../../utils/scan';
 
 export type Route = NativeStackScreenProps<AppStackParamList, 'SubscriptionDetail'>['route'];
@@ -46,11 +46,16 @@ export function detailView({ record, today, receipts, annual_estimate, related_c
           : { label: 'Next renewal', value: 'Add a renewal date' };
 
   // Reminder is actionable only while an advance reminder can still be sent.
+  const too_close_note = in_trial ? 'Too close to remind you before this trial ends.' : 'Too close for this renewal. Reminders start with the next one.';
   const reminder = cancelled || trial_ended
-    ? { text: 'Off', actionable: false }
+    ? { text: 'Off', actionable: false, note: null }
     : !event_date
-      ? { text: 'Add a renewal date', actionable: false }
-      : { text: reminderText(record.reminder, account_reminder_days, remaining), actionable: true };
+      ? { text: 'Add a renewal date', actionable: false, note: null }
+      : {
+          text: reminderText(record.reminder, account_reminder_days, remaining),
+          actionable: true,
+          note: defaultTooClose(record.reminder, account_reminder_days, remaining) ? too_close_note : null,
+        };
 
   const latest = record.price_history[0];
   return {

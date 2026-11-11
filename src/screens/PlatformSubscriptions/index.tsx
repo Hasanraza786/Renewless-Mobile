@@ -21,7 +21,7 @@ export default function PlatformSubscriptionsScreen({ route }: Props) {
     <Container style={styles.main_view}>
       <Header title={screen.title} onBack={goBack} />
       {screen.status !== 'ready' ? (
-        <StateView status={screen.status === 'failed' ? 'failed' : 'loading'} message={screen.status === 'failed' ? screen.error : 'Loading subscriptions.'} onRetry={screen.retry} />
+        <StateView status={screen.status === 'failed' ? 'failed' : 'loading'} message={screen.status === 'failed' ? screen.error : 'Loop is finding your subscriptions…'} onRetry={screen.retry} />
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <CustomText text={screen.summary} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
