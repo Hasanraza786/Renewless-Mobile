@@ -8,6 +8,7 @@ import CustomText from '../CustomText';
 import Icons from '../Icons';
 import RowView from '../RowView';
 import { styles } from './styles';
+import { trackEvent } from '../../utils/analytics';
 
 type Props = {
   visible: boolean;
@@ -15,9 +16,9 @@ type Props = {
 };
 
 const OPTIONS = [
-  { title: 'Add with AI', copy: 'Type, speak, or share a screenshot', icon: sparkle_icon, ai: true, open: () => navigate('AiChat') },
-  { title: 'Add manually', copy: 'Enter your subscription details', icon: pencil_icon, ai: false, open: () => navigate('AddSubscription') },
-  { title: 'Connect Gmail', copy: 'Find subscriptions in your inbox', icon: gmail_logo, ai: false, open: () => navigate('GmailScan') },
+  { title: 'Add with AI', copy: 'Type, speak, or share a screenshot', icon: sparkle_icon, ai: true, option: 'ai', open: () => navigate('AiChat') },
+  { title: 'Add manually', copy: 'Enter your subscription details', icon: pencil_icon, ai: false, option: 'manual', open: () => navigate('AddSubscription') },
+  { title: 'Connect Gmail', copy: 'Find subscriptions in your inbox', icon: gmail_logo, ai: false, option: 'gmail', open: () => navigate('GmailScan') },
 ];
 
 // Header + on Home, List and Calendar (and an empty Calendar date): exactly three ways to add. Close keeps the screen as it was.
@@ -32,6 +33,7 @@ export default function AddSheet({ visible, onClose }: Props) {
             accessibilityRole="button"
             accessibilityLabel={`${option.title}. ${option.copy}`}
             onPress={() => {
+              trackEvent('add_option_selected', { option: option.option });
               onClose();
               option.open();
             }}

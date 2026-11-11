@@ -45,3 +45,10 @@ jest.mock('react-native-keychain', () => {
     }),
   };
 });
+
+jest.mock('@react-native-firebase/analytics', () => ({
+  getAnalytics: jest.fn(() => ({})),
+  logEvent: jest.fn(),
+  logScreenView: jest.fn(),
+  setAnalyticsCollectionEnabled: jest.fn(),
+}));

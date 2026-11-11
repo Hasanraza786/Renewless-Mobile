@@ -7,6 +7,7 @@ import { navigate } from '../../navigation/service';
 import { setWidgetPromptSeen } from '../../redux/slices/constant-slice';
 import type { TabParamList } from '../../types';
 import { pinWidget, widgetEvent, widgetInstalled } from '../../utils/widget';
+import { trackEvent } from '../../utils/analytics';
 
 export type HomeRoute = RouteProp<TabParamList, 'Home'>;
 
@@ -72,8 +73,15 @@ export default function useHome(route: HomeRoute) {
   const retry = () => dispatch(getDashboard());
   const openAdd = () => setAddOpen(true);
   const closeAdd = () => setAddOpen(false);
-  const openAddManual = () => navigate('AddSubscription');
-  const openConnectGmail = () => navigate('GmailScan');
+  // Empty Home's own Add manually / Connect Gmail buttons.
+  const openAddManual = () => {
+    trackEvent('add_option_selected', { option: 'manual' });
+    navigate('AddSubscription');
+  };
+  const openConnectGmail = () => {
+    trackEvent('add_option_selected', { option: 'gmail' });
+    navigate('GmailScan');
+  };
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });
   const openUpcoming = () => navigate('Upcoming');
   // Paid this month opens account Payments on the snapshot's current month.
@@ -83,16 +91,24 @@ export default function useHome(route: HomeRoute) {
   const openPlatform = (platform_id: string, name: string) => navigate('PlatformSubscriptions', { platform_id, name });
   const widget_preview = data ? widgetEvent(data) : { event: null, more: 0 };
   // Any close (button, ×, scrim) ends the prompt for good on this device.
-  const closeWidgetPrompt = () => {
+  const endWidgetPrompt = () => {
     dispatch(setWidgetPromptSeen());
     setWidgetPrompt('closed');
   };
+  const closeWidgetPrompt = () => {
+    trackEvent('widget_prompt_action', { action: 'dismiss' });
+    endWidgetPrompt();
+  };
   // Android: Add widget opens the launcher's pin dialog, then the prompt closes for good.
   const addWidget = () => {
+    trackEvent('widget_prompt_action', { action: 'add' });
     pinWidget();
-    closeWidgetPrompt();
+    endWidgetPrompt();
   };
-  const openWidgetVideo = () => setWidgetPrompt('video');
+  const openWidgetVideo = () => {
+    trackEvent('widget_prompt_action', { action: 'video' });
+    setWidgetPrompt('video');
+  };
   const closeWidgetVideo = () => setWidgetPrompt('prompt');
 
   return {

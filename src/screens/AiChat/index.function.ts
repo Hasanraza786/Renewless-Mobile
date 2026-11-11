@@ -12,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AiDraft, AiInput, AiUsage, SubscriptionFormInput } from '../../types';
 import { missingQuestion } from '../../utils/ai-draft';
 import { tapHaptic } from '../../utils/haptics';
+import { trackEvent } from '../../utils/analytics';
 
 const SPEEDS = [1, 1.5, 2] as const;
 const LIVE_BARS = 32;
@@ -157,7 +158,7 @@ export default function useAiChat() {
   const add = async () => {
     if (!draft || !can_add) return;
     setSaving(true);
-    await dispatch(createSubscription(draftInput(draft), onAdded));
+    await dispatch(createSubscription(draftInput(draft), onAdded, 'ai'));
     if (mounted.current) setSaving(false);
   };
 
@@ -351,9 +352,13 @@ export default function useAiChat() {
   const openDocument = (uri: string, name: string) =>
     viewDocument({ uri, mimeType: 'application/pdf', headerTitle: name, grantPermissions: 'read' }).catch(() => setAttachError('Unable to open this PDF. Please try again.'));
 
-  const agreeConsent = () => dispatch(setAiConsent(true));
+  const agreeConsent = () => {
+    trackEvent('ai_consent_changed', { enabled: 'true' });
+    dispatch(setAiConsent(true));
+  };
   // Not now: back to the Add sheet on the tab that opened AI chat.
   const declineConsent = () => {
+    trackEvent('ai_consent_changed', { enabled: 'false' });
     const tab = focusedTab();
     if (tab === 'Home' || tab === 'List' || tab === 'Calendar') navigate(tab, { add_sheet: Date.now() });
     else goBack();

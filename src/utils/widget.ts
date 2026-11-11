@@ -1,6 +1,7 @@
 import { Linking, NativeModules } from 'react-native';
 import { navigate } from '../navigation/service';
 import type { HomeEvent, HomeSnapshot } from '../types';
+import { trackEvent } from './analytics';
 
 // Widget bridge: ios/Renewless/WidgetBridge.swift and android RenewlessWidgetModule.kt; absent in tests, so every call is a no-op there.
 const bridge: { setSnapshot(json: string): void; clear(): void; isInstalled(): Promise<boolean>; requestPin?(): Promise<boolean> } | undefined = NativeModules.RenewlessWidget;
@@ -62,8 +63,13 @@ export function pinWidget(): Promise<boolean> {
 export function openWidgetUrl(url: string | null | undefined, signed_in: boolean) {
   if (!url || !signed_in) return;
   const match = /^renewless:\/\/subscription\/([^/?#]+)$/.exec(url);
-  if (match) navigate('SubscriptionDetail', { id: decodeURIComponent(match[1]) });
-  else if (url === 'renewless://home') navigate('Home');
+  if (match) {
+    trackEvent('widget_opened', { target: 'subscription' });
+    navigate('SubscriptionDetail', { id: decodeURIComponent(match[1]) });
+  } else if (url === 'renewless://home') {
+    trackEvent('widget_opened', { target: 'home' });
+    navigate('Home');
+  }
 }
 
 export function listenForWidgetUrls(signedIn: () => boolean) {

@@ -5,6 +5,7 @@ import { logoutUser } from '../../redux/actions/auth-action';
 import { deleteAccount, getProfileOverview } from '../../redux/actions/profile-action';
 import { selectUser, setNotice, setProfileError } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
+import { trackEvent } from '../../utils/analytics';
 
 // Settings › How we use your data, Privacy Policy and Terms: the pages don't exist yet, so retrying can't help.
 const UNAVAILABLE = 'This page isn’t available yet.';
@@ -49,7 +50,10 @@ export default function useProfile() {
 
   const openEdit = () => navigate('EditProfile');
   // Connecting a new inbox needs Google consent, which is not integrated yet.
-  const openConnect = () => notice(UNAVAILABLE_GMAIL);
+  const openConnect = () => {
+    trackEvent('gmail_connect_tapped', { from: 'profile' });
+    notice(UNAVAILABLE_GMAIL);
+  };
   const openInbox = () => inbox && navigate('ConnectedInbox', { id: inbox.id });
   const openHistory = () => navigate('History');
   const openPayments = () => navigate('Payments');

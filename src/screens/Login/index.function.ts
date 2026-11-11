@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthProvider, AuthStackParamList } from '../../types';
 import { useAuthForm } from '../../utils/auth-form';
 import { navigate } from '../../navigation/service';
+import { trackEvent } from '../../utils/analytics';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'Login'>['route'];
 
@@ -22,7 +23,8 @@ export default function useLogin(route: Route) {
     dispatch(login(email, password, intent, onFieldError));
   };
 
-  const onSocial = (_provider: AuthProvider) => {
+  const onSocial = (provider: AuthProvider) => {
+    trackEvent('social_login_tapped', { provider });
     dispatch(socialLogin());
   };
 

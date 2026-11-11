@@ -6,6 +6,7 @@ import apiServices from '../../api_services/request-handler';
 import { navigate, popTo } from '../../navigation/service';
 import type { AuthIntent } from '../../types';
 import { enterApp } from '../../utils/auth-form';
+import { trackEvent } from '../../utils/analytics';
 import { successHaptic } from '../../utils/haptics';
 import { saveSessionToken } from '../../utils/session-token';
 import { endSession } from '../endSession';
@@ -38,7 +39,10 @@ export function login(email: string, password: string, intent: AuthIntent | unde
         param_data: { email: email.trim(), password },
         setLoading: authLoading('login'),
         endOnUnauthorized: false,
-        onDone: session => dispatch(startSession(session, intent)),
+        onDone: session => {
+          trackEvent('login', { method: 'email' });
+          dispatch(startSession(session, intent));
+        },
         onError: (error: ApiError) => {
           if (error.code === 'EMAIL_NOT_VERIFIED') navigate('Otp', { purpose: 'signup', email: email.trim(), challenge_id: String(error.extra.challengeId), intent });
           else if (error.field_errors.email) onFieldError('email', error.field_errors.email);
@@ -116,7 +120,10 @@ export function verifyCode(purpose: 'signup' | 'reset', challenge_id: string, co
         param_data,
         setLoading: authLoading('otp'),
         endOnUnauthorized: false,
-        onDone: session => dispatch(startSession(session, intent)),
+        onDone: session => {
+          trackEvent('sign_up', { method: 'email' });
+          dispatch(startSession(session, intent));
+        },
         onError,
       }),
     );
@@ -133,6 +140,7 @@ export function resendCode(challenge_id: string, onSent: (challenge_id: string) 
         setLoading: authLoading('resend'),
         endOnUnauthorized: false,
         onDone: challenge => {
+          trackEvent('otp_resent');
           onSent(challenge.challengeId);
           Alert.alert('We sent you a new code.');
         },
@@ -152,7 +160,10 @@ export function resetPassword(reset_token: string, password: string): AppThunk {
         setLoading: authLoading('reset'),
         setError: authError('reset'),
         endOnUnauthorized: false,
-        onDone: () => popTo('Login'),
+        onDone: () => {
+          trackEvent('password_reset');
+          popTo('Login');
+        },
       }),
     );
   };
@@ -167,6 +178,7 @@ export function changePassword(current_password: string, password: string, onDon
         param_data: { currentPassword: current_password, password },
         setLoading: authLoading('password'),
         onDone: () => {
+          trackEvent('password_changed');
           successHaptic();
           dispatch(setNotice('Password updated.'));
           onDone();
@@ -181,6 +193,7 @@ export function changePassword(current_password: string, password: string, onDon
 export function logoutUser(): AppThunk {
   return async dispatch => {
     const leave = () => {
+      trackEvent('logout');
       dispatch(endSession());
       dispatch(setNotice('You’re logged out.'));
     };

@@ -6,6 +6,7 @@ import { endSession } from '../endSession';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { setUser } from '../slices/constant-slice';
 import { setNotice, setOverview, setOverviewError, setOverviewLoading, setProfileError, setProfileLoading, setProfileUser } from '../slices/profile-slice';
+import { trackEvent } from '../../utils/analytics';
 
 // Connected inboxes and all-time confirmed payment totals per currency.
 async function getProfileData() {
@@ -28,6 +29,7 @@ export function updateProfile(input: ProfileInput, onSaved: () => void): AppThun
         param_data: { revision: getState().constant.user?.revision ?? 0, name: input.name, phone: input.phone || null, dateOfBirth: input.dateOfBirth, gender: input.gender },
         setLoading: setProfileLoading,
         onDone: ({ user }) => {
+          trackEvent('profile_updated');
           const profile = toProfile(user);
           dispatch(setUser(profile));
           dispatch(setProfileUser(profile));
@@ -53,6 +55,7 @@ export function deleteAccount(password: string): AppThunk {
         setError: setProfileError,
         endOnUnauthorized: false,
         onDone: () => {
+          trackEvent('account_deleted');
           dispatch(endSession());
           dispatch(setNotice('Account deleted.'));
         },

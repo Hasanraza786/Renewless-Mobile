@@ -2,6 +2,7 @@ import { fromReminderSettings, toAlert, toReminderSettings } from '../../api_ser
 import type { AlertDto } from '../../api_services/dto';
 import apiServices from '../../api_services/request-handler';
 import type { ReminderApply, ReminderSettings } from '../../types';
+import { trackEvent } from '../../utils/analytics';
 import { successHaptic } from '../../utils/haptics';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { setAlerts, setAlertsError, setAlertsLoading, setReminderSettings } from '../slices/alerts-slice';
@@ -54,6 +55,7 @@ export function saveReminderSettings(settings: ReminderSettings, apply: Reminder
         param_data: { settings, apply },
         ...flag('save'),
         onDone: saved => {
+          trackEvent('reminder_settings_saved');
           dispatch(setReminderSettings(toReminderSettings(saved)));
           // A cached Detail shows the account default; refresh it.
           const open_detail = getState().detail.detail?.record.id;

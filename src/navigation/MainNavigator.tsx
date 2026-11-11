@@ -12,6 +12,7 @@ import { navigationRef } from './service';
 import UndoToast from '../components/UndoToast';
 import LoaderModal from '../components/LoaderModal';
 import { listenForWidgetUrls } from '../utils/widget';
+import { trackScreen } from '../utils/analytics';
 
 const AppStack = createNativeStackNavigator<AppStackParamList>();
 
@@ -26,12 +27,24 @@ export default function MainNavigator() {
   const token_ref = useRef(token);
   token_ref.current = token;
   const [ready, setReady] = useState(false);
+  const screen_ref = useRef<string | undefined>(undefined);
+
+  // One screen view per route change (the leaf route, so tabs count separately).
+  const onRouteChange = () => {
+    const name = navigationRef.getCurrentRoute()?.name;
+    if (name && name !== screen_ref.current) trackScreen(name);
+    screen_ref.current = name;
+  };
+  const onNavigationReady = () => {
+    setReady(true);
+    onRouteChange();
+  };
 
   // Widget taps open their subscription once navigation is mounted.
   useEffect(() => (ready ? listenForWidgetUrls(() => !!token_ref.current) : undefined), [ready]);
 
   return (
-    <NavigationContainer ref={navigationRef} theme={theme} onReady={() => setReady(true)}>
+    <NavigationContainer ref={navigationRef} theme={theme} onReady={onNavigationReady} onStateChange={onRouteChange}>
       <AppStack.Navigator initialRouteName={token ? "Tabs" : "AuthStack"} screenOptions={stack_options}>
         <AppStack.Screen name="AuthStack" component={AuthStack} />
         <AppStack.Screen name="Tabs" component={Tabs} />

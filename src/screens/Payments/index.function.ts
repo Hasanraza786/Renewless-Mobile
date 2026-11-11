@@ -6,6 +6,7 @@ import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, PaymentRecord, TabParamList } from '../../types';
 import { alignedMonth, defaultYear, inPeriod, matchesQuery, monthlySeries, paymentCurrencies, paymentTotals, paymentYears, periodLabel, type PaymentMonth } from '../../utils/payments';
+import { trackEvent } from '../../utils/analytics';
 
 export type PaymentsRoute = RouteProp<TabParamList, 'Payments'> | RouteProp<AppStackParamList, 'SubscriptionPayments'>;
 
@@ -64,11 +65,13 @@ export default function usePayments(route: PaymentsRoute) {
   const page_start = Number(inspect) <= 6 ? 0 : 6;
 
   const chooseYear = (value: string) => {
+    trackEvent('payments_period_changed', { period: 'year' });
     setYearChoice(value);
     setInspectChoice(null);
   };
 
   const chooseMonth = (value: PaymentMonth) => {
+    trackEvent('payments_period_changed', { period: 'month' });
     setMonth(value);
     setInspectChoice(null);
   };

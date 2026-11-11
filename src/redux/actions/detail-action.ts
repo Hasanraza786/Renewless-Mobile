@@ -2,6 +2,7 @@ import { fromReminder, toDetail, toSubscriptionBody } from '../../api_services/a
 import type { DetailDto } from '../../api_services/dto';
 import apiServices from '../../api_services/request-handler';
 import type { ReminderPreference, SubscriptionFormInput, SubscriptionRecord } from '../../types';
+import { trackEvent, type AnalyticsEvent } from '../../utils/analytics';
 import { successHaptic } from '../../utils/haptics';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { setDetail, setDetailError, setDetailLoading, setPlatformRecords, setRemoved } from '../slices/detail-slice';
@@ -54,7 +55,7 @@ const current = (state: { detail: { detail: { record: SubscriptionRecord } | nul
   state.detail.detail?.record.id === id ? state.detail.detail.record : null;
 
 // Mutations refresh Detail, Home and List, then let the screen close its sheet.
-function saveChange<Param>(id: string, apiService: (param_data: Param) => Promise<unknown>, param_data: Param, onSaved: () => void, notice?: string): AppThunk {
+function saveChange<Param>(id: string, event: AnalyticsEvent, apiService: (param_data: Param) => Promise<unknown>, param_data: Param, onSaved: () => void, notice?: string): AppThunk {
   return async dispatch => {
     await dispatch(
       requestHandler({
@@ -62,6 +63,7 @@ function saveChange<Param>(id: string, apiService: (param_data: Param) => Promis
         param_data,
         ...flag('mutation'),
         onDone: () => {
+          trackEvent(event);
           dispatch(getSubscriptionDetail(id));
           dispatch(getDashboard());
           dispatch(getSubscriptions());
@@ -79,7 +81,7 @@ function saveChange<Param>(id: string, apiService: (param_data: Param) => Promis
 export function cancelSubscription(id: string, input: { cancelled_on: string; access_until: string | null }, onSaved: () => void): AppThunk {
   return async (dispatch, getState) => {
     const record = current(getState(), id);
-    await dispatch(saveChange(id, apiServices.cancelSubscription, { id, revision: record?.revision ?? 0, cancelledAt: input.cancelled_on, accessUntil: input.access_until }, onSaved));
+    await dispatch(saveChange(id, 'subscription_cancelled', apiServices.cancelSubscription, { id, revision: record?.revision ?? 0, cancelledAt: input.cancelled_on, accessUntil: input.access_until }, onSaved));
   };
 }
 
@@ -92,6 +94,7 @@ export function resumeSubscription(id: string, input: { price: string; next_date
     await dispatch(
       saveChange(
         id,
+        'subscription_resumed',
         apiServices.resumeSubscription,
         { id, revision: record?.revision ?? 0, price: { currency: record?.currency ?? 'USD', amount: input.price }, anchorDate: input.next_date, reminderOffsets: days },
         onSaved,
@@ -102,13 +105,13 @@ export function resumeSubscription(id: string, input: { price: string; next_date
 
 export function updateReminder(id: string, reminder: ReminderPreference, onSaved: () => void): AppThunk {
   return async (dispatch, getState) => {
-    await dispatch(saveChange(id, apiServices.setSubscriptionReminder, { id, revision: current(getState(), id)?.revision ?? 0, ...fromReminder(reminder) }, onSaved));
+    await dispatch(saveChange(id, 'reminder_changed', apiServices.setSubscriptionReminder, { id, revision: current(getState(), id)?.revision ?? 0, ...fromReminder(reminder) }, onSaved));
   };
 }
 
 export function updateNotes(id: string, notes: string, onSaved: () => void): AppThunk {
   return async (dispatch, getState) => {
-    await dispatch(saveChange(id, apiServices.updateSubscription, { id, revision: current(getState(), id)?.revision ?? 0, note: notes.trim() || null }, onSaved));
+    await dispatch(saveChange(id, 'note_saved', apiServices.updateSubscription, { id, revision: current(getState(), id)?.revision ?? 0, note: notes.trim() || null }, onSaved));
   };
 }
 
@@ -133,7 +136,7 @@ export function updateSubscription(id: string, input: SubscriptionFormInput, onS
   return async (dispatch, getState) => {
     const record = current(getState(), id);
     if (!record) return;
-    await dispatch(saveChange(id, updateFromForm, { id, input, record }, onSaved, 'Changes saved.'));
+    await dispatch(saveChange(id, 'subscription_edited', updateFromForm, { id, input, record }, onSaved, 'Changes saved.'));
   };
 }
 
@@ -143,7 +146,7 @@ async function createFromForm(input: SubscriptionFormInput) {
 }
 
 // Add form: hands the new subscription's ID to the screen once the server confirms it.
-export function createSubscription(input: SubscriptionFormInput, onAdded: (id: string) => void): AppThunk {
+export function createSubscription(input: SubscriptionFormInput, onAdded: (id: string) => void, source: 'manual' | 'ai' = 'manual'): AppThunk {
   return async dispatch => {
     await dispatch(
       requestHandler({
@@ -151,6 +154,7 @@ export function createSubscription(input: SubscriptionFormInput, onAdded: (id: s
         param_data: input,
         ...flag('mutation'),
         onDone: (created: DetailDto) => {
+          trackEvent('subscription_added', { source });
           dispatch(getDashboard());
           dispatch(getSubscriptions());
           successHaptic();
@@ -171,6 +175,7 @@ export function deleteSubscription(id: string, name: string, onRemoved: () => vo
         param_data: { id, revision: current(getState(), id)?.revision ?? 0 },
         ...flag('mutation'),
         onDone: ({ undoToken }) => {
+          trackEvent('subscription_removed');
           dispatch(setRemoved({ id, name, undo_token: undoToken }));
           dispatch(setDetail(null));
           dispatch(getDashboard());
@@ -191,6 +196,7 @@ export function restoreSubscription(id: string, undo_token: string): AppThunk {
         param_data: { id, undoToken: undo_token },
         ...flag('mutation'),
         onDone: () => {
+          trackEvent('subscription_restored');
           dispatch(getDashboard());
           dispatch(getSubscriptions());
           if (shown_platform) dispatch(getPlatformSubscriptions(shown_platform.platform_id, shown_platform.exclude_id));

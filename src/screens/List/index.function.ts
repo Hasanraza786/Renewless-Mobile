@@ -5,6 +5,7 @@ import { getSubscriptions } from '../../redux/actions/list-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { SubscriptionRecord, TabParamList } from '../../types';
 import { LIST_SORTS, filterRecords, groupCounts, listGroup, sortRecords, type ListGroup, type ListSort } from '../../utils/list';
+import { trackEvent } from '../../utils/analytics';
 
 export type ListRoute = RouteProp<TabParamList, 'List'>;
 
@@ -43,16 +44,23 @@ export default function useList(route: ListRoute) {
   // Needs date rows open Edit to supply the date; others open Detail.
   const open = (record: SubscriptionRecord) =>
     listGroup(record, today) === 'needs_date' ? navigate('EditSubscription', { id: record.id }) : navigate('SubscriptionDetail', { id: record.id });
-  const toggleGroup = (group: ListGroup) => setGroups(current => (current.includes(group) ? current.filter(item => item !== group) : [...current, group]));
+  const toggleGroup = (group: ListGroup) => {
+    if (!groups.includes(group)) trackEvent('list_filtered', { group });
+    setGroups(current => (current.includes(group) ? current.filter(item => item !== group) : [...current, group]));
+  };
   const clearGroups = () => setGroups([]);
   const applySort = (next: ListSort) => {
+    trackEvent('list_sorted', { sort: next });
     setSort(next);
     setDialog(null);
   };
   const retry = () => dispatch(getSubscriptions());
   const openAdd = () => setAddOpen(true);
   const closeAdd = () => setAddOpen(false);
-  const openAddManual = () => navigate('AddSubscription');
+  const openAddManual = () => {
+    trackEvent('add_option_selected', { option: 'manual' });
+    navigate('AddSubscription');
+  };
 
   return {
     status,

@@ -5,6 +5,7 @@ import { setImported, setInbox, setInboxError, setInboxLoading, setSyncError } f
 import { setNotice } from '../slices/profile-slice';
 import { getAllSubscriptions } from './list-action';
 import { getProfileOverview } from './profile-action';
+import { trackEvent } from '../../utils/analytics';
 
 // Gmail sync and reconnect need Google sign-in, which is not integrated yet.
 const GMAIL_UNAVAILABLE = 'Gmail sync isn’t available yet. Your saved subscriptions are unchanged.';
@@ -55,6 +56,7 @@ export function disconnectInbox(id: string, onDisconnected: () => void): AppThun
         param_data: { id },
         ...flag('disconnect'),
         onDone: () => {
+          trackEvent('inbox_disconnected');
           dispatch(setInbox(null));
           dispatch(getProfileOverview());
           dispatch(setNotice('Inbox disconnected. Your saved subscriptions stay.'));

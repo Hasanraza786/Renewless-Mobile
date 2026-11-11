@@ -4,6 +4,7 @@ import { navigate } from '../../navigation/service';
 import { getSubscriptions } from '../../redux/actions/list-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { filterHistory, historyRecords, type HistoryStatus } from '../../utils/history';
+import { trackEvent } from '../../utils/analytics';
 
 // Cancelled and expired subscriptions from the same records as List; search and filters survive visits to Detail.
 export default function useHistory() {
@@ -26,8 +27,11 @@ export default function useHistory() {
   const counts = { all: all.length, cancelled: all.filter(item => item.status === 'cancelled').length, expired: all.filter(item => item.status === 'expired').length };
 
   // All clears the selection; a status toggles in or out.
-  const toggleStatus = (key: HistoryStatus | 'all') =>
-    key === 'all' ? setStatuses([]) : setStatuses(current => (current.includes(key) ? current.filter(item => item !== key) : [...current, key]));
+  const toggleStatus = (key: HistoryStatus | 'all') => {
+    trackEvent('history_filtered', { status: key });
+    if (key === 'all') setStatuses([]);
+    else setStatuses(current => (current.includes(key) ? current.filter(item => item !== key) : [...current, key]));
+  };
   const clearAll = () => {
     setQuery('');
     setStatuses([]);

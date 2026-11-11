@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { HomeEvent, TabParamList } from '../../types';
 import { nearestEvent, shiftMonth } from '../../utils/calendar';
 import { localToday } from '../../utils/dates';
+import { trackEvent } from '../../utils/analytics';
 
 const EMPTY: HomeEvent[] = [];
 
@@ -44,14 +45,29 @@ export default function useCalendar(route: CalendarRoute) {
   const event_count = events.length;
   const nearest = nearestEvent(events, today);
 
-  const showPrevious = () => setMonth(current => shiftMonth(current, -1));
-  const showNext = () => setMonth(current => shiftMonth(current, 1));
-  const showToday = () => setMonth(localToday().slice(0, 7));
+  const showPrevious = () => {
+    trackEvent('calendar_month_changed', { via: 'arrow' });
+    setMonth(current => shiftMonth(current, -1));
+  };
+  const showNext = () => {
+    trackEvent('calendar_month_changed', { via: 'arrow' });
+    setMonth(current => shiftMonth(current, 1));
+  };
+  const showToday = () => {
+    trackEvent('calendar_month_changed', { via: 'today' });
+    setMonth(localToday().slice(0, 7));
+  };
   const openPicker = (anchor: PickerAnchor) => setPickerAnchor(anchor);
   const closePicker = () => setPickerAnchor(null);
-  const showMonth = (value: string) => setMonth(value);
+  const showMonth = (value: string) => {
+    trackEvent('calendar_month_changed', { via: 'picker' });
+    setMonth(value);
+  };
   // Stable, so the grid's swipe responder isn't rebuilt mid-gesture.
-  const swipeMonth = useCallback((direction: -1 | 1) => setMonth(current => shiftMonth(current, direction)), []);
+  const swipeMonth = useCallback((direction: -1 | 1) => {
+    trackEvent('calendar_month_changed', { via: 'swipe' });
+    setMonth(current => shiftMonth(current, direction));
+  }, []);
   const retry = () => dispatch(getCalendarMonth(month));
   const openAdd = () => setAddOpen(true);
   const closeAdd = () => setAddOpen(false);

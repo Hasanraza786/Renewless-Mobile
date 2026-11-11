@@ -22,12 +22,19 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
+# react-native-firebase: Firebase 12 from CocoaPods (static app linkage); v27+ needs SPM with dynamic frameworks.
+$RNFirebaseDisableSPM = true
+# Analytics without the IDFA (no IdentitySupport pod), so no App Tracking Transparency prompt is needed.
+$RNFirebaseAnalyticsWithoutAdIdSupport = true
+
 target 'Renewless' do
   config = use_native_modules!
 
   # Google Sign-In's AppCheckCore (Swift) imports these as modules.
   pod 'GoogleUtilities', :modular_headers => true
   pod 'RecaptchaInterop', :modular_headers => true
+  # Firebase (Analytics, Crashlytics) Swift pods import these as modules; avoids switching the app to use_frameworks.
+  %w[FirebaseCore FirebaseCoreExtension FirebaseCoreInternal FirebaseInstallations FirebaseSessions GoogleDataTransport nanopb].each { |name| pod name, :modular_headers => true }
 
   use_react_native!(
     :path => config[:reactNativePath],

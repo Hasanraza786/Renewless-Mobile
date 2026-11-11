@@ -1,5 +1,6 @@
 import * as aiService from '../../api_services/ai-chat';
 import type { AiDraft, AiInput, AiReply, AiUsage } from '../../types';
+import { trackEvent } from '../../utils/analytics';
 import { errorMessage } from '../../utils/errors';
 import type { AppThunk } from '../runRequest';
 
@@ -9,7 +10,9 @@ export function sendAiMessage(input: AiInput, draft: AiDraft | null): AppThunk<A
     const token = getState().constant.token;
     if (!token) return { error: 'Sign in again to continue.' };
     try {
-      return await aiService.sendAiMessage(token, input, draft);
+      const reply = await aiService.sendAiMessage(token, input, draft);
+      trackEvent('ai_message_sent', { type: input.kind === 'file' ? input.file_kind : input.kind });
+      return reply;
     } catch (caught) {
       return { error: errorMessage(caught) };
     }
