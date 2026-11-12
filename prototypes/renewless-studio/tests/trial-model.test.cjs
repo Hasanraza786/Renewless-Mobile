@@ -41,7 +41,7 @@ test('trial ending day is one event, not also a renewal; next cycle follows anch
 test('auto-renew off trial event is visible but excluded from scheduled monetary totals',()=>{
  run("function calendarRecords(){return [trackedRecord({id:'t',name:'Test',price:'12',currency:'USD',start:'2026-10-24',trialDays:7,cycle:'Monthly',autoRenew:false})];}");
  assert.equal(run("calendarEvents({year:2026,month:9}).length"),1);
- assert.equal(run("calendarTotals(calendarEvents({year:2026,month:9}))"),'No scheduled charges');
+ assert.equal(run("calendarTotals(calendarEvents({year:2026,month:9}))"),'0.00');
  assert.equal(run("calendarEvents({year:2026,month:10}).length"),0);
 });
 function trialForm(){const nodes={};const field=(name,value='')=>{const error={hidden:true,textContent:''},small={textContent:'Optional'},label={hidden:false,firstChild:{textContent:'Amount'},querySelector:()=>small};let invalid='false';return {name,value,required:false,checked:true,validity:{valid:true},nextElementSibling:error,closest:()=>label,getAttribute:()=>invalid,setAttribute:(_,v)=>{invalid=v;}};};const form={dataset:{},elements:{},querySelector:key=>nodes[key]};for(const [name,value]of Object.entries({trialDuration:'No trial',trialDaysCustom:'',start:'',renewal:'2026-11-30',price:'12',autoRenew:''}))form.elements[name]=field(name,value);for(const key of ['[data-custom-trial]','[data-trial-settings]','.trial-calculation','[data-trial-tracking-hint]'])nodes[key]={hidden:false,textContent:'',classList:{toggle(){}}};context.form=form;context.detailDate=v=>v;return {form,nodes};}

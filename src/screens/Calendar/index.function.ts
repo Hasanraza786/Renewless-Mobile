@@ -41,7 +41,7 @@ export default function useCalendar(route: CalendarRoute) {
   const today = data?.today ?? localToday();
   const events = data?.events ?? EMPTY;
   const status = data ? 'ready' : error && !loading ? 'failed' : 'loading';
-  const expected_text = data?.expected.length ? data.expected.map(item => `${item.currency} ${item.amount}`).join(' · ') : 'No scheduled charges';
+  const expected_text = data?.expected.length ? data.expected.map(item => `${item.currency} ${item.amount}`).join(' · ') : '0.00';
   const event_count = events.length;
   const nearest = nearestEvent(events, today);
 

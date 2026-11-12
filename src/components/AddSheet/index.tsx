@@ -16,9 +16,9 @@ type Props = {
 };
 
 const OPTIONS = [
+  { title: 'Connect Gmail', copy: 'Find subscriptions in your inbox', icon: gmail_logo, ai: false, option: 'gmail', open: () => navigate('GmailScan') },
   { title: 'Add with AI', copy: 'Type, speak, or share a screenshot', icon: sparkle_icon, ai: true, option: 'ai', open: () => navigate('AiChat') },
   { title: 'Add manually', copy: 'Enter your subscription details', icon: pencil_icon, ai: false, option: 'manual', open: () => navigate('AddSubscription') },
-  { title: 'Connect Gmail', copy: 'Find subscriptions in your inbox', icon: gmail_logo, ai: false, option: 'gmail', open: () => navigate('GmailScan') },
 ];
 
 // Header + on Home, List and Calendar (and an empty Calendar date): exactly three ways to add. Close keeps the screen as it was.
