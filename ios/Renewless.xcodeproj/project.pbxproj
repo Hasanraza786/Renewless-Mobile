@@ -27,6 +27,7 @@
 		F02E73E046B5D01E0B3BB5F9 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3EE57B0EA27F6C36BE557DAD /* SwiftUI.framework */; };
 		F0E7A13A2CA4567400665403 /* Raleway-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0E7A11A2CA4567400665401 /* Raleway-Regular.ttf */; };
 		F0E7A14A2CA4567400665404 /* Raleway-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0E7A12A2CA4567400665402 /* Raleway-Medium.ttf */; };
+		F0E7A15A2CA4567400665405 /* currency_symbols.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F0E7A16A2CA4567400665406 /* currency_symbols.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,7 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F0E7A11A2CA4567400665401 /* Raleway-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Raleway-Regular.ttf"; path = "Renewless/Fonts/Raleway-Regular.ttf"; sourceTree = "<group>"; };
 		F0E7A12A2CA4567400665402 /* Raleway-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Raleway-Medium.ttf"; path = "Renewless/Fonts/Raleway-Medium.ttf"; sourceTree = "<group>"; };
+		F0E7A16A2CA4567400665406 /* currency_symbols.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "currency_symbols.ttf"; path = "Renewless/Fonts/currency_symbols.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +120,7 @@
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 				F0E7A11A2CA4567400665401 /* Raleway-Regular.ttf */,
 				F0E7A12A2CA4567400665402 /* Raleway-Medium.ttf */,
+				F0E7A16A2CA4567400665406 /* currency_symbols.ttf */,
 				8B342DAEE2BE860AA88370C8 /* WidgetBridge.swift */,
 				13073AB5AEE57222F3A57EF3 /* WidgetBridge.m */,
 			);
@@ -287,6 +290,7 @@
 				56DD18AC081ED86A71D7AA64 /* PrivacyInfo.xcprivacy in Resources */,
 				F0E7A13A2CA4567400665403 /* Raleway-Regular.ttf in Resources */,
 				F0E7A14A2CA4567400665404 /* Raleway-Medium.ttf in Resources */,
+				F0E7A15A2CA4567400665405 /* currency_symbols.ttf in Resources */,
 				8CCE363C309CBB310028D272 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

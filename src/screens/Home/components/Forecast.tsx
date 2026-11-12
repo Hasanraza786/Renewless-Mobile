@@ -5,6 +5,7 @@ import RowView from '../../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import type { HomeController } from '../index.function';
 import { styles } from '../styles';
+import { money } from '../../../utils/money';
 
 const shortMonth = (month: string) => {
   const [year, value] = month.split('-').map(Number);
@@ -40,7 +41,7 @@ function Chart({ currency, months }: { currency: string; months: { month: string
         })}
       </RowView>
       <View style={styles.chart_selection}>
-        <CustomText text={`${shortMonth(current.month)} · ${currency} ${current.amount} expected`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        <CustomText text={`${shortMonth(current.month)} · ${money(currency, current.amount)} expected`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </View>
     </Fragment>
   );

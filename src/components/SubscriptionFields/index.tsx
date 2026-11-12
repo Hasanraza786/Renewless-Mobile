@@ -13,6 +13,7 @@ import InputField from '../InputField';
 import RowView from '../RowView';
 import SizedBox from '../SizedBox';
 import { styles } from './styles';
+import { CURRENCY_NAMES, CURRENCY_SEARCH } from '../../utils/money';
 
 type Props = {
   draft: SubscriptionDraft;
@@ -73,7 +74,7 @@ export default function SubscriptionFields({ draft, errors, onChange, onPickServ
           <InputField variant="form" label={on_trial ? 'Price after trial' : 'Amount'} value={draft.price} onChangeText={value => onChange('price', value)} placeholder="0.00" keyboardType="decimal-pad" error={errors.price} editable={editable} />
         </View>
         <View style={styles.currency}>
-          <Dropdown label="Currency" value={draft.currency} options={CURRENCIES} onChange={value => onChange('currency', value)} />
+          <Dropdown label="Currency" value={draft.currency} options={CURRENCIES} option_details={CURRENCY_NAMES} search={CURRENCY_SEARCH} onChange={value => onChange('currency', value)} />
         </View>
       </RowView>
       {show_price_change ? (

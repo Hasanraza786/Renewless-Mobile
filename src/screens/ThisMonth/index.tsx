@@ -11,8 +11,9 @@ import type { HomeEvent, MoneyTotal } from '../../types';
 import { eventCardProps } from '../../utils/events';
 import useHomeSnapshot from '../../utils/use-home-snapshot';
 import { styles } from './styles';
+import { money } from '../../utils/money';
 
-const totalsText = (totals: MoneyTotal[]) => (totals.length ? totals.map(item => `${item.currency} ${item.amount}`).join('\n') : 'None scheduled');
+const totalsText = (totals: MoneyTotal[]) => (totals.length ? totals.map(item => money(item.currency, item.amount)).join('\n') : 'None scheduled');
 
 function Group({ title, items, today, empty }: { title: string; items: HomeEvent[]; today: string; empty: string }) {
   return (

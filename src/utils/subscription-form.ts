@@ -2,7 +2,7 @@ import { PLATFORM_CATALOG } from '../constants/catalog';
 import type { ScanCycle, SubscriptionFormInput, SubscriptionRecord } from '../types';
 import { addDays } from './scan';
 
-export const CURRENCIES = ['USD', 'EUR', 'GBP', 'PKR', 'AED', 'INR'];
+export { CURRENCIES } from './money';
 export const CYCLES: ScanCycle[] = ['Monthly', 'Quarterly', 'Yearly', 'Weekly'];
 export const CATEGORIES = ['Entertainment', 'Productivity', 'Education', 'Storage', 'Utilities', 'Other'];
 export const TRIAL_OPTIONS = ['No trial', '3 days', '7 days', '14 days', '30 days', 'Custom'];

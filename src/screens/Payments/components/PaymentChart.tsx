@@ -4,6 +4,7 @@ import RowView from '../../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import { common_styles } from '../../../utils/common_styles';
 import { MONTH_NAMES } from '../../../utils/payments';
+import { money } from '../../../utils/money';
 
 type Props = {
   currency: string;
@@ -51,7 +52,7 @@ export default function PaymentChart({ currency, year, months, inspect, page_sta
         text={
           <>
             {`${MONTH_NAMES[inspected]} · `}
-            <CustomText text={`${currency} ${months[inspected].toFixed(2)}`} weight={FONTS.medium} size={SIZES.sm} line_height={null} />
+            <CustomText text={money(currency, months[inspected].toFixed(2))} weight={FONTS.medium} size={SIZES.sm} line_height={null} />
             {' confirmed'}
           </>
         }

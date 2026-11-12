@@ -12,6 +12,7 @@ import { common_styles } from '../../../utils/common_styles';
 import { dateLabel } from '../../../utils/scan';
 import type { GmailScanController } from '../index.function';
 import { RING, styles } from '../styles';
+import { money } from '../../../utils/money';
 
 type Props = { gmail: GmailScanController };
 
@@ -112,7 +113,7 @@ function CandidateRow({ gmail, item, last }: { gmail: GmailScanController; item:
               mt={SIZES.padding / 4}
               text={
                 <>
-                  {`${item.currency} `}
+                  <CustomText text={money(item.currency, '')} weight={FONTS.regular} size={SIZES.sm} line_height={null} />
                   <CustomText text={Number(item.old.price).toFixed(2)} weight={FONTS.regular} size={SIZES.sm} decoration="line-through" color={COLORS.text_secondary} line_height={null} />
                   {` → ${Number(item.price).toFixed(2)}`}
                 </>
@@ -130,7 +131,7 @@ function CandidateRow({ gmail, item, last }: { gmail: GmailScanController; item:
       <View style={styles.end}>
         {update ? null : (
           <>
-            <CustomText text={`${value.currency} ${Number(value.price).toFixed(2)}`} weight={FONTS.medium} size={SIZES.sm} />
+            <CustomText text={money(value.currency, Number(value.price).toFixed(2))} weight={FONTS.medium} size={SIZES.sm} />
             <CustomText mt={SIZES.padding / 4} text={`${value.trial ? 'After trial · ' : ''}${value.cycle}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="right" />
           </>
         )}

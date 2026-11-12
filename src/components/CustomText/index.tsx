@@ -1,11 +1,13 @@
 import { memo, useMemo, type ReactNode } from 'react';
 import {
+  StyleSheet,
   Text,
   type StyleProp,
   type TextProps,
   type TextStyle,
 } from 'react-native';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
+import { SIGN_PATTERN, spokenMoney } from '../../utils/money';
 
 type Props = {
   style?: StyleProp<TextStyle>;
@@ -70,8 +72,15 @@ function CustomText({
     [align, color, decoration, font_size, letter_spacing, line_height, mb, ml, mr, mt, transform, weight],
   );
 
+  // The riyal and dirham signs are not in Raleway: draw them in the symbol font and let screen readers hear the code.
+  const signs = typeof text === 'string' && SIGN_PATTERN.test(text);
+  const content = signs
+    ? text.split(SIGN_PATTERN).map((part, index) => (index % 2 ? <Text key={index} style={styles.symbol}>{part}</Text> : part))
+    : text;
+
   return (
     <Text
+      accessibilityLabel={signs ? spokenMoney(text) : undefined}
       numberOfLines={number_of_lines}
       adjustsFontSizeToFit={fit_width}
       minimumFontScale={fit_width ? 0.7 : undefined}
@@ -81,9 +90,11 @@ function CustomText({
       onPress={onPress}
       selectable
       textBreakStrategy="highQuality">
-      {text}
+      {content}
     </Text>
   );
 }
+
+const styles = StyleSheet.create({ symbol: { fontFamily: FONTS.symbol } });
 
 export default memo(CustomText);

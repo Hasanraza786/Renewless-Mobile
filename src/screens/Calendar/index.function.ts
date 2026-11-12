@@ -7,6 +7,7 @@ import type { HomeEvent, TabParamList } from '../../types';
 import { nearestEvent, shiftMonth } from '../../utils/calendar';
 import { localToday } from '../../utils/dates';
 import { trackEvent } from '../../utils/analytics';
+import { money } from '../../utils/money';
 
 const EMPTY: HomeEvent[] = [];
 
@@ -41,7 +42,7 @@ export default function useCalendar(route: CalendarRoute) {
   const today = data?.today ?? localToday();
   const events = data?.events ?? EMPTY;
   const status = data ? 'ready' : error && !loading ? 'failed' : 'loading';
-  const expected_text = data?.expected.length ? data.expected.map(item => `${item.currency} ${item.amount}`).join(' · ') : '0.00';
+  const expected_text = data?.expected.length ? data.expected.map(item => money(item.currency, item.amount)).join(' · ') : '0.00';
   const event_count = events.length;
   const nearest = nearestEvent(events, today);
 

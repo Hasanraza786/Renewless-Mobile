@@ -17,6 +17,7 @@ import { addDays, dateLabel } from '../../../utils/scan';
 import type { GmailScanController } from '../index.function';
 import { styles } from '../styles';
 import { Checkbox } from './GmailViews';
+import { money } from '../../../utils/money';
 
 type Props = { gmail: GmailScanController };
 
@@ -99,7 +100,7 @@ function ChangesSheet({ gmail, item }: Props & { item: GmailCandidate }) {
   const [replace, setReplace] = useState(gmail.replace_date);
   return (
     <AppSheet visible title={`Review ${item.name} changes`} onClose={gmail.closeSheet}>
-      <Field label="Monthly price" value={`${item.currency} ${item.old?.price ?? ''} → ${item.price}`} />
+      <Field label="Monthly price" value={`${money(item.currency, item.old?.price ?? '')} → ${item.price}`} />
       <Field label="Saved renewal" value={item.old?.next_date ? dateLabel(item.old.next_date) : 'Not set'} />
       <Field label="Found in receipt" value={item.next_date ? dateLabel(item.next_date) : 'Not found'} />
       <RowView align_items="flex-start" gap={SIZES.padding2} accessibilityRole="checkbox" accessibilityState={{ checked: replace }} onPress={() => setReplace(current => !current)} style={styles.check_row}>

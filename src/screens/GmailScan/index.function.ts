@@ -5,6 +5,7 @@ import { startGmailScan, getGmailInboxes, getGmailScan, saveGmailResults } from 
 import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch } from '../../redux/store';
 import type { AppStackParamList, GmailCandidate, GmailSelection, ProfileInbox } from '../../types';
+import { money as moneyLabel } from '../../utils/money';
 
 export type GmailScanRoute = NativeStackScreenProps<AppStackParamList, 'GmailScan'>['route'];
 export type GmailPhase = 'loading' | 'scanning' | 'review' | 'nothing' | 'interrupted';
@@ -93,7 +94,7 @@ export default function useGmailScan(route: GmailScanRoute) {
   const money = (() => {
     const totals = new Map<string, number>();
     for (const item of chosen.filter(entry => entry.kind === 'new').map(view)) totals.set(item.currency, (totals.get(item.currency) ?? 0) + Number(item.price) * (MONTHLY[item.cycle] ?? 1));
-    return [...totals].map(([currency, total]) => `${currency} ${total.toFixed(2)}`).join(' · ') || '—';
+    return [...totals].map(([currency, total]) => moneyLabel(currency, total.toFixed(2))).join(' · ') || '—';
   })();
   const save_label = saving
     ? 'Saving…'

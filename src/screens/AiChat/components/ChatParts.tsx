@@ -11,6 +11,7 @@ import { common_styles } from '../../../utils/common_styles';
 import { dateLabel } from '../../../utils/scan';
 import type { AiChatController, ChatMessage } from '../index.function';
 import { styles } from '../styles';
+import { money } from '../../../utils/money';
 
 type Props = { chat: AiChatController };
 
@@ -194,7 +195,7 @@ export function DraftCard({ chat, draft }: Props & { draft: AiDraft }) {
           <CustomText mt={SIZES.padding / 4} text={chat.draft_status} weight={FONTS.regular} color={status_color} size={SIZES.sm} />
         </View>
         <View style={styles.draft_price}>
-          <CustomText text={draft.price && draft.currency ? `${draft.currency} ${draft.price}` : 'Amount needed'} weight={FONTS.medium} size={SIZES.lg} letter_spacing={-0.5} />
+          <CustomText text={draft.price && draft.currency ? money(draft.currency, draft.price) : 'Amount needed'} weight={FONTS.medium} size={SIZES.lg} letter_spacing={-0.5} />
           <CustomText mt={SIZES.padding / 4} text={`${draft.trial ? 'After trial · ' : ''}${draft.cycle ?? 'Cycle needed'}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
       </RowView>

@@ -2,6 +2,7 @@ import { Linking, NativeModules } from 'react-native';
 import { navigate } from '../navigation/service';
 import type { HomeEvent, HomeSnapshot } from '../types';
 import { trackEvent } from './analytics';
+import { money, spokenMoney } from './money';
 
 // Widget bridge: ios/Renewless/WidgetBridge.swift and android RenewlessWidgetModule.kt; absent in tests, so every call is a no-op there.
 const bridge: { setSnapshot(json: string): void; clear(): void; isInstalled(): Promise<boolean>; requestPin?(): Promise<boolean> } | undefined = NativeModules.RenewlessWidget;
@@ -23,7 +24,7 @@ export function widgetCopy(event: HomeEvent, today: string) {
   return {
     tone: trial ? ('trial' as const) : days === 0 ? ('today' as const) : ('renewal' as const),
     eyebrow: trial ? 'TRIAL ENDING' : days === 0 ? 'DUE TODAY' : 'NEXT RENEWAL',
-    amount: !event.expected_charge ? 'Auto-renew off' : event.amount !== '' && Number.isFinite(price) ? `${event.currency} ${price.toFixed(2)}` : 'Amount not set',
+    amount: !event.expected_charge ? 'Auto-renew off' : event.amount !== '' && Number.isFinite(price) ? spokenMoney(money(event.currency, price.toFixed(2))) : 'Amount not set',
     line: `${days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`} · ${short_date}`,
   };
 }

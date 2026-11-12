@@ -12,7 +12,7 @@ test('alerts group by local sent date, newest first', () => {
 });
 
 test('wording follows the event date and the sent time', () => {
-  expect(alertMessage(alert('n', '2026-10-27T09:00:00', 'renewal', today), today)).toBe('Renews today · USD 15.99');
+  expect(alertMessage(alert('n', '2026-10-27T09:00:00', 'renewal', today), today)).toBe('Renews today · $15.99');
   expect(alertMessage(alert('s', '2026-10-26T09:00:00', 'trial_end', '2026-10-31'), today)).toBe('Trial ends 31 Oct');
   expect(sentLabel(alert('n', '2026-10-27T09:00:00', 'renewal', today), today)).toBe('9:00 AM');
   expect(sentLabel(alert('s', '2026-10-26T09:00:00', 'renewal', today), today)).toBe('26 Oct · 9:00 AM');

@@ -8,7 +8,7 @@ function profileContext(){const view=current.startsWith('Profile')?current:profi
 function profileInitials(name){return name.trim().split(/\s+/).filter(Boolean).slice(0,2).map(word=>word[0]).join('').toUpperCase()||'R';}
 function profileInboxForView(){return profileInboxes[0];}
 function profileImportedRecords(email,records=subscriptionListData()){return records.filter(r=>r.source==='Gmail'&&r.inboxEmail===email);}
-function profilePaymentText(){const totals={};for(const p of paymentRecords.values())totals[p.currency]=(totals[p.currency]||0)+Math.round(p.amount*100);return Object.keys(totals).length?Object.entries(totals).map(([currency,cents])=>currency+' '+(cents/100).toFixed(2)).join(' · ')+' confirmed':'Confirmed payment history';}
+function profilePaymentText(){const totals={};for(const p of paymentRecords.values())totals[p.currency]=(totals[p.currency]||0)+Math.round(p.amount*100);return Object.keys(totals).length?Object.entries(totals).map(([currency,cents])=>uiMoney(currency,(cents/100).toFixed(2))).join(' · ')+' confirmed':'Confirmed payment history';}
 function profileMenuRow(label,icon,{to='',action='',subtitle='',tone=''}={}){return `<button class="profile-menu-row ${tone}" ${to?`data-go="${to}"`:`data-profile-action="${action}"`}><span class="profile-menu-icon">${profileIcon(icon)}</span><span class="profile-menu-copy"><strong>${label}</strong>${subtitle?`<small>${escape(subtitle)}</small>`:''}</span><span class="profile-chevron" aria-hidden="true">›</span></button>`;}
 function profileScreen(){
  profileReviewOrigin=current;const context=profileContext(),inbox=context.incomplete?null:profileInboxForView();

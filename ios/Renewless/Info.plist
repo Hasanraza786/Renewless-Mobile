@@ -60,6 +60,7 @@
 	<array>
 		<string>Raleway-Regular.ttf</string>
 		<string>Raleway-Medium.ttf</string>
+		<string>currency_symbols.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

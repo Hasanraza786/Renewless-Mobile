@@ -1,7 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { COLORS, SIZES } from '../../constants/theme';
+import { COLORS, FONTS, SIZES } from '../../constants/theme';
 
 export const OPTION_HEIGHT = SIZES.padding * 2.1;
+export const OPTION_DETAIL_HEIGHT = SIZES.padding * 2.9;
+export const SEARCH_HEIGHT = SIZES.padding * 2.75;
 
 export const styles = StyleSheet.create({
   wrap: {
@@ -41,6 +43,32 @@ export const styles = StyleSheet.create({
     borderRadius: SIZES.padding3,
     height: OPTION_HEIGHT,
     paddingHorizontal: SIZES.padding * 0.55,
+  },
+  option_detail: {
+    height: OPTION_DETAIL_HEIGHT,
+  },
+  search: {
+    borderBottomColor: COLORS.line_menu,
+    borderBottomWidth: 1,
+    height: SEARCH_HEIGHT,
+    justifyContent: 'center',
+    marginBottom: SIZES.padding / 4,
+  },
+  search_input: {
+    backgroundColor: COLORS.checkbox_fill,
+    borderColor: COLORS.select_border,
+    borderRadius: SIZES.padding * 0.45,
+    borderWidth: 1,
+    color: COLORS.text_primary,
+    fontFamily: FONTS.regular,
+    fontSize: SIZES.sm,
+    height: SIZES.padding * 2,
+    paddingHorizontal: SIZES.padding * 0.55,
+    paddingVertical: 0,
+  },
+  empty: {
+    paddingHorizontal: SIZES.padding * 0.55,
+    paddingVertical: SIZES.padding * 0.7,
   },
   option_selected: {
     backgroundColor: COLORS.accent_select,

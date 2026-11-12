@@ -20,10 +20,10 @@ import { localToday } from '../../../../utils/dates';
 import { dateLabel, formatTotals, moneyLabel, paidMonthlyTotals, upcomingWeek } from '../../../../utils/scan';
 import type { OnboardingController } from '../../index.function';
 import { RING, RING_WIDTH, styles } from './styles';
+import { CURRENCIES, CURRENCY_NAMES, CURRENCY_SEARCH } from '../../../../utils/money';
 
 type Props = { onboarding: OnboardingController };
 
-const CURRENCIES = ['USD', 'EUR', 'GBP', 'PKR', 'AED', 'INR'] as const;
 const CYCLES: readonly ScanCycle[] = ['Monthly', 'Quarterly', 'Yearly', 'Weekly'];
 
 // Selected / total as a ring: mint for the selected share, sage for the rest.
@@ -90,7 +90,7 @@ function EditSheet({ onboarding }: Props) {
               />
             </View>
             <View style={styles.currency}>
-              <Dropdown label="Currency" value={draft.currency} options={CURRENCIES.includes(draft.currency as (typeof CURRENCIES)[number]) ? CURRENCIES : [draft.currency, ...CURRENCIES]} onChange={currency => setDraft({ ...draft, currency })} />
+              <Dropdown label="Currency" value={draft.currency} options={CURRENCIES.includes(draft.currency) ? CURRENCIES : [draft.currency, ...CURRENCIES]} option_details={CURRENCY_NAMES} search={CURRENCY_SEARCH} onChange={currency => setDraft({ ...draft, currency })} />
             </View>
           </RowView>
 

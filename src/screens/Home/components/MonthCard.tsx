@@ -5,6 +5,7 @@ import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import type { MoneyTotal } from '../../../types';
 import type { HomeController } from '../index.function';
 import { styles } from '../styles';
+import { money } from '../../../utils/money';
 
 const monthLabel = (month: string) => {
   const [year, value] = month.split('-').map(Number);
@@ -12,7 +13,7 @@ const monthLabel = (month: string) => {
 };
 
 // Each currency on its own line; currencies are never combined.
-const totalsText = (totals: MoneyTotal[], none: string) => (totals.length ? totals.map(item => `${item.currency} ${item.amount}`).join('\n') : none);
+const totalsText = (totals: MoneyTotal[], none: string) => (totals.length ? totals.map(item => money(item.currency, item.amount)).join('\n') : none);
 
 function Column({ label, value, meta, onPress, accessibility_label, divided }: { label: string; value: string; meta: string; onPress: () => void; accessibility_label: string; divided?: boolean }) {
   return (

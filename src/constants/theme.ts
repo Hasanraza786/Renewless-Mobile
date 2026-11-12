@@ -172,6 +172,8 @@ export const SIZES = {
 export const FONTS = {
   regular: 'Raleway-Regular',
   medium: 'Raleway-Medium',
+  // Saudi riyal (U+E900) and UAE dirham (U+E901) signs only; see utils/money.
+  symbol: 'currency_symbols',
 };
 
 export const fonts = FONTS;

@@ -18,6 +18,7 @@ import PaymentChart from './components/PaymentChart';
 import PaymentDialog from './components/PaymentDialog';
 import usePayments, { sourceLabel, type PaymentsController, type PaymentsRoute } from './index.function';
 import { styles } from './styles';
+import { money, spokenMoney } from '../../utils/money';
 
 const ALL_MONTHS = 'All months';
 const MONTH_OPTIONS = [ALL_MONTHS, ...MONTH_NAMES];
@@ -91,12 +92,7 @@ export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
                   <CustomText
                     key={chart.currency}
                     mt={SIZES.padding / 4}
-                    text={
-                      <>
-                        <CustomText text={`${chart.currency} `} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} line_height={null} />
-                        {chart.amount}
-                      </>
-                    }
+                    text={money(chart.currency, chart.amount)}
                     weight={FONTS.medium}
                     size={SIZES.h3}
                   />
@@ -127,13 +123,13 @@ export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
                   <View style={styles.rows}>
                     {payments.matched.map((payment, index) => {
                       const logo = platform_logos[payment.platform_id];
-                      const amount = `${payment.currency} ${Number(payment.amount).toFixed(2)}`;
+                      const amount = money(payment.currency, Number(payment.amount).toFixed(2));
                       return (
                         <RowView
                           key={payment.id}
                           gap={SIZES.padding / 2}
                           accessibilityRole="button"
-                          accessibilityLabel={`View ${payment.name} payment on ${dateLabel(payment.paid_on)}, ${amount}, confirmed`}
+                          accessibilityLabel={`View ${payment.name} payment on ${dateLabel(payment.paid_on)}, ${spokenMoney(amount)}, confirmed`}
                           onPress={() => payments.setSelected(payment)}
                           style={[styles.row, index < payments.matched.length - 1 && styles.divider]}>
                           <View style={styles.avatar}>{logo ? <Icons name={logo} /> : <CustomText text={payment.name.charAt(0)} size={SIZES.sm} />}</View>

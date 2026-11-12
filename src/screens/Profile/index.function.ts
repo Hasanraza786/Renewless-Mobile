@@ -6,6 +6,7 @@ import { deleteAccount, getProfileOverview } from '../../redux/actions/profile-a
 import { selectUser, setNotice, setProfileError } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { trackEvent } from '../../utils/analytics';
+import { money } from '../../utils/money';
 
 // Settings › How we use your data, Privacy Policy and Terms: the pages don't exist yet, so retrying can't help.
 const UNAVAILABLE = 'This page isn’t available yet.';
@@ -38,7 +39,7 @@ export default function useProfile() {
   const inbox = overview?.inboxes[0] ?? null;
   // Hidden until the overview loads, so the No inbox state never flashes for a connected account.
   const inboxes_ready = !!overview;
-  const payment_text = totals.length ? `${totals.map(item => `${item.currency} ${item.amount}`).join(' · ')} confirmed` : 'Confirmed payment history';
+  const payment_text = totals.length ? `${totals.map(item => money(item.currency, item.amount)).join(' · ')} confirmed` : 'Confirmed payment history';
   const deleting = loading;
   const delete_error = error ? 'We couldn’t delete your account. Please try again.' : '';
   const provider_name = user?.provider === 'apple' ? 'Apple' : 'Google';

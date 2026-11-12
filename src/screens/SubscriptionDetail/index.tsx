@@ -16,6 +16,7 @@ import { common_styles } from '../../utils/common_styles';
 import DetailSheets from './components/DetailSheets';
 import useSubscriptionDetail, { type DetailView } from './index.function';
 import { styles } from './styles';
+import { money } from '../../utils/money';
 
 type Props = Pick<NativeStackScreenProps<AppStackParamList, 'SubscriptionDetail'>, 'route'>;
 
@@ -78,12 +79,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
           <CustomText
             size={SIZES.h3}
             letter_spacing={-0.6}
-            text={
-              <>
-                <CustomText text={`${view.cost.currency} `} color={COLORS.text_secondary} size={SIZES.sm} line_height={null} />
-                {view.cost.amount}
-              </>
-            }
+            text={money(view.cost.currency, view.cost.amount)}
           />
           <CustomText text={view.cost.caption} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </RowView>

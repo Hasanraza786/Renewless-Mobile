@@ -1,6 +1,7 @@
 import { COLORS } from '../constants/theme';
 import type { HomeEvent, SubscriptionRecord } from '../types';
 import { dateLabel } from './scan';
+import { money } from './money';
 
 // Whole calendar days from `today` to `date`, both local YYYY-MM-DD.
 export function daysBetween(today: string, date: string) {
@@ -26,9 +27,9 @@ export function eventTiming(event: HomeEvent, today: string) {
   return `${event.kind === 'trial_end' ? 'Trial ends · ' : ''}${relative} · ${dateLabel(event.date)}`;
 }
 
-// "$9.99" for USD, otherwise the currency code: "EUR 9.99".
+// "$9.99", "€9.99": the shared currency symbols in utils/money.
 export function amountLabel(amount: string, currency: string) {
-  return `${currency === 'USD' ? '$' : `${currency} `}${Number(amount).toFixed(2)}`;
+  return money(currency, Number(amount).toFixed(2));
 }
 
 export function eventAmount(event: HomeEvent) {

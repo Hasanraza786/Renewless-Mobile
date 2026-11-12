@@ -1,12 +1,13 @@
 import { PLATFORM_CATALOG } from '../constants/catalog';
 import type { AiDraft, ScanCycle } from '../types';
 import { addDays } from './scan';
+import { CURRENCIES } from './money';
 
 export const EMPTY_DRAFT: AiDraft = { name: null, platform_id: null, category: null, price: null, currency: null, cycle: null, next_date: null, start_date: null, trial: null, notes: null };
 
 const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december'];
 const CURRENCY_SYMBOLS: Record<string, string> = { '€': 'EUR', '£': 'GBP' };
-const CODES = 'USD|EUR|GBP|PKR|AED|INR';
+const CODES = CURRENCIES.join('|');
 const CYCLE_WORDS: [RegExp, ScanCycle][] = [
   [/\b(weekly|every week|per week|a week)\b/i, 'Weekly'],
   [/\b(monthly|every month|per month|a month)\b/i, 'Monthly'],

@@ -1,5 +1,6 @@
 import type { SentAlert } from '../types';
 import { REMINDER_PRESETS, daysText, nextReminderValues, normalizeOffsets } from './reminders';
+import { money } from './money';
 
 const localDate = (iso: string) => {
   const date = new Date(iso);
@@ -25,7 +26,7 @@ export function groupAlerts(alerts: SentAlert[], today: string) {
 // Event wording uses the event date, so an old alert never claims "today" once that day has passed.
 export function alertMessage(alert: SentAlert, today: string) {
   const when = alert.event_date === today ? 'today' : shortDate(alert.event_date);
-  return alert.kind === 'trial_end' ? `Trial ends ${when}` : `Renews ${when} · ${alert.currency} ${Number(alert.amount).toFixed(2)}`;
+  return alert.kind === 'trial_end' ? `Trial ends ${when}` : `Renews ${when} · ${money(alert.currency, Number(alert.amount).toFixed(2))}`;
 }
 
 // "9:00 AM" for today, otherwise "26 Oct · 9:00 AM".

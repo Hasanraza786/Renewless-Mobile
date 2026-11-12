@@ -17,6 +17,7 @@ import type { AppStackParamList } from '../../types';
 import { common_styles } from '../../utils/common_styles';
 import { dateLabel } from '../../utils/scan';
 import { styles } from './styles';
+import { money } from '../../utils/money';
 
 type Props = Pick<NativeStackScreenProps<AppStackParamList, 'PriceHistory'>, 'route'>;
 
@@ -44,7 +45,7 @@ export default function PriceHistoryScreen({ route }: Props) {
             <View style={common_styles.flex_1}>
               <CustomText text={record.plan ? `${record.name} · ${record.plan}` : record.name} size={SIZES.lg} />
               <CustomText mt={SIZES.padding * 0.3} text="Current tracked price" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-              <CustomText mt={SIZES.padding / 4} text={`${record.currency} ${Number(record.price).toFixed(2)} · ${record.cycle}`} size={SIZES.sm} />
+              <CustomText mt={SIZES.padding / 4} text={`${money(record.currency, Number(record.price).toFixed(2))} · ${record.cycle}`} size={SIZES.sm} />
             </View>
           </RowView>
           {record.price_history.length ? (
@@ -63,8 +64,8 @@ export default function PriceHistoryScreen({ route }: Props) {
                     size={SIZES.sm}
                     text={
                       <>
-                        {`${change.currency} ${change.from_amount} · ${change.from_cycle} → `}
-                        <CustomText text={`${change.currency} ${change.to_amount} · ${change.to_cycle}`} size={SIZES.sm} />
+                        <CustomText text={`${money(change.currency, change.from_amount)} · ${change.from_cycle} → `} weight={FONTS.regular} size={SIZES.sm} line_height={null} />
+                        <CustomText text={`${money(change.currency, change.to_amount)} · ${change.to_cycle}`} size={SIZES.sm} />
                       </>
                     }
                   />

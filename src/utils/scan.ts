@@ -1,4 +1,5 @@
 import type { ScanCandidate, ScanCycle } from '../types';
+import { money } from './money';
 
 type Totals = Record<string, number>;
 
@@ -14,14 +15,14 @@ export function dateLabel(iso: string) {
   return new Date(year, month - 1, day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
-export const moneyLabel = (item: ScanCandidate) => `${item.currency} ${Number(item.price).toFixed(2)}`;
+export const moneyLabel = (item: ScanCandidate) => money(item.currency, Number(item.price).toFixed(2));
 
 const cents = (item: ScanCandidate) => Math.round(Number(item.price) * 100);
 const MONTHLY_FACTOR: Record<ScanCycle, number> = { Weekly: 52 / 12, Monthly: 1, Quarterly: 1 / 3, Yearly: 1 / 12 };
 
 // Totals stay in cents per currency; currencies are never converted or merged.
 export function formatTotals(totals: Totals) {
-  const parts = Object.entries(totals).map(([currency, amount]) => `${currency} ${(amount / 100).toFixed(2)}`);
+  const parts = Object.entries(totals).map(([currency, amount]) => money(currency, (amount / 100).toFixed(2)));
   return parts.length ? parts.join(' · ') : '—';
 }
 

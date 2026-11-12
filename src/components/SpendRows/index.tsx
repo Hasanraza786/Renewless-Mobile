@@ -9,6 +9,7 @@ import CustomText from '../CustomText';
 import Icons from '../Icons';
 import { styles } from './styles';
 import RowView from '../RowView';
+import { money } from '../../utils/money';
 
 type Row = { key: string; name: string; logo?: string; amount: string; percent: number; meta: string; onPress: () => void };
 
@@ -26,7 +27,7 @@ function SpendRow({ row, currency }: { row: Row; currency: string }) {
         <CustomText mt={SIZES.padding / 5} text={row.meta} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </View>
       <View style={styles.spend_value}>
-        <CustomText text={`${currency} ${row.amount}`} weight={FONTS.regular} size={SIZES.sm} align="right" />
+        <CustomText text={money(currency, row.amount)} weight={FONTS.regular} size={SIZES.sm} align="right" />
         <CustomText mt={SIZES.padding / 5} text={`${row.percent}% ›`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="right" />
       </View>
     </RowView>
@@ -58,7 +59,7 @@ export function SpendRows({ spending, all, onPlatform, onOthers }: Props) {
         if (!all && group.others && onOthers) rows.push({ key: 'others', name: 'Others', amount: group.others.amount, percent: group.others.percent, meta: `${group.others.platform_count} platforms`, onPress: onOthers });
         return (
           <Fragment key={group.currency}>
-            <CustomText mt={SIZES.padding2} text={`${group.currency} ${group.total} estimated/month`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+            <CustomText mt={SIZES.padding2} text={`${money(group.currency, group.total)} estimated/month`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
             {rows.map(row => (
               <SpendRow key={row.key} row={row} currency={group.currency} />
             ))}
@@ -84,7 +85,7 @@ export function TrialRows({ trials, onPress }: { trials: HomeTrial[]; onPress: (
           <View style={common_styles.flex_1}>
             <CustomText text={item.name} size={SIZES.sm} />
             <CustomText mt={SIZES.padding / 4} text={`Trial ends ${dateLabel(item.end_date)}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-            <CustomText mt={SIZES.padding / 4} text={`Then ${item.currency} ${item.then_amount} · ${item.cycle}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+            <CustomText mt={SIZES.padding / 4} text={`Then ${money(item.currency, item.then_amount)} · ${item.cycle}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           </View>
           <CustomText text="›" weight={FONTS.regular} size={SIZES.md} />
         </RowView>

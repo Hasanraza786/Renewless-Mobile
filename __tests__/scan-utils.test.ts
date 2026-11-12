@@ -17,10 +17,10 @@ const items = [
 ];
 
 test('monthly totals match the prototype, normalise cycles and keep currencies apart', () => {
-  expect(formatTotals(paidMonthlyTotals(items.slice(0, 3)))).toBe('USD 18.98');
-  expect(formatTotals(paidMonthlyTotals([item('y', '120.00', 'GBP', null, { cycle: 'Yearly' }), item('q', '30.00', 'GBP', null, { cycle: 'Quarterly' })]))).toBe('GBP 20.00');
-  expect(formatTotals(paidMonthlyTotals([items[1]]))).toBe('USD 0.00');
-  expect(formatTotals(paidMonthlyTotals([items[5]]))).toBe('EUR 9.99');
+  expect(formatTotals(paidMonthlyTotals(items.slice(0, 3)))).toBe('$18.98');
+  expect(formatTotals(paidMonthlyTotals([item('y', '120.00', 'GBP', null, { cycle: 'Yearly' }), item('q', '30.00', 'GBP', null, { cycle: 'Quarterly' })]))).toBe('£20.00');
+  expect(formatTotals(paidMonthlyTotals([items[1]]))).toBe('$0.00');
+  expect(formatTotals(paidMonthlyTotals([items[5]]))).toBe('€9.99');
   expect(formatTotals({})).toBe('—');
 });
 
@@ -28,8 +28,8 @@ test('upcoming covers today through today + 6 and skips charges for lapsing tria
   const week = upcomingWeek(items, today);
   expect(addDays(today, 6)).toBe('2026-11-02');
   expect(week.count).toBe(6); // excludes 3 Nov and the undated plan
-  expect(formatTotals(week.totals)).toBe('USD 31.07 · EUR 9.99');
-  expect(formatTotals(upcomingWeek(items.slice(0, 3), today).totals)).toBe('USD 30.97');
+  expect(formatTotals(week.totals)).toBe('$31.07 · €9.99');
+  expect(formatTotals(upcomingWeek(items.slice(0, 3), today).totals)).toBe('$30.97');
   expect(nextEvent(items, today)?.id).toBe('netflix');
   expect(dateLabel('2026-10-27')).toBe('27 Oct 2026');
 });
