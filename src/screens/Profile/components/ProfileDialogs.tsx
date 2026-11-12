@@ -50,8 +50,20 @@ function DeleteDialog({ profile }: { profile: ProfileController }) {
   );
 }
 
+// + Connect after 2 Gmail inboxes (disconnected ones count): the limit, nothing to confirm.
+function InboxLimitDialog({ profile }: { profile: ProfileController }) {
+  return (
+    <ConfirmDialog title="You’ve used your 2 Gmail inboxes" close_label="Close" onClose={profile.closeDialog}>
+      <CustomText mt={SIZES.padding * 0.7} text="That’s the limit for now. You can reconnect an inbox you used before." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <SizedBox height={SIZES.padding * 0.7} />
+      <CustomButton variant="primary" text="OK" onPress={profile.closeDialog} />
+    </ConfirmDialog>
+  );
+}
+
 export default function ProfileDialogs({ profile }: { profile: ProfileController }) {
   if (profile.dialog === 'logout') return <LogoutDialog profile={profile} />;
   if (profile.dialog === 'delete') return <DeleteDialog profile={profile} />;
+  if (profile.dialog === 'inbox_limit') return <InboxLimitDialog profile={profile} />;
   return null;
 }

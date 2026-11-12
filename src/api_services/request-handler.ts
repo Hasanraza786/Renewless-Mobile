@@ -24,6 +24,7 @@ export const SERVICE_URLS = {
   verifySignup: '/auth/signup/verify',
   resendCode: '/auth/otp/resend',
   login: '/auth/login',
+  social: '/auth/social',
   forgotPassword: '/auth/password/forgot',
   verifyReset: '/auth/password/verify',
   resetPassword: '/auth/password/reset',
@@ -56,6 +57,7 @@ const signup = (data: { name: string; email: string; password: string; timezone:
 const verifySignup = (data: { challengeId: string; code: string }) => post<SessionDto>(SERVICE_URLS.verifySignup, data);
 const resendCode = (data: { challengeId: string }) => post<ChallengeDto>(SERVICE_URLS.resendCode, data);
 const login = (data: { email: string; password: string }) => post<SessionDto>(SERVICE_URLS.login, data);
+const social = (data: { provider: 'google' | 'apple'; idToken: string; nonce?: string; name?: string }) => post<SessionDto & { isNewUser: boolean }>(SERVICE_URLS.social, data);
 const forgotPassword = (data: { email: string }) => post<ChallengeDto>(SERVICE_URLS.forgotPassword, data);
 const verifyReset = (data: { challengeId: string; code: string }) => post<{ resetToken: string }>(SERVICE_URLS.verifyReset, data);
 const resetPassword = (data: { resetToken: string; password: string }) => post<void>(SERVICE_URLS.resetPassword, data);
@@ -65,7 +67,7 @@ const logout = () => post<void>(SERVICE_URLS.logout);
 // Account
 const getMe = () => get<{ user: UserDto }>(SERVICE_URLS.me);
 const updateMe = (data: { revision: number; name: string; phone: string | null; dateOfBirth: string | null; gender: string | null }) => patch<{ user: UserDto }>(SERVICE_URLS.me, data);
-const updateDevice = (data: { timezone: string }) => put<void>(SERVICE_URLS.device, data);
+const updateDevice = (data: { timezone?: string; fcmToken?: string | null }) => put<void>(SERVICE_URLS.device, data);
 const deleteMe = (data: { password: string }) => del<{ deleted: true }>(SERVICE_URLS.me, data);
 
 // Catalog
@@ -109,6 +111,7 @@ const apiServices = {
   verifySignup,
   resendCode,
   login,
+  social,
   forgotPassword,
   verifyReset,
   resetPassword,

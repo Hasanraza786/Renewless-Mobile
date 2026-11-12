@@ -12,6 +12,8 @@ import constantReducer from '../src/redux/slices/constant-slice';
 import authReducer from '../src/redux/slices/auth-slice';
 import profileReducer from '../src/redux/slices/profile-slice';
 import { navigate, popTo, resetRoot } from '../src/navigation/service';
+import { providerSignIn } from '../src/utils/social-sign-in';
+import apiServices from '../src/api_services/request-handler';
 
 jest.mock('../src/navigation/service', () => ({ navigate: jest.fn(), popTo: jest.fn(), goBack: jest.fn(), resetRoot: jest.fn() }));
 
@@ -49,6 +51,10 @@ jest.mock('../src/api_services/request-handler', () => {
       }),
       resetPassword: jest.fn(async ({ password }: { password: string }) => {
         mockBackend.password = password;
+      }),
+      social: jest.fn(async ({ provider, idToken }: { provider: string; idToken: string }) => {
+        if (idToken === 'taken') throw new ApiError(409, 'EMAIL_TAKEN', 'An account with this email already exists. Log in with your password.');
+        return { token: `token-${provider}`, user: { ...user('Jo Park', 'jo@example.com'), providers: [provider], hasPassword: false }, isNewUser: true };
       }),
       updateDevice: jest.fn(async () => undefined),
     },
@@ -175,4 +181,30 @@ test('password reset verifies a code, sets the new password and returns to Login
   await act(async () => { press(login, 'Log in'); });
   expect(store.getState().constant.token).toBe('token-alex');
   await act(async () => { login.unmount(); });
+});
+
+test('Google/Apple: closing the sheet stays put, a verified token signs in without OTP, a refused token shows why', async () => {
+  const store = makeStore();
+  const { root } = navigationMock();
+  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => undefined);
+  const signIn = providerSignIn as jest.Mock;
+  const tree = await render(SignupScreen, store, null, { intent: 'add_manual' });
+
+  signIn.mockResolvedValueOnce(null);
+  await act(async () => { press(tree, 'Continue with Google'); });
+  expect(apiServices.social).not.toHaveBeenCalled();
+  expect(root.reset).not.toHaveBeenCalled();
+
+  signIn.mockResolvedValueOnce({ provider: 'google', idToken: 'taken' });
+  await act(async () => { press(tree, 'Continue with Google'); });
+  expect(alert).toHaveBeenCalledWith('An account with this email already exists. Log in with your password.');
+  expect(store.getState().constant.token).toBeNull();
+
+  signIn.mockResolvedValueOnce({ provider: 'apple', idToken: 'apple-token', nonce: 'raw-nonce', name: 'Jo Park' });
+  await act(async () => { press(tree, 'Continue with Apple'); });
+  expect(apiServices.social).toHaveBeenLastCalledWith({ provider: 'apple', idToken: 'apple-token', nonce: 'raw-nonce', name: 'Jo Park' });
+  expect(store.getState().constant.token).toBe('token-apple');
+  expect(root.reset).toHaveBeenCalledWith([{ name: 'Tabs' }, { name: 'AddSubscription' }]);
+  alert.mockRestore();
+  await act(async () => { tree.unmount(); });
 });

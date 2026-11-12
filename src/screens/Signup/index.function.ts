@@ -25,7 +25,7 @@ export default function useSignup(route: Route) {
 
   const onSocial = (provider: AuthProvider) => {
     trackEvent('social_login_tapped', { provider });
-    dispatch(socialLogin());
+    dispatch(socialLogin(provider, intent));
   };
 
   const openLogin = () => navigate('Login', { intent });

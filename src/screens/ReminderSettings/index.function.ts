@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ComponentRef } from 'react';
 import { Linking, TextInput } from 'react-native';
 import { requestNotifications } from 'react-native-permissions';
 import { goBack } from '../../navigation/service';
+import { registerPush } from '../../redux/actions/auth-action';
 import { getReminderSettings, getApplyCount, saveReminderSettings } from '../../redux/actions/alerts-action';
 import { setAlertsError } from '../../redux/slices/alerts-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -56,6 +57,7 @@ export default function useReminderSettings() {
     if (device === 'not_asked') {
       await requestNotifications(['alert', 'sound', 'badge']);
       refresh();
+      dispatch(registerPush());
     } else Linking.openSettings();
   };
 

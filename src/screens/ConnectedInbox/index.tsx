@@ -27,7 +27,7 @@ const PILL = {
 function DisconnectDialog({ inbox }: { inbox: ConnectedInboxController }) {
   return (
     <ConfirmDialog title="Disconnect this inbox?" close_label="Close confirmation" onClose={inbox.closeConfirm} locked={inbox.disconnecting}>
-      <CustomText mt={SIZES.padding * 0.7} text="Your saved subscriptions stay. We’ll stop reading this inbox." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <CustomText mt={SIZES.padding * 0.7} text="Your saved subscriptions stay. We’ll stop reading this inbox. It still counts toward your 2 Gmail inboxes, and you can reconnect it anytime." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       {inbox.disconnect_error ? <CustomText mt={SIZES.padding3} text={inbox.disconnect_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} /> : null}
       <RowView gap={SIZES.padding * 0.45} mt={SIZES.padding * 0.7}>
         <CustomButton variant="secondary" text="Cancel" disabled={inbox.disconnecting} onPress={inbox.closeConfirm} style={common_styles.flex_1} />

@@ -25,7 +25,7 @@ export default function useLogin(route: Route) {
 
   const onSocial = (provider: AuthProvider) => {
     trackEvent('social_login_tapped', { provider });
-    dispatch(socialLogin());
+    dispatch(socialLogin(provider, intent));
   };
 
   const openForgot = () => navigate('ForgotPassword');

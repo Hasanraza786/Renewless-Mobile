@@ -11,6 +11,9 @@ import { trackEvent } from '../../utils/analytics';
 const UNAVAILABLE = 'This page isn’t available yet.';
 const UNAVAILABLE_GMAIL = 'Gmail connection is unavailable right now. Your saved subscriptions are unchanged.';
 
+// Free limit per account; the server also counts disconnected inboxes (GMAIL_INBOX_LIMIT).
+const MAX_INBOXES = 2;
+
 export const PROVIDER_LABEL = { email: 'Email', google: 'Google', apple: 'Apple' } as const;
 
 export const initials = (name: string) =>
@@ -21,7 +24,7 @@ export default function useProfile() {
   const user = useAppSelector(selectUser);
   const { overview, loading, error } = useAppSelector(state => state.profile);
   const logging_out = useAppSelector(state => state.auth.loading.logout);
-  const [dialog, setDialog] = useState<'logout' | 'delete' | null>(null);
+  const [dialog, setDialog] = useState<'logout' | 'delete' | 'inbox_limit' | null>(null);
   const [delete_text, setDeleteText] = useState('');
 
   // Inboxes and payment totals refresh on every visit.
@@ -50,9 +53,11 @@ export default function useProfile() {
 
   const openEdit = () => navigate('EditProfile');
   // Connecting a new inbox needs Google consent, which is not integrated yet.
+  // shortcut: only the inboxes listed here are counted; handle GMAIL_INBOX_LIMIT once Gmail connect is integrated.
   const openConnect = () => {
     trackEvent('gmail_connect_tapped', { from: 'profile' });
-    notice(UNAVAILABLE_GMAIL);
+    if ((overview?.inboxes.length ?? 0) >= MAX_INBOXES) setDialog('inbox_limit');
+    else notice(UNAVAILABLE_GMAIL);
   };
   const openInbox = () => inbox && navigate('ConnectedInbox', { id: inbox.id });
   const openHistory = () => navigate('History');

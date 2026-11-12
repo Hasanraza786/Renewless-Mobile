@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, AppState } from 'react-native';
 import { useFocusEffect, type RouteProp } from '@react-navigation/native';
+import { registerPush, savePushToken } from '../../redux/actions/auth-action';
 import { getDashboard } from '../../redux/actions/dashboard-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { navigate } from '../../navigation/service';
@@ -8,6 +9,7 @@ import { setWidgetPromptSeen } from '../../redux/slices/constant-slice';
 import type { TabParamList } from '../../types';
 import { pinWidget, widgetEvent, widgetInstalled } from '../../utils/widget';
 import { trackEvent } from '../../utils/analytics';
+import { listenToPush } from '../../utils/push';
 
 export type HomeRoute = RouteProp<TabParamList, 'Home'>;
 
@@ -37,6 +39,12 @@ export default function useHome(route: HomeRoute) {
       };
     }, [dispatch]),
   );
+
+  // Reminder pushes: register this session's token (the OS asks once) and open the subscription a tapped reminder names.
+  useEffect(() => {
+    dispatch(registerPush());
+    return listenToPush(token => dispatch(savePushToken(token)));
+  }, [dispatch]);
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion);

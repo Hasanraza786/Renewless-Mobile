@@ -9,6 +9,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
   var reactNativeDelegate: ReactNativeDelegate?
   var reactNativeFactory: RCTReactNativeFactory?
   var launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+  // Unused (SceneDelegate owns the window), but Firebase Messaging's app-delegate proxy reads it.
+  var window: UIWindow?
 
   func application(
     _ application: UIApplication,

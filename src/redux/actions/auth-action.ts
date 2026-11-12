@@ -4,11 +4,13 @@ import type { SessionDto } from '../../api_services/dto';
 import type { ApiError } from '../../api_services/http-provider';
 import apiServices from '../../api_services/request-handler';
 import { navigate, popTo } from '../../navigation/service';
-import type { AuthIntent } from '../../types';
+import type { AuthIntent, AuthProvider } from '../../types';
 import { enterApp } from '../../utils/auth-form';
 import { trackEvent } from '../../utils/analytics';
 import { successHaptic } from '../../utils/haptics';
 import { saveSessionToken } from '../../utils/session-token';
+import { pushToken } from '../../utils/push';
+import { providerSignIn, type ProviderToken } from '../../utils/social-sign-in';
 import { endSession } from '../endSession';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { authError, authLoading } from '../slices/auth-slice';
@@ -27,6 +29,20 @@ function startSession(session: SessionDto, intent?: AuthIntent): AppThunk {
     // Reminders are sent in the account timezone; keep it in step with the phone.
     if (session.user.timezone !== timezone()) dispatch(requestHandler({ apiService: apiServices.updateDevice, param_data: { timezone: timezone() } }));
     enterApp(intent);
+  };
+}
+
+// Reminder pushes go to this session's FCM token; logout ends the session and its token with it.
+export function savePushToken(token: string): AppThunk {
+  return async dispatch => {
+    await dispatch(requestHandler({ apiService: apiServices.updateDevice, param_data: { fcmToken: token } }));
+  };
+}
+
+export function registerPush(): AppThunk {
+  return async dispatch => {
+    const token = await pushToken();
+    if (token) dispatch(savePushToken(token));
   };
 }
 
@@ -73,10 +89,32 @@ export function signup(input: { name: string; email: string; password: string },
   };
 }
 
-// Google/Apple sign-in is not integrated yet; the buttons explain that instead of signing in.
-export function socialLogin(): AppThunk {
-  return async () => {
-    Alert.alert('Google and Apple sign-in aren’t available yet.', 'Use your email and password for now.');
+// Google/Apple: the native sheet, then the backend verifies the ID token and starts the session (no OTP).
+// Closing the sheet keeps the person on the screen they started from.
+export function socialLogin(provider: AuthProvider, intent: AuthIntent | undefined): AppThunk {
+  return async dispatch => {
+    const label = provider === 'google' ? 'Google' : 'Apple';
+    let token: ProviderToken | null;
+    try {
+      token = await providerSignIn(provider);
+    } catch {
+      Alert.alert(`${label} sign-in didn’t work. Please try again.`);
+      return;
+    }
+    if (!token) return;
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.social,
+        param_data: { provider: token.provider, idToken: token.idToken, nonce: token.nonce, name: token.name },
+        setLoading: authLoading('social'),
+        endOnUnauthorized: false,
+        onDone: session => {
+          trackEvent(session.isNewUser ? 'sign_up' : 'login', { method: token.provider });
+          dispatch(startSession(session, intent));
+        },
+        onError: error => Alert.alert(error.message),
+      }),
+    );
   };
 }
 

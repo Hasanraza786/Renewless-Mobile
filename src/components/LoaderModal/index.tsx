@@ -11,7 +11,7 @@ import { styles } from './styles';
 // First loads keep their own skeleton or StateView.
 const busyMessage = (state: RootState): string | null => {
   const auth = state.auth.loading;
-  if (auth.login) return 'Loop is signing you in…';
+  if (auth.login || auth.social) return 'Loop is signing you in…';
   if (auth.signup) return 'Loop is creating your account…';
   if (auth.otp) return 'Loop is checking your code…';
   if (auth.forgot) return 'Loop is sending your code…';
