@@ -28,6 +28,15 @@ export const styles = StyleSheet.create({
     right: SIZES.padding3 / 4,
     width: BADGE,
   },
+  // Fills the circle so Loop centres in it.
+  mascot_centre: {
+    alignItems: 'center',
+    bottom: 0,
+    justifyContent: 'center',
+    left: 0,
+    right: 0,
+    top: 0,
+  },
   hint: {
     backgroundColor: COLORS.card,
     borderColor: COLORS.line_soft,

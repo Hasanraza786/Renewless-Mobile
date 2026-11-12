@@ -1,7 +1,7 @@
 import { toInbox } from '../../api_services/adapters';
 import apiServices from '../../api_services/request-handler';
 import { requestHandler, type AppThunk } from '../request-handler';
-import { setImported, setInbox, setInboxError, setInboxLoading, setSyncError, setSyncing } from '../slices/inbox-slice';
+import { setImported, setInbox, setInboxError, setInboxLoading } from '../slices/inbox-slice';
 import { setNotice } from '../slices/profile-slice';
 import { getAllSubscriptions } from './list-action';
 import { getProfileOverview } from './profile-action';
@@ -31,46 +31,6 @@ export function getImportedSubscriptions(id: string): AppThunk {
   return async dispatch => {
     dispatch(setImported(null));
     await dispatch(requestHandler({ apiService: getAllSubscriptions, param_data: { connectorId: id }, ...flag('imported'), onDone: records => dispatch(setImported(records)) }));
-  };
-}
-
-const SYNC_POLL_MS = 2000;
-const SYNC_FAILED = 'Couldn’t check this inbox. Try again in a moment.';
-
-// Sync now: an incremental scan of this inbox; the screen shows Syncing until the job finishes.
-export function syncInbox(id: string): AppThunk {
-  return async dispatch => {
-    dispatch(setSyncError(''));
-    dispatch(setSyncing(true));
-    const finish = (error: string) => {
-      dispatch(setSyncing(false));
-      dispatch(setSyncError(error));
-      dispatch(getInbox(id));
-    };
-    const poll = (job_id: string) =>
-      dispatch(
-        requestHandler({
-          apiService: apiServices.getScan,
-          param_data: { id: job_id },
-          onDone: job => {
-            if (job.status === 'queued' || job.status === 'running') {
-              setTimeout(() => poll(job_id), SYNC_POLL_MS);
-              return;
-            }
-            // An expired grant marks the inbox for reconnect, which the reloaded inbox shows.
-            finish(job.status === 'failed' && job.error?.code !== 'GMAIL_AUTH_EXPIRED' ? SYNC_FAILED : '');
-          },
-          onError: error => finish(error.message),
-        }),
-      );
-    await dispatch(
-      requestHandler({
-        apiService: apiServices.startScan,
-        param_data: { id, kind: 'incremental' as const },
-        onDone: ({ jobId }) => poll(jobId),
-        onError: error => finish(error.code === 'GMAIL_AUTH_EXPIRED' ? '' : error.message),
-      }),
-    );
   };
 }
 

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { KeyboardAvoidingView, Pressable, ScrollView, View, type StyleProp, type ViewStyle } from 'react-native';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View, type StyleProp, type ViewStyle } from 'react-native';
 import { apple_icon, back_icon, google_icon, logo_mark } from '../../assets/icons';
 import { COLORS, FONTS, SIZES, behavior } from '../../constants/theme';
 import type { AuthProvider } from '../../types';
@@ -68,7 +68,8 @@ export function SocialButtons({ onPress, disabled }: { onPress: (provider: AuthP
   return (
     <View style={styles.social}>
       <CustomButton variant="social" icon={google_icon} text="Continue with Google" disabled={disabled} onPress={() => onPress('google')} />
-      <CustomButton variant="social" icon={apple_icon} text="Continue with Apple" disabled={disabled} onPress={() => onPress('apple')} />
+      {/* Sign in with Apple is iOS only; Android has no Apple flow. */}
+      {Platform.OS === 'ios' ? <CustomButton variant="social" icon={apple_icon} text="Continue with Apple" disabled={disabled} onPress={() => onPress('apple')} /> : null}
     </View>
   );
 }

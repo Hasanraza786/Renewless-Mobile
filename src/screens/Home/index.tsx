@@ -12,6 +12,7 @@ import HomeSkeleton from './components/HomeSkeleton';
 import MonthCard from './components/MonthCard';
 import NextEvent from './components/NextEvent';
 import TopSpending from './components/TopSpending';
+import { ConnectArt, TrustRows } from '../Onboarding/components/ConnectInbox';
 import useHome, { type HomeRoute } from './index.function';
 import { styles } from './styles';
 
@@ -33,13 +34,22 @@ export default function HomeScreen({ route }: { route: HomeRoute }) {
           <CustomButton variant="primary" text="Try again" onPress={home.retry} style={styles.empty_primary} />
         </View>
       ) : data && !data.has_subscriptions ? (
-        <View style={styles.empty}>
-          <Mascot expression="neutral" size={SIZES.padding * 5.75} label="Loop" draw={!home.reduce_motion} />
-          <CustomText mt={SIZES.padding * 0.9} text="Your subscriptions, in one place" size={SIZES.lg} align="center" />
-          <CustomText mt={SIZES.padding2} text="Add your first subscription to see what renews next." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
-          <CustomButton variant="primary" text="Add manually" onPress={home.openAddManual} style={styles.empty_primary} />
-          <CustomButton variant="secondary" text="Connect Gmail" onPress={home.openConnectGmail} style={styles.empty_secondary} />
-        </View>
+        // Gmail hero (locked 13 Nov 2026): Connect Gmail leads in the onboarding style; Add manually stays a link.
+        <ScrollView showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="scrollableAxes" contentContainerStyle={styles.empty}>
+          <ConnectArt />
+          <CustomText mt={SIZES.padding} text="Let Loop find your subscriptions" size={SIZES.h4} align="center" />
+          <CustomText
+            mt={SIZES.padding2}
+            text="Connect Gmail and Loop lists what you pay for from your receipts. It takes about 30 seconds."
+            weight={FONTS.regular}
+            color={COLORS.text_secondary}
+            size={SIZES.sm}
+            align="center"
+          />
+          <TrustRows />
+          <CustomButton variant="primary" text="Connect Gmail" onPress={home.openConnectGmail} style={styles.empty_primary} />
+          <CustomButton variant="link" text="Add manually instead" onPress={home.openAddManual} style={styles.empty_secondary} />
+        </ScrollView>
       ) : (
         // scrollableAxes: iOS adds the floating tab bar inset at the bottom without a second top inset under the fixed header.
         <ScrollView showsVerticalScrollIndicator={false}

@@ -12,12 +12,13 @@ const EMPTY: Record<AuthField, string> = {
   confirm: 'Confirm your password.',
 };
 
-// Same rules and copy as the approved auth forms.
-export function authFieldError(field: AuthField, value: string, password = '') {
+// Same rules and copy as the approved auth forms. The 8-character rule is for choosing a password (Sign up, Reset);
+// Login only needs one entered.
+export function authFieldError(field: AuthField, value: string, password = '', new_password = true) {
   if (!value.trim()) return EMPTY[field];
   if (field === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())) return 'Enter a valid email address.';
   if (field === 'confirm' && value !== password) return 'Passwords do not match.';
-  if ((field === 'password' || field === 'confirm') && value.length < 8) return 'Use at least 8 characters.';
+  if (new_password && (field === 'password' || field === 'confirm') && value.length < 8) return 'Use at least 8 characters.';
   return '';
 }
 
@@ -29,7 +30,9 @@ export function useAuthForm<K extends AuthField>(fields: K[], initial: Partial<R
   const [errors, setErrors] = useState<Partial<Record<K, string>>>({});
   const touched = useRef(new Set<K>());
   const inputs = useRef<Partial<Record<K, ComponentRef<typeof TextInput> | null>>>({});
-  const check = (field: K, data: Record<K, string>) => authFieldError(field, data[field], (data as Record<AuthField, string>).password);
+  // Forms with a confirmation choose a new password; Login has none.
+  const new_password = fields.includes('confirm' as K);
+  const check = (field: K, data: Record<K, string>) => authFieldError(field, data[field], (data as Record<AuthField, string>).password, new_password);
 
   const setField = (field: K, value: string) => {
     const next = { ...latest.current, [field]: value };

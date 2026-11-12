@@ -141,10 +141,11 @@ test('sign up verifies the email code before the session, then continues to the 
   expect(store.getState().profile.user?.name).toBe('Sam Lee');
   expect(root.reset).toHaveBeenCalledWith([{ name: 'Tabs' }, { name: 'AddSubscription' }]);
 
-  // Resend respects the cooldown.
-  const alert = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+  // Resend waits out the 2-minute cooldown: no request, and the countdowns show.
+  const { default: services } = jest.requireMock('../src/api_services/request-handler');
   await act(async () => { press(otp, 'Resend code'); });
-  expect(alert).toHaveBeenCalledWith('You can request a new code in 90 seconds.');
+  expect(services.resendCode).not.toHaveBeenCalled();
+  expect(texts(otp)).toEqual(expect.arrayContaining(['Available in 2:00', 'Code expires in 5:00']));
   await act(async () => { otp.unmount(); });
 });
 

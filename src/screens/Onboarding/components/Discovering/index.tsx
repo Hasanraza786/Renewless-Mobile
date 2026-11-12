@@ -16,34 +16,65 @@ type Props = { onboarding: OnboardingController };
 
 const STAGES = ['Finding receipts', 'Grouping subscriptions', 'Checking renewal details'];
 
-export function DiscoveringBody({ onboarding }: Props) {
-  const complete = onboarding.scan_status === 'completed';
+// The scan radar: a turning mint arc around the neutral Loop (still once complete or with Reduce Motion).
+// Shared by onboarding's Discovering and the signed-in Gmail scan.
+export function ScanRadar({ complete, reduce_motion }: { complete: boolean; reduce_motion: boolean }) {
   const spin = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (complete || onboarding.reduce_motion) return;
+    if (complete || reduce_motion) return;
     const loop = Animated.loop(Animated.timing(spin, { toValue: 1, duration: 3000, easing: Easing.linear, useNativeDriver: true }));
     loop.start();
     return () => loop.stop();
-  }, [complete, onboarding.reduce_motion, spin]);
+  }, [complete, reduce_motion, spin]);
 
   return (
+    <View style={styles.radar}>
+      <Svg width={RADAR_SIZE} height={RADAR_SIZE} style={common_styles.absolute}>
+        <Defs>
+          <RadialGradient id="radar_wash" cx="50%" cy="50%" r="50%">
+            <Stop offset="0" stopColor={COLORS.primary} stopOpacity={0.05} />
+            <Stop offset="1" stopColor={COLORS.primary} stopOpacity={0} />
+          </RadialGradient>
+        </Defs>
+        <Circle cx={RADAR_SIZE / 2} cy={RADAR_SIZE / 2} r={RADAR_SIZE / 2} fill="url(#radar_wash)" />
+      </Svg>
+      <Animated.View
+        style={[styles.ring, complete && styles.ring_complete, { transform: [{ rotate: spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] }) }] }]}
+      />
+      <Mascot expression="neutral" size={SIZES.padding * 4.5} label="Loop is finding subscriptions" draw={!reduce_motion} />
+    </View>
+  );
+}
+
+// Numbered scan stages: done ones show a check, the running one is outlined in mint.
+export function ScanStages({ labels, done_count, running }: { labels: readonly string[]; done_count: number; running: boolean }) {
+  return (
+    <View accessibilityLiveRegion="polite" style={styles.stages}>
+      {labels.map((label, index) => {
+        const done = index < done_count;
+        const scanning = index === done_count && running;
+        return (
+          <RowView gap={SIZES.padding * 0.7} key={label} style={styles.stage} accessibilityLabel={`${label}${done ? ', done' : scanning ? ', in progress' : ''}`}>
+            <View style={[styles.badge, scanning && styles.badge_scanning]}>
+              {done ? (
+                <Icons name={check_icon} />
+              ) : (
+                <CustomText text={`0${index + 1}`} weight={FONTS.regular} color={scanning ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
+              )}
+            </View>
+            <CustomText text={label} weight={FONTS.regular} color={done ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
+          </RowView>
+        );
+      })}
+    </View>
+  );
+}
+
+export function DiscoveringBody({ onboarding }: Props) {
+  return (
     <Fragment>
-      <View style={styles.radar}>
-        <Svg width={RADAR_SIZE} height={RADAR_SIZE} style={common_styles.absolute}>
-          <Defs>
-            <RadialGradient id="radar_wash" cx="50%" cy="50%" r="50%">
-              <Stop offset="0" stopColor={COLORS.primary} stopOpacity={0.05} />
-              <Stop offset="1" stopColor={COLORS.primary} stopOpacity={0} />
-            </RadialGradient>
-          </Defs>
-          <Circle cx={RADAR_SIZE / 2} cy={RADAR_SIZE / 2} r={RADAR_SIZE / 2} fill="url(#radar_wash)" />
-        </Svg>
-        <Animated.View
-          style={[styles.ring, complete && styles.ring_complete, { transform: [{ rotate: spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] }) }] }]}
-        />
-        <Mascot expression="neutral" size={SIZES.padding * 4.5} label="Loop is finding subscriptions" draw={!onboarding.reduce_motion} />
-      </View>
+      <ScanRadar complete={onboarding.scan_status === 'completed'} reduce_motion={onboarding.reduce_motion} />
 
       <OnboardingTitle
         eyebrow="A LITTLE CLARITY IS ON ITS WAY"
@@ -51,24 +82,7 @@ export function DiscoveringBody({ onboarding }: Props) {
         copy="Turning your receipts into a clearer picture of your subscriptions."
       />
 
-      <View accessibilityLiveRegion="polite" style={styles.stages}>
-        {STAGES.map((label, index) => {
-          const done = index < onboarding.scan_stages;
-          const scanning = index === onboarding.scan_stages && onboarding.scan_status === 'running';
-          return (
-            <RowView gap={SIZES.padding * 0.7} key={label} style={styles.stage} accessibilityLabel={`${label}${done ? ', done' : scanning ? ', in progress' : ''}`}>
-              <View style={[styles.badge, scanning && styles.badge_scanning]}>
-                {done ? (
-                  <Icons name={check_icon} />
-                ) : (
-                  <CustomText text={`0${index + 1}`} weight={FONTS.regular} color={scanning ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
-                )}
-              </View>
-              <CustomText text={label} weight={FONTS.regular} color={done ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
-            </RowView>
-          );
-        })}
-      </View>
+      <ScanStages labels={STAGES} done_count={onboarding.scan_stages} running={onboarding.scan_status === 'running'} />
     </Fragment>
   );
 }

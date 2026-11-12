@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { goBack, navigate } from '../../navigation/service';
-import { disconnectInbox, getInbox, reconnectInbox, syncInbox } from '../../redux/actions/inbox-action';
+import { disconnectInbox, getInbox, reconnectInbox } from '../../redux/actions/inbox-action';
 import { setInboxError, setSyncError } from '../../redux/slices/inbox-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
@@ -54,7 +54,8 @@ export default function useConnectedInbox(route: ConnectedInboxRoute) {
 
   const retry = () => dispatch(getInbox(id));
   const openImported = () => navigate('InboxSubscriptions', { id });
-  const runMain = () => (reconnect_needed ? dispatch(reconnectInbox(id)) : dispatch(syncInbox(id)));
+  // Sync now runs the same scan and review as every other Gmail entry (onboarding look); Back returns here.
+  const runMain = () => (reconnect_needed ? dispatch(reconnectInbox(id)) : navigate('GmailScan', { inbox_id: id }));
   const openConfirm = () => {
     dispatch(setInboxError({ key: 'disconnect', value: '' }));
     setConfirmOpen(true);

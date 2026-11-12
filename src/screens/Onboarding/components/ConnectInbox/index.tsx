@@ -20,24 +20,44 @@ const TRUST_ROWS = [
   ['Scans & updates', 'Free to use'],
 ];
 
+// Gmail → Renewless art and the three trust rows; also used by the empty Home (Gmail hero).
+export function ConnectArt() {
+  return (
+    <RowView justify_content="center" gap={SIZES.padding * 0.75} style={styles.art} accessible accessibilityRole="image" accessibilityLabel="Connect Gmail to Renewless">
+      <View style={styles.brand_view}>
+        <View style={styles.icon_view}>
+          <Icons name={gmail_logo} />
+        </View>
+        <CustomText text="Gmail" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      </View>
+      <Icons name={arrow_icon} style={styles.arrow} />
+      <View style={styles.brand_view}>
+        <View style={styles.icon_view}>
+          <Icons name={logo_mark} icon_height={SIZES.padding * 1.65} icon_width={SIZES.padding * 1.65} />
+        </View>
+        <CustomText text="Renewless" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      </View>
+    </RowView>
+  );
+}
+
+export function TrustRows() {
+  return (
+    <View style={styles.trust}>
+      {TRUST_ROWS.map(([label, value], index) => (
+        <RowView align_items="stretch" justify_content="space-between" gap={SIZES.padding * 0.9} key={label} style={[styles.trust_row, index < TRUST_ROWS.length - 1 && styles.trust_divider]}>
+          <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} />
+        </RowView>
+      ))}
+    </View>
+  );
+}
+
 export function ConnectInboxBody({ onboarding }: Props) {
   return (
     <Fragment>
-      <RowView justify_content="center" gap={SIZES.padding * 0.75} style={styles.art} accessible accessibilityRole="image" accessibilityLabel="Connect Gmail to Renewless">
-        <View style={styles.brand_view}>
-          <View style={styles.icon_view}>
-            <Icons name={gmail_logo} />
-          </View>
-          <CustomText text="Gmail" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-        </View>
-        <Icons name={arrow_icon} style={styles.arrow} />
-        <View style={styles.brand_view}>
-          <View style={styles.icon_view}>
-            <Icons name={logo_mark} icon_height={SIZES.padding * 1.65} icon_width={SIZES.padding * 1.65} />
-          </View>
-          <CustomText text="Renewless" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-        </View>
-      </RowView>
+      <ConnectArt />
 
       <SizedBox />
 
@@ -65,14 +85,7 @@ export function ConnectInboxBody({ onboarding }: Props) {
         </View>
       ) : null}
 
-      <View style={styles.trust}>
-        {TRUST_ROWS.map(([label, value], index) => (
-          <RowView align_items="stretch" justify_content="space-between" gap={SIZES.padding * 0.9} key={label} style={[styles.trust_row, index < TRUST_ROWS.length - 1 && styles.trust_divider]}>
-            <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-            <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} />
-          </RowView>
-        ))}
-      </View>
+      <TrustRows />
 
       <SizedBox />
 
@@ -106,10 +119,10 @@ export function ConnectInboxFooter({ onboarding }: Props) {
       <CustomButton variant="link" text="Add subscriptions manually" onPress={onboarding.openManual} />
 
       <RowView align_items="stretch" justify_content="center" gap={SIZES.padding2} style={styles.legal}>
-        {['Terms', 'Privacy'].map((label, index) => (
+        {([['Terms', onboarding.openTerms], ['Privacy', onboarding.openPrivacy]] as const).map(([label, open], index) => (
           <RowView gap={SIZES.padding2} key={label}>
             {index ? <CustomText text="·" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.md} /> : null}
-            <Pressable accessibilityRole="link" onPress={onboarding.openLegal} style={styles.legal_link}>
+            <Pressable accessibilityRole="link" onPress={open} style={styles.legal_link}>
               <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} decoration="underline" />
             </Pressable>
           </RowView>

@@ -8,10 +8,9 @@ import { selectUser, setNotice, setProfileError } from '../../redux/slices/profi
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { trackEvent } from '../../utils/analytics';
 import { money } from '../../utils/money';
+import { PRIVACY_URL, TERMS_URL, openLegal } from '../../config/legal';
 import type { ProfileInbox } from '../../types';
 
-// Settings › How we use your data, Privacy Policy and Terms: the pages don't exist yet, so retrying can't help.
-const UNAVAILABLE = 'This page isn’t available yet.';
 
 // Free limit per account; the server also counts disconnected inboxes (GMAIL_INBOX_LIMIT).
 const MAX_INBOXES = 2;
@@ -78,7 +77,9 @@ export default function useProfile() {
   const openChangePassword = () => navigate('ChangePassword');
   const showProvider = () => notice(`You sign in with ${provider_name}. Manage your password through your ${provider_name} account.`);
   const showSupport = () => notice('Support is currently unavailable. Please try again later.');
-  const showUnavailable = () => notice(UNAVAILABLE);
+  // Settings › How we use your data and Privacy Policy open the privacy page; Terms of Service the terms page.
+  const openPrivacy = () => openLegal(PRIVACY_URL);
+  const openTerms = () => openLegal(TERMS_URL);
 
   // Logout and deletion end the session, which returns to Login.
   const confirmLogout = () => {
@@ -119,7 +120,8 @@ export default function useProfile() {
     openChangePassword,
     showProvider,
     showSupport,
-    showUnavailable,
+    openPrivacy,
+    openTerms,
     confirmLogout,
     confirmDelete,
   };

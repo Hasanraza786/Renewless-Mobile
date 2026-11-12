@@ -356,6 +356,8 @@ export type ConstantState = {
   token: string | null;
   user: Profile | null;
   splash_seen: boolean;
+  // Signed in once on this install: signed-out starts open Login instead of Welcome.
+  onboarding_done: boolean;
   // The one-time Home prompt to add the widget was closed on this device.
   widget_prompt_seen: boolean;
   // AI chat consent (Google Gemini) given on this device for the signed-in account; cleared on sign-out.

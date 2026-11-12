@@ -8,9 +8,11 @@ const Stack = createNativeStackNavigator<AuthStackParamList>();
 
 export default function AuthStack() {
   const splash_seen = useAppSelector(state => state.constant.splash_seen);
+  // Onboarding shows until the first sign-in on this install; after that signed-out starts open Login.
+  const onboarding_done = useAppSelector(state => state.constant.onboarding_done);
 
   return (
-    <Stack.Navigator initialRouteName={splash_seen ? 'Onboarding' : 'Splash'} screenOptions={stack_options}>
+    <Stack.Navigator initialRouteName={!splash_seen ? 'Splash' : onboarding_done ? 'Login' : 'Onboarding'} screenOptions={stack_options}>
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="Onboarding" component={Onboarding} />
       <Stack.Screen name="Login" component={LoginScreen} />

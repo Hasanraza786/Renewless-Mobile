@@ -27,8 +27,8 @@ type Props = { onboarding: OnboardingController };
 
 const CYCLES: readonly ScanCycle[] = ['Monthly', 'Quarterly', 'Yearly', 'Weekly'];
 
-// Selected / total as a ring: mint for the selected share, sage for the rest.
-function SelectionRing({ selected, total }: { selected: number; total: number }) {
+// Selected / total as a ring: mint for the selected share, sage for the rest. Also used by the Gmail review.
+export function SelectionRing({ selected, total }: { selected: number; total: number }) {
   const radius = (RING - RING_WIDTH) / 2;
   const length = 2 * Math.PI * radius;
   const share = total ? selected / total : 0;

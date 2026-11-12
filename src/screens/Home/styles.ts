@@ -109,8 +109,8 @@ export const styles = StyleSheet.create({
   },
   // Empty
   empty: {
-    alignItems: 'center',
-    paddingTop: SIZES.padding * 5.7,
+    paddingBottom: SIZES.padding * 5,
+    paddingTop: SIZES.padding * 1.1,
   },
   empty_primary: {
     marginTop: SIZES.padding * 1.1,

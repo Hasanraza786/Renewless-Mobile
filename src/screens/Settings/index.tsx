@@ -50,7 +50,7 @@ export default function SettingsScreen() {
           text={
             <>
               {`${settings.ai_note} `}
-              <CustomText text="How we use your data ›" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} accessibility_role="link" onPress={profile.showUnavailable} />
+              <CustomText text="How we use your data ›" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} accessibility_role="link" onPress={profile.openPrivacy} />
             </>
           }
         />
@@ -68,8 +68,8 @@ export default function SettingsScreen() {
         <MenuGroup
           title="Legal"
           items={[
-            { label: 'Privacy Policy', icon: privacy_icon, onPress: profile.showUnavailable },
-            { label: 'Terms of Service', icon: terms_icon, onPress: profile.showUnavailable },
+            { label: 'Privacy Policy', icon: privacy_icon, onPress: profile.openPrivacy },
+            { label: 'Terms of Service', icon: terms_icon, onPress: profile.openTerms },
           ]}
         />
       </ScrollView>

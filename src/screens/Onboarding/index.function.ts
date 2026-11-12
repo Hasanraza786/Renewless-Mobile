@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AccessibilityInfo, Alert, Animated, BackHandler, Easing } from 'react-native';
+import { AccessibilityInfo, Animated, BackHandler, Easing } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   connectOnboardingGoogle,
   editOnboardingCandidate,
@@ -9,10 +10,11 @@ import {
   saveOnboardingFinds,
   startOnboardingScan,
 } from '../../redux/actions/onboarding-action';
-import { toggleCandidate } from '../../redux/slices/onboarding-slice';
+import { setConnectMessage, toggleCandidate } from '../../redux/slices/onboarding-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList, OnboardingStep, ScanCandidate } from '../../types';
 import { navigate, resetRoot } from '../../navigation/service';
+import { PRIVACY_URL, TERMS_URL, openLegal } from '../../config/legal';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>['route'];
 
@@ -106,19 +108,27 @@ export default function useOnboarding(route: Route) {
     }
   }, [candidates.length, goTo, scan_status, step]);
 
+  // A Connect message (cancelled, denied) belongs to that attempt: leaving the panel clears it.
+  useEffect(() => {
+    if (step !== 'connectInbox') dispatch(setConnectMessage(''));
+  }, [dispatch, step]);
+
   const back_target = ONBOARDING_STEPS[step].back;
   const onBack = useCallback(() => {
     if (back_target) goTo(back_target, -1);
   }, [back_target, goTo]);
 
-  useEffect(() => {
-    const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (!back_target) return false;
-      onBack();
-      return true;
-    });
-    return () => subscription.remove();
-  }, [back_target, onBack]);
+  // Only while Onboarding is the visible screen: Sign up, Login or Add opened on top handle their own Back.
+  useFocusEffect(
+    useCallback(() => {
+      const subscription = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (!back_target) return false;
+        onBack();
+        return true;
+      });
+      return () => subscription.remove();
+    }, [back_target, onBack]),
+  );
 
   const openScan = () => goTo('discovering');
 
@@ -147,7 +157,8 @@ export default function useOnboarding(route: Route) {
   const openLogin = () => navigate('Login');
   // Manual entry: the Add form when signed in, otherwise sign up first and continue to it.
   const openManual = () => (signed_in ? navigate('AddSubscription') : navigate('Signup', { intent: 'add_manual' }));
-  const openLegal = () => Alert.alert('Not available yet', 'Terms and Privacy will be available before release.');
+  const openTerms = () => openLegal(TERMS_URL);
+  const openPrivacy = () => openLegal(PRIVACY_URL);
 
   return {
     ...onboarding_state,
@@ -169,7 +180,8 @@ export default function useOnboarding(route: Route) {
     save,
     openLogin,
     openManual,
-    openLegal,
+    openTerms,
+    openPrivacy,
     openDashboard,
     // Zero selection: continue to the actual (possibly empty) dashboard without a fake success.
     skipSave: openDashboard,

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { AccessibilityInfo } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { goBack, navigate } from '../../navigation/service';
 import { connectGmailInbox, getGmailInboxes, getGmailScan, saveGmailResults, startGmailScan } from '../../redux/actions/gmail-action';
@@ -15,6 +16,8 @@ export type GmailSheet = { kind: 'candidate' | 'changes'; id: string } | { kind:
 export type CandidateEdit = Pick<GmailSelection, 'price' | 'next_date' | 'start_date' | 'trial'>;
 
 const POLL_MS = 2000;
+// Like onboarding's Discovering: a short hold on the completed stages, then the review opens by itself.
+const ADVANCE_MS = 650;
 const INBOX_LIMIT = 'You’ve used your 2 Gmail inboxes. You can reconnect an inbox you used before.';
 const MONTHLY: Record<string, number> = { Weekly: 52 / 12, Monthly: 1, Quarterly: 1 / 3, Yearly: 1 / 12 };
 
@@ -33,6 +36,7 @@ export default function useGmailScan(route: GmailScanRoute) {
   const [sheet, setSheet] = useState<GmailSheet>(null);
   const [saving, setSaving] = useState(false);
   const [save_error, setSaveError] = useState('');
+  const [reduce_motion, setReduceMotion] = useState(false);
   // Each scan gets a token; progress from an older scan or after leaving is ignored.
   const scan_token = useRef(0);
 
@@ -57,6 +61,8 @@ export default function useGmailScan(route: GmailScanRoute) {
             setCandidates(status.candidates);
             // Server-preselected new plans start selected; updates and saved ones do not.
             setSelected(status.candidates.filter(item => item.kind === 'new' && !item.saved && item.selected).map(item => item.id));
+            const found = status.candidates.some(item => item.kind !== 'duplicate' && !item.saved);
+            setTimeout(() => token === scan_token.current && setPhase(found ? 'review' : 'nothing'), ADVANCE_MS);
           }),
         );
       const onStarted = (job: string) => {
@@ -75,6 +81,10 @@ export default function useGmailScan(route: GmailScanRoute) {
     },
     [dispatch],
   );
+
+  useEffect(() => {
+    AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion, () => {});
+  }, []);
 
   const onFirstInbox = useCallback(
     (target: ProfileInbox) => {
@@ -119,7 +129,8 @@ export default function useGmailScan(route: GmailScanRoute) {
   const view = (item: GmailCandidate): GmailCandidate => ({ ...item, ...edits[item.id] });
   const money = (() => {
     const totals = new Map<string, number>();
-    for (const item of chosen.filter(entry => entry.kind === 'new').map(view)) totals.set(item.currency, (totals.get(item.currency) ?? 0) + Number(item.price) * (MONTHLY[item.cycle] ?? 1));
+    // Paid plans only: free trials aren't in the total, as in onboarding.
+    for (const item of chosen.filter(entry => entry.kind === 'new').map(view).filter(entry => !entry.trial)) totals.set(item.currency, (totals.get(item.currency) ?? 0) + Number(item.price) * (MONTHLY[item.cycle] ?? 1));
     return [...totals].map(([currency, total]) => moneyLabel(currency, total.toFixed(2))).join(' · ') || '—';
   })();
   const save_label = saving
@@ -131,11 +142,14 @@ export default function useGmailScan(route: GmailScanRoute) {
         : update_count
           ? `Save ${update_count} update${update_count === 1 ? '' : 's'}`
           : 'Select subscriptions';
-  const title = phase === 'review' ? 'Review subscriptions' : phase === 'nothing' ? 'Scan complete' : phase === 'interrupted' ? 'Scan interrupted' : 'Find subscriptions';
+  // Review heading: the first scan of an inbox is its first look; later ones show what's new.
+  const eyebrow = inbox?.lastSync ? 'WHAT’S NEW' : 'YOUR FIRST LOOK';
+  const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
+  const intro = `We found ${plural(new_items.length, 'new subscription', 'new subscriptions')}${updates.length ? ` and ${plural(updates.length, 'change', 'changes')}` : ''}. Choose what to keep.`;
+  const open_count = actionable.length;
   const sheet_candidate = sheet && sheet.kind !== 'inboxes' ? candidates.find(item => item.id === sheet.id) ?? null : null;
 
   const toggle = (id: string) => setSelected(current => (current.includes(id) ? current.filter(item => item !== id) : [...current, id]));
-  const openReview = () => setPhase(actionable.length ? 'review' : 'nothing');
   const openCandidate = (item: GmailCandidate) => setSheet({ kind: item.kind === 'update' ? 'changes' : 'candidate', id: item.id });
   const openInboxes = () => setSheet({ kind: 'inboxes' });
   const closeSheet = () => setSheet(null);
@@ -191,7 +205,10 @@ export default function useGmailScan(route: GmailScanRoute) {
     phase,
     stage,
     scan_done,
-    title,
+    reduce_motion,
+    eyebrow,
+    intro,
+    open_count,
     new_items,
     updates,
     duplicates,
@@ -206,7 +223,6 @@ export default function useGmailScan(route: GmailScanRoute) {
     sheet_candidate,
     view,
     toggle,
-    openReview,
     openCandidate,
     openInboxes,
     closeSheet,

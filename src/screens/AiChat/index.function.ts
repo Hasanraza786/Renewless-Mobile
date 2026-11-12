@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Alert, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { pick, types } from '@react-native-documents/picker';
 import { viewDocument } from '@react-native-documents/viewer';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { createSound } from 'react-native-nitro-sound';
 import { focusedTab, goBack, navigate } from '../../navigation/service';
+import { PRIVACY_URL, openLegal } from '../../config/legal';
 import { addAiDraft, sendAiMessage, startAiChat } from '../../redux/actions/ai-action';
 import { setAiConsent } from '../../redux/slices/constant-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -378,7 +379,7 @@ export default function useAiChat() {
     if (tab === 'Home' || tab === 'List' || tab === 'Calendar') navigate(tab, { add_sheet: Date.now() });
     else goBack();
   };
-  const openPrivacy = () => Alert.alert('Not available yet', 'Terms and Privacy will be available before release.');
+  const openPrivacy = () => openLegal(PRIVACY_URL);
 
   return {
     ai_consent,

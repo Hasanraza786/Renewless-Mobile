@@ -1,51 +1,51 @@
-import { ScrollView, View } from 'react-native';
-import { gmail_logo } from '../../assets/icons';
+import { Pressable, ScrollView, View } from 'react-native';
+import { back_icon, logo_mark } from '../../assets/icons';
 import Container from '../../components/Container';
-import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
-import Header from '../../components/Header';
+import Icons from '../../components/Icons';
+import RowView from '../../components/RowView';
+import SizedBox from '../../components/SizedBox';
 import StateView from '../../components/StateView';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { goBack } from '../../navigation/service';
+import { styles as onboarding_styles } from '../Onboarding/styles';
 import GmailSheets from './components/GmailSheets';
-import { InboxSwitch, RecoveryView, ReviewView, ScanningView } from './components/GmailViews';
+import { RecoveryFooter, RecoveryView, ReviewFooter, ReviewView, ScanningFooter, ScanningView } from './components/GmailViews';
 import useGmailScan, { type GmailScanRoute } from './index.function';
-import { styles } from './styles';
 
-// Authenticated Gmail scan → review → save; the inbox stays visible and the action stays pinned.
+// Signed-in Gmail scan → review → save in onboarding's frame and components (locked 13 Nov 2026): the same header
+// (Back, RENEWLESS, mark; no step bars), scrolling content and pinned footer. Every Gmail entry opens this screen.
 export default function GmailScanScreen({ route }: { route: GmailScanRoute }) {
   const gmail = useGmailScan(route);
-  const footer =
-    gmail.phase === 'scanning'
-      ? { text: 'Review subscriptions', onPress: gmail.openReview, disabled: !gmail.scan_done, note: 'Only your chosen subscriptions will be saved.' }
-      : gmail.phase === 'review'
-        ? { text: gmail.save_label, onPress: gmail.save, disabled: !gmail.selected_count || gmail.saving, note: 'Your existing subscriptions stay available.' }
-        : gmail.phase === 'nothing'
-          ? { text: 'Try another inbox', onPress: gmail.openInboxes, disabled: false, note: '' }
-          : gmail.phase === 'interrupted'
-            ? { text: 'Try again', onPress: gmail.retry, disabled: false, note: '' }
-            : null;
+  const fitted = gmail.phase === 'nothing' || gmail.phase === 'interrupted';
 
   return (
-    <Container is_auth style={styles.main_view}>
-      <Header title={gmail.title} onBack={goBack} accessory={gmail_logo} />
-      {gmail.phase === 'loading' ? (
-        <StateView status="loading" message="Getting your inbox ready." />
-      ) : (
-        <>
-          {/* Keyed by phase so each state (e.g. Review after scanning) opens at the top. */}
-          <ScrollView key={gmail.phase} showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-            <InboxSwitch gmail={gmail} />
-            {gmail.phase === 'scanning' ? <ScanningView gmail={gmail} /> : gmail.phase === 'review' ? <ReviewView gmail={gmail} /> : <RecoveryView gmail={gmail} />}
-          </ScrollView>
-          {footer ? (
-            <View style={styles.footer}>
-              <CustomButton variant="primary" text={footer.text} busy={gmail.saving && gmail.phase === 'review'} disabled={footer.disabled} onPress={footer.onPress} />
-              {footer.note ? <CustomText mt={SIZES.padding3} text={footer.note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" /> : null}
+    <Container is_auth>
+      <View style={onboarding_styles.main_view}>
+        <RowView justify_content="space-between">
+          <Pressable accessibilityRole="button" accessibilityLabel="Back" hitSlop={SIZES.padding3 / 4} onPress={goBack} style={onboarding_styles.back}>
+            <Icons name={back_icon} />
+          </Pressable>
+          <CustomText text="RENEWLESS" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} letter_spacing={2} />
+          <Icons name={logo_mark} />
+        </RowView>
+
+        <SizedBox />
+
+        {gmail.phase === 'loading' ? (
+          <StateView status="loading" message="Getting your inbox ready." />
+        ) : (
+          <>
+            {/* Keyed by phase so each state (e.g. the review after scanning) opens at the top. */}
+            <ScrollView key={gmail.phase} showsVerticalScrollIndicator={false} contentContainerStyle={[onboarding_styles.scroll, fitted && onboarding_styles.scroll_fitted]}>
+              {gmail.phase === 'scanning' ? <ScanningView gmail={gmail} /> : gmail.phase === 'review' ? <ReviewView gmail={gmail} /> : <RecoveryView gmail={gmail} />}
+            </ScrollView>
+            <View style={[onboarding_styles.footer, !fitted && onboarding_styles.footer_divider]}>
+              {gmail.phase === 'scanning' ? <ScanningFooter gmail={gmail} /> : gmail.phase === 'review' ? <ReviewFooter gmail={gmail} /> : <RecoveryFooter gmail={gmail} />}
             </View>
-          ) : null}
-        </>
-      )}
+          </>
+        )}
+      </View>
       <GmailSheets gmail={gmail} />
     </Container>
   );

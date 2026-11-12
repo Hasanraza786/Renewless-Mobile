@@ -928,3 +928,22 @@
 
 /* Never-synced inbox (native, 13 Nov 2026; pending review). */
 .inbox-connection-status.inbox-state-pending{color:#e8be78;background:#e8be780b;border-color:#e8be782b}
+
+/* Home empty, Gmail hero (locked 13 Nov 2026). */
+.gmail-promo{display:flex;flex-direction:column;align-items:center;text-align:center;padding:6px 0 10px}
+.phone .gmail-promo h3{font-size:20px;margin:14px 0 8px}
+.phone .gmail-promo-copy{font-size:13px;color:var(--muted);margin:0 0 16px;max-width:300px}
+.gmail-promo .ob-trust{width:100%;text-align:left}
+.gmail-promo-actions{width:100%;margin-top:18px}
+.phone .gmail-promo-cta{width:100%}
+.gmail-promo-actions .link{display:block;width:100%;margin-top:6px}
+
+
+/* Gmail scans in the onboarding frame (13 Nov 2026; pending review): inbox line with Change, tracked rows. */
+.phone .gmail-ob-inbox{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.phone .gmail-ob-inbox .link{min-height:0;padding:0;margin:0;width:auto;font-size:inherit;color:var(--accent)}
+.phone .ob-fixed-top:not(:has(.ob-steps)){padding-bottom:14px}
+.gmail-ob-tracked .ob-result-row{opacity:.7}
+/* Loop sits inside the circle, centred (Gmail recovery). */
+.gmail-ob-mascot{display:grid;place-items:center}
+.gmail-ob-mascot .mascot-view{margin:0 auto}

@@ -1,4 +1,4 @@
-import { Pressable, type StyleProp, type ViewStyle } from 'react-native';
+import { Platform, Pressable, type StyleProp, type ViewStyle } from 'react-native';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
@@ -22,7 +22,8 @@ export default function CustomButton({ text, onPress, disabled, variant, style, 
     return (
       <Pressable
         accessibilityRole="button"
-        accessibilityState={{ disabled: !!disabled, busy: !!busy }}
+        // Android never clears a busy state once set, so there a request in flight reads as disabled instead.
+        accessibilityState={Platform.OS === 'ios' ? { disabled: !!disabled, busy: !!busy } : { disabled: !!disabled || !!busy }}
         disabled={disabled || busy}
         onPress={onPress}
         // Text links stay visually compact but get a 44pt touch target.

@@ -1,231 +1,213 @@
-import PlatformLogo from '../../../components/PlatformLogo';
-import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, Easing, View } from 'react-native';
-import Svg, { Circle } from 'react-native-svg';
-import { check_dark_icon, chevron_down_icon, gmail_logo, loop_scanning } from '../../../assets/icons';
+import { Fragment } from 'react';
+import { Pressable, View } from 'react-native';
+import { check_dark_icon, edit_icon, inbox_badge_icon, offline_badge_icon } from '../../../assets/icons';
+import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
 import Icons from '../../../components/Icons';
-import Mascot from '../../../components/Mascot';
+import OnboardingTitle from '../../../components/OnboardingTitle';
+import PlatformLogo from '../../../components/PlatformLogo';
 import RowView from '../../../components/RowView';
+import SizedBox from '../../../components/SizedBox';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import type { GmailCandidate } from '../../../types';
 import { common_styles } from '../../../utils/common_styles';
-import { dateLabel } from '../../../utils/scan';
-import type { GmailScanController } from '../index.function';
-import { RING, styles } from '../styles';
 import { money } from '../../../utils/money';
+import { dateLabel } from '../../../utils/scan';
+import { ScanRadar, ScanStages } from '../../Onboarding/components/Discovering';
+import { RecoveryArt } from '../../Onboarding/components/ScanRecovery';
+import { styles as recovery_styles } from '../../Onboarding/components/ScanRecovery/styles';
+import { SelectionRing } from '../../Onboarding/components/YourSubscriptions';
+import { styles as result_styles } from '../../Onboarding/components/YourSubscriptions/styles';
+import type { GmailScanController } from '../index.function';
+import { styles } from '../styles';
 
 type Props = { gmail: GmailScanController };
 
-const STAGES = ['Finding subscription receipts', 'Matching your subscriptions', 'Checking renewals & trials'];
-
-export function InboxSwitch({ gmail }: Props) {
-  return (
-    <RowView justify_content="space-between" accessibilityRole="button" accessibilityLabel={`Inbox ${gmail.inbox?.email ?? ''}. Change`} onPress={gmail.openInboxes} style={styles.inbox}>
-      <RowView>
-        <Icons name={gmail_logo} icon_height={SIZES.padding} icon_width={SIZES.padding} />
-        <CustomText text={gmail.inbox?.email ?? ''} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-      </RowView>
-      <RowView gap={SIZES.padding / 4}>
-        <CustomText text="Change" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-        <Icons name={chevron_down_icon} />
-      </RowView>
-    </RowView>
-  );
-}
+const STAGES = ['Finding receipts', 'Matching your subscriptions', 'Checking renewals & trials'];
 
 export function Checkbox({ checked, disabled }: { checked: boolean; disabled?: boolean }) {
   return <View style={[styles.box, checked && styles.box_checked, disabled && styles.box_disabled]}>{checked ? <Icons name={check_dark_icon} /> : null}</View>;
 }
 
-function Intro({ eyebrow, title, copy }: { eyebrow: string; title: string; copy: string }) {
+// "Checking you@gmail.com Change" / "Found in you@gmail.com Change": the inbox, with the inbox picker.
+function InboxLine({ gmail, prefix }: Props & { prefix: string }) {
   return (
-    <>
-      <CustomText mt={SIZES.padding * 1.1} text={eyebrow} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} letter_spacing={1.5} />
-      <CustomText mt={SIZES.padding2} text={title} weight={FONTS.medium} size={SIZES.lg} letter_spacing={-1} accessibility_role="header" />
-      <CustomText mt={SIZES.padding2} text={copy} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-    </>
-  );
-}
-
-// Loop checks receipts inside the halo while a mint arc turns; on completion the happy Loop replaces it.
-export function ScanningView({ gmail }: Props) {
-  const spin = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    if (gmail.scan_done) return;
-    const loop = Animated.loop(Animated.timing(spin, { toValue: 1, duration: 2400, easing: Easing.linear, useNativeDriver: true }));
-    loop.start();
-    return () => loop.stop();
-  }, [gmail.scan_done, spin]);
-  const rotate = spin.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });
-  const radius = RING / 2 - 1;
-
-  return (
-    <>
-      <View style={styles.visual}>
-        <Animated.View style={[common_styles.absolute, { transform: [{ rotate }] }]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <Svg width={RING} height={RING}>
-            <Circle cx={RING / 2} cy={RING / 2} r={radius} stroke={COLORS.accent_border} strokeWidth={1} fill="none" />
-            {gmail.scan_done ? null : <Circle cx={RING / 2} cy={RING / 2} r={radius} stroke={COLORS.primary} strokeWidth={1.5} fill="none" strokeDasharray={`${radius * 1.4} ${radius * 6}`} strokeLinecap="round" />}
-          </Svg>
-        </Animated.View>
-        <View style={styles.halo} accessibilityLabel={gmail.scan_done ? 'Loop found your results' : 'Loop is checking your receipts'}>
-          {gmail.scan_done ? <Mascot expression="happy" size={SIZES.padding * 6.95} label="Loop" /> : <Icons name={loop_scanning} icon_height={SIZES.padding * 5.15} icon_width={SIZES.padding * 5.15} />}
-        </View>
-      </View>
-      <Intro eyebrow="YOUR INBOX, ORGANIZED" title="Finding what’s new." copy="We’re checking receipts for subscriptions and changes to the ones you track." />
-      <View style={styles.steps} accessibilityLiveRegion="polite">
-        {STAGES.map((label, index) => {
-          const done = gmail.stage > index;
-          const running = gmail.stage === index;
-          return (
-            <RowView key={label} gap={SIZES.padding * 0.55} accessibilityLabel={`${label}: ${done ? 'complete' : running ? 'in progress' : 'waiting'}`} style={styles.step}>
-              <View style={[styles.step_mark, done && styles.step_done]}>
-                {done ? <Icons name={check_dark_icon} /> : running ? <ActivityIndicator size="small" color={COLORS.primary} /> : <CustomText text="·" color={COLORS.text_waiting} size={SIZES.sm} line_height={null} />}
-              </View>
-              <CustomText text={label} weight={FONTS.regular} color={done || running ? COLORS.text_primary : COLORS.text_waiting} size={SIZES.sm} />
-            </RowView>
-          );
-        })}
-      </View>
-      {gmail.scan_done ? <CustomText mt={SIZES.padding2} text="Your results are ready to review." weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} accessibility_role="text" /> : null}
-    </>
-  );
-}
-
-function CandidateRow({ gmail, item, last }: { gmail: GmailScanController; item: GmailCandidate; last: boolean }) {
-  const value = gmail.view(item);
-  const update = item.kind === 'update';
-  const checked = gmail.selected.includes(item.id) && !item.saved;
-  const timing = value.trial ? `Trial ends ${dateLabel(value.trial.end_date)}` : value.next_date ? `Renews ${dateLabel(value.next_date)}` : 'Renewal date needed';
-  return (
-    <RowView align_items="center" gap={SIZES.padding * 0.45} style={[styles.row, !last && styles.divider]}>
-      <RowView accessibilityRole="checkbox" accessibilityState={{ checked, disabled: item.saved }} accessibilityLabel={`Select ${item.name} ${update ? 'update' : item.plan ?? 'subscription'}`} disabled={item.saved} onPress={() => gmail.toggle(item.id)} hitSlop={SIZES.padding2}>
-        <Checkbox checked={checked} disabled={item.saved} />
-      </RowView>
-      <View style={styles.avatar}><PlatformLogo platform_id={item.platform_id} name={item.name} /></View>
-      <View style={common_styles.flex_1}>
-        <CustomText text={item.name} weight={FONTS.medium} size={SIZES.sm} />
-        <CustomText mt={SIZES.padding / 4} text={update ? 'Price change found' : value.plan ?? value.cycle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-        {update && item.old ? (
-          <>
-            <CustomText
-              mt={SIZES.padding / 4}
-              text={
-                <>
-                  <CustomText text={money(item.currency, '')} weight={FONTS.regular} size={SIZES.sm} line_height={null} />
-                  <CustomText text={Number(item.old.price).toFixed(2)} weight={FONTS.regular} size={SIZES.sm} decoration="line-through" color={COLORS.text_secondary} line_height={null} />
-                  {` → ${Number(item.price).toFixed(2)}`}
-                </>
-              }
-              weight={FONTS.regular}
-              size={SIZES.sm}
-            />
-            <CustomText mt={SIZES.padding / 4} text={gmail.replace_date && item.next_date ? `Renewal · ${dateLabel(item.next_date)}` : 'Your saved renewal date is kept.'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-          </>
-        ) : (
-          <CustomText mt={SIZES.padding / 4} text={timing} weight={FONTS.regular} color={value.trial ? COLORS.trial : COLORS.text_secondary} size={SIZES.sm} />
-        )}
-        {item.saved ? <CustomText mt={SIZES.padding / 4} text="Saved" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} /> : null}
-      </View>
-      <View style={styles.end}>
-        {update ? null : (
-          <>
-            <CustomText text={money(value.currency, Number(value.price).toFixed(2))} weight={FONTS.medium} size={SIZES.sm} />
-            <CustomText mt={SIZES.padding / 4} text={`${value.trial ? 'After trial · ' : ''}${value.cycle}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="right" />
-          </>
-        )}
-        {item.saved ? null : (
-          <RowView accessibilityRole="button" accessibilityLabel={`Review ${item.name} ${update ? 'changes' : 'details'}`} onPress={() => gmail.openCandidate(item)} style={styles.review_link}>
-            <CustomText text={update ? 'Review changes ›' : 'Review ›'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
-          </RowView>
-        )}
-      </View>
+    <RowView gap={SIZES.padding / 4} style={styles.inbox_line}>
+      <CustomText text={`${prefix} ${gmail.inbox?.email ?? ''}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <Pressable accessibilityRole="button" accessibilityLabel="Change inbox" hitSlop={SIZES.padding2} onPress={gmail.openInboxes}>
+        <CustomText text="Change" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+      </Pressable>
     </RowView>
   );
 }
 
-function Section({ gmail, title, items }: { gmail: GmailScanController; title: string; items: GmailCandidate[] }) {
-  if (!items.length) return null;
+// Onboarding's Discovering, with the Gmail stages; the review opens by itself when the scan ends.
+export function ScanningView({ gmail }: Props) {
   return (
-    <View style={styles.section}>
-      <RowView>
-        <CustomText text={title} weight={FONTS.medium} size={SIZES.lg} accessibility_role="header" />
-        <View style={styles.count_badge}>
-          <CustomText text={String(items.length)} weight={FONTS.medium} color={COLORS.text_secondary} size={SIZES.sm} />
+    <Fragment>
+      <ScanRadar complete={gmail.scan_done} reduce_motion={gmail.reduce_motion} />
+      <OnboardingTitle eyebrow="YOUR INBOX, ORGANIZED" title="Finding what’s new." copy="Checking receipts for new subscriptions and changes to the ones you track." />
+      <InboxLine gmail={gmail} prefix="Checking" />
+      <ScanStages labels={STAGES} done_count={gmail.stage} running={!gmail.scan_done} />
+    </Fragment>
+  );
+}
+
+export function ScanningFooter({ gmail }: Props) {
+  return <CustomText text={gmail.scan_done ? 'Your results are ready.' : 'This may take a moment.'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" mt={SIZES.padding} />;
+}
+
+function Caption({ title, note }: { title: string; note: string }) {
+  return (
+    <RowView align_items="stretch" justify_content="space-between" gap={0} style={result_styles.caption}>
+      <CustomText text={title} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} letter_spacing={0.5} />
+      <CustomText text={note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+    </RowView>
+  );
+}
+
+// Onboarding's result row: checkbox, logo tile, name and two lines, with the edit pencil opening the review sheet.
+function CandidateRow({ gmail, item, last }: { gmail: GmailScanController; item: GmailCandidate; last: boolean }) {
+  const value = gmail.view(item);
+  const update = item.kind === 'update';
+  const checked = gmail.selected.includes(item.id) && !item.saved;
+  const locked = item.saved || gmail.saving;
+  const first = update && item.old ? `Price ${money(item.currency, Number(item.old.price).toFixed(2))} → ${money(item.currency, Number(item.price).toFixed(2))}` : `${value.trial ? 'Trial ends' : 'Renews'} ${value.trial ? dateLabel(value.trial.end_date) : value.next_date ? dateLabel(value.next_date) : 'Date not set'}`;
+  const second = update ? (gmail.replace_date && item.next_date ? `Renews ${dateLabel(item.next_date)}` : 'Your saved renewal date is kept') : `${value.trial ? 'Then ' : ''}${money(value.currency, Number(value.price).toFixed(2))} · ${value.cycle}`;
+  return (
+    <RowView gap={0} style={!last && result_styles.row_divider}>
+      <RowView
+        gap={SIZES.padding * 0.45}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked, disabled: locked }}
+        accessibilityLabel={`Select ${item.name}${update ? ' update' : ''}, ${first}, ${second}`}
+        disabled={locked}
+        onPress={() => gmail.toggle(item.id)}
+        style={result_styles.row_select}>
+        <View style={[result_styles.checkbox, checked && result_styles.checkbox_checked]}>{checked ? <Icons name={check_dark_icon} /> : null}</View>
+        <View style={result_styles.logo_tile}>
+          <PlatformLogo platform_id={item.platform_id} name={item.name} />
+        </View>
+        <View style={common_styles.flex_1}>
+          <CustomText text={item.name} size={SIZES.sm} />
+          <CustomText mt={SIZES.padding / 4} text={first} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          <CustomText mt={SIZES.padding / 4} text={second} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          {item.saved ? <CustomText mt={SIZES.padding / 4} text="Saved" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} /> : null}
         </View>
       </RowView>
-      <View style={styles.list}>
-        {items.map((item, index) => (
-          <CandidateRow key={item.id} gmail={gmail} item={item} last={index === items.length - 1} />
-        ))}
-      </View>
+      {item.saved ? null : (
+        <Pressable accessibilityRole="button" accessibilityLabel={`Edit ${item.name}`} disabled={gmail.saving} onPress={() => gmail.openCandidate(item)} style={result_styles.edit}>
+          <Icons name={edit_icon} />
+        </Pressable>
+      )}
+    </RowView>
+  );
+}
+
+function Results({ gmail, items }: { gmail: GmailScanController; items: GmailCandidate[] }) {
+  return (
+    <View style={result_styles.results}>
+      {items.map((item, index) => (
+        <CandidateRow key={item.id} gmail={gmail} item={item} last={index === items.length - 1} />
+      ))}
     </View>
   );
 }
 
+// Onboarding's Your subscriptions: title, inbox, the cost card with the selection ring, then the rows.
 export function ReviewView({ gmail }: Props) {
-  const [show_tracked, setShowTracked] = useState(false);
   return (
-    <>
-      <Intro eyebrow="NEW SUBSCRIPTIONS & UPDATES" title="A clearer picture." copy="Choose what to add and which changes to keep." />
-      <RowView gap={SIZES.padding * 0.9} style={styles.summary}>
-        <View style={styles.summary_count}>
-          <CustomText text="Selected" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-          <CustomText mt={SIZES.padding * 0.3} text={String(gmail.selected_count)} weight={FONTS.medium} color={COLORS.primary} size={SIZES.h3} align="center" />
-        </View>
+    <Fragment>
+      <SizedBox height={SIZES.padding3 / 2} />
+      <OnboardingTitle eyebrow={gmail.eyebrow} title="A clearer" emphasis="picture." copy={gmail.intro} title_spacing={-0.5} />
+      <InboxLine gmail={gmail} prefix="Found in" />
+
+      <RowView gap={SIZES.padding2} style={result_styles.total}>
         <View style={common_styles.flex_1}>
-          <CustomText text="New plans · monthly equivalent" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-          <CustomText mt={SIZES.padding * 0.3} text={gmail.money} weight={FONTS.medium} size={SIZES.h3} letter_spacing={-0.5} />
-          <CustomText mt={SIZES.padding * 0.3} text="Trial prices apply after the trial." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          <CustomText text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          <CustomText mt={SIZES.padding * 0.35} text={gmail.money} weight={FONTS.regular} size={SIZES.h3} />
+          <CustomText mt={SIZES.padding * 0.35} text="Free trials aren’t included in this total." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
+        <SelectionRing selected={gmail.selected_count} total={gmail.open_count} />
       </RowView>
-      <Section gmail={gmail} title="New subscriptions" items={gmail.new_items} />
-      <Section gmail={gmail} title="Updates found" items={gmail.updates} />
-      {gmail.duplicates.length ? (
+
+      {gmail.new_items.length ? (
         <>
-          <RowView accessibilityRole="button" accessibilityState={{ expanded: show_tracked }} onPress={() => setShowTracked(current => !current)} style={styles.duplicates}>
-            <CustomText text={`${show_tracked ? '▾' : '▸'} ${gmail.duplicates.length} already tracked`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-          </RowView>
-          {show_tracked
-            ? gmail.duplicates.map(item => (
-                <RowView key={item.id} gap={SIZES.padding / 2} style={styles.duplicate_row}>
-                  <View style={styles.avatar}><PlatformLogo platform_id={item.platform_id} /></View>
-                  <View style={common_styles.flex_1}>
-                    <CustomText text={item.name} weight={FONTS.medium} size={SIZES.sm} />
-                    <CustomText mt={SIZES.padding / 5} text="Already tracked · won’t be added again" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-                  </View>
-                  <CustomText text="✓" color={COLORS.primary} size={SIZES.sm} />
-                </RowView>
-              ))
-            : null}
+          <Caption title="SUBSCRIPTIONS FOUND" note="Review before saving" />
+          <Results gmail={gmail} items={gmail.new_items} />
         </>
       ) : null}
-      <CustomText mt={SIZES.padding} text="Matching payment receipts update your payment history automatically." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-      {gmail.save_error ? <CustomText mt={SIZES.padding2} text={gmail.save_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} accessibility_role="alert" /> : null}
-    </>
+      {gmail.updates.length ? (
+        <>
+          <Caption title="UPDATES FOUND" note={String(gmail.updates.length)} />
+          <Results gmail={gmail} items={gmail.updates} />
+        </>
+      ) : null}
+      {gmail.duplicates.length ? (
+        <>
+          <Caption title="ALREADY TRACKED" note={String(gmail.duplicates.length)} />
+          <View style={[result_styles.results, styles.tracked]}>
+            {gmail.duplicates.map((item, index) => (
+              <RowView key={item.id} gap={SIZES.padding * 0.45} style={[result_styles.row_select, index < gmail.duplicates.length - 1 && result_styles.row_divider]}>
+                <View style={result_styles.logo_tile}>
+                  <PlatformLogo platform_id={item.platform_id} name={item.name} />
+                </View>
+                <View style={common_styles.flex_1}>
+                  <CustomText text={item.name} size={SIZES.sm} />
+                  <CustomText mt={SIZES.padding / 4} text="Won’t be added again" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+                </View>
+              </RowView>
+            ))}
+          </View>
+        </>
+      ) : null}
+    </Fragment>
   );
 }
 
-// No new results and interrupted share one recovery layout; neither claims the account has no subscriptions.
+export function ReviewFooter({ gmail }: Props) {
+  return (
+    <Fragment>
+      {gmail.save_error ? (
+        <View accessibilityRole="alert" style={result_styles.save_error}>
+          <CustomText text={gmail.save_error} weight={FONTS.regular} size={SIZES.sm} />
+        </View>
+      ) : null}
+      <SizedBox height={SIZES.padding * 1.1} />
+      <CustomButton variant="primary" text={gmail.save_label} disabled={!gmail.selected_count || gmail.saving} busy={gmail.saving} onPress={gmail.save} />
+      <SizedBox height={SIZES.padding * 0.65} />
+      <CustomButton variant="link" text="Add a subscription manually" onPress={gmail.addManually} />
+    </Fragment>
+  );
+}
+
+// Onboarding's no-results and interrupted layout: the sad Loop centred in its circle with a badge.
 export function RecoveryView({ gmail }: Props) {
   const interrupted = gmail.phase === 'interrupted';
   return (
-    <>
-      <View style={styles.recovery_visual}>
-        <View style={[styles.halo, styles.halo_large]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
-          <Mascot expression={interrupted ? 'sad' : 'neutral'} size={SIZES.padding * 7.35} label="Loop" />
-        </View>
-      </View>
-      <Intro
-        eyebrow={interrupted ? 'LET’S TRY AGAIN' : 'YOU’RE UP TO DATE'}
-        title={interrupted ? 'Your scan was interrupted.' : 'No new subscriptions found.'}
-        copy={interrupted ? 'We couldn’t finish checking this inbox. Try again when your connection is ready.' : 'We didn’t find any new subscriptions or changes in this inbox.'}
+    <Fragment>
+      <RecoveryArt badge={interrupted ? offline_badge_icon : inbox_badge_icon} centred reduce_motion={gmail.reduce_motion} />
+      <SizedBox height={SIZES.padding2 * 2} />
+      <OnboardingTitle
+        eyebrow={interrupted ? 'LET’S GET BACK ON TRACK' : 'YOU’RE UP TO DATE'}
+        title={interrupted ? 'Your scan' : 'Nothing new'}
+        emphasis={interrupted ? 'was interrupted.' : 'this time.'}
+        copy={interrupted ? 'We couldn’t finish checking this inbox. Check your connection and try again.' : 'We didn’t find new subscriptions or changes in this inbox.'}
+        align="center"
       />
-      <CustomText mt={SIZES.padding2} text="Your saved subscriptions haven’t changed." weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
-      <RowView accessibilityRole="button" onPress={interrupted ? gmail.openInboxes : gmail.addManually} style={styles.link}>
-        <CustomText text={interrupted ? 'Choose another inbox ›' : 'Add manually ›'} weight={FONTS.regular} size={SIZES.md} />
-      </RowView>
-    </>
+      <CustomText mt={SIZES.padding3 * 2} text="Your saved subscriptions haven’t changed." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" style={recovery_styles.reassurance} />
+    </Fragment>
+  );
+}
+
+export function RecoveryFooter({ gmail }: Props) {
+  const interrupted = gmail.phase === 'interrupted';
+  return (
+    <Fragment>
+      <SizedBox height={SIZES.padding2} />
+      <CustomButton variant="primary" text={interrupted ? 'Try again' : 'Try another inbox'} onPress={interrupted ? gmail.retry : gmail.openInboxes} />
+      <SizedBox height={SIZES.padding / 2} />
+      <CustomButton variant="secondary" text="Add a subscription manually" onPress={gmail.addManually} />
+    </Fragment>
   );
 }

@@ -54,16 +54,16 @@ export default function OtpScreen({ route }: Props) {
         <CustomText mt={SIZES.padding * 0.35} text={otp.code_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} />
       ) : null}
 
-      <CustomText mt={SIZES.padding * 0.7} text="Code expires in 5 minutes" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding2} />
+      <CustomText mt={SIZES.padding * 0.7} text={otp.expiry_label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding2} />
 
       <CustomButton variant="primary" text={otp.reset ? 'Verify code' : 'Verify email'} disabled={otp.loading} busy={otp.loading} onPress={otp.onSubmit} style={styles.submit} />
 
       <View style={styles.resend}>
         <CustomText text="Didn’t receive a code?" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
-        <Pressable accessibilityRole="button" onPress={otp.onResend} style={styles.resend_button}>
-          <CustomText text="Resend code" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+        <Pressable accessibilityRole="button" accessibilityState={{ disabled: !otp.can_resend }} disabled={!otp.can_resend} onPress={otp.onResend} style={styles.resend_button}>
+          <CustomText text="Resend code" weight={FONTS.regular} color={otp.can_resend ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
         </Pressable>
-        <CustomText text="Available after 2 minutes" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
+        {otp.resend_label ? <CustomText text={otp.resend_label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" /> : null}
       </View>
     </AuthLayout>
   );
