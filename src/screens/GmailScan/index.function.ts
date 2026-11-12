@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { goBack, navigate } from '../../navigation/service';
-import { startGmailScan, getGmailInboxes, getGmailScan, saveGmailResults } from '../../redux/actions/gmail-action';
+import { connectGmailInbox, getGmailInboxes, getGmailScan, saveGmailResults, startGmailScan } from '../../redux/actions/gmail-action';
 import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch } from '../../redux/store';
+import type { ApiError } from '../../api_services/http-provider';
 import type { AppStackParamList, GmailCandidate, GmailSelection, ProfileInbox } from '../../types';
 import { money as moneyLabel } from '../../utils/money';
 
@@ -13,9 +14,9 @@ export type GmailSheet = { kind: 'candidate' | 'changes'; id: string } | { kind:
 // Reviewed values for a new plan (price, renewal or trial details).
 export type CandidateEdit = Pick<GmailSelection, 'price' | 'next_date' | 'start_date' | 'trial'>;
 
-const POLL_MS = 400;
+const POLL_MS = 2000;
+const INBOX_LIMIT = 'You’ve used your 2 Gmail inboxes. You can reconnect an inbox you used before.';
 const MONTHLY: Record<string, number> = { Weekly: 52 / 12, Monthly: 1, Quarterly: 1 / 3, Yearly: 1 / 12 };
-export const UNAVAILABLE = 'Gmail connection is unavailable right now. Your saved subscriptions are unchanged.';
 
 // Authenticated Gmail: scan the chosen inbox, review new plans and updates, save only what is selected.
 export default function useGmailScan(route: GmailScanRoute) {
@@ -36,50 +37,75 @@ export default function useGmailScan(route: GmailScanRoute) {
   const scan_token = useRef(0);
 
   const scan = useCallback(
-    async (target: ProfileInbox) => {
+    (target: ProfileInbox) => {
       const token = ++scan_token.current;
       setInbox(target);
       setPhase('scanning');
       setStage(0);
       setCandidates([]);
       setSaveError('');
-      const job = await dispatch(startGmailScan(target.id));
-      if (token !== scan_token.current) return;
-      if (!job) return setPhase('interrupted');
-      setJobId(job);
-      while (token === scan_token.current) {
-        const status = await dispatch(getGmailScan(job));
+      const poll = (job: string) =>
+        dispatch(
+          getGmailScan(job, status => {
+            if (token !== scan_token.current) return;
+            setStage(status.stage);
+            if (status.status === 'failed') return setPhase('interrupted');
+            if (status.status !== 'completed') {
+              setTimeout(() => token === scan_token.current && poll(job), POLL_MS);
+              return;
+            }
+            setCandidates(status.candidates);
+            // Server-preselected new plans start selected; updates and saved ones do not.
+            setSelected(status.candidates.filter(item => item.kind === 'new' && !item.saved && item.selected).map(item => item.id));
+          }),
+        );
+      const onStarted = (job: string) => {
         if (token !== scan_token.current) return;
-        setStage(status.stage);
-        if (status.status === 'failed') return setPhase('interrupted');
-        if (status.status === 'completed') {
-          setCandidates(status.candidates);
-          // Confident new plans start selected; updates and saved ones do not.
-          setSelected(status.candidates.filter(item => item.kind === 'new' && !item.saved).map(item => item.id));
-          return;
-        }
-        await new Promise<void>(resolve => setTimeout(resolve, POLL_MS));
-      }
+        setJobId(job);
+        poll(job);
+      };
+      // The weekly limit is not an interruption: say when, and leave the screen.
+      const onFailed = (error: ApiError) => {
+        if (token !== scan_token.current) return;
+        if (error.code !== 'SYNC_LIMIT') return setPhase('interrupted');
+        dispatch(setNotice(error.message));
+        goBack();
+      };
+      dispatch(startGmailScan(target, onStarted, onFailed));
     },
     [dispatch],
   );
 
+  const onFirstInbox = useCallback(
+    (target: ProfileInbox) => {
+      setInboxes([target]);
+      scan(target);
+    },
+    [scan],
+  );
+  const onFirstLimit = useCallback(() => {
+    dispatch(setNotice(INBOX_LIMIT));
+    goBack();
+  }, [dispatch]);
+
   useEffect(() => {
-    (async () => {
-      const list = (await dispatch(getGmailInboxes())) ?? [];
-      setInboxes(list);
-      const first = list.find(item => item.id === route.params?.inbox_id) ?? list[0];
-      if (!first) {
-        dispatch(setNotice(UNAVAILABLE));
-        goBack();
-        return;
-      }
-      scan(first);
-    })();
+    // Leaving bumps the token, so a late answer neither scans nor opens Google.
+    const visit = scan_token.current;
+    const onFailed = () => visit === scan_token.current && goBack();
+    dispatch(
+      getGmailInboxes(list => {
+        if (visit !== scan_token.current) return;
+        setInboxes(list);
+        const first = list.find(item => item.id === route.params?.inbox_id) ?? list[0];
+        if (first) return scan(first);
+        // No inbox yet (Home or the Add sheet): connect one first; closing Google leaves the screen.
+        dispatch(connectGmailInbox(onFirstInbox, onFirstLimit, goBack));
+      }, onFailed),
+    );
     return () => {
       scan_token.current += 1;
     };
-  }, [dispatch, route.params?.inbox_id, scan]);
+  }, [dispatch, onFirstInbox, onFirstLimit, route.params?.inbox_id, scan]);
 
   const scan_done = phase === 'scanning' && stage >= 3;
   const actionable = candidates.filter(item => item.kind !== 'duplicate' && !item.saved);
@@ -128,14 +154,27 @@ export default function useGmailScan(route: GmailScanRoute) {
     setSheet(null);
     scan(target);
   };
+  const onConnected = (target: ProfileInbox) => {
+    setInboxes(current => [...current.filter(item => item.id !== target.id), target]);
+    scan(target);
+  };
+  const onInboxLimit = () => dispatch(setNotice(INBOX_LIMIT));
   const connectAnother = () => {
     setSheet(null);
-    dispatch(setNotice(UNAVAILABLE));
+    dispatch(connectGmailInbox(onConnected, onInboxLimit));
   };
   const retry = () => inbox && scan(inbox);
   const addManually = () => navigate('AddSubscription');
 
-  const save = async () => {
+  const onSaved = () => {
+    setSaving(false);
+    navigate('List');
+  };
+  const onSaveFailed = (message: string) => {
+    setSaving(false);
+    setSaveError(message);
+  };
+  const save = () => {
     if (!chosen.length || saving) return;
     setSaving(true);
     setSaveError('');
@@ -143,10 +182,7 @@ export default function useGmailScan(route: GmailScanRoute) {
       const value = view(item);
       return { id: item.id, price: value.price, next_date: value.next_date, start_date: value.start_date, trial: value.trial, replace_date: item.kind === 'update' && replace_date };
     });
-    const result = await dispatch(saveGmailResults(job_id, selections));
-    setSaving(false);
-    if ('error' in result) return setSaveError(result.error);
-    navigate('List');
+    dispatch(saveGmailResults(job_id, chosen, selections, onSaved, onSaveFailed));
   };
 
   return {

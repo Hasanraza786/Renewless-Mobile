@@ -1,8 +1,9 @@
+import PlatformLogo from '../../../../components/PlatformLogo';
 import { Fragment, useEffect, useState } from 'react';
 import { common_styles } from '../../../../utils/common_styles';
 import { Pressable, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { check_dark_icon, edit_icon, platform_logos } from '../../../../assets/icons';
+import { check_dark_icon, edit_icon } from '../../../../assets/icons';
 import AppSheet from '../../../../components/AppSheet';
 import CustomButton from '../../../../components/CustomButton';
 import RowView from '../../../../components/RowView';
@@ -177,7 +178,7 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
                   {checked ? <Icons name={check_dark_icon} /> : null}
                 </View>
                 <View style={styles.logo_tile}>
-                  <Icons name={platform_logos[item.platform_id] ?? ''} />
+                  <PlatformLogo platform_id={item.platform_id} name={item.name} />
                 </View>
                 <View style={common_styles.flex_1}>
                   <CustomText text={item.name} size={SIZES.sm} />

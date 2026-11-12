@@ -2,15 +2,16 @@ import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { navigate } from '../../navigation/service';
 import { logoutUser } from '../../redux/actions/auth-action';
+import { connectGmailInbox } from '../../redux/actions/gmail-action';
 import { deleteAccount, getProfileOverview } from '../../redux/actions/profile-action';
 import { selectUser, setNotice, setProfileError } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { trackEvent } from '../../utils/analytics';
 import { money } from '../../utils/money';
+import type { ProfileInbox } from '../../types';
 
 // Settings › How we use your data, Privacy Policy and Terms: the pages don't exist yet, so retrying can't help.
 const UNAVAILABLE = 'This page isn’t available yet.';
-const UNAVAILABLE_GMAIL = 'Gmail connection is unavailable right now. Your saved subscriptions are unchanged.';
 
 // Free limit per account; the server also counts disconnected inboxes (GMAIL_INBOX_LIMIT).
 const MAX_INBOXES = 2;
@@ -27,6 +28,8 @@ export default function useProfile() {
   const logging_out = useAppSelector(state => state.auth.loading.logout);
   const [dialog, setDialog] = useState<'logout' | 'delete' | 'inbox_limit' | null>(null);
   const [delete_text, setDeleteText] = useState('');
+  // Email accounts confirm deletion with their password; Google/Apple verify in the provider sheet.
+  const [delete_password, setDeletePassword] = useState('');
 
   // Inboxes and payment totals refresh on every visit.
   useFocusEffect(
@@ -37,11 +40,16 @@ export default function useProfile() {
 
   const totals = overview?.payment_totals ?? [];
   const inbox = overview?.inboxes[0] ?? null;
+  // Never synced yet is not Synced.
+  const inbox_status = !inbox ? '' : inbox.status === 'reconnect' ? 'Reconnect needed' : inbox.status === 'paused' ? 'Updates paused' : inbox.lastSync ? 'Synced' : 'Not synced yet';
   // Hidden until the overview loads, so the No inbox state never flashes for a connected account.
   const inboxes_ready = !!overview;
   const payment_text = totals.length ? `${totals.map(item => money(item.currency, item.amount)).join(' · ')} confirmed` : 'Confirmed payment history';
   const deleting = loading;
-  const delete_error = error ? 'We couldn’t delete your account. Please try again.' : '';
+  const needs_password = user?.provider === 'email';
+  const delete_ready = delete_text.trim() === 'DELETE' && (!needs_password || !!delete_password);
+  // A wrong password says so; other failures keep the general message.
+  const delete_error = !error ? '' : needs_password ? error : 'We couldn’t delete your account. Please try again.';
   const provider_name = user?.provider === 'apple' ? 'Apple' : 'Google';
 
   const notice = (text: string) => dispatch(setNotice(text));
@@ -49,16 +57,18 @@ export default function useProfile() {
   const closeDialog = () => {
     setDialog(null);
     setDeleteText('');
+    setDeletePassword('');
     dispatch(setProfileError(''));
   };
 
   const openEdit = () => navigate('EditProfile');
-  // Connecting a new inbox needs Google consent, which is not integrated yet.
-  // shortcut: only the inboxes listed here are counted; handle GMAIL_INBOX_LIMIT once Gmail connect is integrated.
+  // The list leaves out disconnected inboxes, so the server's GMAIL_INBOX_LIMIT also opens the dialog.
+  const onInboxConnected = (connected: ProfileInbox) => navigate('GmailScan', { inbox_id: connected.id });
+  const openInboxLimit = () => setDialog('inbox_limit');
   const openConnect = () => {
     trackEvent('gmail_connect_tapped', { from: 'profile' });
-    if ((overview?.inboxes.length ?? 0) >= MAX_INBOXES) setDialog('inbox_limit');
-    else notice(UNAVAILABLE_GMAIL);
+    if ((overview?.inboxes.length ?? 0) >= MAX_INBOXES) openInboxLimit();
+    else dispatch(connectGmailInbox(onInboxConnected, openInboxLimit));
   };
   const openInbox = () => inbox && navigate('ConnectedInbox', { id: inbox.id });
   const openHistory = () => navigate('History');
@@ -76,15 +86,15 @@ export default function useProfile() {
     dispatch(logoutUser());
   };
 
-  // shortcut: the approved dialog collects "DELETE", but the backend asks for the account password; this sends the typed text until the dialog is updated.
   const confirmDelete = () => {
-    if (delete_text.trim() !== 'DELETE') return;
-    dispatch(deleteAccount(delete_text.trim()));
+    if (!delete_ready || !user) return;
+    dispatch(deleteAccount(user.provider, delete_password));
   };
 
   return {
     user,
     inbox,
+    inbox_status,
     inboxes_ready,
     payment_text,
     dialog,
@@ -92,6 +102,10 @@ export default function useProfile() {
     closeDialog,
     delete_text,
     setDeleteText,
+    delete_password,
+    setDeletePassword,
+    needs_password,
+    delete_ready,
     deleting,
     delete_error,
     logging_out,

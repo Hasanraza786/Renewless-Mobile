@@ -12,7 +12,14 @@ import type {
   ProfileInbox,
   ReminderPreference,
   ReminderSettings,
+  AiReply,
+  ChatDraft,
+  GmailCandidate,
+  GmailScanStatus,
+  GmailSelection,
+  ScanCandidate,
   ScanCycle,
+  ScanStatus,
   SentAlert,
   SubscriptionDetail,
   SubscriptionFormInput,
@@ -22,7 +29,10 @@ import { localToday } from '../utils/dates';
 import type {
   AlertDto,
   CalendarDto,
+  CandidateDto,
   CategoryDto,
+  ChatDraftDto,
+  ChatTurnDto,
   ConnectorDto,
   CycleDto,
   DetailDto,
@@ -37,6 +47,7 @@ import type {
   TrialDto,
   UpcomingDto,
   UserDto,
+  ScanJobDto,
 } from './dto';
 
 // Backend DTOs → app types, mapped once here. Screens keep using the app types.
@@ -45,19 +56,25 @@ export const toCycle = (cycle: CycleDto) => (cycle.charAt(0).toUpperCase() + cyc
 export const fromCycle = (cycle: ScanCycle) => cycle.toLowerCase() as CycleDto;
 
 // Bundled logos are keyed by catalog slug; backend platforms have ObjectIds, so link the two by name.
-// shortcut: name-matched bundled logos; use the backend logoUrl once platform logos are hosted.
+// The backend's hosted logo (logoUrl) covers platforms without a bundled one.
 const slugByName = new Map(PLATFORM_CATALOG.map(entry => [entry.name.toLowerCase(), entry.platform_id]));
 // Subscription ID → platform ID, so events (which carry no platform) still find their logo.
 const platformBySubscription = new Map<string, string>();
 
-function logoKey(name: string, platform_id: string) {
+// Platform ID → hosted logo URL, read by PlatformLogo.
+export const logo_urls: Record<string, string> = {};
+
+function logoKey(name: string, platform_id: string, logo_url?: string | null) {
   const slug = slugByName.get(name.toLowerCase());
   if (slug && platform_logos[slug] && !platform_logos[platform_id]) platform_logos[platform_id] = platform_logos[slug];
+  if (logo_url) logo_urls[platform_id] = logo_url;
   return platform_id;
 }
 
-function platformOf(subscription_id: string, name: string) {
-  return platformBySubscription.get(subscription_id) ?? logoKey(name, slugByName.get(name.toLowerCase()) ?? subscription_id);
+function platformOf(subscription_id: string, name: string, logo_url?: string | null) {
+  const platform_id = platformBySubscription.get(subscription_id) ?? logoKey(name, slugByName.get(name.toLowerCase()) ?? subscription_id);
+  if (logo_url) logo_urls[platform_id] = logo_url;
+  return platform_id;
 }
 
 // Categories: the form offers six names; the backend has its own list, linked by name.
@@ -102,7 +119,7 @@ export function fromReminder(reminder: ReminderPreference) {
 
 export function toRecord(item: SummaryDto | DetailDto): SubscriptionRecord {
   const detail = 'revision' in item ? item : null;
-  const platform_id = logoKey(item.name, item.platformId ?? item.id);
+  const platform_id = logoKey(item.name, item.platformId ?? item.id, item.logoUrl);
   platformBySubscription.set(item.id, platform_id);
   const start = detail?.startDate ?? null;
   const connector = detail?.source.connector ?? null;
@@ -181,7 +198,7 @@ export function toEvent(event: EventDto): HomeEvent {
   return {
     id: `${event.subscriptionId}:${event.type}:${event.date}`,
     subscription_id: event.subscriptionId,
-    platform_id: platformOf(event.subscriptionId, event.name),
+    platform_id: platformOf(event.subscriptionId, event.name, event.logoUrl),
     name: event.name,
     plan: event.plan,
     date: event.date,
@@ -195,7 +212,7 @@ export function toEvent(event: EventDto): HomeEvent {
 }
 
 const toSpend = (item: PlatformSpendDto): HomePlatformSpend => ({
-  platform_id: logoKey(item.name, item.platformId),
+  platform_id: logoKey(item.name, item.platformId, item.logoUrl),
   name: item.name,
   amount: item.monthly.amount,
   percent: item.percent,
@@ -204,7 +221,7 @@ const toSpend = (item: PlatformSpendDto): HomePlatformSpend => ({
 
 const toTrial = (trial: TrialDto): HomeTrial => ({
   subscription_id: trial.subscriptionId,
-  platform_id: platformOf(trial.subscriptionId, trial.name),
+  platform_id: platformOf(trial.subscriptionId, trial.name, trial.logoUrl),
   name: trial.name,
   end_date: trial.endDate,
   then_amount: trial.after.amount,
@@ -265,7 +282,7 @@ export function toPayment(payment: PaymentDto): PaymentRecord {
     currency: payment.amount.currency,
     paid_on: payment.paidDate,
     name: payment.name,
-    platform_id: platformOf(payment.subscriptionId, payment.name),
+    platform_id: platformOf(payment.subscriptionId, payment.name, payment.logoUrl),
     billing_date: payment.billingDate,
     source: payment.source === 'gmail' ? 'gmail' : payment.source === 'manual' ? 'manual' : 'reviewed',
     inbox_email: payment.inboxEmail,
@@ -277,7 +294,7 @@ export function toAlert(alert: AlertDto): SentAlert {
   return {
     id: alert.id,
     subscription_id: alert.subscriptionId,
-    platform_id: platformOf(alert.subscriptionId, alert.name),
+    platform_id: platformOf(alert.subscriptionId, alert.name, alert.logoUrl),
     name: alert.name,
     kind: alert.eventType,
     event_date: alert.eventDate,
@@ -315,7 +332,124 @@ export function toInbox(connector: ConnectorDto): ProfileInbox {
   return {
     id: connector.id,
     email: connector.email,
-    status: connector.status === 'active' ? 'synced' : connector.status === 'paused' ? 'paused' : 'reconnect',
+    status: connector.status === 'connected' ? 'synced' : 'reconnect',
     lastSync: connector.lastSuccessfulSyncAt,
+    nextSync: connector.nextSyncAt ?? null,
+  };
+}
+
+// Onboarding shows only complete new finds; an update or already-tracked row belongs to the signed-in Gmail review.
+// shortcut: finds the backend marks needsDetails are left out, until the review panel has a state for them.
+export function toScanCandidate(dto: CandidateDto): ScanCandidate | null {
+  // The price/cycle checks only narrow the types; needsDetails already covers them.
+  if (dto.classification !== 'new' || dto.needsDetails || !dto.price || !dto.cycle) return null;
+  return {
+    id: dto.id,
+    platform_id: logoKey(dto.name, dto.platformId ?? dto.id, dto.logoUrl),
+    name: dto.name,
+    price: dto.price.amount,
+    currency: dto.price.currency,
+    cycle: toCycle(dto.cycle),
+    next_date: dto.trial?.endDate ?? dto.anchorDate,
+    estimated: dto.estimated,
+    trial: dto.trial ? { auto_renew: dto.trial.autoRenew } : undefined,
+    revision: dto.revision,
+    selected: dto.selected && !dto.imported,
+  };
+}
+
+// The access-expired failure sends the person back to Connect; anything else can be retried.
+export function toScanStatus(dto: ScanJobDto): ScanStatus {
+  const status = dto.status === 'succeeded' ? 'completed' : dto.status === 'failed' ? 'failed' : 'running';
+  return {
+    job_id: dto.id,
+    completed_stages: dto.stages.filter(stage => stage.status === 'done').length,
+    status,
+    failure: status === 'failed' ? (dto.error?.code === 'GMAIL_AUTH_EXPIRED' ? 'access' : 'network') : undefined,
+    candidates: dto.candidates.map(toScanCandidate).filter((item): item is ScanCandidate => !!item),
+  };
+}
+
+// A review edit: price, cycle and the renewal (or trial end) date.
+export function fromScanCandidate(item: ScanCandidate) {
+  return {
+    revision: item.revision,
+    price: { currency: item.currency, amount: item.price },
+    cycle: fromCycle(item.cycle),
+    ...(item.trial ? { trial: { endDate: item.next_date ?? '', autoRenew: item.trial.auto_renew } } : item.next_date ? { anchorDate: item.next_date } : {}),
+  };
+}
+
+// AI chat draft → the draft card. A trial keeps its end date; the renewal date is the anchor.
+export function toChatDraft(dto: ChatDraftDto): ChatDraft {
+  const { fields } = dto;
+  const trial = fields.trial ? { days: fields.trial.days ?? null, end_date: fields.trial.endDate ?? null, auto_renew: fields.autoRenew ?? true } : null;
+  return {
+    id: dto.id,
+    revision: dto.revision,
+    ready: dto.status === 'ready',
+    name: fields.name ?? null,
+    platform_id: fields.name ? logoKey(fields.name, fields.platformId ?? fields.name) : null,
+    category: fields.categoryId ? categoryName(fields.categoryId) : null,
+    price: fields.price?.amount ?? null,
+    currency: fields.price?.currency ?? null,
+    cycle: fields.cycle ? toCycle(fields.cycle) : null,
+    next_date: fields.anchorDate ?? null,
+    start_date: fields.startDate ?? null,
+    trial,
+    notes: fields.note ?? null,
+  };
+}
+
+// One answered turn: the reply text and the draft it changed (the newest, when several changed).
+export function toAiReply(turn: ChatTurnDto): AiReply {
+  const draft = turn.drafts.filter(item => item.status !== 'added').pop();
+  return { reply: turn.reply.text ?? '', draft: draft ? toChatDraft(draft) : null, usage: turn.usage };
+}
+
+// Signed-in Gmail review. Rows the review has no state for (missing price or cycle, or no safe match) are left out.
+// shortcut: the backend sends no trial start or length, so a trial edit starts from an empty start date.
+export function toGmailCandidate(dto: CandidateDto): GmailCandidate | null {
+  if (dto.classification === 'unresolved' || dto.needsDetails || !dto.price || !dto.cycle) return null;
+  const old = dto.changes?.price.from;
+  return {
+    id: dto.id,
+    kind: dto.classification === 'tracked' ? 'duplicate' : dto.classification,
+    name: dto.name,
+    platform_id: logoKey(dto.name, dto.platformId ?? dto.id, dto.logoUrl),
+    plan: dto.plan,
+    price: dto.price.amount,
+    currency: dto.price.currency,
+    cycle: toCycle(dto.cycle),
+    category: 'Other',
+    start_date: null,
+    next_date: dto.trial ? null : dto.anchorDate,
+    trial: dto.trial ? { days: 0, end_date: dto.trial.endDate, auto_renew: dto.trial.autoRenew } : null,
+    target_id: dto.targetSubscriptionId,
+    // shortcut: minor units shown with two decimals, like every amount in the app.
+    old: old ? { price: (old.amountMinor / 100).toFixed(2), next_date: null } : null,
+    saved: dto.imported,
+    revision: dto.revision,
+    selected: dto.selected,
+  };
+}
+
+export function toGmailScan(dto: ScanJobDto): GmailScanStatus {
+  const status = toScanStatus(dto).status;
+  return {
+    status,
+    stage: dto.stages.filter(stage => stage.status === 'done').length,
+    candidates: dto.candidates.map(toGmailCandidate).filter((item): item is GmailCandidate => !!item),
+    error: '',
+  };
+}
+
+// A reviewed row before import: edited price and dates for a new plan, the date choice for an update.
+export function fromGmailSelection(item: GmailCandidate, selection: GmailSelection) {
+  if (item.kind === 'update') return { revision: item.revision, replaceAnchorDate: selection.replace_date };
+  return {
+    revision: item.revision,
+    price: { currency: item.currency, amount: selection.price },
+    ...(selection.trial ? { trial: { endDate: selection.trial.end_date, autoRenew: selection.trial.auto_renew } } : selection.next_date ? { anchorDate: selection.next_date } : {}),
   };
 }

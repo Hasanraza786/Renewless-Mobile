@@ -1,23 +1,22 @@
+import PlatformLogo from '../../components/PlatformLogo';
 import { Fragment } from 'react';
 import { View } from 'react-native';
-import { platform_logos } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import type { HomeSpending, HomeTrial } from '../../types';
 import { common_styles } from '../../utils/common_styles';
 import { dateLabel } from '../../utils/scan';
 import CustomText from '../CustomText';
-import Icons from '../Icons';
 import { styles } from './styles';
 import RowView from '../RowView';
 import { money } from '../../utils/money';
 
-type Row = { key: string; name: string; logo?: string; amount: string; percent: number; meta: string; onPress: () => void };
+type Row = { key: string; name: string; platform_id?: string; amount: string; percent: number; meta: string; onPress: () => void };
 
 function SpendRow({ row, currency }: { row: Row; currency: string }) {
   return (
     <RowView gap={SIZES.padding / 2} accessibilityRole="button" accessibilityLabel={`${row.name}, ${currency} ${row.amount} a month, ${row.percent}%`} onPress={row.onPress} style={styles.spend_row}>
-      <View style={[styles.spend_avatar, !row.logo && styles.others_avatar]}>
-        {row.logo ? <Icons name={row.logo} /> : <CustomText text="•••" weight={FONTS.regular} size={SIZES.sm} />}
+      <View style={[styles.spend_avatar, !row.platform_id && styles.others_avatar]}>
+        {row.platform_id ? <PlatformLogo platform_id={row.platform_id} name={row.name} /> : <CustomText text="•••" weight={FONTS.regular} size={SIZES.sm} />}
       </View>
       <View style={common_styles.flex_1}>
         <CustomText text={row.name} size={SIZES.lg} />
@@ -50,7 +49,7 @@ export function SpendRows({ spending, all, onPlatform, onOthers }: Props) {
         const rows: Row[] = (all ? group.all_platforms : group.platforms).map(item => ({
           key: item.platform_id,
           name: item.name,
-          logo: platform_logos[item.platform_id],
+          platform_id: item.platform_id,
           amount: item.amount,
           percent: item.percent,
           meta: `${item.subscription_count} subscription${item.subscription_count === 1 ? '' : 's'}`,
@@ -80,7 +79,7 @@ export function TrialRows({ trials, onPress }: { trials: HomeTrial[]; onPress: (
       {trials.map(item => (
         <RowView gap={SIZES.padding * 0.45} key={item.subscription_id} accessibilityRole="button" accessibilityLabel={`View ${item.name} trial`} onPress={() => onPress(item.subscription_id)} style={styles.trial_row}>
           <View style={styles.trial_avatar}>
-            {platform_logos[item.platform_id] ? <Icons name={platform_logos[item.platform_id]} icon_height={SIZES.padding * 1.05} icon_width={SIZES.padding * 1.05} /> : null}
+            <PlatformLogo platform_id={item.platform_id} size={SIZES.padding * 1.05} />
           </View>
           <View style={common_styles.flex_1}>
             <CustomText text={item.name} size={SIZES.sm} />

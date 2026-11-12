@@ -60,18 +60,18 @@ export default function ProfileScreen() {
             ) : null}
           </RowView>
           {!profile.inboxes_ready ? null : inbox ? (
-            <RowView accessibilityRole="button" accessibilityLabel={`${inbox.email}, ${inbox.status === 'synced' ? 'Synced' : inbox.status === 'reconnect' ? 'Reconnect needed' : 'Updates paused'}`} gap={SIZES.padding / 2} onPress={profile.openInbox} style={styles.inbox_row}>
+            <RowView accessibilityRole="button" accessibilityLabel={`${inbox.email}, ${profile.inbox_status}`} gap={SIZES.padding / 2} onPress={profile.openInbox} style={styles.inbox_row}>
               <View style={styles.inbox_logo}>
                 <Icons name={gmail_logo} icon_height={SIZES.padding * 1.15} icon_width={SIZES.padding * 1.15} />
               </View>
               <View style={common_styles.flex_1}>
                 <CustomText text={inbox.email} size={SIZES.sm} number_of_lines={1} />
                 <RowView gap={SIZES.padding / 5} mt={SIZES.padding * 0.35}>
-                  <View style={[styles.dot, inbox.status !== 'synced' && styles.dot_paused]} />
+                  <View style={[styles.dot, profile.inbox_status !== 'Synced' && styles.dot_paused]} />
                   <CustomText
-                    text={inbox.status === 'synced' ? 'Synced' : inbox.status === 'reconnect' ? 'Reconnect needed' : 'Updates paused'}
+                    text={profile.inbox_status}
                     weight={FONTS.regular}
-                    color={inbox.status === 'synced' ? COLORS.primary : COLORS.renewing_soon}
+                    color={profile.inbox_status === 'Synced' ? COLORS.primary : COLORS.renewing_soon}
                     size={SIZES.sm}
                   />
                   {inbox.lastSync ? <CustomText text={`· Last sync ${syncDate(inbox.lastSync)}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}

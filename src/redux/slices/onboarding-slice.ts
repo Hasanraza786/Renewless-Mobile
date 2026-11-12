@@ -5,6 +5,7 @@ const initial_state: OnboardingState = {
   connect_loading: false,
   connect_message: '',
   inbox_email: '',
+  connector_id: '',
   scan_job_id: '',
   scan_stages: 0,
   scan_status: 'idle',
@@ -26,8 +27,9 @@ const onboardingSlice = createSlice({
     setConnectMessage(state, action: PayloadAction<string>) {
       state.connect_message = action.payload;
     },
-    setInboxEmail(state, action: PayloadAction<string>) {
-      state.inbox_email = action.payload;
+    setInboxConnector(state, action: PayloadAction<{ id: string; email: string }>) {
+      state.connector_id = action.payload.id;
+      state.inbox_email = action.payload.email;
     },
     // A new scan discards the previous job's results and drafts; already saved records stay saved.
     setScanJob(state, action: PayloadAction<string>) {
@@ -46,7 +48,7 @@ const onboardingSlice = createSlice({
       state.scan_failure = action.payload.failure ?? '';
       if (action.payload.status === 'completed' && state.candidates.length === 0) {
         state.candidates = action.payload.candidates;
-        state.selected_ids = action.payload.candidates.map(item => item.id);
+        state.selected_ids = action.payload.candidates.filter(item => item.selected).map(item => item.id);
       }
     },
     setScanFailed(state, action: PayloadAction<ScanFailure>) {
@@ -63,10 +65,10 @@ const onboardingSlice = createSlice({
     updateCandidate(state, action: PayloadAction<ScanCandidate>) {
       state.candidates = state.candidates.map(item => (item.id === action.payload.id ? action.payload : item));
     },
-    // Saved records accumulate across scans; a repeated save of the same ID keeps the first record.
-    addSaved(state, action: PayloadAction<ScanCandidate[]>) {
+    // Imported candidate IDs; saved records accumulate across scans and a repeat keeps the first record.
+    addSaved(state, action: PayloadAction<string[]>) {
       const known = new Set(state.saved.map(item => item.id));
-      state.saved.push(...action.payload.filter(item => !known.has(item.id)));
+      state.saved.push(...state.candidates.filter(item => action.payload.includes(item.id) && !known.has(item.id)));
     },
     setSaveLoading(state, action: PayloadAction<boolean>) {
       state.save_loading = action.payload;
@@ -80,7 +82,7 @@ const onboardingSlice = createSlice({
 export const {
   setConnectLoading,
   setConnectMessage,
-  setInboxEmail,
+  setInboxConnector,
   setScanJob,
   setScanStatus,
   setScanFailed,

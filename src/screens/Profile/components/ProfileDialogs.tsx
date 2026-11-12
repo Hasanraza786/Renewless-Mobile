@@ -20,14 +20,31 @@ function LogoutDialog({ profile }: { profile: ProfileController }) {
   );
 }
 
-// Delete account: typed DELETE enables the action; the account is removed only after the server confirms.
+// Delete account: typed DELETE (and the password for an email account) enables the action; the account is removed
+// only after the server confirms.
 function DeleteDialog({ profile }: { profile: ProfileController }) {
-  const ready = profile.delete_text.trim() === 'DELETE';
   return (
     <ConfirmDialog title="Delete your Renewless account?" close_label="Close deletion confirmation" onClose={profile.closeDialog} locked={profile.deleting}>
       <CustomText mt={SIZES.padding * 0.7} text="This permanently removes your account and saved tracking data, disconnects your Gmail inboxes and stops Renewless reminders." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       <CustomText mt={SIZES.padding * 0.7} text="Your subscriptions with other services won’t be cancelled." weight={FONTS.regular} size={SIZES.sm} />
-      <CustomText mt={SIZES.padding * 0.7} mb={SIZES.padding * 0.7} text="We’ll ask you to verify your sign-in before deleting your account." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <CustomText mt={SIZES.padding * 0.7} mb={SIZES.padding * 0.7} text={profile.needs_password ? 'Enter your password and type DELETE to confirm.' : 'We’ll ask you to verify your sign-in before deleting your account.'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      {profile.needs_password ? (
+        <>
+          <InputField
+            variant="sheet"
+            label="Password"
+            value={profile.delete_password}
+            onChangeText={profile.setDeletePassword}
+            secureTextEntry
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoComplete="current-password"
+            editable={!profile.deleting}
+            returnKeyType="next"
+          />
+          <SizedBox height={SIZES.padding2} />
+        </>
+      ) : null}
       <InputField
         variant="sheet"
         label="Type DELETE to confirm"
@@ -44,7 +61,7 @@ function DeleteDialog({ profile }: { profile: ProfileController }) {
       <SizedBox height={SIZES.padding2} />
       <RowView gap={SIZES.padding2}>
         <CustomButton variant="secondary" text="Keep account" disabled={profile.deleting} onPress={profile.closeDialog} style={common_styles.flex_1} />
-        <CustomButton variant="danger" text={profile.deleting ? 'Deleting…' : 'Delete account'} disabled={!ready} busy={profile.deleting} onPress={profile.confirmDelete} style={common_styles.flex_1} />
+        <CustomButton variant="danger" text={profile.deleting ? 'Deleting…' : 'Delete account'} disabled={!profile.delete_ready} busy={profile.deleting} onPress={profile.confirmDelete} style={common_styles.flex_1} />
       </RowView>
     </ConfirmDialog>
   );

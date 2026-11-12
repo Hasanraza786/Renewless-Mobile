@@ -1,7 +1,8 @@
+import PlatformLogo from '../../../components/PlatformLogo';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, Easing, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { check_dark_icon, chevron_down_icon, gmail_logo, loop_scanning, platform_logos } from '../../../assets/icons';
+import { check_dark_icon, chevron_down_icon, gmail_logo, loop_scanning } from '../../../assets/icons';
 import CustomText from '../../../components/CustomText';
 import Icons from '../../../components/Icons';
 import Mascot from '../../../components/Mascot';
@@ -95,7 +96,6 @@ export function ScanningView({ gmail }: Props) {
 function CandidateRow({ gmail, item, last }: { gmail: GmailScanController; item: GmailCandidate; last: boolean }) {
   const value = gmail.view(item);
   const update = item.kind === 'update';
-  const logo = platform_logos[item.platform_id];
   const checked = gmail.selected.includes(item.id) && !item.saved;
   const timing = value.trial ? `Trial ends ${dateLabel(value.trial.end_date)}` : value.next_date ? `Renews ${dateLabel(value.next_date)}` : 'Renewal date needed';
   return (
@@ -103,7 +103,7 @@ function CandidateRow({ gmail, item, last }: { gmail: GmailScanController; item:
       <RowView accessibilityRole="checkbox" accessibilityState={{ checked, disabled: item.saved }} accessibilityLabel={`Select ${item.name} ${update ? 'update' : item.plan ?? 'subscription'}`} disabled={item.saved} onPress={() => gmail.toggle(item.id)} hitSlop={SIZES.padding2}>
         <Checkbox checked={checked} disabled={item.saved} />
       </RowView>
-      <View style={styles.avatar}>{logo ? <Icons name={logo} /> : <CustomText text={item.name.charAt(0)} size={SIZES.sm} />}</View>
+      <View style={styles.avatar}><PlatformLogo platform_id={item.platform_id} name={item.name} /></View>
       <View style={common_styles.flex_1}>
         <CustomText text={item.name} weight={FONTS.medium} size={SIZES.sm} />
         <CustomText mt={SIZES.padding / 4} text={update ? 'Price change found' : value.plan ?? value.cycle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
@@ -190,7 +190,7 @@ export function ReviewView({ gmail }: Props) {
           {show_tracked
             ? gmail.duplicates.map(item => (
                 <RowView key={item.id} gap={SIZES.padding / 2} style={styles.duplicate_row}>
-                  <View style={styles.avatar}>{platform_logos[item.platform_id] ? <Icons name={platform_logos[item.platform_id]} /> : null}</View>
+                  <View style={styles.avatar}><PlatformLogo platform_id={item.platform_id} /></View>
                   <View style={common_styles.flex_1}>
                     <CustomText text={item.name} weight={FONTS.medium} size={SIZES.sm} />
                     <CustomText mt={SIZES.padding / 5} text="Already tracked · won’t be added again" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

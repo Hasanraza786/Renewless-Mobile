@@ -11,6 +11,7 @@ export type ConnectedInboxRoute = NativeStackScreenProps<AppStackParamList, 'Con
 
 const STATUS = {
   synced: 'Synced',
+  pending: 'Not synced yet',
   syncing: 'Syncing…',
   reconnect: 'Reconnect needed',
   error: 'Sync failed',
@@ -42,7 +43,12 @@ export default function useConnectedInbox(route: ConnectedInboxRoute) {
   const status = view ? 'ready' : error.inbox && !loading.inbox ? 'failed' : 'loading';
   const reconnect_needed = view?.status === 'reconnect';
   // A failed attempt never shows a new successful time; the pill follows the latest attempt.
-  const state: keyof typeof STATUS = syncing ? 'syncing' : reconnect_needed ? 'reconnect' : sync_error ? 'error' : view?.status === 'paused' ? 'paused' : 'synced';
+  const state: keyof typeof STATUS = syncing ? 'syncing' : reconnect_needed ? 'reconnect' : sync_error ? 'error' : view?.status === 'paused' ? 'paused' : view?.lastSync ? 'synced' : 'pending';
+  // Sync runs once a week per inbox; until it opens again the button says when.
+  const next_sync = view?.nextSync && new Date(view.nextSync) > new Date() ? new Date(view.nextSync).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+  const sync_locked = !reconnect_needed && !syncing && !!next_sync;
+  const main_label = reconnect_needed ? 'Reconnect Gmail' : syncing ? 'Syncing…' : sync_locked ? `Sync opens ${next_sync}` : 'Sync now';
+  const sync_hint = reconnect_needed ? 'Gmail needs your permission again. Your saved subscriptions are still available.' : sync_locked ? 'You can check this inbox once a week. Renewals you track are still checked.' : 'Check this inbox for new receipts and subscription updates.';
   const status_label = STATUS[state];
   const last_sync = syncLabel(view?.lastSync ?? null);
 
@@ -68,6 +74,9 @@ export default function useConnectedInbox(route: ConnectedInboxRoute) {
     status_label,
     last_sync,
     reconnect_needed,
+    sync_locked,
+    main_label,
+    sync_hint,
     syncing,
     sync_error,
     reconnecting: loading.reconnect,

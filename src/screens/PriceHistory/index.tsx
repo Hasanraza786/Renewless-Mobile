@@ -1,11 +1,10 @@
+import PlatformLogo from '../../components/PlatformLogo';
 import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { platform_logos } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Header from '../../components/Header';
-import Icons from '../../components/Icons';
 import Mascot from '../../components/Mascot';
 import RowView from '../../components/RowView';
 import StateView from '../../components/StateView';
@@ -41,7 +40,7 @@ export default function PriceHistoryScreen({ route }: Props) {
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <RowView gap={SIZES.padding2} style={styles.panel}>
-            <View style={styles.avatar}>{platform_logos[record.platform_id] ? <Icons name={platform_logos[record.platform_id]} /> : <CustomText text={record.name.charAt(0)} />}</View>
+            <View style={styles.avatar}><PlatformLogo platform_id={record.platform_id} name={record.name} letter_size={SIZES.md} /></View>
             <View style={common_styles.flex_1}>
               <CustomText text={record.plan ? `${record.name} · ${record.plan}` : record.name} size={SIZES.lg} />
               <CustomText mt={SIZES.padding * 0.3} text="Current tracked price" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

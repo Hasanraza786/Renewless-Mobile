@@ -1,6 +1,7 @@
+import PlatformLogo from '../../../components/PlatformLogo';
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, Platform, View } from 'react-native';
-import { benefit_check_icon, demo_app_icons, logo_mark, platform_logos, play_circle_icon } from '../../../assets/icons';
+import { benefit_check_icon, demo_app_icons, logo_mark, play_circle_icon } from '../../../assets/icons';
 import ConfirmDialog from '../../../components/ConfirmDialog';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
@@ -41,7 +42,7 @@ function WidgetTile({ event, more, today }: { event: HomeEvent; more: number; to
         {more ? <CustomText text={`+${more}`} weight={FONTS.regular} color={COLORS.sage_soft} size={SIZES.sm} /> : null}
       </RowView>
       <RowView gap={SIZES.padding * 0.3} style={styles.widget_service}>
-        {platform_logos[event.platform_id] ? <Icons name={platform_logos[event.platform_id]} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} /> : null}
+        <PlatformLogo platform_id={event.platform_id} size={SIZES.padding * 0.9} />
         <CustomText text={event.name} weight={FONTS.medium} color={COLORS.sage_text} size={SIZES.sm} letter_spacing={-0.3} number_of_lines={1} />
       </RowView>
       <CustomText mt={SIZES.padding * 0.35} text={copy.amount} weight={FONTS.medium} color={COLORS.sage_text} size={copy.amount.length > 12 ? SIZES.md : SIZES.h3} letter_spacing={-0.7} number_of_lines={1} />

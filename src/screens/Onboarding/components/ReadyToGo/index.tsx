@@ -1,8 +1,9 @@
+import PlatformLogo from '../../../../components/PlatformLogo';
 import { Fragment, useEffect, useRef } from 'react';
 import { common_styles } from '../../../../utils/common_styles';
 import { Animated, Easing, View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { check_dark_icon, party_popper_icon, platform_logos } from '../../../../assets/icons';
+import { check_dark_icon, party_popper_icon } from '../../../../assets/icons';
 import CustomButton from '../../../../components/CustomButton';
 import RowView from '../../../../components/RowView';
 import CustomText from '../../../../components/CustomText';
@@ -91,7 +92,7 @@ export function ReadyToGoBody({ onboarding }: Props) {
       {next ? (
         <RowView gap={SIZES.padding2} style={styles.next}>
           <View style={styles.logo_tile}>
-            <Icons name={platform_logos[next.platform_id] ?? ''} />
+            <PlatformLogo platform_id={next.platform_id} name={next.name} />
           </View>
           <View>
             <CustomText text={next.trial ? 'NEXT TRIAL ENDING' : next.estimated ? 'NEXT ESTIMATED RENEWAL' : 'NEXT RENEWAL'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} letter_spacing={0.8} />

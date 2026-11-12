@@ -1,6 +1,7 @@
+import PlatformLogo from '../../../components/PlatformLogo';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { gmail_logo, option_check_icon, platform_logos } from '../../../assets/icons';
+import { gmail_logo, option_check_icon } from '../../../assets/icons';
 import AppSheet from '../../../components/AppSheet';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
@@ -53,11 +54,10 @@ function CandidateSheet({ gmail, item }: Props & { item: GmailCandidate }) {
     });
   };
 
-  const logo = platform_logos[item.platform_id];
   return (
     <AppSheet visible title={value.trial ? `Review ${item.name} trial` : `Review ${item.name}`} onClose={gmail.closeSheet}>
       <RowView gap={SIZES.padding2} style={styles.identity}>
-        <View style={styles.avatar}>{logo ? <Icons name={logo} /> : null}</View>
+        <View style={styles.avatar}><PlatformLogo platform_id={item.platform_id} /></View>
         <CustomText text={item.plan ?? item.name} weight={FONTS.regular} size={SIZES.sm} />
       </RowView>
       <InputField variant="form" label={`${value.trial ? 'Price after trial' : 'Amount'} · ${item.currency}`} value={price} onChangeText={setPrice} keyboardType="decimal-pad" error={errors.price} />

@@ -1,6 +1,7 @@
+import PlatformLogo from '../../components/PlatformLogo';
 import { Pressable, ScrollView, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { find_grey_icon, platform_logos } from '../../assets/icons';
+import { find_grey_icon } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
@@ -57,7 +58,6 @@ function LinkCard({ title, caption, trailing, onPress }: { title: string; captio
 
 function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof useSubscriptionDetail> }) {
   const { record } = view;
-  const logo = platform_logos[record.platform_id];
   return (
     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
       {detail.message ? (
@@ -68,7 +68,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
 
       <View style={styles.overview}>
         <RowView gap={SIZES.padding / 2}>
-          <View style={styles.avatar}>{logo ? <Icons name={logo} /> : <CustomText text={record.name.charAt(0)} size={SIZES.lg} />}</View>
+          <View style={styles.avatar}><PlatformLogo platform_id={record.platform_id} name={record.name} letter_size={SIZES.lg} /></View>
           <View style={common_styles.flex_1}>
             <CustomText text={record.plan ? `${record.name} · ${record.plan}` : record.name} size={SIZES.lg} />
             <CustomText mt={SIZES.padding * 0.35} text={record.category} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

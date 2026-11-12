@@ -10,7 +10,7 @@ export default function AuthStack() {
   const splash_seen = useAppSelector(state => state.constant.splash_seen);
 
   return (
-    <Stack.Navigator initialRouteName={splash_seen ? 'Login' : 'Splash'} screenOptions={stack_options}>
+    <Stack.Navigator initialRouteName={splash_seen ? 'Onboarding' : 'Splash'} screenOptions={stack_options}>
       <Stack.Screen name="Splash" component={Splash} />
       <Stack.Screen name="Onboarding" component={Onboarding} />
       <Stack.Screen name="Login" component={LoginScreen} />

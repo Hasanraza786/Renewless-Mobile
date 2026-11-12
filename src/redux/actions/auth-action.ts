@@ -20,7 +20,8 @@ import { setNotice, setProfileUser } from '../slices/profile-slice';
 const timezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
 
 // Keychain first, then the store, then into the app.
-function startSession(session: SessionDto, intent?: AuthIntent): AppThunk {
+// Stores the session and profile without leaving the current screen (onboarding keeps going after Google connect).
+export function beginSession(session: SessionDto): AppThunk {
   return async dispatch => {
     await saveSessionToken(session.token);
     const user = toProfile(session.user);
@@ -28,6 +29,12 @@ function startSession(session: SessionDto, intent?: AuthIntent): AppThunk {
     dispatch(setProfileUser(user));
     // Reminders are sent in the account timezone; keep it in step with the phone.
     if (session.user.timezone !== timezone()) dispatch(requestHandler({ apiService: apiServices.updateDevice, param_data: { timezone: timezone() } }));
+  };
+}
+
+function startSession(session: SessionDto, intent?: AuthIntent): AppThunk {
+  return async dispatch => {
+    await dispatch(beginSession(session));
     enterApp(intent);
   };
 }

@@ -1,10 +1,14 @@
-import { del, get, patch, post, put } from './http-provider';
+import { del, get, patch, post, postLong, put, upload } from './http-provider';
 import type {
+  AiUsageDto,
   AlertsDto,
   CalendarDto,
   CategoryDto,
   ChallengeDto,
+  ChatTurnDto,
+  CandidateDto,
   ConnectorDto,
+  GoogleConnectDto,
   DetailDto,
   HomeDto,
   PaymentsDto,
@@ -12,6 +16,8 @@ import type {
   PlatformDto,
   PriceHistoryDto,
   ReminderSettingsDto,
+  ScanImportDto,
+  ScanJobDto,
   SessionDto,
   SpendingDto,
   SubscriptionListDto,
@@ -46,6 +52,12 @@ export const SERVICE_URLS = {
   reminderApply: '/reminder-settings/apply',
   alerts: '/alerts',
   connectors: '/connectors',
+  googleConnect: '/auth/google-connect',
+  onboardingComplete: '/me/onboarding/complete',
+  scans: '/scans',
+  uploads: '/uploads',
+  conversations: '/conversations',
+  drafts: '/drafts',
 };
 
 const subscription = (id: string, action = '') => `${SERVICE_URLS.subscriptions}/${id}${action}`;
@@ -68,7 +80,8 @@ const logout = () => post<void>(SERVICE_URLS.logout);
 const getMe = () => get<{ user: UserDto }>(SERVICE_URLS.me);
 const updateMe = (data: { revision: number; name: string; phone: string | null; dateOfBirth: string | null; gender: string | null }) => patch<{ user: UserDto }>(SERVICE_URLS.me, data);
 const updateDevice = (data: { timezone?: string; fcmToken?: string | null }) => put<void>(SERVICE_URLS.device, data);
-const deleteMe = (data: { password: string }) => del<{ deleted: true }>(SERVICE_URLS.me, data);
+// Google/Apple accounts verify with a fresh provider token; password accounts with the password.
+const deleteMe = (data: { password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string }) => del<{ deleted: true }>(SERVICE_URLS.me, data);
 
 // Catalog
 const getPlatforms = (data: { q: string }) => get<{ platforms: PlatformDto[] }>(SERVICE_URLS.platforms, data);
@@ -106,7 +119,34 @@ const getConnectors = () => get<{ connectors: ConnectorDto[] }>(SERVICE_URLS.con
 const getConnector = ({ id }: Id) => get<ConnectorDto>(`${SERVICE_URLS.connectors}/${id}`);
 const disconnectConnector = ({ id }: Id) => del<void>(`${SERVICE_URLS.connectors}/${id}`);
 
+// Gmail connect and scans
+const googleConnect = (data: { idToken: string; serverAuthCode: string }) => post<GoogleConnectDto>(SERVICE_URLS.googleConnect, data);
+const startScan = ({ id, kind }: Id<{ kind: 'initial' | 'incremental' }>) => post<{ jobId: string; status: string }>(`${SERVICE_URLS.connectors}/${id}/scans`, { kind });
+const getScan = ({ id }: Id) => get<ScanJobDto>(`${SERVICE_URLS.scans}/${id}`);
+const updateCandidate = ({ job_id, id, ...data }: Id<{ job_id: string; revision: number; price?: { currency: string; amount: string }; cycle?: string; anchorDate?: string; trial?: { endDate: string; autoRenew?: boolean } | null; replaceAnchorDate?: boolean; selected?: boolean }>) =>
+  patch<CandidateDto>(`${SERVICE_URLS.scans}/${job_id}/candidates/${id}`, data);
+const importScan = ({ job_id, candidate_ids }: { job_id: string; candidate_ids: string[] }) => post<ScanImportDto>(`${SERVICE_URLS.scans}/${job_id}/import`, { candidateIds: candidate_ids }, true);
+const completeOnboarding = () => post<{ user: UserDto }>(SERVICE_URLS.onboardingComplete);
+
+// AI chat
+const startConversation = () => post<{ id: string; usage: AiUsageDto }>(SERVICE_URLS.conversations);
+const uploadFile = (file: Blob) => upload<{ uploadId: string; kind: string }>(SERVICE_URLS.uploads, file);
+// The client message ID makes a Retry of the same message answer once.
+const sendChatMessage = ({ id, ...data }: Id<{ clientMessageId: string; text: string | null; uploadId: string | null }>) =>
+  postLong<ChatTurnDto>(`${SERVICE_URLS.conversations}/${id}/messages`, data);
+const createFromDraft = ({ id, ...data }: Id<{ revision: number; separatePlan: boolean }>) => post<{ subscriptionId: string }>(`${SERVICE_URLS.drafts}/${id}/create`, data, true);
+
 const apiServices = {
+  startConversation,
+  uploadFile,
+  sendChatMessage,
+  createFromDraft,
+  googleConnect,
+  startScan,
+  getScan,
+  updateCandidate,
+  importScan,
+  completeOnboarding,
   signup,
   verifySignup,
   resendCode,

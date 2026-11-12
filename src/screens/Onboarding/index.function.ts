@@ -3,11 +3,13 @@ import { AccessibilityInfo, Alert, Animated, BackHandler, Easing } from 'react-n
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   connectOnboardingGoogle,
+  editOnboardingCandidate,
+  finishOnboarding,
   getOnboardingScan,
   saveOnboardingFinds,
   startOnboardingScan,
 } from '../../redux/actions/onboarding-action';
-import { toggleCandidate, updateCandidate } from '../../redux/slices/onboarding-slice';
+import { toggleCandidate } from '../../redux/slices/onboarding-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList, OnboardingStep, ScanCandidate } from '../../types';
 import { navigate, resetRoot } from '../../navigation/service';
@@ -46,7 +48,7 @@ export default function useOnboarding(route: Route) {
   const panel_opacity = useRef(new Animated.Value(1)).current;
   // Built once per width, not on every render, so a running slide keeps its node.
   const panel_shift = useMemo(() => Animated.multiply(panel_x, panel_width / 4), [panel_width, panel_x]);
-  const { scan_status, scan_failure, candidates } = onboarding_state;
+  const { scan_status, scan_failure, candidates, scan_job_id, connector_id, selected_ids } = onboarding_state;
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion, () => {});
@@ -89,9 +91,9 @@ export default function useOnboarding(route: Route) {
   // Poll only while Discovering is visible and the job is still running.
   useEffect(() => {
     if (step !== 'discovering' || scan_status !== 'running') return;
-    const timer = setInterval(() => dispatch(getOnboardingScan()), SCAN_POLL_MS);
+    const timer = setInterval(() => dispatch(getOnboardingScan(scan_job_id)), SCAN_POLL_MS);
     return () => clearInterval(timer);
-  }, [dispatch, scan_status, step]);
+  }, [dispatch, scan_job_id, scan_status, step]);
 
   // Discovering leaves on its own: results after a short hold on the completed stages, otherwise recovery.
   useEffect(() => {
@@ -118,23 +120,19 @@ export default function useOnboarding(route: Route) {
     return () => subscription.remove();
   }, [back_target, onBack]);
 
-  const connectGoogle = async () => {
-    const next = await dispatch(connectOnboardingGoogle());
-    if (next) goTo(next);
-  };
+  const openScan = () => goTo('discovering');
 
   // A network failure retries with the existing Gmail grant; lost access goes back to Connect.
   const retryScan = () => {
-    if (scan_failure === 'access') return goTo('connectInbox', -1);
-    dispatch(startOnboardingScan());
+    if (scan_failure === 'access' || !connector_id) return goTo('connectInbox', -1);
+    dispatch(startOnboardingScan(connector_id, openDashboard));
     goTo('discovering');
   };
 
-  const save = async () => {
-    if (await dispatch(saveOnboardingFinds())) goTo('readyToGo');
-  };
+  const save = () => dispatch(saveOnboardingFinds(scan_job_id, selected_ids, () => goTo('readyToGo')));
 
-  const openDashboard = () => resetRoot([{ name: 'Tabs' }]);
+  const openDashboard = () => dispatch(finishOnboarding(() => resetRoot([{ name: 'Tabs' }])));
+  const connectGoogle = () => dispatch(connectOnboardingGoogle(openScan, openDashboard));
 
   const stage = ONBOARDING_STEPS[step].stage;
   const back = back_target ? onBack : undefined;
@@ -145,10 +143,7 @@ export default function useOnboarding(route: Route) {
 
   const toggle = (id: string) => dispatch(toggleCandidate(id));
   const closeEdit = () => setEditingId('');
-  const saveEdit = (item: ScanCandidate) => {
-    dispatch(updateCandidate(item));
-    setEditingId('');
-  };
+  const saveEdit = (item: ScanCandidate) => dispatch(editOnboardingCandidate(scan_job_id, item, closeEdit));
   const openLogin = () => navigate('Login');
   // Manual entry: the Add form when signed in, otherwise sign up first and continue to it.
   const openManual = () => (signed_in ? navigate('AddSubscription') : navigate('Signup', { intent: 'add_manual' }));

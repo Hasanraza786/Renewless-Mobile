@@ -1,6 +1,7 @@
+import PlatformLogo from '../../../components/PlatformLogo';
 import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, Image, Pressable, View } from 'react-native';
-import { pause_icon, pdf_icon, platform_logos, play_icon } from '../../../assets/icons';
+import { pause_icon, pdf_icon, play_icon } from '../../../assets/icons';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
 import Icons from '../../../components/Icons';
@@ -176,7 +177,6 @@ function Cell({ label, value, full }: { label: string; value: string; full?: boo
 
 // The one current draft: identity and status, amount, the populated fields, and Add subscription.
 export function DraftCard({ chat, draft }: Props & { draft: AiDraft }) {
-  const logo = draft.platform_id ? platform_logos[draft.platform_id] : null;
   const status_color = chat.added || !chat.missing ? COLORS.primary : COLORS.renewing_soon;
   const cells: { label: string; value: string; full?: boolean }[] = [];
   if (draft.trial) cells.push({ label: 'Trial ends', value: draft.trial.end_date ? dateLabel(draft.trial.end_date) : 'Needs confirmation' });
@@ -189,7 +189,7 @@ export function DraftCard({ chat, draft }: Props & { draft: AiDraft }) {
   return (
     <View style={styles.draft} accessibilityLabel={`${draft.name ?? 'Subscription'} draft, ${chat.draft_status}`}>
       <RowView align_items="flex-start" gap={SIZES.padding * 0.45}>
-        <View style={styles.draft_tile}>{logo ? <Icons name={logo} /> : <CustomText text={(draft.name ?? '?').charAt(0)} size={SIZES.sm} />}</View>
+        <View style={styles.draft_tile}><PlatformLogo platform_id={draft.platform_id ?? ''} name={draft.name ?? '?'} /></View>
         <View style={common_styles.flex_1}>
           <CustomText text={draft.name ?? ''} weight={FONTS.medium} size={SIZES.sm} />
           <CustomText mt={SIZES.padding / 4} text={chat.draft_status} weight={FONTS.regular} color={status_color} size={SIZES.sm} />

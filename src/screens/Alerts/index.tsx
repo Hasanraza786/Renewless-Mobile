@@ -1,5 +1,6 @@
+import PlatformLogo from '../../components/PlatformLogo';
 import { ScrollView, View } from 'react-native';
-import { chevron_right_icon, gear_accent_icon, notice_bell_icon, platform_logos } from '../../assets/icons';
+import { chevron_right_icon, gear_accent_icon, notice_bell_icon } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Header from '../../components/Header';
@@ -73,7 +74,6 @@ export default function AlertsScreen() {
                   </RowView>
                   <View style={styles.card}>
                     {group.alerts.map((alert, row) => {
-                      const logo = platform_logos[alert.platform_id];
                       const message = alertMessage(alert, alerts.today);
                       const sent = sentLabel(alert, alerts.today);
                       return (
@@ -84,7 +84,7 @@ export default function AlertsScreen() {
                           accessibilityLabel={`${alert.name}, ${message}, sent ${sent}`}
                           onPress={() => alerts.openAlert(alert)}
                           style={[styles.row, row < group.alerts.length - 1 && styles.divider]}>
-                          <View style={styles.avatar}>{logo ? <Icons name={logo} /> : <CustomText text={alert.name.charAt(0)} size={SIZES.sm} />}</View>
+                          <View style={styles.avatar}><PlatformLogo platform_id={alert.platform_id} name={alert.name} /></View>
                           <View style={common_styles.flex_1}>
                             <CustomText text={alert.name} weight={FONTS.medium} size={SIZES.lg} />
                             <CustomText mt={SIZES.padding * 0.15} text={message} weight={FONTS.regular} color={alert.kind === 'trial_end' ? COLORS.trial : COLORS.text_message} size={SIZES.sm} />

@@ -1,5 +1,6 @@
+import PlatformLogo from '../../components/PlatformLogo';
 import { ScrollView, View } from 'react-native';
-import { chevron_right_icon, platform_logos } from '../../assets/icons';
+import { chevron_right_icon } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Dropdown from '../../components/Dropdown';
@@ -122,7 +123,6 @@ export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
                   </RowView>
                   <View style={styles.rows}>
                     {payments.matched.map((payment, index) => {
-                      const logo = platform_logos[payment.platform_id];
                       const amount = money(payment.currency, Number(payment.amount).toFixed(2));
                       return (
                         <RowView
@@ -132,7 +132,7 @@ export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
                           accessibilityLabel={`View ${payment.name} payment on ${dateLabel(payment.paid_on)}, ${spokenMoney(amount)}, confirmed`}
                           onPress={() => payments.setSelected(payment)}
                           style={[styles.row, index < payments.matched.length - 1 && styles.divider]}>
-                          <View style={styles.avatar}>{logo ? <Icons name={logo} /> : <CustomText text={payment.name.charAt(0)} size={SIZES.sm} />}</View>
+                          <View style={styles.avatar}><PlatformLogo platform_id={payment.platform_id} name={payment.name} /></View>
                           <View style={common_styles.flex_1}>
                             <CustomText text={payment.name} weight={FONTS.medium} size={SIZES.lg} />
                             <CustomText mt={SIZES.padding / 4} text={dateLabel(payment.paid_on)} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

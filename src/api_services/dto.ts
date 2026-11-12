@@ -128,10 +128,73 @@ export type AlertDto = {
   amount: MoneyDto | null;
   sentAt: string | null;
   subscriptionAvailable: boolean;
+  logoUrl: string | null;
 };
 export type AlertsDto = { items: AlertDto[]; total: number; nextCursor: string | null };
 
-export type ConnectorDto = { id: string; email: string; status: string; lastSuccessfulSyncAt: string | null; importedCount?: number };
+export type ConnectorDto = { id: string; email: string; status: 'connected' | 'reconnect_needed' | 'disconnected'; lastSuccessfulSyncAt: string | null; nextSyncAt: string | null; importedCount?: number };
+
+// Google sign-in plus the Gmail grant; a token comes back only when the app had no session.
+// scannedBefore: a deleted account already read this inbox, so no first scan runs.
+export type GoogleConnectDto = { token?: string; user: UserDto; isNewUser: boolean; gmailGranted: boolean; scannedBefore: boolean; connector: ConnectorDto | null };
+
+export type CandidateDto = {
+  id: string;
+  classification: 'new' | 'update' | 'tracked' | 'unresolved';
+  selected: boolean;
+  name: string;
+  plan: string | null;
+  platformId: string | null;
+  logoUrl: string | null;
+  price: MoneyDto | null;
+  cycle: CycleDto | null;
+  anchorDate: string | null;
+  estimated: boolean;
+  trial: { endDate: string; autoRenew: boolean } | null;
+  targetSubscriptionId: string | null;
+  changes: { price: { from: { currency: string; amountMinor: number }; to: { currency: string; amountMinor: number } } } | null;
+  imported: boolean;
+  // Backend: true when price or cycle is missing.
+  needsDetails: boolean;
+  revision: number;
+};
+
+export type ScanJobDto = {
+  id: string;
+  connectorId: string;
+  kind: 'initial' | 'incremental' | 'renewal';
+  status: 'queued' | 'running' | 'succeeded' | 'failed';
+  stages: { key: 'finding' | 'grouping' | 'checking'; status: 'pending' | 'running' | 'done' | 'failed' }[];
+  error: { code: string; retryable: boolean } | null;
+  counts: { messages: number; candidates: number };
+  candidates: CandidateDto[];
+};
+
+// AI chat. Draft `fields` use the POST /subscriptions body shape; a value the AI has not found yet is absent or null.
+export type AiUsageDto = { used: number; limit: number; remaining: number; resetsOn: string };
+export type ChatDraftDto = {
+  id: string;
+  revision: number;
+  status: 'incomplete' | 'ready' | 'added';
+  fields: {
+    name?: string;
+    platformId?: string | null;
+    categoryId?: string | null;
+    price?: { currency: string | null; amount: string | null };
+    cycle?: CycleDto;
+    startDate?: string;
+    anchorDate?: string;
+    trial?: { endDate?: string; days?: number };
+    autoRenew?: boolean;
+    note?: string;
+  };
+  missing: string[];
+  match: { kind: string; subscriptionIds: string[] };
+  subscriptionId: string | null;
+};
+export type ChatTurnDto = { reply: { id: string | null; text: string | null; draftIds: string[] }; drafts: ChatDraftDto[]; usage: AiUsageDto };
+
+export type ScanImportDto = { created: string[]; updated: string[]; alreadyApplied: string[] };
 
 export type PlatformDto = { id: string; name: string; categoryId: string | null; logoUrl: string | null };
 export type CategoryDto = { id: string; key: string; name: string };

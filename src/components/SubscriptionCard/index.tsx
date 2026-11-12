@@ -1,5 +1,6 @@
+import PlatformLogo from '../../components/PlatformLogo';
 import { View } from 'react-native';
-import { chevron_right_icon, platform_logos } from '../../assets/icons';
+import { chevron_right_icon } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import CustomText from '../CustomText';
@@ -23,12 +24,10 @@ type Props = {
 
 // The one shared tracked-subscription card: logo, name, status, timing/context lines and the amount.
 export default function SubscriptionCard({ name, platform_id, status, lines, amount, caption, chevron, onPress, accessibility_label }: Props) {
-  const logo = platform_logos[platform_id];
-
   return (
     <RowView gap={SIZES.padding * 0.55} accessibilityRole="button" accessibilityLabel={accessibility_label ?? name} onPress={onPress} style={styles.main_view}>
       <View style={styles.avatar}>
-        {logo ? <Icons name={logo} /> : <CustomText text={name.charAt(0)} size={SIZES.sm} />}
+        <PlatformLogo platform_id={platform_id} name={name} />
       </View>
       <View style={common_styles.flex_1}>
         <CustomText text={name} size={SIZES.md} />

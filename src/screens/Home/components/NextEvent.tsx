@@ -1,7 +1,6 @@
+import PlatformLogo from '../../../components/PlatformLogo';
 import { Pressable, View } from 'react-native';
-import { platform_logos } from '../../../assets/icons';
 import CustomText from '../../../components/CustomText';
-import Icons from '../../../components/Icons';
 import RowView from '../../../components/RowView';
 import SubscriptionCard from '../../../components/SubscriptionCard';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
@@ -31,7 +30,7 @@ function Toolbar({ events, selected, home }: { events: HomeEvent[]; selected: Ho
               accessibilityLabel={item.plan ? `${item.name} · ${item.plan}` : item.name}
               onPress={() => home.selectEvent(item.id)}
               style={[styles.event_tab, active && styles.event_tab_active]}>
-              {platform_logos[item.platform_id] ? <Icons name={platform_logos[item.platform_id]} icon_height={SIZES.padding * 0.8} icon_width={SIZES.padding * 0.8} /> : null}
+              <PlatformLogo platform_id={item.platform_id} size={SIZES.padding * 0.8} />
               <CustomText text={same_platform ? item.plan! : item.name} weight={FONTS.regular} color={active ? COLORS.primary : COLORS.text_primary} size={SIZES.sm} number_of_lines={1} />
             </RowView>
           );

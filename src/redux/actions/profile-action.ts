@@ -7,6 +7,8 @@ import { requestHandler, type AppThunk } from '../request-handler';
 import { setUser } from '../slices/constant-slice';
 import { setNotice, setOverview, setOverviewError, setOverviewLoading, setProfileError, setProfileLoading, setProfileUser } from '../slices/profile-slice';
 import { trackEvent } from '../../utils/analytics';
+import { providerSignIn } from '../../utils/social-sign-in';
+import type { Profile } from '../../types';
 
 // Connected inboxes and all-time confirmed payment totals per currency.
 async function getProfileData() {
@@ -43,14 +45,23 @@ export function updateProfile(input: ProfileInput, onSaved: () => void): AppThun
   };
 }
 
-// Deletion ends the session locally only after the server confirms it.
-// shortcut: the approved dialog asks for DELETE, not the password the backend requires; send it once the dialog collects it.
-export function deleteAccount(password: string): AppThunk {
+// Deletion ends the session locally only after the server confirms it. A Google/Apple account first verifies
+// its sign-in in the provider sheet; closing the sheet keeps the dialog open.
+// A password account sends the password typed in the dialog.
+export function deleteAccount(provider: Profile['provider'], password: string): AppThunk {
   return async dispatch => {
+    let verification: { password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string } = { password };
+    if (provider !== 'email') {
+      dispatch(setProfileLoading(true));
+      const token = await providerSignIn(provider).catch(() => null);
+      dispatch(setProfileLoading(false));
+      if (!token) return;
+      verification = { provider, idToken: token.idToken, nonce: token.nonce };
+    }
     await dispatch(
       requestHandler({
         apiService: apiServices.deleteMe,
-        param_data: { password },
+        param_data: verification,
         setLoading: setProfileLoading,
         setError: setProfileError,
         endOnUnauthorized: false,

@@ -2,7 +2,7 @@ import { addDays, dateLabel, formatTotals, nextEvent, paidMonthlyTotals, upcomin
 import type { ScanCandidate, ScanCycle } from '../src/types';
 
 const item = (id: string, price: string, currency: string, next_date: string | null, extra: Partial<ScanCandidate> = {}): ScanCandidate =>
-  ({ id, platform_id: id, name: id, price, currency, cycle: 'Monthly' as ScanCycle, next_date, estimated: true, ...extra });
+  ({ id, platform_id: id, name: id, price, currency, cycle: 'Monthly' as ScanCycle, next_date, estimated: true, revision: 1, selected: true, ...extra });
 
 const today = '2026-10-27';
 const items = [

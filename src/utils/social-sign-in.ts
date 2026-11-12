@@ -4,7 +4,9 @@ import Config from 'react-native-config';
 import type { AuthProvider } from '../types';
 
 // iOS reads its client ID from GoogleService-Info.plist; the web client ID is the token audience the backend accepts.
-GoogleSignin.configure({ webClientId: Config.GOOGLE_WEB_CLIENT_ID });
+const LOGIN_CONFIG = { webClientId: Config.GOOGLE_WEB_CLIENT_ID };
+GoogleSignin.configure(LOGIN_CONFIG);
+const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly';
 
 export type ProviderToken = { provider: AuthProvider; idToken: string; nonce?: string; name?: string };
 
@@ -40,4 +42,26 @@ async function apple(): Promise<ProviderToken | null> {
 // null when the person closes the provider sheet: they stay on the screen they started from.
 export function providerSignIn(provider: AuthProvider) {
   return provider === 'google' ? google() : apple();
+}
+
+export type GmailGrant = { idToken: string; serverAuthCode: string };
+
+// Sign in with Google and grant read-only Gmail. The backend exchanges the one-time code (web client) for the inbox.
+// Only this flow asks for Gmail; plain sign-in keeps the login-only configuration. null when the sheet is closed.
+export async function gmailSignIn(): Promise<GmailGrant | null> {
+  // forceCodeForRefreshToken makes Google send a refresh token again for an inbox that granted access before.
+  GoogleSignin.configure({ ...LOGIN_CONFIG, scopes: [GMAIL_SCOPE], offlineAccess: true, forceCodeForRefreshToken: true });
+  try {
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    const response = await GoogleSignin.signIn();
+    if (!isSuccessResponse(response) || !response.data.idToken) return null;
+    // A missing code means Gmail access was not granted; the backend says so for the empty code.
+    return { idToken: response.data.idToken, serverAuthCode: response.data.serverAuthCode ?? '' };
+  } catch (caught) {
+    if (isErrorWithCode(caught) && (caught.code === statusCodes.SIGN_IN_CANCELLED || caught.code === statusCodes.IN_PROGRESS)) return null;
+    throw caught;
+  } finally {
+    await GoogleSignin.signOut().catch(() => undefined);
+    GoogleSignin.configure(LOGIN_CONFIG);
+  }
 }

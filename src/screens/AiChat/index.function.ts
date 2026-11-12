@@ -5,11 +5,10 @@ import { viewDocument } from '@react-native-documents/viewer';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { createSound } from 'react-native-nitro-sound';
 import { focusedTab, goBack, navigate } from '../../navigation/service';
-import { getAiUsage, sendAiMessage } from '../../redux/actions/ai-action';
-import { createSubscription } from '../../redux/actions/detail-action';
+import { addAiDraft, sendAiMessage, startAiChat } from '../../redux/actions/ai-action';
 import { setAiConsent } from '../../redux/slices/constant-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { AiDraft, AiInput, AiUsage, SubscriptionFormInput } from '../../types';
+import type { AiInput, AiReply, AiUsage, ChatDraft } from '../../types';
 import { missingQuestion } from '../../utils/ai-draft';
 import { tapHaptic } from '../../utils/haptics';
 import { trackEvent } from '../../utils/analytics';
@@ -31,20 +30,6 @@ const OPENING = 'Which service would you like to add? Send its name and billing 
 let next_id = 0;
 const messageId = () => `m${Date.now()}-${next_id++}`;
 
-const draftInput = (draft: AiDraft): SubscriptionFormInput => ({
-  name: draft.name!,
-  platform_id: draft.platform_id,
-  price: Number(draft.price).toFixed(2),
-  currency: draft.currency!,
-  cycle: draft.cycle!,
-  category: draft.category ?? 'Other',
-  start_date: draft.start_date,
-  next_date: draft.trial ? null : draft.next_date,
-  trial: draft.trial && draft.trial.end_date ? { days: draft.trial.days ?? 0, end_date: draft.trial.end_date, auto_renew: draft.trial.auto_renew } : null,
-  notes: draft.notes,
-  price_change: null,
-});
-
 // "1 Dec" from the local YYYY-MM-DD reset date.
 const usageDate = (iso: string) => {
   const [year, month, day] = iso.split('-').map(Number);
@@ -57,7 +42,8 @@ export default function useAiChat() {
   // Nothing is sent to Google Gemini until the user agrees (App Store 5.1.2(i)); Settings can withdraw it.
   const ai_consent = useAppSelector(state => state.constant.ai_consent);
   const [messages, setMessages] = useState<ChatMessage[]>([{ id: messageId(), role: 'loop', input: null, text: OPENING, failed: false }]);
-  const [draft, setDraft] = useState<AiDraft | null>(null);
+  const [conversation_id, setConversationId] = useState('');
+  const [draft, setDraft] = useState<ChatDraft | null>(null);
   const [added_id, setAddedId] = useState<string | null>(null);
   const [text, setText] = useState('');
   const [thinking, setThinking] = useState(false);
@@ -72,6 +58,8 @@ export default function useAiChat() {
   const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1);
   const [preview_uri, setPreviewUri] = useState<string | null>(null);
   const [usage, setUsage] = useState<AiUsage | null>(null);
+  // Add found a service the user already tracks: the saved record's ID (null when the server sent none).
+  const [duplicate, setDuplicate] = useState<{ existing_id: string | null } | null>(null);
   const recorder = useRef(createSound()).current;
   const player = useRef(createSound()).current;
   const mounted = useRef(true);
@@ -88,10 +76,18 @@ export default function useAiChat() {
     };
   }, [player, recorder]);
 
-  // Free messages left this month (shown under the header); refreshed from every reply.
+  // A conversation per visit; its usage (free messages left, shown under the header) is refreshed from every reply.
+  // It starts only after consent, so nothing reaches the AI service before the user agrees.
   useEffect(() => {
-    dispatch(getAiUsage()).then(value => mounted.current && value && setUsage(value));
-  }, [dispatch]);
+    if (!ai_consent) return;
+    dispatch(
+      startAiChat((id, value) => {
+        if (!mounted.current) return;
+        setConversationId(id);
+        setUsage(value);
+      }),
+    );
+  }, [ai_consent, dispatch]);
 
   const has_failed = messages.some(message => message.failed);
   const busy = thinking || saving;
@@ -99,32 +95,38 @@ export default function useAiChat() {
   const limit_reached = usage?.remaining === 0;
   const resets_label = usage ? usageDate(usage.resetsOn) : '';
   const usage_state = !usage ? null : limit_reached ? 'out' : usage.remaining <= 10 ? 'low' : 'ok';
-  const can_send = !busy && !has_failed && !limit_reached && (text.trim().length > 0 || !!attachment);
-  const missing = draft ? missingQuestion(draft) : null;
-  const draft_status = added_id ? 'Added to your subscriptions' : saving ? 'Adding…' : thinking ? 'Updating details…' : missing ? 'A few details to finish' : 'Ready to add';
-  const can_add = !!draft && !missing && !busy && !has_failed && !added_id;
+  const can_send = !!conversation_id && !busy && !has_failed && !limit_reached && (text.trim().length > 0 || !!attachment);
+  // The server decides when every required field is known; the question names the first gap it can see.
+  const missing = draft && !draft.ready ? missingQuestion(draft) : null;
+  const draft_status = added_id ? 'Added to your subscriptions' : saving ? 'Adding…' : thinking ? 'Updating details…' : !draft?.ready ? 'A few details to finish' : 'Ready to add';
+  const can_add = !!draft?.ready && !busy && !has_failed && !added_id;
   const show_draft = !!draft?.name;
   const added = !!added_id;
 
-  const run = async (message: ChatMessage) => {
-    if (!message.input) return;
+  const markFailed = (id: string) => setMessages(current => current.map(item => (item.id === id ? { ...item, failed: true } : item)));
+
+  const run = (message: ChatMessage) => {
+    if (!message.input || !conversation_id) return;
     setThinking(true);
-    const result = await dispatch(sendAiMessage(message.input, added_id ? null : draft));
-    if (!mounted.current) return;
-    setThinking(false);
-    if ('error' in result) {
-      setMessages(current => current.map(item => (item.id === message.id ? { ...item, failed: true } : item)));
-      // The send may have failed on the monthly limit; read the count again.
-      dispatch(getAiUsage()).then(value => mounted.current && value && setUsage(value));
-      return;
-    }
-    setUsage(result.usage);
-    setMessages(current => [...current.map(item => (item.id === message.id ? { ...item, failed: false } : item)), { id: messageId(), role: 'loop', input: null, text: result.reply, failed: false }]);
-    if (result.draft) {
-      // A new service after an added one starts a separate draft.
-      if (added_id && result.draft.name) setAddedId(null);
-      setDraft(result.draft);
-    }
+    const onReply = (result: AiReply) => {
+      if (!mounted.current) return;
+      setThinking(false);
+      setUsage(result.usage);
+      setMessages(current => [...current.map(item => (item.id === message.id ? { ...item, failed: false } : item)), { id: messageId(), role: 'loop', input: null, text: result.reply, failed: false }]);
+      if (result.draft) {
+        // A new service after an added one starts a separate draft.
+        if (added_id && result.draft.id !== draft?.id) setAddedId(null);
+        setDraft(result.draft);
+      }
+    };
+    // At the monthly limit the composer closes; the failed message keeps its Retry.
+    const onFailed = (code: string) => {
+      if (!mounted.current) return;
+      setThinking(false);
+      markFailed(message.id);
+      if (code === 'AI_MONTHLY_LIMIT') setUsage(current => current && { ...current, used: current.limit, remaining: 0 });
+    };
+    dispatch(sendAiMessage(conversation_id, message.id, message.input, onReply, onFailed));
   };
 
   const submit = (input: AiInput, shown: string) => {
@@ -155,11 +157,24 @@ export default function useAiChat() {
     navigate('SubscriptionDetail', { id });
   };
 
-  const add = async () => {
+  const onAddDone = () => mounted.current && setSaving(false);
+  const onDuplicate = (existing_id: string | null) => mounted.current && setDuplicate({ existing_id });
+  const add = () => {
     if (!draft || !can_add) return;
     setSaving(true);
-    await dispatch(createSubscription(draftInput(draft), onAdded, 'ai'));
-    if (mounted.current) setSaving(false);
+    dispatch(addAiDraft(draft, onAdded, onAddDone, onDuplicate));
+  };
+  const closeDuplicate = () => setDuplicate(null);
+  const viewExisting = () => {
+    const id = duplicate?.existing_id;
+    setDuplicate(null);
+    if (id) navigate('SubscriptionDetail', { id });
+  };
+  const addSeparate = () => {
+    if (!draft) return;
+    setDuplicate(null);
+    setSaving(true);
+    dispatch(addAiDraft(draft, onAdded, onAddDone, onDuplicate, true));
   };
 
   const viewAdded = () => added_id && navigate('SubscriptionDetail', { id: added_id });
@@ -395,6 +410,10 @@ export default function useAiChat() {
     retry,
     add,
     viewAdded,
+    duplicate,
+    closeDuplicate,
+    viewExisting,
+    addSeparate,
     discarded,
     speed,
     startRecording,

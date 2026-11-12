@@ -23,6 +23,8 @@ export type ProfileInbox = {
   email: string;
   status: 'synced' | 'paused' | 'reconnect';
   lastSync: string | null;
+  // When the weekly Sync opens again (ISO); null until the first scan is done.
+  nextSync: string | null;
 };
 
 // Profile data beyond identity: connected inboxes and all-time confirmed payment totals per currency.
@@ -281,6 +283,10 @@ export type GmailCandidate = {
   old: { price: string; next_date: string | null } | null;
   // Already saved from this scan; no longer selectable.
   saved: boolean;
+  // The server's edit version; a reviewed change sends it back.
+  revision: number;
+  // Preselected by the server (complete, confident and not lapsed).
+  selected: boolean;
 };
 
 export type GmailScanStatus = { status: 'running' | 'completed' | 'failed'; stage: number; candidates: GmailCandidate[]; error: string };
@@ -308,7 +314,10 @@ export type AiInput = { kind: 'text'; text: string } | { kind: 'voice'; uri: str
 // Free AI messages this calendar month (backend `usage`); resetsOn is the local YYYY-MM-DD of the next reset.
 export type AiUsage = { used: number; limit: number; remaining: number; resetsOn: string };
 
-export type AiReply = { reply: string; draft: AiDraft | null; usage: AiUsage };
+// A draft saved on the server: its ID and revision create it; ready means every required field is known.
+export type ChatDraft = AiDraft & { id: string; revision: number; ready: boolean };
+
+export type AiReply = { reply: string; draft: ChatDraft | null; usage: AiUsage };
 
 // One month of scheduled events (renewals and trial endings) with expected charges per currency.
 export type CalendarMonth = { month: string; today: string; events: HomeEvent[]; expected: MoneyTotal[] };
@@ -393,6 +402,7 @@ export type OnboardingState = {
   connect_loading: boolean;
   connect_message: string;
   inbox_email: string;
+  connector_id: string;
   scan_job_id: string;
   scan_stages: number;
   scan_status: 'idle' | 'running' | 'completed' | 'failed';
@@ -442,6 +452,10 @@ export type ScanCandidate = {
   // The date was inferred from receipts rather than stated or reviewed.
   estimated: boolean;
   trial?: { auto_renew: boolean };
+  // The server's edit version; a review edit sends it back.
+  revision: number;
+  // Preselected by the server (complete, confident and not lapsed).
+  selected: boolean;
 };
 
 export type ScanFailure = 'network' | 'access';

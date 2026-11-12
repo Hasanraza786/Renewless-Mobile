@@ -10,6 +10,7 @@ import { goBack } from '../../navigation/service';
 import { common_styles } from '../../utils/common_styles';
 import Composer, { AttachSheet } from './components/Composer';
 import ConsentDialog from './components/ConsentDialog';
+import DuplicateDialog from './components/DuplicateDialog';
 import { DraftCard, MessageItem, ThinkingDots } from './components/ChatParts';
 import useAiChat from './index.function';
 import type { AiUsage } from '../../types';
@@ -69,6 +70,7 @@ export default function AiChatScreen() {
       </KeyboardAvoidingView>
       <AttachSheet chat={chat} />
       <ConsentDialog chat={chat} />
+      <DuplicateDialog chat={chat} />
       <Modal visible={!!chat.preview_uri} animationType="fade" onRequestClose={chat.closePreview}>
         <View style={styles.preview}>
           {chat.preview_uri ? <Image source={{ uri: chat.preview_uri }} resizeMode="contain" style={styles.preview_image} accessibilityLabel="Sent image" /> : null}

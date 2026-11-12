@@ -1,9 +1,8 @@
+import PlatformLogo from '../../../components/PlatformLogo';
 import { StyleSheet, View } from 'react-native';
-import { platform_logos } from '../../../assets/icons';
 import ConfirmDialog from '../../../components/ConfirmDialog';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
-import Icons from '../../../components/Icons';
 import RowView from '../../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import { common_styles } from '../../../utils/common_styles';
@@ -30,11 +29,10 @@ function Field({ label, value }: { label: string; value: string }) {
 
 // Payment details: evidence for one confirmed payment; confirmation never changes the renewal schedule.
 export default function PaymentDialog({ payment, onClose, onViewSubscription }: { payment: PaymentRecord; onClose: () => void; onViewSubscription: () => void }) {
-  const logo = platform_logos[payment.platform_id];
   return (
     <ConfirmDialog title="Payment details" close_label="Close payment details" onClose={onClose}>
       <RowView gap={SIZES.padding / 2} mt={SIZES.padding}>
-        <View style={screen_styles.avatar}>{logo ? <Icons name={logo} /> : <CustomText text={payment.name.charAt(0)} size={SIZES.sm} />}</View>
+        <View style={screen_styles.avatar}><PlatformLogo platform_id={payment.platform_id} name={payment.name} /></View>
         <CustomText text={payment.name} weight={FONTS.medium} size={SIZES.lg} style={common_styles.flex_1} />
         <CustomText text="Confirmed" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
       </RowView>

@@ -1,4 +1,4 @@
-import { fromReminder, setCategories, toDetail, toHome, toRecord, toSubscriptionBody } from '../src/api_services/adapters';
+import { fromReminder, setCategories, toAiReply, toDetail, toGmailCandidate, toHome, toRecord, toSubscriptionBody } from '../src/api_services/adapters';
 import type { DetailDto, EventDto, HomeDto } from '../src/api_services/dto';
 import { platform_logos } from '../src/assets/icons';
 
@@ -75,4 +75,26 @@ test('Home merges the snapshot, Upcoming, this month and spending', () => {
   expect(snapshot.trials[0]).toMatchObject({ subscription_id: 'sub-2', then_amount: '20.00', cycle: 'Monthly' });
   // Months without a charge in a currency are explicit zeros.
   expect(snapshot.forecast).toEqual([{ currency: 'USD', months: [{ month: '2026-11', amount: '35.49' }, { month: '2026-12', amount: '0.00' }] }]);
+});
+
+test('an AI turn shows the newest changed draft; a trial keeps its end date and auto-renew', () => {
+  const draft = (id: string, status: 'incomplete' | 'ready' | 'added', fields: object) => ({ id, revision: 2, status, fields, missing: [], match: { kind: 'none', subscriptionIds: [] }, subscriptionId: null });
+  const usage = { used: 3, limit: 50, remaining: 47, resetsOn: '2026-12-01' };
+  const reply = toAiReply({
+    reply: { id: 'r1', text: 'Got it.', draftIds: ['d1', 'd2'] },
+    drafts: [draft('d1', 'added', { name: 'Old' }), draft('d2', 'ready', { name: 'Spotify', price: { currency: 'USD', amount: '11.99' }, cycle: 'monthly', trial: { endDate: '2026-12-01' }, autoRenew: false })],
+    usage,
+  });
+  expect(reply.reply).toBe('Got it.');
+  expect(reply.draft).toMatchObject({ id: 'd2', revision: 2, ready: true, name: 'Spotify', price: '11.99', currency: 'USD', cycle: 'Monthly', trial: { end_date: '2026-12-01', auto_renew: false }, next_date: null });
+  expect(toAiReply({ reply: { id: null, text: null, draftIds: [] }, drafts: [], usage }).draft).toBeNull();
+});
+
+test('the Gmail review leaves out rows it cannot show and maps an update with its old price', () => {
+  const base = { id: 'c1', classification: 'new' as const, selected: true, name: 'Claude', plan: 'Max', platformId: null, logoUrl: null, price: { currency: 'USD', amount: '100.00' }, cycle: 'monthly' as const, anchorDate: '2026-11-30', estimated: true, trial: null, targetSubscriptionId: null, changes: null, imported: false, needsDetails: false, revision: 1 };
+  expect(toGmailCandidate({ ...base, needsDetails: true, price: null })).toBeNull();
+  expect(toGmailCandidate({ ...base, classification: 'unresolved' })).toBeNull();
+  expect(toGmailCandidate({ ...base, classification: 'tracked' })).toMatchObject({ kind: 'duplicate' });
+  const update = toGmailCandidate({ ...base, classification: 'update', targetSubscriptionId: 's1', changes: { price: { from: { currency: 'USD', amountMinor: 9000 }, to: { currency: 'USD', amountMinor: 10000 } } } });
+  expect(update).toMatchObject({ kind: 'update', target_id: 's1', old: { price: '90.00' }, next_date: '2026-11-30', revision: 1, selected: true });
 });

@@ -22,6 +22,7 @@ const PILL = {
   reconnect: { style: styles.pill_alert, color: COLORS.danger },
   error: { style: styles.pill_alert, color: COLORS.danger },
   paused: { style: styles.pill_paused, color: COLORS.renewing_soon },
+  pending: { style: styles.pill_paused, color: COLORS.renewing_soon },
 };
 
 function DisconnectDialog({ inbox }: { inbox: ConnectedInboxController }) {
@@ -94,13 +95,13 @@ export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxR
             <CustomText text={inbox.reconnect_needed ? 'Reconnect your inbox' : 'Keep everything up to date'} weight={FONTS.medium} size={SIZES.sm} />
             <CustomText
               mt={SIZES.padding2}
-              text={inbox.reconnect_needed ? 'Gmail needs your permission again. Your saved subscriptions are still available.' : 'Check this inbox for new receipts and subscription updates.'}
+              text={inbox.sync_hint}
               weight={FONTS.regular}
               color={COLORS.text_secondary}
               size={SIZES.sm}
             />
             <SizedBox height={SIZES.padding * 1.1} />
-            <CustomButton variant="primary" text={inbox.reconnect_needed ? 'Reconnect Gmail' : inbox.syncing ? 'Syncing…' : 'Sync now'} busy={busy} onPress={inbox.runMain} />
+            <CustomButton variant="primary" text={inbox.main_label} disabled={inbox.sync_locked} busy={busy} onPress={inbox.runMain} />
           </View>
           <RowView accessibilityRole="button" disabled={busy} onPress={inbox.openConfirm} style={styles.disconnect}>
             <CustomText text="Disconnect inbox" weight={FONTS.regular} color={COLORS.danger} size={SIZES.sm} />
