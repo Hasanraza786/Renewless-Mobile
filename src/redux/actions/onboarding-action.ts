@@ -171,7 +171,8 @@ export function saveOnboardingFinds(job_id: string, candidate_ids: string[], onS
           dispatch(addSaved(candidate_ids));
           onSaved();
         },
-        onError: () => dispatch(setSaveError(SAVE_FAILED)),
+        // The 500-subscription cap (409 SUBSCRIPTION_LIMIT) says so; other failures keep the general message.
+        onError: error => dispatch(setSaveError(error.code === 'SUBSCRIPTION_LIMIT' ? error.message : SAVE_FAILED)),
       }),
     );
   };

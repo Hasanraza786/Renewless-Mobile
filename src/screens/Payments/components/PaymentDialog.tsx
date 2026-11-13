@@ -36,7 +36,7 @@ export default function PaymentDialog({ payment, onClose, onViewSubscription }: 
         <CustomText text={payment.name} weight={FONTS.medium} size={SIZES.lg} style={common_styles.flex_1} />
         <CustomText text="Confirmed" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
       </RowView>
-      <CustomText mt={SIZES.padding * 0.9} text={money(payment.currency, Number(payment.amount).toFixed(2))} weight={FONTS.medium} size={SIZES.h3} />
+      <CustomText mt={SIZES.padding * 0.9} text={money(payment.currency, payment.amount)} weight={FONTS.medium} size={SIZES.h3} />
       <View style={styles.fields}>
         <Field label="Payment date" value={dateLabel(payment.paid_on)} />
         <Field label="Billing date" value={dateLabel(payment.billing_date)} />

@@ -123,7 +123,7 @@ export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
                   </RowView>
                   <View style={styles.rows}>
                     {payments.matched.map((payment, index) => {
-                      const amount = money(payment.currency, Number(payment.amount).toFixed(2));
+                      const amount = money(payment.currency, payment.amount);
                       return (
                         <RowView
                           key={payment.id}

@@ -1,5 +1,5 @@
 import type { SubscriptionRecord } from '../src/types';
-import { catalogMatches, draftFromRecord, draftToInput, emptyDraft, trialEnd, validateDraft, firstInvalid } from '../src/utils/subscription-form';
+import { draftFromRecord, draftToInput, emptyDraft, trialEnd, validateDraft, firstInvalid } from '../src/utils/subscription-form';
 
 const today = '2026-11-06';
 
@@ -20,7 +20,7 @@ test('a trial needs a start date, calculates its end and hides the next renewal'
   const started = { ...draft, start_date: '2026-10-28' };
   expect(trialEnd(started, null)).toBe('2026-11-04');
   const input = draftToInput(started, null, null, today);
-  expect(input).toMatchObject({ platform_id: 'spotify', next_date: null, trial: { days: 7, end_date: '2026-11-04', auto_renew: true } });
+  expect(input).toMatchObject({ platform_id: null, next_date: null, trial: { days: 7, end_date: '2026-11-04', auto_renew: true } });
   expect(validateDraft({ ...started, trial: 'Custom', custom_days: '400' }, null, today).custom_days).toBe('Enter a whole number from 1 to 365.');
 });
 
@@ -42,10 +42,10 @@ test('edit keeps an exact trial end until start or duration changes, and asks wh
   expect(draftToInput({ ...changed, price_reason: 'Correcting a mistake' }, origin, record, today).price_change).toEqual({ reason: 'correction', effective_on: today });
 });
 
-test('catalog suggestions match names and aliases, at most four', () => {
-  expect(catalogMatches('notion labs').map(item => item.platform_id)).toEqual(['notion']);
-  expect(catalogMatches('e').length).toBe(4);
-  expect(catalogMatches(' ')).toEqual([]);
+test('a picked catalog suggestion saves its platform; a typed name is linked when saving', () => {
+  const draft = { ...emptyDraft(), name: 'Netflix', price: '15.99', next_date: '2026-11-20' };
+  expect(draftToInput({ ...draft, platform_id: '6730a1b2c3d4e5f6a7b8c9d0' }, null, null, today).platform_id).toBe('6730a1b2c3d4e5f6a7b8c9d0');
+  expect(draftToInput(draft, null, null, today).platform_id).toBeNull();
 });
 
 test('a failed submit focuses the topmost invalid field', () => {

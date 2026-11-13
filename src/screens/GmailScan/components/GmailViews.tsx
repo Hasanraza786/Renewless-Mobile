@@ -73,8 +73,8 @@ function CandidateRow({ gmail, item, last }: { gmail: GmailScanController; item:
   const update = item.kind === 'update';
   const checked = gmail.selected.includes(item.id) && !item.saved;
   const locked = item.saved || gmail.saving;
-  const first = update && item.old ? `Price ${money(item.currency, Number(item.old.price).toFixed(2))} → ${money(item.currency, Number(item.price).toFixed(2))}` : `${value.trial ? 'Trial ends' : 'Renews'} ${value.trial ? dateLabel(value.trial.end_date) : value.next_date ? dateLabel(value.next_date) : 'Date not set'}`;
-  const second = update ? (gmail.replace_date && item.next_date ? `Renews ${dateLabel(item.next_date)}` : 'Your saved renewal date is kept') : `${value.trial ? 'Then ' : ''}${money(value.currency, Number(value.price).toFixed(2))} · ${value.cycle}`;
+  const first = update && item.old ? `Price ${money(item.currency, item.old.price)} → ${money(item.currency, item.price)}` : `${value.trial ? 'Trial ends' : 'Renews'} ${value.trial ? dateLabel(value.trial.end_date) : value.next_date ? dateLabel(value.next_date) : 'Date not set'}`;
+  const second = update ? (gmail.replace_date && item.next_date ? `Renews ${dateLabel(item.next_date)}` : 'Your saved renewal date is kept') : `${value.trial ? 'Then ' : ''}${money(value.currency, value.price)} · ${value.cycle}`;
   return (
     <RowView gap={0} style={!last && result_styles.row_divider}>
       <RowView

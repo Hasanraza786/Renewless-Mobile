@@ -11,6 +11,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AiInput, AiReply, AiUsage, ChatDraft } from '../../types';
 import { missingQuestion } from '../../utils/ai-draft';
 import { tapHaptic } from '../../utils/haptics';
+import { afterModalClose } from '../../utils/modal';
 import { trackEvent } from '../../utils/analytics';
 
 const SPEEDS = [1, 1.5, 2] as const;
@@ -373,16 +374,20 @@ export default function useAiChat() {
     dispatch(changeAiConsent(true));
   };
   // Not now: back to the Add sheet on the tab that opened AI chat.
+  // The dialog closes first; leaving waits for its fade, so the tab's Add sheet can open on iOS.
+  const [consent_declined, setConsentDeclined] = useState(false);
+  const show_consent = !ai_consent && !consent_declined;
   const declineConsent = () => {
     trackEvent('ai_consent_changed', { enabled: 'false' });
+    setConsentDeclined(true);
     const tab = focusedTab();
-    if (tab === 'Home' || tab === 'List' || tab === 'Calendar') navigate(tab, { add_sheet: Date.now() });
-    else goBack();
+    afterModalClose(() => (tab === 'Home' || tab === 'List' || tab === 'Calendar' ? navigate(tab, { add_sheet: Date.now() }) : goBack()));
   };
   const openPrivacy = () => openLegal(PRIVACY_URL);
 
   return {
     ai_consent,
+    show_consent,
     usage,
     usage_state,
     resets_label,

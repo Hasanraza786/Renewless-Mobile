@@ -1,4 +1,5 @@
-import { del, get, patch, post, postLong, put, upload } from './http-provider';
+import { ApiError, del, get, patch, post, postLong, put, upload } from './http-provider';
+import { deviceInfo } from '../utils/device-id';
 import type {
   AiUsageDto,
   AlertsDto,
@@ -69,10 +70,11 @@ type Id<T = object> = { id: string } & T;
 
 // Auth
 const signup = (data: { name: string; email: string; password: string; timezone: string }) => post<ChallengeDto>(SERVICE_URLS.signup, data);
-const verifySignup = (data: { challengeId: string; code: string }) => post<SessionDto>(SERVICE_URLS.verifySignup, data);
+const verifySignup = async (data: { challengeId: string; code: string }) => post<SessionDto>(SERVICE_URLS.verifySignup, { ...data, device: await deviceInfo() });
 const resendCode = (data: { challengeId: string }) => post<ChallengeDto>(SERVICE_URLS.resendCode, data);
-const login = (data: { email: string; password: string }) => post<SessionDto>(SERVICE_URLS.login, data);
-const social = (data: { provider: 'google' | 'apple'; idToken: string; nonce?: string; name?: string }) => post<SessionDto & { isNewUser: boolean }>(SERVICE_URLS.social, data);
+const login = async (data: { email: string; password: string }) => post<SessionDto>(SERVICE_URLS.login, { ...data, device: await deviceInfo() });
+const social = async (data: { provider: 'google' | 'apple'; idToken: string; nonce?: string; name?: string }) =>
+  post<SessionDto & { isNewUser: boolean }>(SERVICE_URLS.social, { ...data, device: await deviceInfo() });
 const forgotPassword = (data: { email: string }) => post<ChallengeDto>(SERVICE_URLS.forgotPassword, data);
 const verifyReset = (data: { challengeId: string; code: string }) => post<{ resetToken: string }>(SERVICE_URLS.verifyReset, data);
 const resetPassword = (data: { resetToken: string; password: string }) => post<void>(SERVICE_URLS.resetPassword, data);
@@ -127,7 +129,21 @@ const getConnector = ({ id }: Id) => get<ConnectorDto>(`${SERVICE_URLS.connector
 const disconnectConnector = ({ id }: Id) => del<void>(`${SERVICE_URLS.connectors}/${id}`);
 
 // Gmail connect and scans
-const googleConnect = (data: { idToken: string; serverAuthCode: string }) => post<GoogleConnectDto>(SERVICE_URLS.googleConnect, data);
+// Another connect for this account or inbox may still be running (409 REQUEST_IN_PROGRESS, retryable): wait and ask
+// again, up to three more times, before showing the error.
+const IN_PROGRESS_RETRIES = 3;
+const IN_PROGRESS_WAIT_MS = 1500;
+const googleConnect = async (data: { idToken: string; serverAuthCode: string }) => {
+  const body = { ...data, device: await deviceInfo() };
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      return await post<GoogleConnectDto>(SERVICE_URLS.googleConnect, body);
+    } catch (error) {
+      if (!(error instanceof ApiError) || error.code !== 'REQUEST_IN_PROGRESS' || attempt >= IN_PROGRESS_RETRIES) throw error;
+      await new Promise<void>(resolve => setTimeout(resolve, IN_PROGRESS_WAIT_MS));
+    }
+  }
+};
 const startScan = ({ id, kind }: Id<{ kind: 'initial' | 'incremental' }>) => post<{ jobId: string; status: string }>(`${SERVICE_URLS.connectors}/${id}/scans`, { kind });
 const getScan = ({ id }: Id) => get<ScanJobDto>(`${SERVICE_URLS.scans}/${id}`);
 const updateCandidate = ({ job_id, id, ...data }: Id<{ job_id: string; revision: number; price?: { currency: string; amount: string }; cycle?: string; anchorDate?: string; trial?: { endDate: string; autoRenew?: boolean } | null; replaceAnchorDate?: boolean; selected?: boolean }>) =>

@@ -24,7 +24,7 @@ export default function useCalendarDay(date: string) {
   const totals = new Map<string, number>();
   for (const event of events.filter(item => item.expected_charge)) totals.set(event.currency, (totals.get(event.currency) ?? 0) + Math.round(Number(event.amount) * 100));
   // "2 scheduled · USD 27.98"; a direct link to an empty date gets fallback copy.
-  const note = events.length ? [`${events.length} scheduled`, ...[...totals].map(([currency, cents]) => money(currency, (cents / 100).toFixed(2)))].join(' · ') : 'Nothing is scheduled on this date.';
+  const note = events.length ? [`${events.length} scheduled`, ...[...totals].map(([currency, cents]) => money(currency, cents / 100))].join(' · ') : 'Nothing is scheduled on this date.';
 
   const retry = () => dispatch(getCalendarMonth(month));
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });

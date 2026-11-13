@@ -49,6 +49,7 @@ export default function AddSubscriptionScreen({ route }: { route: SubscriptionFo
               show_price_change={form.show_price_change}
               today={form.today}
               editable={!form.saving}
+              suggestions={form.suggestions}
               onFieldLayout={(field, y) => {
                 field_y.current[field] = y;
               }}

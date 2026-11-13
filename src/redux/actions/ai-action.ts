@@ -58,7 +58,8 @@ export function startAiChat(onStarted: (conversation_id: string, usage: AiUsage)
       requestHandler({
         apiService: apiServices.startConversation,
         onDone: ({ id, usage }) => onStarted(id, usage),
-        onError: () => dispatch(setNotice('Couldn’t reach Loop. Check your connection and try again.')),
+        // More than 30 new chats in an hour answers 429 with the server's own message.
+        onError: error => dispatch(setNotice(error.status === 429 ? error.message : 'Couldn’t reach Loop. Check your connection and try again.')),
       }),
     );
   };

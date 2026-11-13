@@ -10,7 +10,7 @@ import type { AppStackParamList, ReminderPreference, SubscriptionDetail } from '
 import { amountLabel, daysBetween, recordStatus } from '../../utils/events';
 import { defaultTooClose, reminderText } from '../../utils/reminders';
 import { dateLabel } from '../../utils/scan';
-import { money } from '../../utils/money';
+import { formatAmount, money } from '../../utils/money';
 
 export type Route = NativeStackScreenProps<AppStackParamList, 'SubscriptionDetail'>['route'];
 export type Sheet = 'reminder' | 'cancel' | 'delete' | 'resume' | 'notes' | null;
@@ -62,7 +62,7 @@ export function detailView({ record, today, receipts, receipt_emails, annual_est
   return {
     record,
     status: { ...status, fill: STATUS_FILL[status.color] ?? COLORS.status_muted_bg },
-    cost: { currency: record.currency, amount: Number(record.price).toFixed(2), caption: `${in_trial ? 'After trial · ' : ''}${record.cycle}` },
+    cost: { currency: record.currency, amount: formatAmount(record.currency, record.price), caption: `${in_trial ? 'After trial · ' : ''}${record.cycle}` },
     event,
     // Only an active trial uses the trial title; an ended trial is back to renewal billing.
     billing_title: in_trial ? 'Trial & billing' : 'Renewal & billing',

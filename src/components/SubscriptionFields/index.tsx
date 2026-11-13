@@ -2,10 +2,10 @@ import type { ComponentRef } from 'react';
 import { View, type TextInput } from 'react-native';
 import { switch_off_icon, switch_on_icon } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
-import type { ScanCycle } from '../../types';
+import type { PlatformSuggestion, ScanCycle } from '../../types';
 import { common_styles } from '../../utils/common_styles';
 import { dateLabel } from '../../utils/scan';
-import { CATEGORIES, CURRENCIES, CYCLES, NOTES_LIMIT, PRICE_REASONS, TRIAL_OPTIONS, catalogMatches, trialEnd, trialSummary, type DraftErrors, type DraftField, type SubscriptionDraft, type TrialOrigin } from '../../utils/subscription-form';
+import { CATEGORIES, CURRENCIES, CYCLES, NOTES_LIMIT, PRICE_REASONS, TRIAL_OPTIONS, trialEnd, trialSummary, type DraftErrors, type DraftField, type SubscriptionDraft, type TrialOrigin } from '../../utils/subscription-form';
 import CustomText from '../CustomText';
 import DateField from '../DateField';
 import Dropdown from '../Dropdown';
@@ -14,7 +14,7 @@ import InputField from '../InputField';
 import RowView from '../RowView';
 import SizedBox from '../SizedBox';
 import { styles } from './styles';
-import { CURRENCY_NAMES, CURRENCY_SEARCH } from '../../utils/money';
+import { CURRENCY_NAMES, CURRENCY_SEARCH, amountKeyboard, amountPlaceholder } from '../../utils/money';
 
 type Props = {
   draft: SubscriptionDraft;
@@ -27,6 +27,8 @@ type Props = {
   show_price_change: boolean;
   today: string;
   editable: boolean;
+  // Up to four catalog platforms matching the typed name (from the backend).
+  suggestions: PlatformSuggestion[];
   // Where each field that can show an error sits, and its text input, so a failed submit can scroll to and focus it.
   onFieldLayout?: (field: DraftField, y: number) => void;
   inputRef?: (field: DraftField, input: ComponentRef<typeof TextInput> | null) => void;
@@ -39,10 +41,10 @@ function FieldError({ text }: { text?: string }) {
 }
 
 // The one Add/Edit field set: service, amount/currency, cycle, category, trial, dates, notes.
-export default function SubscriptionFields({ draft, errors, onChange, onPickService, origin, show_price_change, today, editable, onFieldLayout, inputRef }: Props) {
+export default function SubscriptionFields({ draft, errors, onChange, onPickService, origin, show_price_change, today, editable, suggestions, onFieldLayout, inputRef }: Props) {
   const at = (field: DraftField) => ({ onLayout: (event: { nativeEvent: { layout: { y: number } } }) => onFieldLayout?.(field, event.nativeEvent.layout.y) });
   const on_trial = draft.trial !== 'No trial';
-  const matches = draft.platform_id ? [] : catalogMatches(draft.name);
+  const matches = draft.platform_id ? [] : suggestions;
   const calculated = !!trialEnd(draft, origin);
   const categories = CATEGORIES.includes(draft.category) ? CATEGORIES : [...CATEGORIES, draft.category];
 
@@ -77,7 +79,7 @@ export default function SubscriptionFields({ draft, errors, onChange, onPickServ
       <SizedBox height={GAP} />
       <RowView align_items="flex-start" gap={SIZES.padding / 2} {...at('price')}>
         <View style={common_styles.flex_1}>
-          <InputField ref={input => inputRef?.('price', input)} variant="form" label={on_trial ? 'Price after trial' : 'Amount'} value={draft.price} onChangeText={value => onChange('price', value)} placeholder="0.00" keyboardType="decimal-pad" error={errors.price} editable={editable} />
+          <InputField ref={input => inputRef?.('price', input)} variant="form" label={on_trial ? 'Price after trial' : 'Amount'} value={draft.price} onChangeText={value => onChange('price', value)} placeholder={amountPlaceholder(draft.currency)} keyboardType={amountKeyboard(draft.currency)} error={errors.price} editable={editable} />
         </View>
         <View style={styles.currency}>
           <Dropdown label="Currency" value={draft.currency} options={CURRENCIES} option_details={CURRENCY_NAMES} search={CURRENCY_SEARCH} onChange={value => onChange('currency', value)} />

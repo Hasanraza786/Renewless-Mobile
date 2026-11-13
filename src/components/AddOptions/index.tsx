@@ -4,6 +4,7 @@ import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { navigate } from '../../navigation/service';
 import { trackEvent } from '../../utils/analytics';
 import { common_styles } from '../../utils/common_styles';
+import { afterModalClose } from '../../utils/modal';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
 import RowView from '../RowView';
@@ -37,8 +38,11 @@ export default function AddOptions({ onPick, gmail }: Props) {
           accessibilityLabel={`${option.title}. ${option.copy}`}
           onPress={() => {
             trackEvent('add_option_selected', { option: option.option });
-            onPick?.();
-            option.open();
+            // The Add sheet closes first; the next screen opens once its fade ends.
+            if (onPick) {
+              onPick();
+              afterModalClose(option.open);
+            } else option.open();
           }}
           style={[styles.option, option.ai && styles.option_ai]}>
           <View style={[styles.icon, option.ai && styles.icon_ai]}>

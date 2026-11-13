@@ -78,11 +78,10 @@ export default function useProfile() {
   const openPrivacy = () => openLegal(PRIVACY_URL);
   const openTerms = () => openLegal(TERMS_URL);
 
-  // Logout and deletion end the session, which returns to Login.
-  const confirmLogout = () => {
-    setDialog(null);
-    dispatch(logoutUser());
-  };
+  // Logout and deletion end the session, which returns to Login. The dialog stays open (its button busy) under the
+  // saving overlay: closing it first made iOS present the overlay Modal while the dialog Modal was still fading out,
+  // which left an invisible Modal blocking every touch.
+  const confirmLogout = () => dispatch(logoutUser());
 
   const confirmDelete = () => {
     if (!delete_ready || !user) return;

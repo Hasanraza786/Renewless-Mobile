@@ -68,7 +68,7 @@ export default function HomeScreen({ route }: { route: HomeRoute }) {
               <CustomText mt={SIZES.padding} text="Let Loop find your subscriptions" size={SIZES.h4} align="center" />
               <CustomText
                 mt={SIZES.padding2}
-                text="Connect Gmail and Loop lists what you pay for from your receipts. It takes about 30 seconds."
+                text="Connect Gmail and Loop lists what you pay for from your receipts. It takes about a minute."
                 weight={FONTS.regular}
                 color={COLORS.text_secondary}
                 size={SIZES.sm}

@@ -152,7 +152,8 @@ export type CandidateDto = {
   cycle: CycleDto | null;
   anchorDate: string | null;
   estimated: boolean;
-  trial: { endDate: string; autoRenew: boolean } | null;
+  // startDate/days only when an email dates the trial's start (e.g. a "trial started" email).
+  trial: { endDate: string; autoRenew: boolean; startDate?: string | null; days?: number | null } | null;
   targetSubscriptionId: string | null;
   changes: { price: { from: { currency: string; amountMinor: number }; to: { currency: string; amountMinor: number } } } | null;
   imported: boolean;

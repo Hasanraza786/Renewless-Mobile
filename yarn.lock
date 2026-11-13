@@ -6359,6 +6359,11 @@ react-native-confirmation-code-field@^9.0.0:
   resolved "https://registry.npmjs.org/react-native-confirmation-code-field/-/react-native-confirmation-code-field-9.0.0.tgz"
   integrity sha512-U2/rNPpvsEbRTj/dP3bwjFR5C5tnqOXJ4RE/OCxE13Z0TBYnqkA2WpPYZDqEDPJ/u1Ana7aXLzeOkUoHGEMVZw==
 
+react-native-device-info@^15.0.2:
+  version "15.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-device-info/-/react-native-device-info-15.0.2.tgz#c7de1bb6baeb07e1bab70159ad540c5705cb8dc0"
+  integrity sha512-dd71eXG2l3Cwp66IvKNadMTB8fhU3PEjyVddI97sYan+D4bgIAUmgGDhbSOFvHcGavksb2U17kiQYaDiK2WK2g==
+
 react-native-gesture-handler@^3.3.0:
   version "3.4.0"
   resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-3.4.0.tgz"

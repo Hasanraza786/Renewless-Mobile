@@ -29,7 +29,7 @@ export function eventTiming(event: HomeEvent, today: string) {
 
 // "$9.99", "€9.99": the shared currency symbols in utils/money.
 export function amountLabel(amount: string, currency: string) {
-  return money(currency, Number(amount).toFixed(2));
+  return money(currency, amount);
 }
 
 export function eventAmount(event: HomeEvent) {

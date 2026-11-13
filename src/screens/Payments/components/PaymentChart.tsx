@@ -4,7 +4,7 @@ import RowView from '../../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import { common_styles } from '../../../utils/common_styles';
 import { MONTH_NAMES } from '../../../utils/payments';
-import { money } from '../../../utils/money';
+import { formatAmount, money } from '../../../utils/money';
 
 type Props = {
   currency: string;
@@ -52,7 +52,7 @@ export default function PaymentChart({ currency, year, months, inspect, page_sta
         text={
           <>
             {`${MONTH_NAMES[inspected]} · `}
-            <CustomText text={money(currency, months[inspected].toFixed(2))} weight={FONTS.medium} size={SIZES.sm} line_height={null} />
+            <CustomText text={money(currency, months[inspected])} weight={FONTS.medium} size={SIZES.sm} line_height={null} />
             {' confirmed'}
           </>
         }
@@ -71,7 +71,7 @@ export default function PaymentChart({ currency, year, months, inspect, page_sta
               key={index}
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
-              accessibilityLabel={`${MONTH_NAMES[index]} ${year}, ${currency} ${amount.toFixed(2)} confirmed. Inspect amount`}
+              accessibilityLabel={`${MONTH_NAMES[index]} ${year}, ${currency} ${formatAmount(currency, amount)} confirmed. Inspect amount`}
               onPress={() => onInspect(String(index + 1).padStart(2, '0'))}
               style={({ pressed }) => [common_styles.flex_1, styles.column, active && styles.column_active, pressed && common_styles.pressed]}>
               <View style={[styles.track, active && styles.track_active]}>

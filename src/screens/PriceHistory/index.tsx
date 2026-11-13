@@ -44,7 +44,7 @@ export default function PriceHistoryScreen({ route }: Props) {
             <View style={common_styles.flex_1}>
               <CustomText text={record.plan ? `${record.name} · ${record.plan}` : record.name} size={SIZES.lg} />
               <CustomText mt={SIZES.padding * 0.3} text="Current tracked price" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-              <CustomText mt={SIZES.padding / 4} text={`${money(record.currency, Number(record.price).toFixed(2))} · ${record.cycle}`} size={SIZES.sm} />
+              <CustomText mt={SIZES.padding / 4} text={`${money(record.currency, record.price)} · ${record.cycle}`} size={SIZES.sm} />
             </View>
           </RowView>
           {record.price_history.length ? (

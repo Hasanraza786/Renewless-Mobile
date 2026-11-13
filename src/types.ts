@@ -537,6 +537,9 @@ export type AppStackParamList = {
   SubscriptionPayments: { id: string; name: string };
 };
 
+// An Add form suggestion from the backend catalog (never a price or date).
+export type PlatformSuggestion = { name: string; category: string; platform_id: string };
+
 // One billing email in the Receipts screen; files open from a short-lived private link.
 export type ReceiptFile = { id: string; name: string; kind: 'pdf' | 'image' };
 export type ReceiptItem = {

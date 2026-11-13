@@ -17,7 +17,7 @@ const ROWS = [
 
 // One-time consent before anything reaches Google Gemini; Not now leaves the chat unused.
 export default function ConsentDialog({ chat }: { chat: AiChatController }) {
-  if (chat.ai_consent) return null;
+  if (!chat.show_consent) return null;
   return (
     <ConfirmDialog title="Before you chat with Loop" close_label="Not now" onClose={chat.declineConsent} art={<Mascot expression="happy" size={SIZES.padding * 3.2} label="Loop" />}>
       <CustomText mt={SIZES.padding3} text="Loop uses an AI service to read what you send and fill in your subscription details." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />

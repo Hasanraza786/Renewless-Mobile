@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import type { RouteProp } from '@react-navigation/native';
 import { goBack, replace } from '../../navigation/service';
-import { createSubscription, getSubscriptionDetail, updateSubscription } from '../../redux/actions/detail-action';
+import { createSubscription, getSubscriptionDetail, searchPlatforms, updateSubscription } from '../../redux/actions/detail-action';
 import { setDetailError } from '../../redux/slices/detail-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { AppStackParamList } from '../../types';
+import type { AppStackParamList, PlatformSuggestion } from '../../types';
 import { localToday } from '../../utils/dates';
 import { draftFromRecord, draftServerErrors, draftToInput, emptyDraft, firstInvalid, priceChanged, validateDraft, type DraftErrors, type DraftField, type SubscriptionDraft, type TrialOrigin } from '../../utils/subscription-form';
 
@@ -27,6 +27,7 @@ export default function useSubscriptionForm(route: SubscriptionFormRoute) {
   const [server_errors, setServerErrors] = useState<DraftErrors>({});
   // The first invalid field after a failed submit; `at` makes a repeat submit scroll there again.
   const [focus_request, setFocusRequest] = useState<{ field: DraftField; at: number } | null>(null);
+  const [suggestions, setSuggestions] = useState<PlatformSuggestion[]>([]);
 
   // A stale save error from another screen never shows on a fresh form.
   useEffect(() => {
@@ -42,6 +43,22 @@ export default function useSubscriptionForm(route: SubscriptionFormRoute) {
     setDraft(loaded.draft);
     setOrigin(loaded.origin);
   }, [record, draft, today]);
+
+  // Catalog suggestions follow the typed name, 250 ms after the last key; a picked platform or an empty name shows none,
+  // and an older answer never replaces a newer one.
+  const query = draft && !draft.platform_id ? draft.name.trim() : '';
+  useEffect(() => {
+    if (!query) {
+      setSuggestions([]);
+      return;
+    }
+    let live = true;
+    const timer = setTimeout(() => dispatch(searchPlatforms(query, found => live && setSuggestions(found))), 250);
+    return () => {
+      live = false;
+      clearTimeout(timer);
+    };
+  }, [query, dispatch]);
 
   const errors = { ...server_errors, ...(submitted && draft ? validateDraft(draft, record, today) : {}) };
   const show_price_change = !!draft && priceChanged(draft, record);
@@ -84,5 +101,5 @@ export default function useSubscriptionForm(route: SubscriptionFormRoute) {
     else dispatch(createSubscription(input, openAdded, 'manual', onFieldErrors));
   };
 
-  return { draft, origin, errors, show_price_change, status, load_error, title, action, today, saving, request_error, focus_request, update, pickService, retry, onSubmit };
+  return { draft, origin, errors, show_price_change, status, load_error, title, action, today, saving, request_error, focus_request, suggestions, update, pickService, retry, onSubmit };
 }

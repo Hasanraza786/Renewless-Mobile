@@ -22,8 +22,8 @@ import { localToday } from '../../../../utils/dates';
 import { dateLabel, formatTotals, moneyLabel, paidMonthlyTotals, upcomingWeek } from '../../../../utils/scan';
 import type { OnboardingController } from '../../index.function';
 import { RING, RING_WIDTH, styles } from './styles';
-import { CURRENCIES, CURRENCY_NAMES, CURRENCY_SEARCH } from '../../../../utils/money';
-import { AMOUNT_ERROR, isValidAmount } from '../../../../utils/subscription-form';
+import { CURRENCIES, CURRENCY_NAMES, CURRENCY_SEARCH, formatAmount, amountKeyboard, amountPlaceholder } from '../../../../utils/money';
+import { amountError, isValidAmount } from '../../../../utils/subscription-form';
 
 type Props = { onboarding: OnboardingController };
 
@@ -69,12 +69,12 @@ function EditSheet({ onboarding }: Props) {
   }, [item]);
 
   const price = Number(price_text);
-  const valid = isValidAmount(price_text) && (!draft?.trial || !!draft.next_date);
+  const valid = !!draft && isValidAmount(price_text, draft.currency) && (!draft.trial || !!draft.next_date);
 
   const submit = () => {
     if (!item || !draft || !valid) return;
     // A changed date counts as reviewed; an amount-only edit keeps the date's confidence.
-    onboarding.saveEdit({ ...draft, price: price.toFixed(2), estimated: draft.next_date === item.next_date ? item.estimated : false });
+    onboarding.saveEdit({ ...draft, price: formatAmount(draft.currency, price), estimated: draft.next_date === item.next_date ? item.estimated : false });
   };
 
   return (
@@ -86,11 +86,11 @@ function EditSheet({ onboarding }: Props) {
               <InputField
                 variant="sheet"
                 label={draft.trial ? 'Price after trial' : 'Amount'}
-                placeholder="0.00"
+                placeholder={amountPlaceholder(draft.currency)}
                 value={price_text}
                 onChangeText={setPriceText}
-                keyboardType="decimal-pad"
-                error={price_text && !isValidAmount(price_text) ? AMOUNT_ERROR : onboarding.edit_error || undefined}
+                keyboardType={amountKeyboard(draft.currency)}
+                error={draft && price_text && !isValidAmount(price_text, draft.currency) ? amountError(draft.currency) : onboarding.edit_error || undefined}
               />
             </View>
             <View style={styles.currency}>

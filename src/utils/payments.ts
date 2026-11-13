@@ -1,3 +1,4 @@
+import { formatAmount } from './money';
 import type { MoneyTotal, PaymentRecord } from '../types';
 
 export const MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -24,7 +25,7 @@ export const matchesQuery = (row: PaymentRecord, query: string) => row.name.toLo
 export function paymentTotals(rows: PaymentRecord[]): MoneyTotal[] {
   const sums = new Map<string, number>();
   for (const row of rows) sums.set(row.currency, (sums.get(row.currency) ?? 0) + cents(row.amount));
-  return [...sums].map(([currency, total]) => ({ currency, amount: (total / 100).toFixed(2) }));
+  return [...sums].map(([currency, total]) => ({ currency, amount: formatAmount(currency, total / 100) }));
 }
 
 // Twelve monthly confirmed totals for one currency, as numbers; zero months stay explicit.

@@ -1,4 +1,5 @@
 import { Linking, NativeModules } from 'react-native';
+import { bundledLogoKey } from '../assets/icons/platform_logos';
 import { navigate } from '../navigation/service';
 import type { HomeEvent, HomeSnapshot } from '../types';
 import { trackEvent } from './analytics';
@@ -24,7 +25,7 @@ export function widgetCopy(event: HomeEvent, today: string) {
   return {
     tone: trial ? ('trial' as const) : days === 0 ? ('today' as const) : ('renewal' as const),
     eyebrow: trial ? 'TRIAL ENDING' : days === 0 ? 'DUE TODAY' : 'NEXT RENEWAL',
-    amount: !event.expected_charge ? 'Auto-renew off' : event.amount !== '' && Number.isFinite(price) ? spokenMoney(money(event.currency, price.toFixed(2))) : 'Amount not set',
+    amount: !event.expected_charge ? 'Auto-renew off' : event.amount !== '' && Number.isFinite(price) ? spokenMoney(money(event.currency, price)) : 'Amount not set',
     line: `${days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`} · ${short_date}`,
   };
 }
@@ -33,7 +34,8 @@ export function saveWidgetSnapshot(home: HomeSnapshot) {
   const { event: next, more } = widgetEvent(home);
   const event = next && {
     subscription_id: next.subscription_id,
-    platform_id: next.platform_id,
+    // The widgets draw their own copies of the bundled logos, found by name.
+    platform_id: bundledLogoKey(next.name),
     name: next.name,
     date: next.date,
     kind: next.kind,

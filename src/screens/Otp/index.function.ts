@@ -53,7 +53,6 @@ export default function useOtp(route: Route) {
     dispatch(verifyCode(purpose, challenge_id, code, intent, setCodeError));
   };
 
-  // shortcut: resend feedback uses a system alert; replace if a shared toast/notice is designed.
   const onSent = (next_id: string) => {
     setChallengeId(next_id);
     setSentAt(Date.now());

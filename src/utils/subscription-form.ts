@@ -1,5 +1,5 @@
-import { PLATFORM_CATALOG } from '../constants/catalog';
 import type { ScanCycle, SubscriptionFormInput, SubscriptionRecord } from '../types';
+import { formatAmount, minorDigits } from './money';
 import { addDays } from './scan';
 
 export { CURRENCIES } from './money';
@@ -30,10 +30,19 @@ export type SubscriptionDraft = {
 // Edit keeps an exact trial end (from Gmail/AI) until the start or duration changes.
 export type TrialOrigin = { start_date: string; days: number; end_date: string } | null;
 
-// One amount rule for every form and review sheet: up to 12 whole digits and 2 decimals, above zero (the server's
-// limits); "1e3" or "12.345" are refused, not converted or rounded.
+// One amount rule for every form and review sheet, the server's: up to 12 whole digits, above zero, and no more
+// decimals than the currency uses (USD 2, PKR 0, KWD 3; trailing zeros are fine). "1e3" or "12.345" are refused, never
+// converted or rounded.
 export const AMOUNT_ERROR = 'Enter a valid amount greater than 0 (up to 2 decimals).';
-export const isValidAmount = (text: string) => /^\d{1,12}(\.\d{1,2})?$/.test(text.trim()) && Number(text) > 0;
+export function isValidAmount(text: string, currency = 'USD') {
+  const match = /^(\d{1,12})(?:\.(\d+))?$/.exec(text.trim());
+  return !!match && (match[2] ?? '').replace(/0+$/, '').length <= minorDigits(currency) && Number(text) > 0;
+}
+// The message for a refused amount; a whole-number currency says so, in the server's words.
+export function amountError(currency: string) {
+  const digits = minorDigits(currency);
+  return digits === 0 ? `${currency} amounts have no decimals. Enter a whole amount.` : digits === 3 ? 'Enter a valid amount greater than 0 (up to 3 decimals).' : AMOUNT_ERROR;
+}
 
 export type DraftField = 'name' | 'price' | 'custom_days' | 'start_date' | 'next_date' | 'price_reason' | 'effective_on';
 export type DraftErrors = Partial<Record<DraftField, string>>;
@@ -93,7 +102,7 @@ export function validateDraft(draft: SubscriptionDraft, record: SubscriptionReco
   if (!draft.name.trim()) errors.name = 'Enter a platform or service name.';
   else if (draft.name.trim().length > 100) errors.name = 'Use 100 characters or fewer.';
   if (!draft.price.trim()) errors.price = 'Enter the subscription amount.';
-  else if (!isValidAmount(draft.price)) errors.price = AMOUNT_ERROR;
+  else if (!isValidAmount(draft.price, draft.currency)) errors.price = amountError(draft.currency);
   if (draft.trial === 'Custom') {
     if (!draft.custom_days.trim()) errors.custom_days = 'Enter your trial duration.';
     else if (Number.isNaN(trialDays(draft))) errors.custom_days = 'Enter a whole number from 1 to 365.';
@@ -107,22 +116,14 @@ export function validateDraft(draft: SubscriptionDraft, record: SubscriptionReco
   return errors;
 }
 
-// Matching catalog services while typing, up to four, by name or alias.
-export function catalogMatches(query: string) {
-  const value = query.trim().toLowerCase();
-  if (!value) return [];
-  return PLATFORM_CATALOG.filter(entry => [entry.name, ...(entry.aliases ?? [])].some(alias => alias.toLowerCase().includes(value))).slice(0, 4);
-}
-
 export function draftToInput(draft: SubscriptionDraft, origin: TrialOrigin, record: SubscriptionRecord | null, today: string): SubscriptionFormInput {
   const on_trial = draft.trial !== 'No trial';
   const name = draft.name.trim();
-  // A typed name that exactly matches the catalog links its platform; unknown names stay as entered.
-  const known = PLATFORM_CATALOG.find(entry => [entry.name, ...(entry.aliases ?? [])].some(alias => alias.toLowerCase() === name.toLowerCase()));
+  // A picked suggestion carries its platform; a typed name is linked by name when saving (getPlatformId).
   return {
     name,
-    platform_id: known?.platform_id ?? (record && record.name === name ? record.platform_id : null),
-    price: Number(draft.price).toFixed(2),
+    platform_id: draft.platform_id ?? (record && record.name === name ? record.platform_id : null),
+    price: formatAmount(draft.currency, draft.price),
     currency: draft.currency,
     cycle: draft.cycle,
     category: draft.category,

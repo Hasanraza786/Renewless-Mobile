@@ -29,6 +29,12 @@ jest.mock('react-native-mmkv', () => {
   };
 });
 
+jest.mock('react-native-device-info', () => ({
+  getUniqueId: jest.fn(async () => 'device-1'),
+  getDeviceName: jest.fn(async () => 'Test phone'),
+  getVersion: jest.fn(() => '1.0.0'),
+}));
+
 // The session token lives in the Keychain; tests keep it in memory.
 jest.mock('react-native-keychain', () => {
   let saved: { username: string; password: string } | false = false;

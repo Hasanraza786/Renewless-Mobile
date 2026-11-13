@@ -7,6 +7,7 @@ import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch } from '../../redux/store';
 import type { ApiError } from '../../api_services/http-provider';
 import type { AppStackParamList, GmailCandidate, GmailSelection, ProfileInbox } from '../../types';
+import { afterModalClose } from '../../utils/modal';
 import { money as moneyLabel } from '../../utils/money';
 
 export type GmailScanRoute = NativeStackScreenProps<AppStackParamList, 'GmailScan'>['route'];
@@ -154,7 +155,7 @@ export default function useGmailScan(route: GmailScanRoute) {
     const totals = new Map<string, number>();
     // Paid plans only: free trials aren't in the total, as in onboarding.
     for (const item of chosen.filter(entry => entry.kind === 'new').map(view).filter(entry => !entry.trial)) totals.set(item.currency, (totals.get(item.currency) ?? 0) + Number(item.price) * (MONTHLY[item.cycle] ?? 1));
-    return [...totals].map(([currency, total]) => moneyLabel(currency, total.toFixed(2))).join(' · ') || '—';
+    return [...totals].map(([currency, total]) => moneyLabel(currency, total)).join(' · ') || '—';
   })();
   const save_label = saving
     ? 'Saving…'
@@ -198,7 +199,7 @@ export default function useGmailScan(route: GmailScanRoute) {
   const onInboxLimit = () => dispatch(setNotice(INBOX_LIMIT_NOTICE));
   const connectAnother = () => {
     setSheet(null);
-    dispatch(connectGmailInbox(onConnected, onInboxLimit));
+    afterModalClose(() => dispatch(connectGmailInbox(onConnected, onInboxLimit)));
   };
   const retry = () => {
     if (!inbox) return;

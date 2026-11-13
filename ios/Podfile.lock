@@ -2019,6 +2019,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - RNDeviceInfo (15.0.2):
+    - React-Core
   - RNFBAnalytics (26.4.0):
     - FirebaseAnalytics/Core (= 12.18.0)
     - hermes-engine
@@ -2429,6 +2431,7 @@ DEPENDENCIES:
   - RecaptchaInterop
   - "RNAppleAuthentication (from `../node_modules/@invertase/react-native-apple-authentication`)"
   - "RNDateTimePicker (from `../node_modules/@react-native-community/datetimepicker`)"
+  - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - "RNFBAnalytics (from `../node_modules/@react-native-firebase/analytics`)"
   - "RNFBApp (from `../node_modules/@react-native-firebase/app`)"
   - "RNFBCrashlytics (from `../node_modules/@react-native-firebase/crashlytics`)"
@@ -2659,6 +2662,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@invertase/react-native-apple-authentication"
   RNDateTimePicker:
     :path: "../node_modules/@react-native-community/datetimepicker"
+  RNDeviceInfo:
+    :path: "../node_modules/react-native-device-info"
   RNFBAnalytics:
     :path: "../node_modules/@react-native-firebase/analytics"
   RNFBApp:
@@ -2804,6 +2809,7 @@ SPEC CHECKSUMS:
   RecaptchaInterop: 11e0b637842dfb48308d242afc3f448062325aba
   RNAppleAuthentication: a89c9804592b38ed4ab11f0aee68d05ba12ad432
   RNDateTimePicker: e2d1fa58ac2faa1e318fd4b1e86633c8ab4bdc73
+  RNDeviceInfo: 4c852998208b60dc192ae3529e5867817719ad1e
   RNFBAnalytics: 6b6859b4355a13050d1f2281160dd1228ff8701d
   RNFBApp: 909622e738d3a923b670950f9cdc9aeac9b1e6cc
   RNFBCrashlytics: f35ddacefa0249e62a91763b6cf3754fb7927a3b

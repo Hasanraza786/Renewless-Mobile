@@ -1,7 +1,7 @@
-import { fromReminder, toDetail, toSubscriptionBody } from '../../api_services/adapters';
+import { fromReminder, toDetail, toPlatformSuggestion, toSubscriptionBody } from '../../api_services/adapters';
 import type { DetailDto } from '../../api_services/dto';
 import apiServices from '../../api_services/request-handler';
-import type { ReminderPreference, SubscriptionFormInput, SubscriptionRecord } from '../../types';
+import type { PlatformSuggestion, ReminderPreference, SubscriptionFormInput, SubscriptionRecord } from '../../types';
 import { trackEvent, type AnalyticsEvent } from '../../utils/analytics';
 import { successHaptic } from '../../utils/haptics';
 import { requestHandler, type AppThunk } from '../request-handler';
@@ -120,6 +120,18 @@ export function updateReminder(id: string, reminder: ReminderPreference, onSaved
 export function updateNotes(id: string, notes: string, onSaved: () => void): AppThunk {
   return async (dispatch, getState) => {
     await dispatch(saveChange(id, 'note_saved', apiServices.updateSubscription, { id, revision: current(getState(), id)?.revision ?? 0, note: notes.trim() || null }, onSaved));
+  };
+}
+
+// Add form suggestions while typing: up to four catalog platforms from the backend. A failure just shows none.
+async function findPlatforms({ q }: { q: string }) {
+  await getCategoryList();
+  return (await apiServices.getPlatforms({ q })).platforms.map(toPlatformSuggestion);
+}
+
+export function searchPlatforms(query: string, onLoaded: (suggestions: PlatformSuggestion[]) => void): AppThunk {
+  return async dispatch => {
+    await dispatch(requestHandler({ apiService: findPlatforms, param_data: { q: query }, onDone: onLoaded, onError: () => onLoaded([]) }));
   };
 }
 

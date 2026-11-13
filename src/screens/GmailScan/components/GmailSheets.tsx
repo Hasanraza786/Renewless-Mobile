@@ -1,4 +1,5 @@
-import { AMOUNT_ERROR, isValidAmount } from '../../../utils/subscription-form';
+import { amountError, isValidAmount } from '../../../utils/subscription-form';
+import { amountKeyboard, amountPlaceholder, formatAmount } from '../../../utils/money';
 import PlatformLogo from '../../../components/PlatformLogo';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -29,11 +30,12 @@ const NOTE = 'Nothing is added until you save selected subscriptions.';
 function CandidateSheet({ gmail, item }: Props & { item: GmailCandidate }) {
   const value = gmail.view(item);
   const original = item.trial;
-  const durations = [...new Set([7, 14, 30, ...(original ? [original.days] : [])])].sort((a, b) => a - b).map(days => `${days} days`);
+  // An unknown trial length (0) offers the usual choices and starts at 14 days.
+  const durations = [...new Set([7, 14, 30, ...(original?.days ? [original.days] : [])])].sort((a, b) => a - b).map(days => `${days} days`);
   const [price, setPrice] = useState(value.price);
   const [next_date, setNextDate] = useState(value.next_date);
   const [start_date, setStartDate] = useState(value.start_date);
-  const [duration, setDuration] = useState(`${value.trial?.days ?? 14} days`);
+  const [duration, setDuration] = useState(`${value.trial?.days || 14} days`);
   const [auto_renew, setAutoRenew] = useState(value.trial?.auto_renew ?? true);
   const [errors, setErrors] = useState<{ price?: string; date?: string }>({});
   const days = Number.parseInt(duration, 10);
@@ -42,13 +44,13 @@ function CandidateSheet({ gmail, item }: Props & { item: GmailCandidate }) {
 
   const keep = () => {
     const next = {
-      price: isValidAmount(price) ? undefined : AMOUNT_ERROR,
+      price: isValidAmount(price, item.currency) ? undefined : amountError(item.currency),
       date: (value.trial ? start_date : next_date) ? undefined : 'Choose a valid date.',
     };
     setErrors(next);
     if (next.price || next.date) return;
     gmail.keepDetails(item.id, {
-      price: Number(price).toFixed(2),
+      price: formatAmount(item.currency, price),
       next_date: value.trial ? null : next_date,
       start_date,
       trial: value.trial && end ? { days, end_date: end, auto_renew } : null,
@@ -61,7 +63,7 @@ function CandidateSheet({ gmail, item }: Props & { item: GmailCandidate }) {
         <View style={styles.avatar}><PlatformLogo platform_id={item.platform_id} /></View>
         <CustomText text={item.plan ?? item.name} weight={FONTS.regular} size={SIZES.sm} />
       </RowView>
-      <InputField variant="form" label={`${value.trial ? 'Price after trial' : 'Amount'} · ${item.currency}`} value={price} onChangeText={setPrice} keyboardType="decimal-pad" placeholder="0.00" error={errors.price} />
+      <InputField variant="form" label={`${value.trial ? 'Price after trial' : 'Amount'} · ${item.currency}`} value={price} onChangeText={setPrice} keyboardType={amountKeyboard(item.currency)} placeholder={amountPlaceholder(item.currency)} error={errors.price} />
       <SizedBox height={SIZES.padding * 0.7} />
       {value.trial ? (
         <>

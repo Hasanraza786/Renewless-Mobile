@@ -1,5 +1,6 @@
+import { formatAmount, minorDigits } from '../utils/money';
 import { platform_logos } from '../assets/icons';
-import { PLATFORM_CATALOG } from '../constants/catalog';
+import { bundledLogoKey } from '../assets/icons/platform_logos';
 import type {
   CalendarMonth,
   HomeEvent,
@@ -15,6 +16,7 @@ import type {
   AiReply,
   ChatDraft,
   ReceiptItem,
+  PlatformSuggestion,
   GmailCandidate,
   GmailScanStatus,
   GmailSelection,
@@ -42,6 +44,7 @@ import type {
   EventDto,
   HomeDto,
   PaymentDto,
+  PlatformDto,
   PlatformSpendDto,
   PriceHistoryDto,
   ReminderSettingsDto,
@@ -58,9 +61,8 @@ import type {
 export const toCycle = (cycle: CycleDto) => (cycle.charAt(0).toUpperCase() + cycle.slice(1)) as ScanCycle;
 export const fromCycle = (cycle: ScanCycle) => cycle.toLowerCase() as CycleDto;
 
-// Bundled logos are keyed by catalog slug; backend platforms have ObjectIds, so link the two by name.
+// Bundled logos are keyed by name; backend platforms have ObjectIds, so link the two by name.
 // The backend's hosted logo (logoUrl) covers platforms without a bundled one.
-const slugByName = new Map(PLATFORM_CATALOG.map(entry => [entry.name.toLowerCase(), entry.platform_id]));
 // Subscription ID → platform ID, so events (which carry no platform) still find their logo.
 const platformBySubscription = new Map<string, string>();
 
@@ -68,14 +70,14 @@ const platformBySubscription = new Map<string, string>();
 export const logo_urls: Record<string, string> = {};
 
 function logoKey(name: string, platform_id: string, logo_url?: string | null) {
-  const slug = slugByName.get(name.toLowerCase());
-  if (slug && platform_logos[slug] && !platform_logos[platform_id]) platform_logos[platform_id] = platform_logos[slug];
+  const bundled = platform_logos[bundledLogoKey(name)];
+  if (bundled && !platform_logos[platform_id]) platform_logos[platform_id] = bundled;
   if (logo_url) logo_urls[platform_id] = logo_url;
   return platform_id;
 }
 
 function platformOf(subscription_id: string, name: string, logo_url?: string | null) {
-  const platform_id = platformBySubscription.get(subscription_id) ?? logoKey(name, slugByName.get(name.toLowerCase()) ?? subscription_id);
+  const platform_id = platformBySubscription.get(subscription_id) ?? logoKey(name, subscription_id);
   if (logo_url) logo_urls[platform_id] = logo_url;
   return platform_id;
 }
@@ -91,6 +93,10 @@ const categoryName = (id: string | null) => {
   const name = categories.find(item => item.id === id)?.name ?? 'Other';
   return name === 'Streaming' ? 'Entertainment' : name;
 };
+// An Add form suggestion from the backend catalog: its platform, name and category (never a price or date).
+export function toPlatformSuggestion(dto: PlatformDto): PlatformSuggestion {
+  return { name: dto.name, category: categoryName(dto.categoryId), platform_id: logoKey(dto.name, dto.id, dto.logoUrl) };
+}
 const categoryId = (name: string) => {
   const wanted = (FORM_TO_BACKEND[name] ?? name).toLowerCase();
   return categories.find(item => item.name.toLowerCase() === wanted)?.id ?? null;
@@ -412,7 +418,7 @@ export function toAiReply(turn: ChatTurnDto): AiReply {
 }
 
 // Signed-in Gmail review. Rows the review has no state for (missing price or cycle, or no safe match) are left out.
-// shortcut: the backend sends no trial start or length, so a trial edit starts from an empty start date.
+// A trial keeps the start and length the backend found; without them its edit starts from an empty start date.
 export function toGmailCandidate(dto: CandidateDto): GmailCandidate | null {
   if (dto.classification === 'unresolved' || dto.needsDetails || !dto.price || !dto.cycle) return null;
   const old = dto.changes?.price.from;
@@ -426,12 +432,11 @@ export function toGmailCandidate(dto: CandidateDto): GmailCandidate | null {
     currency: dto.price.currency,
     cycle: toCycle(dto.cycle),
     category: 'Other',
-    start_date: null,
+    start_date: dto.trial?.startDate ?? null,
     next_date: dto.trial ? null : dto.anchorDate,
-    trial: dto.trial ? { days: 0, end_date: dto.trial.endDate, auto_renew: dto.trial.autoRenew } : null,
+    trial: dto.trial ? { days: dto.trial.days ?? 0, end_date: dto.trial.endDate, auto_renew: dto.trial.autoRenew } : null,
     target_id: dto.targetSubscriptionId,
-    // shortcut: minor units shown with two decimals, like every amount in the app.
-    old: old ? { price: (old.amountMinor / 100).toFixed(2), next_date: null } : null,
+    old: old ? { price: formatAmount(old.currency, old.amountMinor / 10 ** minorDigits(old.currency)), next_date: null } : null,
     saved: dto.imported,
     revision: dto.revision,
     selected: dto.selected,

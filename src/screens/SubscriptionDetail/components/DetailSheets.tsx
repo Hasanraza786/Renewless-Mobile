@@ -14,6 +14,8 @@ import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import { daysBetween } from '../../../utils/events';
 import { REMINDER_PRESETS, daysText, nextReminderValues, normalizeOffsets, preferenceFromValues } from '../../../utils/reminders';
 import { dateLabel } from '../../../utils/scan';
+import { amountKeyboard, amountPlaceholder, formatAmount } from '../../../utils/money';
+import { amountError, isValidAmount } from '../../../utils/subscription-form';
 import type { DetailController, DetailView } from '../index.function';
 import { styles } from './styles';
 
@@ -157,17 +159,17 @@ function ResumeSheet({ view, detail }: Props) {
 
   const save = () => {
     const next: typeof errors = {};
-    if (!(Number(price) > 0)) next.price = 'Enter an amount greater than 0.';
+    if (!isValidAmount(price, record.currency)) next.price = amountError(record.currency);
     if (!next_date) next.date = 'Choose the next renewal date.';
     setErrors(next);
     if (next.price || next.date) return;
     const days = parseInt(timing, 10);
-    detail.resume({ price: Number(price).toFixed(2), next_date: next_date!, reminder: Number.isInteger(days) ? { mode: 'days', days: [days] } : { mode: 'off' } });
+    detail.resume({ price: formatAmount(record.currency, price), next_date: next_date!, reminder: Number.isInteger(days) ? { mode: 'days', days: [days] } : { mode: 'off' } });
   };
 
   return (
     <AppSheet visible title={`Track ${record.name} again`} subtitle="Review your details before resuming." onClose={detail.close}>
-      <InputField variant="sheet" label="Amount" label_end={`${record.currency} · ${record.cycle}`} value={price} onChangeText={value => { setPrice(value); setErrors({ ...errors, price: undefined }); }} keyboardType="decimal-pad" placeholder="0.00" error={errors.price} />
+      <InputField variant="sheet" label="Amount" label_end={`${record.currency} · ${record.cycle}`} value={price} onChangeText={value => { setPrice(value); setErrors({ ...errors, price: undefined }); }} keyboardType={amountKeyboard(record.currency)} placeholder={amountPlaceholder(record.currency)} error={errors.price} />
       <SizedBox height={SIZES.padding2} />
       <DateField label="Next renewal" value={next_date} minimum={detail.today} onChange={value => { setNextDate(value); setErrors({ ...errors, date: undefined }); }} />
       {errors.date ? <CustomText mt={SIZES.padding * 0.35} text={errors.date} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} /> : null}

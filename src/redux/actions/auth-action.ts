@@ -197,7 +197,8 @@ export function verifyCode(purpose: 'signup' | 'reset', challenge_id: string, co
   };
 }
 
-// A new code replaces the old challenge; the screen keeps the new ID for verification.
+// A new code replaces the old challenge; the screen keeps the new ID for verification. Both outcomes show in the app's
+// notice, like every other one-line message.
 export function resendCode(challenge_id: string, onSent: (challenge_id: string) => void): AppThunk {
   return async dispatch => {
     await dispatch(
@@ -209,9 +210,9 @@ export function resendCode(challenge_id: string, onSent: (challenge_id: string) 
         onDone: challenge => {
           trackEvent('otp_resent');
           onSent(challenge.challengeId);
-          Alert.alert('We sent you a new code.');
+          dispatch(setNotice('We sent you a new code.'));
         },
-        onError: error => Alert.alert(error.message),
+        onError: error => dispatch(setNotice(error.message)),
       }),
     );
   };
