@@ -4,15 +4,16 @@ React Native + TypeScript mobile client for tracking subscriptions and renewals.
 
 ## Product and design documents
 
-Only five canonical product documents:
+Only six canonical product documents:
 
 1. [Product specification](docs/product-specification.md) — features, journey, scope, catalog and prototype operation.
 2. [Product screens](docs/product-screens.md) — all screen specifications, locked/pending register and change workflow.
 3. [API/mobile contract](docs/api-mobile-contract.md) — shared data, operations, validation and current implementation gaps.
 4. [Design system](docs/design-system.md) — theme, controls, motion, mascot, assets and provenance.
 5. [Billing](docs/billing.md) — free v1 access policy; deferred Phase 2 monetization drafts, retained RevenueCat/store plans and review assets.
+6. [Admin API](docs/admin-api.md) — admin website screens and the `/v1/admin` backend routes it needs.
 
-[AGENTS.md](AGENTS.md) is the project working policy, not a sixth product specification. Finalized screens are frozen: changes require scoped unlock confirmation. All 74 existing prototype base states, including Add/Edit trials, were approved 31 October 2026; the subsequently requested shared 22/16/12 typography is pending reapproval; native implementation is not yet complete. Every approved change updates all affected canonical documents in the same task.
+[AGENTS.md](AGENTS.md) is the project working policy, not a seventh product specification. Finalized screens are frozen: changes require scoped unlock confirmation. All 74 existing prototype base states, including Add/Edit trials, were approved 31 October 2026; the subsequently requested shared 22/16/12 typography is pending reapproval; native implementation is not yet complete. Every approved change updates all affected canonical documents in the same task.
 
 Start implementation from the [React Native blueprint](docs/api-mobile-contract.md#mobile-implementation), [native route/state mapping](docs/product-screens.md#native-navigation), [shared component map](docs/design-system.md#native-components) and [milestone/release plan](docs/product-specification.md#implementation-sequence). The existing native client has documented gaps; provider/backend verification and the account-deletion release-scope gap remain explicit. No sixth mobile implementation document is needed.
 

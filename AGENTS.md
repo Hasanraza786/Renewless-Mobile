@@ -4,10 +4,10 @@
 
 - Current phase: the user explicitly finalized the complete current prototype on 3 November 2026. All 77 current inspection routes, typography, Upcoming, Payments/header navigation, Delete account and Reminder settings dropdown multi-select compatibility are design-locked. The separate native implementation and actual backend integrations are not approved as complete. Faithful implementation and accurate handoff documentation remain authorized when requested; design changes require scoped unlock.
 - Payment-history export and preferred-currency/FX settings remain deferred beyond v1; own-app monetization stays Phase 2. Retain separate currencies, verified Gmail payment evidence and the existing compact dropdown (not the rejected day-grid experiment).
-- Maintain exactly five canonical product documents: `docs/product-specification.md`, `docs/product-screens.md`, `docs/api-mobile-contract.md`, `docs/design-system.md`, `docs/billing.md`.
-- Pre-release QA (device matrix, test suites, real-data rules, store checklist) is the runbook `qa/QA-PLAN.md`; it is not a sixth product document, and QA results go in `qa/runs/`.
+- Maintain exactly six canonical product documents: `docs/product-specification.md`, `docs/product-screens.md`, `docs/api-mobile-contract.md`, `docs/design-system.md`, `docs/billing.md`, `docs/admin-api.md` (added for the admin website by the user, 13 November 2026).
+- Pre-release QA (device matrix, test suites, real-data rules, store checklist) is the runbook `qa/QA-PLAN.md`; it is not a seventh product document, and QA results go in `qa/runs/`.
 - Root README is an index/setup guide. This AGENTS.md is working policy. Do not create separate Auth, Onboarding, Home, Calendar, Listing, per-screen, duplicate summary or dated override documents.
-- Product specification owns features/journey/scope/catalog; Product screens owns screen fields/actions/states/layout/approval; API/mobile contract owns shared backend data/operations/errors; Design system owns common visual/components/assets/motion; Billing owns Renewless Pro purchases/entitlements. Use links to owners instead of independent repeated specifications.
+- Product specification owns features/journey/scope/catalog; Product screens owns screen fields/actions/states/layout/approval; API/mobile contract owns shared backend data/operations/errors; Design system owns common visual/components/assets/motion; Billing owns Renewless Pro purchases/entitlements; Admin API owns the admin website's screens and its `/v1/admin` backend routes. Use links to owners instead of independent repeated specifications.
 
 ## Release policy — v1 free, monetization Phase 2
 
