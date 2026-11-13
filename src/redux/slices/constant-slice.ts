@@ -8,6 +8,7 @@ const initial_state: ConstantState = {
   onboarding_done: false,
   widget_prompt_seen: false,
   ai_consent: false,
+  ai_withdrawal_unsent: false,
 };
 
 const constantSlice = createSlice({
@@ -34,6 +35,7 @@ const constantSlice = createSlice({
       state.token = null;
       state.user = null;
       state.ai_consent = false;
+      state.ai_withdrawal_unsent = false;
     },
     setSplashSeen(state) {
       state.splash_seen = true;
@@ -44,9 +46,12 @@ const constantSlice = createSlice({
     setAiConsent(state, action: PayloadAction<boolean>) {
       state.ai_consent = action.payload;
     },
+    setAiWithdrawalUnsent(state, action: PayloadAction<boolean>) {
+      state.ai_withdrawal_unsent = action.payload;
+    },
   },
 });
 
-export const { setSession, restoreToken, setUser, clearSession, setSplashSeen, setWidgetPromptSeen, setAiConsent } = constantSlice.actions;
+export const { setSession, restoreToken, setUser, clearSession, setSplashSeen, setWidgetPromptSeen, setAiConsent, setAiWithdrawalUnsent } = constantSlice.actions;
 
 export default constantSlice.reducer;

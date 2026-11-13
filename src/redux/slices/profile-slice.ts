@@ -4,6 +4,7 @@ import type { Profile, ProfileOverview, ProfileState, RootState } from '../../ty
 const initial_state: ProfileState = {
   user: null,
   loading: false,
+  delete_step: '',
   error: '',
   overview: null,
   overview_loading: false,
@@ -20,6 +21,9 @@ const profileSlice = createSlice({
     },
     setProfileLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
+    },
+    setDeleteStep(state, action: PayloadAction<ProfileState['delete_step']>) {
+      state.delete_step = action.payload;
     },
     setProfileError(state, action: PayloadAction<string>) {
       state.error = action.payload;
@@ -42,7 +46,7 @@ const profileSlice = createSlice({
   },
 });
 
-export const { setProfileUser, setProfileLoading, setProfileError, setOverview, setOverviewLoading, setOverviewError, setNotice, resetProfile } = profileSlice.actions;
+export const { setProfileUser, setProfileLoading, setDeleteStep, setProfileError, setOverview, setOverviewLoading, setOverviewError, setNotice, resetProfile } = profileSlice.actions;
 
 export function selectUser(state: RootState) {
   return state.profile.user ?? state.constant.user;

@@ -21,8 +21,14 @@ const isServerId = (value: string | null) => !!value && /^[a-f0-9]{24}$/.test(va
 // Detail, its price changes and the account reminder default, read together.
 async function getDetailData({ id }: { id: string }) {
   await getCategoryList();
-  const [detail, history, settings] = await Promise.all([apiServices.getSubscription({ id }), apiServices.getPriceHistory({ id }), apiServices.getReminderSettings()]);
-  return toDetail(detail, history, settings);
+  // The receipts count is extra: Detail still opens when it can't be read.
+  const [detail, history, settings, receipts] = await Promise.all([
+    apiServices.getSubscription({ id }),
+    apiServices.getPriceHistory({ id }),
+    apiServices.getReminderSettings(),
+    apiServices.getSubscriptionReceipts({ id, limit: 1 }).catch(() => null),
+  ]);
+  return toDetail(detail, history, settings, receipts);
 }
 
 export function getSubscriptionDetail(id: string): AppThunk {
@@ -54,8 +60,9 @@ export function getPlatformSubscriptions(platform_id: string, exclude_id?: strin
 const current = (state: { detail: { detail: { record: SubscriptionRecord } | null } }, id: string) =>
   state.detail.detail?.record.id === id ? state.detail.detail.record : null;
 
-// Mutations refresh Detail, Home and List, then let the screen close its sheet.
-function saveChange<Param>(id: string, event: AnalyticsEvent, apiService: (param_data: Param) => Promise<unknown>, param_data: Param, onSaved: () => void, notice?: string): AppThunk {
+// Mutations refresh Detail, Home and List, then let the screen close its sheet. onFieldErrors gets the server's
+// per-field messages (the form places them under its fields).
+function saveChange<Param>(id: string, event: AnalyticsEvent, apiService: (param_data: Param) => Promise<unknown>, param_data: Param, onSaved: () => void, notice?: string, onFieldErrors?: (field_errors: Record<string, string>) => void): AppThunk {
   return async dispatch => {
     await dispatch(
       requestHandler({
@@ -73,6 +80,7 @@ function saveChange<Param>(id: string, event: AnalyticsEvent, apiService: (param
           }
           onSaved();
         },
+        onError: error => onFieldErrors?.(error.field_errors),
       }),
     );
   };
@@ -116,8 +124,9 @@ export function updateNotes(id: string, notes: string, onSaved: () => void): App
 }
 
 // A typed catalog name links its backend platform; unknown names are saved as entered.
-async function getPlatformId(input: SubscriptionFormInput) {
-  if (isServerId(input.platform_id)) return input.platform_id;
+// A record without a platform uses its own ID as the logo key (adapters), which is not a platform: never send it.
+async function getPlatformId(input: SubscriptionFormInput, own_id?: string) {
+  if (isServerId(input.platform_id) && input.platform_id !== own_id) return input.platform_id;
   const { platforms } = await apiServices.getPlatforms({ q: input.name });
   return platforms.find(item => item.name.toLowerCase() === input.name.toLowerCase())?.id ?? null;
 }
@@ -125,18 +134,18 @@ async function getPlatformId(input: SubscriptionFormInput) {
 // Edit: only what the form changed. An unchanged trial keeps its exact end date.
 async function updateFromForm({ id, input, record }: { id: string; input: SubscriptionFormInput; record: SubscriptionRecord }) {
   await getCategoryList();
-  const body: Record<string, unknown> = { ...toSubscriptionBody(input, await getPlatformId(input)), id, revision: record.revision };
+  const body: Record<string, unknown> = { ...toSubscriptionBody(input, await getPlatformId(input, record.id)), id, revision: record.revision };
   const same_trial = record.trial && input.trial && record.trial.start_date === input.start_date && record.trial.end_date === input.trial.end_date;
   if (same_trial) delete body.trial;
   return apiServices.updateSubscription(body as { id: string });
 }
 
 // Edit: save, then Changes saved.
-export function updateSubscription(id: string, input: SubscriptionFormInput, onSaved: () => void): AppThunk {
+export function updateSubscription(id: string, input: SubscriptionFormInput, onSaved: () => void, onFieldErrors?: (field_errors: Record<string, string>) => void): AppThunk {
   return async (dispatch, getState) => {
     const record = current(getState(), id);
     if (!record) return;
-    await dispatch(saveChange(id, 'subscription_edited', updateFromForm, { id, input, record }, onSaved, 'Changes saved.'));
+    await dispatch(saveChange(id, 'subscription_edited', updateFromForm, { id, input, record }, onSaved, 'Changes saved.', onFieldErrors));
   };
 }
 
@@ -146,7 +155,7 @@ async function createFromForm(input: SubscriptionFormInput) {
 }
 
 // Add form: hands the new subscription's ID to the screen once the server confirms it.
-export function createSubscription(input: SubscriptionFormInput, onAdded: (id: string) => void, source: 'manual' | 'ai' = 'manual'): AppThunk {
+export function createSubscription(input: SubscriptionFormInput, onAdded: (id: string) => void, source: 'manual' | 'ai' = 'manual', onFieldErrors?: (field_errors: Record<string, string>) => void): AppThunk {
   return async dispatch => {
     await dispatch(
       requestHandler({
@@ -161,6 +170,7 @@ export function createSubscription(input: SubscriptionFormInput, onAdded: (id: s
           dispatch(setNotice('Subscription added.'));
           onAdded(created.id);
         },
+        onError: error => onFieldErrors?.(error.field_errors),
       }),
     );
   };

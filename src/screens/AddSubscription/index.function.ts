@@ -6,7 +6,7 @@ import { setDetailError } from '../../redux/slices/detail-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
 import { localToday } from '../../utils/dates';
-import { draftFromRecord, draftToInput, emptyDraft, priceChanged, validateDraft, type SubscriptionDraft, type TrialOrigin } from '../../utils/subscription-form';
+import { draftFromRecord, draftServerErrors, draftToInput, emptyDraft, firstInvalid, priceChanged, validateDraft, type DraftErrors, type DraftField, type SubscriptionDraft, type TrialOrigin } from '../../utils/subscription-form';
 
 export type SubscriptionFormRoute = RouteProp<AppStackParamList, 'AddSubscription'> | RouteProp<AppStackParamList, 'EditSubscription'>;
 
@@ -23,6 +23,10 @@ export default function useSubscriptionForm(route: SubscriptionFormRoute) {
   const [draft, setDraft] = useState<SubscriptionDraft | null>(edit_id ? null : emptyDraft());
   const [origin, setOrigin] = useState<TrialOrigin>(null);
   const [submitted, setSubmitted] = useState(false);
+  // The server's field messages from the last save, cleared when that field is edited.
+  const [server_errors, setServerErrors] = useState<DraftErrors>({});
+  // The first invalid field after a failed submit; `at` makes a repeat submit scroll there again.
+  const [focus_request, setFocusRequest] = useState<{ field: DraftField; at: number } | null>(null);
 
   // A stale save error from another screen never shows on a fresh form.
   useEffect(() => {
@@ -39,7 +43,7 @@ export default function useSubscriptionForm(route: SubscriptionFormRoute) {
     setOrigin(loaded.origin);
   }, [record, draft, today]);
 
-  const errors = submitted && draft ? validateDraft(draft, record, today) : {};
+  const errors = { ...server_errors, ...(submitted && draft ? validateDraft(draft, record, today) : {}) };
   const show_price_change = !!draft && priceChanged(draft, record);
   const status = draft ? 'ready' : load_error ? 'failed' : 'loading';
   const title = edit_id ? 'Edit subscription' : 'Add subscription';
@@ -47,6 +51,7 @@ export default function useSubscriptionForm(route: SubscriptionFormRoute) {
 
   const update = <Key extends keyof SubscriptionDraft>(key: Key, value: SubscriptionDraft[Key]) => {
     setDraft(current => (current ? { ...current, [key]: value } : current));
+    setServerErrors(current => (key in current ? { ...current, [key]: undefined } : current));
     if (request_error) dispatch(setDetailError({ key: 'mutation', value: '' }));
   };
 
@@ -55,17 +60,29 @@ export default function useSubscriptionForm(route: SubscriptionFormRoute) {
 
   const retry = () => edit_id && dispatch(getSubscriptionDetail(edit_id));
 
+  const focusFirst = (found: DraftErrors) => {
+    const field = firstInvalid(found);
+    if (field) setFocusRequest({ field, at: Date.now() });
+  };
+  const onFieldErrors = (field_errors: Record<string, string>) => {
+    const found = draftServerErrors(field_errors);
+    setServerErrors(found);
+    focusFirst(found);
+  };
+
   // Replace the form so Back from the new Detail returns to where Add started.
   const openAdded = (id: string) => replace('SubscriptionDetail', { id });
 
   const onSubmit = () => {
     if (!draft || saving) return;
     setSubmitted(true);
-    if (Object.keys(validateDraft(draft, record, today)).length) return;
+    const invalid = validateDraft(draft, record, today);
+    if (Object.keys(invalid).length) return focusFirst(invalid);
     const input = draftToInput(draft, origin, record, today);
-    if (edit_id) dispatch(updateSubscription(edit_id, input, goBack));
-    else dispatch(createSubscription(input, openAdded));
+    setServerErrors({});
+    if (edit_id) dispatch(updateSubscription(edit_id, input, goBack, onFieldErrors));
+    else dispatch(createSubscription(input, openAdded, 'manual', onFieldErrors));
   };
 
-  return { draft, origin, errors, show_price_change, status, load_error, title, action, today, saving, request_error, update, pickService, retry, onSubmit };
+  return { draft, origin, errors, show_price_change, status, load_error, title, action, today, saving, request_error, focus_request, update, pickService, retry, onSubmit };
 }

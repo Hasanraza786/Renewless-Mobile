@@ -117,6 +117,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
       </View>
 
       <LinkCard title="Price history" caption={view.price_history} trailing="›" onPress={detail.openPriceHistory} />
+      <LinkCard title={view.receipt_emails.title} caption={view.receipt_emails.caption} trailing="›" onPress={detail.openReceipts} />
 
       <View style={styles.panel}>
         <RowView justify_content="space-between">

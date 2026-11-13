@@ -115,8 +115,15 @@ export const styles = StyleSheet.create({
   empty_primary: {
     marginTop: SIZES.padding * 1.1,
   },
-  empty_secondary: {
-    marginTop: SIZES.padding / 2,
+  sync_pill: {
+    alignSelf: 'center',
+    backgroundColor: COLORS.accent_chip,
+    borderColor: COLORS.accent_frame,
+    borderRadius: SIZES.padding,
+    borderWidth: 1,
+    marginTop: SIZES.padding * 0.8,
+    paddingHorizontal: SIZES.padding * 0.55,
+    paddingVertical: SIZES.padding / 4,
   },
   // Skeleton
   sk_root: {

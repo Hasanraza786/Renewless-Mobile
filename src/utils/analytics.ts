@@ -1,6 +1,7 @@
 import { getAnalytics, logEvent, logScreenView, setAnalyticsCollectionEnabled } from '@react-native-firebase/analytics';
 
-// Development builds never send analytics, so Firebase holds only real usage.
+// Development builds never send analytics, so Firebase holds only real usage. Collection starts off natively
+// (firebase.json analytics_auto_collection_enabled: false) and only a release build turns it on here.
 const analytics = getAnalytics();
 setAnalyticsCollectionEnabled(analytics, !__DEV__);
 
@@ -9,6 +10,7 @@ export type AnalyticsEvent =
   | 'login'
   | 'sign_up'
   | 'subscription_added'
+  | 'receipt_file_opened'
   | 'subscription_edited'
   | 'subscription_cancelled'
   | 'subscription_resumed'

@@ -1,10 +1,11 @@
-import { View } from 'react-native';
+import type { ComponentRef } from 'react';
+import { View, type TextInput } from 'react-native';
 import { switch_off_icon, switch_on_icon } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import type { ScanCycle } from '../../types';
 import { common_styles } from '../../utils/common_styles';
 import { dateLabel } from '../../utils/scan';
-import { CATEGORIES, CURRENCIES, CYCLES, NOTES_LIMIT, PRICE_REASONS, TRIAL_OPTIONS, catalogMatches, trialEnd, trialSummary, type DraftErrors, type SubscriptionDraft, type TrialOrigin } from '../../utils/subscription-form';
+import { CATEGORIES, CURRENCIES, CYCLES, NOTES_LIMIT, PRICE_REASONS, TRIAL_OPTIONS, catalogMatches, trialEnd, trialSummary, type DraftErrors, type DraftField, type SubscriptionDraft, type TrialOrigin } from '../../utils/subscription-form';
 import CustomText from '../CustomText';
 import DateField from '../DateField';
 import Dropdown from '../Dropdown';
@@ -26,6 +27,9 @@ type Props = {
   show_price_change: boolean;
   today: string;
   editable: boolean;
+  // Where each field that can show an error sits, and its text input, so a failed submit can scroll to and focus it.
+  onFieldLayout?: (field: DraftField, y: number) => void;
+  inputRef?: (field: DraftField, input: ComponentRef<typeof TextInput> | null) => void;
 };
 
 const GAP = SIZES.padding * 0.7;
@@ -35,7 +39,8 @@ function FieldError({ text }: { text?: string }) {
 }
 
 // The one Add/Edit field set: service, amount/currency, cycle, category, trial, dates, notes.
-export default function SubscriptionFields({ draft, errors, onChange, onPickService, origin, show_price_change, today, editable }: Props) {
+export default function SubscriptionFields({ draft, errors, onChange, onPickService, origin, show_price_change, today, editable, onFieldLayout, inputRef }: Props) {
+  const at = (field: DraftField) => ({ onLayout: (event: { nativeEvent: { layout: { y: number } } }) => onFieldLayout?.(field, event.nativeEvent.layout.y) });
   const on_trial = draft.trial !== 'No trial';
   const matches = draft.platform_id ? [] : catalogMatches(draft.name);
   const calculated = !!trialEnd(draft, origin);
@@ -43,8 +48,9 @@ export default function SubscriptionFields({ draft, errors, onChange, onPickServ
 
   return (
     <View>
-      <View style={styles.service}>
+      <View style={styles.service} {...at('name')}>
         <InputField
+          ref={input => inputRef?.('name', input)}
           variant="form"
           label="Platform or service"
           value={draft.name}
@@ -69,9 +75,9 @@ export default function SubscriptionFields({ draft, errors, onChange, onPickServ
         ) : null}
       </View>
       <SizedBox height={GAP} />
-      <RowView align_items="flex-start" gap={SIZES.padding / 2}>
+      <RowView align_items="flex-start" gap={SIZES.padding / 2} {...at('price')}>
         <View style={common_styles.flex_1}>
-          <InputField variant="form" label={on_trial ? 'Price after trial' : 'Amount'} value={draft.price} onChangeText={value => onChange('price', value)} placeholder="0.00" keyboardType="decimal-pad" error={errors.price} editable={editable} />
+          <InputField ref={input => inputRef?.('price', input)} variant="form" label={on_trial ? 'Price after trial' : 'Amount'} value={draft.price} onChangeText={value => onChange('price', value)} placeholder="0.00" keyboardType="decimal-pad" error={errors.price} editable={editable} />
         </View>
         <View style={styles.currency}>
           <Dropdown label="Currency" value={draft.currency} options={CURRENCIES} option_details={CURRENCY_NAMES} search={CURRENCY_SEARCH} onChange={value => onChange('currency', value)} />
@@ -80,12 +86,16 @@ export default function SubscriptionFields({ draft, errors, onChange, onPickServ
       {show_price_change ? (
         <>
           <SizedBox height={GAP} />
-          <Dropdown label="Reason for price update" value={draft.price_reason} options={PRICE_REASONS} onChange={value => onChange('price_reason', value)} />
-          <FieldError text={errors.price_reason} />
+          <View {...at('price_reason')}>
+            <Dropdown label="Reason for price update" value={draft.price_reason} options={PRICE_REASONS} onChange={value => onChange('price_reason', value)} />
+            <FieldError text={errors.price_reason} />
+          </View>
           {draft.price_reason !== 'Correcting a mistake' ? (
             <>
               <SizedBox height={GAP} />
-              <DateField variant="form" label="Effective from" value={draft.effective_on || today} maximum={today} onChange={value => onChange('effective_on', value)} error={errors.effective_on} />
+              <View {...at('effective_on')}>
+                <DateField variant="form" label="Effective from" value={draft.effective_on || today} maximum={today} onChange={value => onChange('effective_on', value)} error={errors.effective_on} />
+              </View>
             </>
           ) : null}
           <CustomText mt={SIZES.padding3} text="Previous payment receipts stay unchanged." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
@@ -100,11 +110,15 @@ export default function SubscriptionFields({ draft, errors, onChange, onPickServ
       {draft.trial === 'Custom' ? (
         <>
           <SizedBox height={GAP} />
-          <InputField variant="form" label="Custom trial days" value={draft.custom_days} onChangeText={value => onChange('custom_days', value.replace(/\D/g, '').slice(0, 3))} placeholder="e.g. 21" keyboardType="number-pad" error={errors.custom_days} editable={editable} />
+          <View {...at('custom_days')}>
+            <InputField ref={input => inputRef?.('custom_days', input)} variant="form" label="Custom trial days" value={draft.custom_days} onChangeText={value => onChange('custom_days', value.replace(/\D/g, '').slice(0, 3))} placeholder="e.g. 21" keyboardType="number-pad" error={errors.custom_days} editable={editable} />
+          </View>
         </>
       ) : null}
       <SizedBox height={GAP} />
-      <DateField variant="form" label={`Start date  ${on_trial ? 'Required for trial' : 'Optional'}`} value={draft.start_date} onChange={value => onChange('start_date', value)} error={errors.start_date} />
+      <View {...at('start_date')}>
+        <DateField variant="form" label={`Start date  ${on_trial ? 'Required for trial' : 'Optional'}`} value={draft.start_date} onChange={value => onChange('start_date', value)} error={errors.start_date} />
+      </View>
       {on_trial ? (
         <>
           <CustomText mt={SIZES.padding / 2} accessibility_role="text" text={trialSummary(draft, origin, dateLabel)} weight={FONTS.regular} color={calculated ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
@@ -129,7 +143,9 @@ export default function SubscriptionFields({ draft, errors, onChange, onPickServ
       ) : (
         <>
           <SizedBox height={GAP} />
-          <DateField variant="form" label="Next renewal" value={draft.next_date} onChange={value => onChange('next_date', value)} error={errors.next_date} />
+          <View {...at('next_date')}>
+            <DateField variant="form" label="Next renewal" value={draft.next_date} onChange={value => onChange('next_date', value)} error={errors.next_date} />
+          </View>
         </>
       )}
       <SizedBox height={GAP} />

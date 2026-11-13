@@ -33,6 +33,7 @@ function DeleteDialog({ profile }: { profile: ProfileController }) {
           <InputField
             variant="sheet"
             label="Password"
+            placeholder="Enter your password"
             value={profile.delete_password}
             onChangeText={profile.setDeletePassword}
             secureTextEntry
@@ -48,6 +49,7 @@ function DeleteDialog({ profile }: { profile: ProfileController }) {
       <InputField
         variant="sheet"
         label="Type DELETE to confirm"
+        placeholder="DELETE"
         value={profile.delete_text}
         onChangeText={profile.setDeleteText}
         autoCapitalize="characters"
@@ -61,7 +63,7 @@ function DeleteDialog({ profile }: { profile: ProfileController }) {
       <SizedBox height={SIZES.padding2} />
       <RowView gap={SIZES.padding2}>
         <CustomButton variant="secondary" text="Keep account" disabled={profile.deleting} onPress={profile.closeDialog} style={common_styles.flex_1} />
-        <CustomButton variant="danger" text={profile.deleting ? 'Deleting…' : 'Delete account'} disabled={!profile.delete_ready} busy={profile.deleting} onPress={profile.confirmDelete} style={common_styles.flex_1} />
+        <CustomButton variant="danger" text={profile.delete_label} disabled={!profile.delete_ready} busy={profile.deleting} onPress={profile.confirmDelete} style={common_styles.flex_1} />
       </RowView>
     </ConfirmDialog>
   );

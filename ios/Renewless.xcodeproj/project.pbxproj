@@ -83,7 +83,7 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F0E7A11A2CA4567400665401 /* Raleway-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Raleway-Regular.ttf"; path = "Renewless/Fonts/Raleway-Regular.ttf"; sourceTree = "<group>"; };
 		F0E7A12A2CA4567400665402 /* Raleway-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Raleway-Medium.ttf"; path = "Renewless/Fonts/Raleway-Medium.ttf"; sourceTree = "<group>"; };
-		F0E7A16A2CA4567400665406 /* currency_symbols.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "currency_symbols.ttf"; path = "Renewless/Fonts/currency_symbols.ttf"; sourceTree = "<group>"; };
+		F0E7A16A2CA4567400665406 /* currency_symbols.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = currency_symbols.ttf; path = Renewless/Fonts/currency_symbols.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

@@ -15,6 +15,7 @@ import type {
   PaymentsSummaryDto,
   PlatformDto,
   PriceHistoryDto,
+  ReceiptsDto,
   ReminderSettingsDto,
   ScanImportDto,
   ScanJobDto,
@@ -54,10 +55,12 @@ export const SERVICE_URLS = {
   connectors: '/connectors',
   googleConnect: '/auth/google-connect',
   onboardingComplete: '/me/onboarding/complete',
+  aiConsent: '/me/ai-consent',
   scans: '/scans',
   uploads: '/uploads',
   conversations: '/conversations',
   drafts: '/drafts',
+  receipts: '/receipts',
 };
 
 const subscription = (id: string, action = '') => `${SERVICE_URLS.subscriptions}/${id}${action}`;
@@ -80,6 +83,7 @@ const logout = () => post<void>(SERVICE_URLS.logout);
 const getMe = () => get<{ user: UserDto }>(SERVICE_URLS.me);
 const updateMe = (data: { revision: number; name: string; phone: string | null; dateOfBirth: string | null; gender: string | null }) => patch<{ user: UserDto }>(SERVICE_URLS.me, data);
 const updateDevice = (data: { timezone?: string; fcmToken?: string | null }) => put<void>(SERVICE_URLS.device, data);
+const saveAiConsent = (data: { consented: boolean; copyVersion?: string }) => put<{ user: UserDto }>(SERVICE_URLS.aiConsent, data);
 // Google/Apple accounts verify with a fresh provider token; password accounts with the password.
 const deleteMe = (data: { password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string }) => del<{ deleted: true }>(SERVICE_URLS.me, data);
 
@@ -98,6 +102,9 @@ const setSubscriptionReminder = ({ id, ...data }: Id) => put<DetailDto>(subscrip
 const removeSubscription = ({ id, ...data }: Id<{ revision: number }>) => del<{ undoToken: string }>(subscription(id), data);
 const restoreSubscription = ({ id, ...data }: Id<{ undoToken: string }>) => post<DetailDto>(subscription(id, '/restore'), data);
 const getPriceHistory = ({ id }: Id) => get<PriceHistoryDto>(subscription(id, '/price-history'));
+// Billing emails matched to this subscription, newest first, and a 5-minute private link to one kept file.
+const getSubscriptionReceipts = ({ id, ...data }: Id<{ cursor?: string; limit: number }>) => get<ReceiptsDto>(subscription(id, '/receipts'), data);
+const getReceiptFile = ({ id, attachment_id }: Id<{ attachment_id: string }>) => get<{ url: string; expiresAt: string }>(`${SERVICE_URLS.receipts}/${id}/attachments/${attachment_id}`);
 
 // Dashboard
 const getHome = () => get<HomeDto>(SERVICE_URLS.home);
@@ -160,6 +167,7 @@ const apiServices = {
   getMe,
   updateMe,
   updateDevice,
+  saveAiConsent,
   deleteMe,
   getPlatforms,
   getCategories,
@@ -173,6 +181,8 @@ const apiServices = {
   removeSubscription,
   restoreSubscription,
   getPriceHistory,
+  getSubscriptionReceipts,
+  getReceiptFile,
   getHome,
   getUpcoming,
   getCalendar,

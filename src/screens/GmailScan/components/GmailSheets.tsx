@@ -1,3 +1,4 @@
+import { AMOUNT_ERROR, isValidAmount } from '../../../utils/subscription-form';
 import PlatformLogo from '../../../components/PlatformLogo';
 import { useState } from 'react';
 import { View } from 'react-native';
@@ -41,7 +42,7 @@ function CandidateSheet({ gmail, item }: Props & { item: GmailCandidate }) {
 
   const keep = () => {
     const next = {
-      price: !(Number(price) > 0) ? 'Enter an amount greater than zero.' : undefined,
+      price: isValidAmount(price) ? undefined : AMOUNT_ERROR,
       date: (value.trial ? start_date : next_date) ? undefined : 'Choose a valid date.',
     };
     setErrors(next);
@@ -60,7 +61,7 @@ function CandidateSheet({ gmail, item }: Props & { item: GmailCandidate }) {
         <View style={styles.avatar}><PlatformLogo platform_id={item.platform_id} /></View>
         <CustomText text={item.plan ?? item.name} weight={FONTS.regular} size={SIZES.sm} />
       </RowView>
-      <InputField variant="form" label={`${value.trial ? 'Price after trial' : 'Amount'} · ${item.currency}`} value={price} onChangeText={setPrice} keyboardType="decimal-pad" error={errors.price} />
+      <InputField variant="form" label={`${value.trial ? 'Price after trial' : 'Amount'} · ${item.currency}`} value={price} onChangeText={setPrice} keyboardType="decimal-pad" placeholder="0.00" error={errors.price} />
       <SizedBox height={SIZES.padding * 0.7} />
       {value.trial ? (
         <>

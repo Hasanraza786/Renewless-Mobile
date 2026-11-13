@@ -76,7 +76,7 @@ export function useAuthForm<K extends AuthField>(fields: K[], initial: Partial<R
   return { form_data: latest.current, errors, setErrors, validateAll, fieldProps, focusField };
 }
 
-// After authentication: the Add form for manual entry (above Home), otherwise Home.
+// After authentication: the Add form for manual entry or AI chat for Add with AI (above Home), otherwise Home.
 export function enterApp(intent?: AuthIntent) {
-  resetRoot(intent === 'add_manual' ? [{ name: 'Tabs' }, { name: 'AddSubscription' }] : [{ name: 'Tabs' }]);
+  resetRoot(intent === 'add_manual' ? [{ name: 'Tabs' }, { name: 'AddSubscription' }] : intent === 'add_ai' ? [{ name: 'Tabs' }, { name: 'AiChat' }] : [{ name: 'Tabs' }]);
 }

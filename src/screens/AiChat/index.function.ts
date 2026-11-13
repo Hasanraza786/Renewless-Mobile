@@ -6,8 +6,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import { createSound } from 'react-native-nitro-sound';
 import { focusedTab, goBack, navigate } from '../../navigation/service';
 import { PRIVACY_URL, openLegal } from '../../config/legal';
-import { addAiDraft, sendAiMessage, startAiChat } from '../../redux/actions/ai-action';
-import { setAiConsent } from '../../redux/slices/constant-slice';
+import { addAiDraft, changeAiConsent, sendAiMessage, startAiChat } from '../../redux/actions/ai-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AiInput, AiReply, AiUsage, ChatDraft } from '../../types';
 import { missingQuestion } from '../../utils/ai-draft';
@@ -338,7 +337,8 @@ export default function useAiChat() {
       if (!file?.uri) return;
       if (file.type && file.type !== 'application/pdf') return setAttachError('Choose a PDF document.');
       if (!file.size) return setAttachError('This file is empty. Choose another file.');
-      if (file.size > 20 * MB) return setAttachError('Choose a PDF of 20 MB or smaller.');
+      // The server accepts PDFs up to 14 MB.
+      if (file.size > 14 * MB) return setAttachError('Choose a PDF of 14 MB or smaller.');
       setAttachError('');
       setAttachment({ uri: file.uri, name: file.name ?? 'Document.pdf', file_kind: 'pdf' });
     } catch {
@@ -370,7 +370,7 @@ export default function useAiChat() {
 
   const agreeConsent = () => {
     trackEvent('ai_consent_changed', { enabled: 'true' });
-    dispatch(setAiConsent(true));
+    dispatch(changeAiConsent(true));
   };
   // Not now: back to the Add sheet on the tab that opened AI chat.
   const declineConsent = () => {

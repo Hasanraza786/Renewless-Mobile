@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppSelector } from '../redux/store';
-import { AiChatScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, GmailScanScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, SettingsScreen, CalendarDayScreen, ChangePasswordScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, SubscriptionDetailScreen } from '../screens';
+import { AiChatScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, GmailScanScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, SettingsScreen, CalendarDayScreen, ChangePasswordScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, ReceiptsScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, SubscriptionDetailScreen } from '../screens';
 import type { AppStackParamList } from '../types';
 import AuthStack from './AuthStack';
 import { stack_options } from '../config';
@@ -58,6 +58,7 @@ export default function MainNavigator() {
         <AppStack.Screen name="SpendingBreakdown" component={SpendingBreakdownScreen} />
         <AppStack.Screen name="PlatformSubscriptions" component={PlatformSubscriptionsScreen} />
         <AppStack.Screen name="PriceHistory" component={PriceHistoryScreen} />
+        <AppStack.Screen name="Receipts" component={ReceiptsScreen} />
         <AppStack.Screen name="Alerts" component={AlertsScreen} />
         <AppStack.Screen name="History" component={HistoryScreen} />
         <AppStack.Screen name="ConnectedInbox" component={ConnectedInboxScreen} />

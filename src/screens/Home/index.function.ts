@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, AppState } from 'react-native';
 import { useFocusEffect, type RouteProp } from '@react-navigation/native';
+import { syncAiConsent } from '../../redux/actions/ai-action';
 import { registerPush, savePushToken } from '../../redux/actions/auth-action';
 import { getDashboard } from '../../redux/actions/dashboard-action';
+import { MAX_INBOXES, getSyncLockedInbox } from '../../redux/actions/gmail-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { navigate } from '../../navigation/service';
 import { setWidgetPromptSeen } from '../../redux/slices/constant-slice';
-import type { TabParamList } from '../../types';
+import type { ProfileInbox, TabParamList } from '../../types';
 import { pinWidget, widgetEvent, widgetInstalled } from '../../utils/widget';
 import { trackEvent } from '../../utils/analytics';
 import { listenToPush } from '../../utils/push';
@@ -22,6 +24,8 @@ export default function useHome(route: HomeRoute) {
   const widget_prompt_seen = useAppSelector(state => state.constant.widget_prompt_seen);
   const [widget_prompt, setWidgetPrompt] = useState<'closed' | 'prompt' | 'video'>('closed');
   const widget_checked = useRef(false);
+  const [locked_inbox, setLockedInbox] = useState<ProfileInbox | null>(null);
+  const [inbox_count, setInboxCount] = useState(0);
 
   // Refresh on every visit, on returning to the app and at local midnight (dates are relative to today);
   // a usable snapshot stays on screen while it reloads.
@@ -42,6 +46,7 @@ export default function useHome(route: HomeRoute) {
 
   // Reminder pushes: register this session's token (the OS asks once) and open the subscription a tapped reminder names.
   useEffect(() => {
+    dispatch(syncAiConsent());
     dispatch(registerPush());
     return listenToPush(token => dispatch(savePushToken(token)));
   }, [dispatch]);
@@ -53,6 +58,17 @@ export default function useHome(route: HomeRoute) {
   }, []);
 
   const has_subscriptions = !!data?.has_subscriptions;
+
+  // Empty Home: when the connected inbox can't sync yet, the card offers other ways to add instead of Connect Gmail.
+  useEffect(() => {
+    if (!data || has_subscriptions) return;
+    dispatch(
+      getSyncLockedInbox((inbox, count) => {
+        setLockedInbox(inbox);
+        setInboxCount(count);
+      }),
+    );
+  }, [data, has_subscriptions, dispatch]);
 
   // One-time prompt: only with a tracked subscription and only when the platform reports the widget is not placed.
   useEffect(() => {
@@ -86,6 +102,13 @@ export default function useHome(route: HomeRoute) {
     trackEvent('add_option_selected', { option: 'manual' });
     navigate('AddSubscription');
   };
+  const openAddAi = () => {
+    trackEvent('add_option_selected', { option: 'ai' });
+    navigate('AiChat');
+  };
+  // With both free inboxes connected there is no Connect another Gmail.
+  const can_add_inbox = inbox_count < MAX_INBOXES;
+  const next_sync = locked_inbox?.nextSync ? new Date(locked_inbox.nextSync).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
   const openConnectGmail = () => {
     trackEvent('add_option_selected', { option: 'gmail' });
     navigate('GmailScan');
@@ -130,7 +153,11 @@ export default function useHome(route: HomeRoute) {
     retry,
     openAdd,
     closeAdd,
+    locked_inbox,
+    can_add_inbox,
+    next_sync,
     openAddManual,
+    openAddAi,
     openConnectGmail,
     openDetail,
     openUpcoming,

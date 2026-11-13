@@ -1,5 +1,5 @@
 import type { SubscriptionRecord } from '../src/types';
-import { catalogMatches, draftFromRecord, draftToInput, emptyDraft, trialEnd, validateDraft } from '../src/utils/subscription-form';
+import { catalogMatches, draftFromRecord, draftToInput, emptyDraft, trialEnd, validateDraft, firstInvalid } from '../src/utils/subscription-form';
 
 const today = '2026-11-06';
 
@@ -46,4 +46,11 @@ test('catalog suggestions match names and aliases, at most four', () => {
   expect(catalogMatches('notion labs').map(item => item.platform_id)).toEqual(['notion']);
   expect(catalogMatches('e').length).toBe(4);
   expect(catalogMatches(' ')).toEqual([]);
+});
+
+test('a failed submit focuses the topmost invalid field', () => {
+  expect(firstInvalid({ next_date: 'x', price: 'x', name: 'x' })).toBe('name');
+  expect(firstInvalid({ start_date: 'x', price: 'x' })).toBe('price');
+  expect(firstInvalid({ next_date: 'x', custom_days: 'x' })).toBe('custom_days');
+  expect(firstInvalid({})).toBeUndefined();
 });

@@ -30,7 +30,16 @@ export type SubscriptionDraft = {
 // Edit keeps an exact trial end (from Gmail/AI) until the start or duration changes.
 export type TrialOrigin = { start_date: string; days: number; end_date: string } | null;
 
-export type DraftErrors = Partial<Record<'name' | 'price' | 'custom_days' | 'start_date' | 'next_date' | 'price_reason' | 'effective_on', string>>;
+// One amount rule for every form and review sheet: up to 12 whole digits and 2 decimals, above zero (the server's
+// limits); "1e3" or "12.345" are refused, not converted or rounded.
+export const AMOUNT_ERROR = 'Enter a valid amount greater than 0 (up to 2 decimals).';
+export const isValidAmount = (text: string) => /^\d{1,12}(\.\d{1,2})?$/.test(text.trim()) && Number(text) > 0;
+
+export type DraftField = 'name' | 'price' | 'custom_days' | 'start_date' | 'next_date' | 'price_reason' | 'effective_on';
+export type DraftErrors = Partial<Record<DraftField, string>>;
+// Top-to-bottom order of the fields that can show an error, for focusing the first one on submit.
+export const FIELD_ORDER: DraftField[] = ['name', 'price', 'price_reason', 'effective_on', 'custom_days', 'start_date', 'next_date'];
+export const firstInvalid = (errors: DraftErrors) => FIELD_ORDER.find(field => errors[field]);
 
 export const emptyDraft = (): SubscriptionDraft => ({
   name: '', platform_id: null, price: '', currency: 'USD', cycle: 'Monthly', category: 'Entertainment', trial: 'No trial', custom_days: '',
@@ -82,8 +91,9 @@ export function validateDraft(draft: SubscriptionDraft, record: SubscriptionReco
   const errors: DraftErrors = {};
   const on_trial = draft.trial !== 'No trial';
   if (!draft.name.trim()) errors.name = 'Enter a platform or service name.';
+  else if (draft.name.trim().length > 100) errors.name = 'Use 100 characters or fewer.';
   if (!draft.price.trim()) errors.price = 'Enter the subscription amount.';
-  else if (!/^\d+(\.\d{1,2})?$/.test(draft.price.trim()) || Number(draft.price) <= 0) errors.price = 'Enter a valid amount greater than 0 (up to 2 decimals).';
+  else if (!isValidAmount(draft.price)) errors.price = AMOUNT_ERROR;
   if (draft.trial === 'Custom') {
     if (!draft.custom_days.trim()) errors.custom_days = 'Enter your trial duration.';
     else if (Number.isNaN(trialDays(draft))) errors.custom_days = 'Enter a whole number from 1 to 365.';
@@ -122,4 +132,30 @@ export function draftToInput(draft: SubscriptionDraft, origin: TrialOrigin, reco
     notes: draft.notes.trim() || null,
     price_change: priceChanged(draft, record) ? { reason: draft.price_reason === 'Correcting a mistake' ? 'correction' : 'price_changed', effective_on: draft.price_reason === 'Correcting a mistake' ? today : draft.effective_on } : null,
   };
+}
+
+// Server field errors (body paths) on the form field that shows them; anything else stays a form-wide message.
+const SERVER_FIELDS: Record<string, keyof DraftErrors> = {
+  name: 'name',
+  platformId: 'name',
+  price: 'price',
+  'price.amount': 'price',
+  'price.currency': 'price',
+  cycle: 'price',
+  startDate: 'start_date',
+  anchorDate: 'next_date',
+  trial: 'custom_days',
+  'trial.days': 'custom_days',
+  priceChange: 'price_reason',
+  'priceChange.reason': 'price_reason',
+  'priceChange.effectiveDate': 'effective_on',
+};
+
+export function draftServerErrors(field_errors: Record<string, string>): DraftErrors {
+  const errors: DraftErrors = {};
+  for (const [path, message] of Object.entries(field_errors)) {
+    const field = SERVER_FIELDS[path];
+    if (field && !errors[field]) errors[field] = message;
+  }
+  return errors;
 }

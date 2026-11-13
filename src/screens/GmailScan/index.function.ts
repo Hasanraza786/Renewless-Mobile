@@ -18,6 +18,7 @@ export type CandidateEdit = Pick<GmailSelection, 'price' | 'next_date' | 'start_
 const POLL_MS = 2000;
 // Like onboarding's Discovering: a short hold on the completed stages, then the review opens by itself.
 const ADVANCE_MS = 650;
+const POLL_FAILURES = 3;
 const INBOX_LIMIT = 'You’ve used your 2 Gmail inboxes. You can reconnect an inbox you used before.';
 const MONTHLY: Record<string, number> = { Weekly: 52 / 12, Monthly: 1, Quarterly: 1 / 3, Yearly: 1 / 12 };
 
@@ -40,22 +41,31 @@ export default function useGmailScan(route: GmailScanRoute) {
   // Each scan gets a token; progress from an older scan or after leaving is ignored.
   const scan_token = useRef(0);
 
-  const scan = useCallback(
-    (target: ProfileInbox) => {
-      const token = ++scan_token.current;
-      setInbox(target);
-      setPhase('scanning');
-      setStage(0);
-      setCandidates([]);
-      setSaveError('');
-      const poll = (job: string) =>
+  // A job we lost contact with (3 status checks in a row failed); Retry checks it again instead of a new scan.
+  const lost_job = useRef('');
+
+  // Follows one scan job until it ends. A status check that can't reach the server is retried; 3 in a row interrupt.
+  const follow = useCallback(
+    (job: string, token: number) => {
+      let failures = 0;
+      const poll = () =>
         dispatch(
           getGmailScan(job, status => {
             if (token !== scan_token.current) return;
+            if (status.status === 'failed' && status.error) {
+              failures += 1;
+              if (failures < POLL_FAILURES) {
+                setTimeout(() => token === scan_token.current && poll(), POLL_MS);
+                return;
+              }
+              lost_job.current = job;
+              return setPhase('interrupted');
+            }
+            failures = 0;
             setStage(status.stage);
             if (status.status === 'failed') return setPhase('interrupted');
             if (status.status !== 'completed') {
-              setTimeout(() => token === scan_token.current && poll(job), POLL_MS);
+              setTimeout(() => token === scan_token.current && poll(), POLL_MS);
               return;
             }
             setCandidates(status.candidates);
@@ -65,10 +75,24 @@ export default function useGmailScan(route: GmailScanRoute) {
             setTimeout(() => token === scan_token.current && setPhase(found ? 'review' : 'nothing'), ADVANCE_MS);
           }),
         );
+      poll();
+    },
+    [dispatch],
+  );
+
+  const scan = useCallback(
+    (target: ProfileInbox) => {
+      const token = ++scan_token.current;
+      lost_job.current = '';
+      setInbox(target);
+      setPhase('scanning');
+      setStage(0);
+      setCandidates([]);
+      setSaveError('');
       const onStarted = (job: string) => {
         if (token !== scan_token.current) return;
         setJobId(job);
-        poll(job);
+        follow(job, token);
       };
       // The weekly limit is not an interruption: say when, and leave the screen.
       const onFailed = (error: ApiError) => {
@@ -79,7 +103,7 @@ export default function useGmailScan(route: GmailScanRoute) {
       };
       dispatch(startGmailScan(target, onStarted, onFailed));
     },
-    [dispatch],
+    [dispatch, follow],
   );
 
   useEffect(() => {
@@ -177,8 +201,15 @@ export default function useGmailScan(route: GmailScanRoute) {
     setSheet(null);
     dispatch(connectGmailInbox(onConnected, onInboxLimit));
   };
-  const retry = () => inbox && scan(inbox);
+  const retry = () => {
+    if (!inbox) return;
+    if (!lost_job.current) return scan(inbox);
+    const token = ++scan_token.current;
+    setPhase('scanning');
+    follow(lost_job.current, token);
+  };
   const addManually = () => navigate('AddSubscription');
+  const addWithAi = () => navigate('AiChat');
 
   const onSaved = () => {
     setSaving(false);
@@ -232,6 +263,7 @@ export default function useGmailScan(route: GmailScanRoute) {
     connectAnother,
     retry,
     addManually,
+    addWithAi,
     save,
   };
 }

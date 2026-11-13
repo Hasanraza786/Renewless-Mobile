@@ -4,9 +4,52 @@ import type { AiInput, AiReply, AiUsage, ChatDraft } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { successHaptic } from '../../utils/haptics';
 import { requestHandler, type AppThunk } from '../request-handler';
+import { setAiConsent, setAiWithdrawalUnsent } from '../slices/constant-slice';
 import { setNotice } from '../slices/profile-slice';
 import { getSubscriptions } from './list-action';
 import { getDashboard } from './dashboard-action';
+
+// Version of the approved AI consent text (AI chat consent dialog and Settings, 8 Nov 2026), sent with an acceptance.
+const AI_CONSENT_COPY_VERSION = '2026-11-08';
+const consentBody = (consented: boolean) => (consented ? { consented, copyVersion: AI_CONSENT_COPY_VERSION } : { consented });
+
+// The consent dialog's Allow and the Settings switch: the phone's flag changes at once and the account's record follows,
+// because the server refuses AI chat (403 AI_CONSENT_REQUIRED) without it.
+export function changeAiConsent(consented: boolean): AppThunk {
+  return async dispatch => {
+    dispatch(setAiConsent(consented));
+    dispatch(setAiWithdrawalUnsent(false));
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.saveAiConsent,
+        param_data: consentBody(consented),
+        // A lost acceptance is sent again by syncAiConsent; a lost withdrawal is remembered for it here.
+        onError: () => !consented && dispatch(setAiWithdrawalUnsent(true)),
+      }),
+    );
+  };
+}
+
+// Once per app open: a phone that allowed AI before the server kept consent sends it, so older installs fix themselves,
+// and a withdrawal that never reached the server is sent again.
+export function syncAiConsent(): AppThunk {
+  return async (dispatch, getState) => {
+    const { ai_consent, ai_withdrawal_unsent } = getState().constant;
+    if (ai_withdrawal_unsent) {
+      await dispatch(requestHandler({ apiService: apiServices.saveAiConsent, param_data: consentBody(false), onDone: () => dispatch(setAiWithdrawalUnsent(false)) }));
+      return;
+    }
+    if (!ai_consent) return;
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.getMe,
+        onDone: ({ user }) => {
+          if (!user.aiConsent?.consented) dispatch(requestHandler({ apiService: apiServices.saveAiConsent, param_data: consentBody(true) }));
+        },
+      }),
+    );
+  };
+}
 
 // A new conversation for this visit; its usage is shown under the header before the first send.
 export function startAiChat(onStarted: (conversation_id: string, usage: AiUsage) => void): AppThunk {

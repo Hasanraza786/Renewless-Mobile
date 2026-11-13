@@ -14,6 +14,8 @@ export type UserDto = {
   gender: 'male' | 'female' | 'other' | null;
   timezone: string;
   onboardingCompleted: boolean;
+  // The account's AI chat consent (PUT /me/ai-consent).
+  aiConsent?: { consented: boolean; consentedAt: string | null; copyVersion: string | null };
   revision: number;
 };
 
@@ -193,6 +195,19 @@ export type ChatDraftDto = {
   subscriptionId: string | null;
 };
 export type ChatTurnDto = { reply: { id: string | null; text: string | null; draftIds: string[] }; drafts: ChatDraftDto[]; usage: AiUsageDto };
+
+// A billing email Gmail matched to a subscription: extracted details and its kept files, never the email body.
+export type ReceiptDto = {
+  id: string;
+  kind: string;
+  subject: string;
+  from: string;
+  receivedAt: string;
+  amount: MoneyDto | null;
+  billingDate: string | null;
+  attachments: { id: string; filename: string; mimeType: string; size: number }[];
+};
+export type ReceiptsDto = { items: ReceiptDto[]; total: number; nextCursor: string | null };
 
 export type ScanImportDto = { created: string[]; updated: string[]; alreadyApplied: string[] };
 

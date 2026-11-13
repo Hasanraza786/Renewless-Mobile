@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Pressable, View } from 'react-native';
 import { check_dark_icon, edit_icon, inbox_badge_icon, offline_badge_icon } from '../../../assets/icons';
+import AddChoiceLinks from '../../../components/AddChoiceLinks';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
 import Icons from '../../../components/Icons';
@@ -176,7 +177,7 @@ export function ReviewFooter({ gmail }: Props) {
       <SizedBox height={SIZES.padding * 1.1} />
       <CustomButton variant="primary" text={gmail.save_label} disabled={!gmail.selected_count || gmail.saving} busy={gmail.saving} onPress={gmail.save} />
       <SizedBox height={SIZES.padding * 0.65} />
-      <CustomButton variant="link" text="Add a subscription manually" onPress={gmail.addManually} />
+      <AddChoiceLinks onAi={gmail.addWithAi} onManual={gmail.addManually} />
     </Fragment>
   );
 }
@@ -186,7 +187,7 @@ export function RecoveryView({ gmail }: Props) {
   const interrupted = gmail.phase === 'interrupted';
   return (
     <Fragment>
-      <RecoveryArt badge={interrupted ? offline_badge_icon : inbox_badge_icon} centred reduce_motion={gmail.reduce_motion} />
+      <RecoveryArt badge={interrupted ? offline_badge_icon : inbox_badge_icon} reduce_motion={gmail.reduce_motion} />
       <SizedBox height={SIZES.padding2 * 2} />
       <OnboardingTitle
         eyebrow={interrupted ? 'LET’S GET BACK ON TRACK' : 'YOU’RE UP TO DATE'}
@@ -207,7 +208,9 @@ export function RecoveryFooter({ gmail }: Props) {
       <SizedBox height={SIZES.padding2} />
       <CustomButton variant="primary" text={interrupted ? 'Try again' : 'Try another inbox'} onPress={interrupted ? gmail.retry : gmail.openInboxes} />
       <SizedBox height={SIZES.padding / 2} />
-      <CustomButton variant="secondary" text="Add a subscription manually" onPress={gmail.addManually} />
+      <CustomButton variant="secondary" text="Add with AI" onPress={gmail.addWithAi} />
+      <SizedBox height={SIZES.padding * 0.65} />
+      <CustomButton variant="link" text="Add manually" onPress={gmail.addManually} />
     </Fragment>
   );
 }

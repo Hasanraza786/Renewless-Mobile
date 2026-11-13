@@ -13,6 +13,8 @@ import { common_styles } from '../../utils/common_styles';
 import useChangePassword from './index.function';
 import { styles } from './styles';
 
+const PLACEHOLDERS = { current_password: 'Enter your current password', new_password: 'At least 8 characters', confirm_password: 'Re-enter your password' };
+
 export default function ChangePasswordScreen() {
   const form = useChangePassword();
 
@@ -37,6 +39,7 @@ export default function ChangePasswordScreen() {
     <InputField
       variant="form"
       label={label}
+      placeholder={PLACEHOLDERS[key]}
       value={form.form_data[key]}
       onChangeText={form.update(key)}
       error={form.errors[key]}

@@ -46,13 +46,13 @@ const COPY: Record<Kind, { badge: string; hint_icon: string; eyebrow: string; ti
 // Lost Gmail access needs a reconnect rather than a retry.
 const ACCESS_COPY = 'Gmail access needs to be renewed before we can continue.';
 
-// The sad Loop in its circle with a corner badge. Interrupted (and the Gmail recovery) draw Loop at 122pt so it sits
-// centred inside the circle (user, 13 November 2026); no results keeps the original 150pt.
-export function RecoveryArt({ badge, centred, reduce_motion }: { badge: string; centred: boolean; reduce_motion: boolean }) {
+// The sad Loop in its circle with a corner badge, drawn at 122pt so it sits centred inside the circle on every recovery
+// screen (no results, interrupted and the Gmail recovery; user, 13 November 2026).
+export function RecoveryArt({ badge, reduce_motion }: { badge: string; reduce_motion: boolean }) {
   return (
     <View style={styles.art}>
-      <View style={[common_styles.absolute, centred && styles.mascot_centre]}>
-        <Mascot expression="sad" size={centred ? SIZES.padding * 6.1 : SIZES.padding * 7.5} label="Loop is here to help" draw={!reduce_motion} />
+      <View style={[common_styles.absolute, styles.mascot_centre]}>
+        <Mascot expression="sad" size={SIZES.padding * 6.1} label="Loop is here to help" draw={!reduce_motion} />
       </View>
       <View style={styles.badge}>
         <Icons name={badge} />
@@ -66,7 +66,7 @@ function RecoveryBody({ kind, onboarding }: { kind: Kind } & Props) {
   const access = kind === 'interrupted' && onboarding.scan_failure === 'access';
   return (
     <Fragment>
-      <RecoveryArt badge={content.badge} centred={kind === 'interrupted'} reduce_motion={onboarding.reduce_motion} />
+      <RecoveryArt badge={content.badge} reduce_motion={onboarding.reduce_motion} />
 
       <SizedBox height={SIZES.padding2 * 2} />
 
@@ -100,7 +100,9 @@ function RecoveryFooter({ kind, onboarding }: { kind: Kind } & Props) {
 
       <SizedBox height={SIZES.padding / 2} />
 
-      <CustomButton variant="secondary" text="Add a subscription manually" onPress={onboarding.openManual} />
+      <CustomButton variant="secondary" text="Add with AI" onPress={onboarding.openAi} />
+      <SizedBox height={SIZES.padding * 0.65} />
+      <CustomButton variant="link" text="Add manually" onPress={onboarding.openManual} />
     </Fragment>
   );
 }

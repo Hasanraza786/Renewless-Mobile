@@ -16,11 +16,11 @@ export default function LoginScreen({ route }: Props) {
 
   return (
     <AuthLayout title="Welcome back" copy="Keep your next renewal in sight.">
-      <InputField variant="auth" label="Email" onSubmitEditing={form.focusField('password')} submitBehavior="submit" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" returnKeyType="next" {...form.fieldProps('email')} />
+      <InputField variant="auth" label="Email" placeholder="you@example.com" onSubmitEditing={form.focusField('password')} submitBehavior="submit" keyboardType="email-address" autoCapitalize="none" autoComplete="email" textContentType="emailAddress" returnKeyType="next" {...form.fieldProps('email')} />
 
       <SizedBox height={SIZES.padding * 0.9} />
 
-      <InputField variant="auth" label="Password" secureTextEntry autoComplete="current-password" textContentType="password" returnKeyType="go" onSubmitEditing={onSubmit} {...form.fieldProps('password')} />
+      <InputField variant="auth" label="Password" placeholder="Enter your password" secureTextEntry autoComplete="current-password" textContentType="password" returnKeyType="go" onSubmitEditing={onSubmit} {...form.fieldProps('password')} />
 
       <View style={styles.forgot}>
         <CustomButton variant="link" text="Forgot password?" onPress={openForgot} style={styles.forgot_link} />

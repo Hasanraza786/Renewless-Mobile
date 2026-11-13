@@ -167,7 +167,7 @@ function ResumeSheet({ view, detail }: Props) {
 
   return (
     <AppSheet visible title={`Track ${record.name} again`} subtitle="Review your details before resuming." onClose={detail.close}>
-      <InputField variant="sheet" label="Amount" label_end={`${record.currency} · ${record.cycle}`} value={price} onChangeText={value => { setPrice(value); setErrors({ ...errors, price: undefined }); }} keyboardType="decimal-pad" error={errors.price} />
+      <InputField variant="sheet" label="Amount" label_end={`${record.currency} · ${record.cycle}`} value={price} onChangeText={value => { setPrice(value); setErrors({ ...errors, price: undefined }); }} keyboardType="decimal-pad" placeholder="0.00" error={errors.price} />
       <SizedBox height={SIZES.padding2} />
       <DateField label="Next renewal" value={next_date} minimum={detail.today} onChange={value => { setNextDate(value); setErrors({ ...errors, date: undefined }); }} />
       {errors.date ? <CustomText mt={SIZES.padding * 0.35} text={errors.date} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} /> : null}

@@ -109,7 +109,7 @@ export default function ReminderSettingsScreen() {
               {draft.values.includes('custom') ? (
                 <>
                   <SizedBox height={SIZES.padding * 0.65} />
-                  <InputField ref={settings.custom_ref} variant="form" label="Days before the event" value={draft.custom} editable={!off} onChangeText={settings.updateCustom} keyboardType="number-pad" error={settings.custom_error || undefined} />
+                  <InputField ref={settings.custom_ref} variant="form" label="Days before the event" placeholder="e.g. 4" value={draft.custom} editable={!off} onChangeText={settings.updateCustom} keyboardType="number-pad" error={settings.custom_error || undefined} />
                 </>
               ) : null}
               <SizedBox height={SIZES.padding * 0.65} />
@@ -133,9 +133,10 @@ export default function ReminderSettingsScreen() {
                 ) : null}
               </RowView>
             ) : null}
-            {settings.save_error && !settings.confirm ? <CustomText mt={SIZES.padding2} text={settings.save_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} accessibility_role="alert" /> : null}
           </ScrollView>
           <View style={styles.footer}>
+            {/* The save error sits right above the pinned button, where it is seen. */}
+            {settings.save_error && !settings.confirm ? <CustomText mb={SIZES.padding3} text={settings.save_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} align="center" accessibility_role="alert" /> : null}
             <CustomButton variant="primary" text="Save settings" busy={settings.saving && !settings.confirm} onPress={settings.onSave} />
             <CustomText mt={SIZES.padding3} text="Applies to future reminders. Your history stays." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
           </View>

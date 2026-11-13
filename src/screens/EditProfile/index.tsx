@@ -28,6 +28,7 @@ export default function EditProfileScreen() {
           <InputField
             variant="form"
             label="Name"
+            placeholder="Your name"
             value={form.form_data.name}
             onChangeText={value => form.update('name', value)}
             error={form.errors.name}

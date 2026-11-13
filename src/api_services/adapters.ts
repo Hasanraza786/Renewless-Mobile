@@ -14,6 +14,7 @@ import type {
   ReminderSettings,
   AiReply,
   ChatDraft,
+  ReceiptItem,
   GmailCandidate,
   GmailScanStatus,
   GmailSelection,
@@ -33,6 +34,8 @@ import type {
   CategoryDto,
   ChatDraftDto,
   ChatTurnDto,
+  ReceiptDto,
+  ReceiptsDto,
   ConnectorDto,
   CycleDto,
   DetailDto,
@@ -164,11 +167,12 @@ function toPriceChanges(history: PriceHistoryDto): PriceChange[] {
   }));
 }
 
-export function toDetail(detail: DetailDto, history: PriceHistoryDto | null, settings: ReminderSettingsDto | null): SubscriptionDetail {
+export function toDetail(detail: DetailDto, history: PriceHistoryDto | null, settings: ReminderSettingsDto | null, receipt_emails: ReceiptsDto | null = null): SubscriptionDetail {
   return {
     record: { ...toRecord(detail), price_history: history ? toPriceChanges(history) : [] },
     today: localToday(),
     receipts: { totals: detail.spending.totals, count: detail.spending.count },
+    receipt_emails: { count: receipt_emails?.total ?? 0, latest: receipt_emails?.items[0] ? receiptDate(receipt_emails.items[0]) : null },
     annual_estimate: detail.spending.annualEquivalent.amount,
     related_count: detail.samePlatformCount,
     account_reminder_days: settings?.defaultOffsets ?? [3],
@@ -451,5 +455,34 @@ export function fromGmailSelection(item: GmailCandidate, selection: GmailSelecti
     revision: item.revision,
     price: { currency: item.currency, amount: selection.price },
     ...(selection.trial ? { trial: { endDate: selection.trial.end_date, autoRenew: selection.trial.auto_renew } } : selection.next_date ? { anchorDate: selection.next_date } : {}),
+  };
+}
+
+const RECEIPT_KINDS: Record<string, { label: string; tone: ReceiptItem['tone'] }> = {
+  receipt: { label: 'Payment receipt', tone: 'paid' },
+  invoice: { label: 'Invoice', tone: 'info' },
+  failed_payment: { label: 'Payment failed', tone: 'alert' },
+  trial_started: { label: 'Trial started', tone: 'info' },
+  trial_ending: { label: 'Trial ending', tone: 'info' },
+  price_change: { label: 'Price change', tone: 'info' },
+  cancellation: { label: 'Cancelled', tone: 'alert' },
+  access_ended: { label: 'Access ended', tone: 'alert' },
+  refund: { label: 'Refund', tone: 'paid' },
+};
+
+// The billing date when the email gives one, else the day it arrived (local).
+const receiptDate = (dto: ReceiptDto) => dto.billingDate ?? localToday(new Date(dto.receivedAt));
+
+export function toReceipt(dto: ReceiptDto): ReceiptItem {
+  const kind = RECEIPT_KINDS[dto.kind] ?? { label: 'Billing email', tone: 'info' as const };
+  return {
+    id: dto.id,
+    kind_label: kind.label,
+    tone: kind.tone,
+    date: receiptDate(dto),
+    amount: dto.amount,
+    subject: dto.subject,
+    from: dto.from,
+    files: dto.attachments.map(file => ({ id: file.id, name: file.filename, kind: file.mimeType === 'application/pdf' ? 'pdf' : 'image' })),
   };
 }

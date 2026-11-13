@@ -18,7 +18,7 @@ export default function ResetPasswordScreen({ route }: Props) {
 
   return (
     <AuthLayout onBack={onBack} title="Set a new password" copy="Choose a new password to keep your account secure.">
-      <InputField variant="auth" label="New password" onSubmitEditing={form.focusField('confirm')} submitBehavior="submit" secureTextEntry autoComplete="new-password" textContentType="newPassword" returnKeyType="next" {...password} />
+      <InputField variant="auth" label="New password" placeholder="At least 8 characters" onSubmitEditing={form.focusField('confirm')} submitBehavior="submit" secureTextEntry autoComplete="new-password" textContentType="newPassword" returnKeyType="next" {...password} />
 
       {/* The helper gives way to the error, which says the same thing. */}
       {password.error ? <SizedBox height={SIZES.padding * 1.15} /> : <CustomText mt={SIZES.padding * 0.55} text="Use at least 8 characters." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} mb={SIZES.padding * 1.15} />}
@@ -26,6 +26,7 @@ export default function ResetPasswordScreen({ route }: Props) {
       <InputField
         variant="auth"
         label="Confirm password"
+        placeholder="Re-enter your password"
         secureTextEntry
         autoComplete="new-password"
         textContentType="newPassword"

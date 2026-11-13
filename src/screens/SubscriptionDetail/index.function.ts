@@ -28,7 +28,7 @@ const STATUS_FILL: Record<string, string> = {
 const relative = (days: number) => (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : days < 0 ? 'Past date' : `In ${days} days`);
 
 // Everything Detail shows, derived once from the server record.
-export function detailView({ record, today, receipts, annual_estimate, related_count, account_reminder_days }: SubscriptionDetail) {
+export function detailView({ record, today, receipts, receipt_emails, annual_estimate, related_count, account_reminder_days }: SubscriptionDetail) {
   const status = recordStatus(record, today);
   const in_trial = !!record.trial && record.trial.end_date >= today;
   const trial_ended = !!record.trial && !in_trial && !record.trial.auto_renew;
@@ -84,6 +84,8 @@ export function detailView({ record, today, receipts, annual_estimate, related_c
     price_history: latest
       ? `${money(latest.currency, latest.from_amount)} · ${latest.from_cycle} → ${money(latest.currency, latest.to_amount)} · ${latest.to_cycle}`
       : 'No price changes recorded',
+    // Receipts row: how many billing emails are kept and the newest one's date.
+    receipt_emails: receipt_emails.count && receipt_emails.latest ? { title: `Receipts · ${receipt_emails.count}`, caption: `Latest ${dateLabel(receipt_emails.latest)} · from your Gmail` } : { title: 'Receipts', caption: 'No receipts yet' },
     source: record.source.kind === 'gmail'
       ? { title: 'Scanned inbox', badge: 'Found in Gmail', caption: record.inbox?.disconnected ? 'The inbox this subscription was found in. It is now disconnected.' : 'The connected inbox this subscription was found in.' }
       : { title: 'Added under', badge: 'Added manually', caption: 'Your Renewless account when this subscription was added.' },
@@ -126,6 +128,7 @@ export default function useSubscriptionDetail(route: Route) {
   const openEdit = () => navigate('EditSubscription', { id });
   const openPayments = () => view && navigate('SubscriptionPayments', { id, name: view.record.name });
   const openPriceHistory = () => navigate('PriceHistory', { id });
+  const openReceipts = () => navigate('Receipts', { id });
   const openRelated = () => view && navigate('PlatformSubscriptions', { platform_id: view.record.platform_id, name: view.record.name, exclude_id: id });
   const openManage = () => view?.record.manage_url && Linking.openURL(view.record.manage_url);
   const saveReminderPreference = (reminder: ReminderPreference) => dispatch(updateReminder(id, reminder, done()));
@@ -153,6 +156,7 @@ export default function useSubscriptionDetail(route: Route) {
     openEdit,
     openPayments,
     openPriceHistory,
+    openReceipts,
     openRelated,
     openManage,
     saveReminder: saveReminderPreference,

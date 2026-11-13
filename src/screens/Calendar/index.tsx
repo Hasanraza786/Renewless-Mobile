@@ -114,7 +114,7 @@ export default function CalendarScreen({ route }: { route: CalendarRoute }) {
                   <SubscriptionCard {...eventCardProps(nearest.event, calendar.today)} onPress={() => calendar.openDetail(nearest.event.subscription_id)} />
                 </View>
               ) : (
-                <CustomText mt={SIZES.padding / 2} text="No upcoming renewals in this month." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} style={styles.all_clear} />
+                <CustomText mt={SIZES.padding / 2} text={calendar.empty_copy} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} style={styles.all_clear} />
               )}
             </View>
 

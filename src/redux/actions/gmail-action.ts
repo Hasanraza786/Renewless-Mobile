@@ -10,6 +10,9 @@ import { getDashboard } from './dashboard-action';
 import { getSubscriptions } from './list-action';
 import { getProfileOverview } from './profile-action';
 
+// Free limit per account; the server also counts disconnected inboxes (GMAIL_INBOX_LIMIT).
+export const MAX_INBOXES = 2;
+
 const CONNECT_FAILED = 'We couldn’t connect this inbox. Please try again.';
 const GMAIL_DENIED = 'Allow Gmail access to connect this inbox.';
 
@@ -32,6 +35,24 @@ export function getGmailInboxes(onLoaded: (inboxes: ProfileInbox[]) => void, onF
         onError: error => {
           dispatch(setNotice(error.message));
           onFailed();
+        },
+      }),
+    );
+  };
+}
+
+// Home's empty card: the connected inbox when none can sync yet (each syncs once a week), else null, and how many inboxes
+// are connected. It runs in the background, so a failure just leaves the usual Connect Gmail card.
+export function getSyncLockedInbox(onLoaded: (inbox: ProfileInbox | null, inbox_count: number) => void): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.getConnectors,
+        onDone: ({ connectors }) => {
+          const now = new Date();
+          const inboxes = connectors.map(toInbox).filter(inbox => inbox.status === 'synced');
+          const locked = inboxes.length > 0 && inboxes.every(inbox => !!inbox.nextSync && new Date(inbox.nextSync) > now);
+          onLoaded(locked ? inboxes[0] : null, inboxes.length);
         },
       }),
     );

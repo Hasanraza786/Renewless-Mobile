@@ -57,6 +57,6 @@ export {
 } from './profile_icons';
 export { bin_danger_icon, bin_icon, chevron_up_icon, lock_icon, record_mic_icon, record_pause_icon } from './switch_icons';
 export { close_small_icon, image_icon, mic_active_icon, mic_icon, paperclip_icon, pause_icon, pdf_icon, play_icon, send_icon } from './switch_icons';
-export { clock_icon, device_bell_icon, gear_accent_icon, notice_bell_icon, pencil_icon, sparkle_icon, switch_off_icon, switch_on_icon } from './switch_icons';
+export { clock_accent_icon, clock_icon, device_bell_icon, gear_accent_icon, notice_bell_icon, pencil_icon, sparkle_icon, switch_off_icon, switch_on_icon } from './switch_icons';
 export { default as gear_box_icon } from './gear_box_icon';
 export { benefit_check_icon, demo_app_icons, play_circle_icon } from './widget_icons';

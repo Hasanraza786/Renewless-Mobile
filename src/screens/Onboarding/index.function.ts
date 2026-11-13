@@ -7,8 +7,8 @@ import {
   editOnboardingCandidate,
   finishOnboarding,
   getOnboardingScan,
+  retryOnboardingScan,
   saveOnboardingFinds,
-  startOnboardingScan,
 } from '../../redux/actions/onboarding-action';
 import { setConnectMessage, toggleCandidate } from '../../redux/slices/onboarding-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -42,6 +42,8 @@ export default function useOnboarding(route: Route) {
   const signed_in = useAppSelector(state => !!state.constant.token);
 
   const [editing_id, setEditingId] = useState('');
+  // The last save error of the open review sheet.
+  const [edit_error, setEditError] = useState('');
   const [step, setStep] = useState<OnboardingStep>(route.params?.step ?? 'welcome');
   const [animating, setAnimating] = useState(false);
   const [panel_width, setPanelWidth] = useState(0);
@@ -135,7 +137,7 @@ export default function useOnboarding(route: Route) {
   // A network failure retries with the existing Gmail grant; lost access goes back to Connect.
   const retryScan = () => {
     if (scan_failure === 'access' || !connector_id) return goTo('connectInbox', -1);
-    dispatch(startOnboardingScan(connector_id, openDashboard));
+    dispatch(retryOnboardingScan(connector_id, scan_job_id, openDashboard));
     goTo('discovering');
   };
 
@@ -152,11 +154,18 @@ export default function useOnboarding(route: Route) {
   const footer_style = { opacity: panel_opacity };
 
   const toggle = (id: string) => dispatch(toggleCandidate(id));
-  const closeEdit = () => setEditingId('');
-  const saveEdit = (item: ScanCandidate) => dispatch(editOnboardingCandidate(scan_job_id, item, closeEdit));
+  const closeEdit = () => {
+    setEditingId('');
+    setEditError('');
+  };
+  const saveEdit = (item: ScanCandidate) => {
+    setEditError('');
+    dispatch(editOnboardingCandidate(scan_job_id, item, closeEdit, setEditError));
+  };
   const openLogin = () => navigate('Login');
   // Manual entry: the Add form when signed in, otherwise sign up first and continue to it.
   const openManual = () => (signed_in ? navigate('AddSubscription') : navigate('Signup', { intent: 'add_manual' }));
+  const openAi = () => (signed_in ? navigate('AiChat') : navigate('Signup', { intent: 'add_ai' }));
   const openTerms = () => openLegal(TERMS_URL);
   const openPrivacy = () => openLegal(PRIVACY_URL);
 
@@ -174,12 +183,14 @@ export default function useOnboarding(route: Route) {
     retryScan,
     toggleCandidate: toggle,
     editing,
+    edit_error,
     openEdit: setEditingId,
     closeEdit,
     saveEdit,
     save,
     openLogin,
     openManual,
+    openAi,
     openTerms,
     openPrivacy,
     openDashboard,

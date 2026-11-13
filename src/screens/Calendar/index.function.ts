@@ -45,6 +45,8 @@ export default function useCalendar(route: CalendarRoute) {
   const expected_text = data?.expected.length ? data.expected.map(item => money(item.currency, item.amount)).join(' · ') : '0.00';
   const event_count = events.length;
   const nearest = nearestEvent(events, today);
+  // A past month has nothing upcoming to promise.
+  const empty_copy = month < today.slice(0, 7) ? 'No renewals in this month.' : 'No upcoming renewals in this month.';
 
   const showPrevious = () => {
     trackEvent('calendar_month_changed', { via: 'arrow' });
@@ -91,6 +93,7 @@ export default function useCalendar(route: CalendarRoute) {
     expected_text,
     event_count,
     nearest,
+    empty_copy,
     picker_anchor,
     showPrevious,
     showNext,

@@ -1,4 +1,5 @@
-import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
+import { useEffect, useRef, type ComponentRef } from 'react';
+import { KeyboardAvoidingView, ScrollView, View, type TextInput } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Container from '../../components/Container';
 import CustomButton from '../../components/CustomButton';
@@ -9,6 +10,7 @@ import SubscriptionFields from '../../components/SubscriptionFields';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { goBack } from '../../navigation/service';
 import { common_styles } from '../../utils/common_styles';
+import type { DraftField } from '../../utils/subscription-form';
 import useSubscriptionForm, { type SubscriptionFormRoute } from './index.function';
 import { useKeyboardScroll } from '../../utils/keyboard-scroll';
 import { styles } from './styles';
@@ -19,6 +21,16 @@ export default function AddSubscriptionScreen({ route }: { route: SubscriptionFo
   // The keyboard offset is measured from the safe area, below the status bar.
   const insets = useSafeAreaInsets();
   const keyboard = useKeyboardScroll();
+  const field_y = useRef<Partial<Record<DraftField, number>>>({});
+  const inputs = useRef<Partial<Record<DraftField, ComponentRef<typeof TextInput> | null>>>({});
+
+  // A failed submit brings its first invalid field into view and focuses it when it is typed into.
+  const focus_request = form.focus_request;
+  useEffect(() => {
+    if (!focus_request) return;
+    keyboard.scroll_ref.current?.scrollTo({ y: Math.max(0, (field_y.current[focus_request.field] ?? 0) - SIZES.padding), animated: true });
+    inputs.current[focus_request.field]?.focus();
+  }, [focus_request, keyboard.scroll_ref]);
 
   return (
     <Container is_auth style={styles.main_view}>
@@ -37,10 +49,17 @@ export default function AddSubscriptionScreen({ route }: { route: SubscriptionFo
               show_price_change={form.show_price_change}
               today={form.today}
               editable={!form.saving}
+              onFieldLayout={(field, y) => {
+                field_y.current[field] = y;
+              }}
+              inputRef={(field, input) => {
+                inputs.current[field] = input;
+              }}
             />
-            {form.request_error ? <CustomText mt={SIZES.padding2} text={form.request_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} accessibility_role="alert" /> : null}
           </ScrollView>
           <View style={styles.footer}>
+            {/* The save error sits right above the pinned button, where it is seen. */}
+            {form.request_error ? <CustomText mb={SIZES.padding3} text={form.request_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} align="center" accessibility_role="alert" /> : null}
             <CustomButton variant="primary" text={form.action} busy={form.saving} onPress={form.onSubmit} />
             <CustomText mt={SIZES.padding3} text="You can edit these details anytime." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} align="center" />
           </View>

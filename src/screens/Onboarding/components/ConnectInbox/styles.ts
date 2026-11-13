@@ -23,8 +23,9 @@ export const styles = StyleSheet.create({
     marginTop: -SIZES.padding * 1.3,
     opacity: 0.65,
   },
+  // Every Connect message means it didn't connect (failed, cancelled, Gmail not allowed): coral, like other errors.
   feedback: {
-    borderColor: COLORS.primary,
+    borderColor: COLORS.danger,
     borderRadius: SIZES.padding2,
     borderWidth: 1,
     padding: SIZES.padding2,

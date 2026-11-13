@@ -5,7 +5,7 @@ import { successHaptic } from '../../utils/haptics';
 import { endSession } from '../endSession';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { setUser } from '../slices/constant-slice';
-import { setNotice, setOverview, setOverviewError, setOverviewLoading, setProfileError, setProfileLoading, setProfileUser } from '../slices/profile-slice';
+import { setDeleteStep, setNotice, setOverview, setOverviewError, setOverviewLoading, setProfileError, setProfileLoading, setProfileUser } from '../slices/profile-slice';
 import { trackEvent } from '../../utils/analytics';
 import { providerSignIn } from '../../utils/social-sign-in';
 import type { Profile } from '../../types';
@@ -52,9 +52,9 @@ export function deleteAccount(provider: Profile['provider'], password: string): 
   return async dispatch => {
     let verification: { password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string } = { password };
     if (provider !== 'email') {
-      dispatch(setProfileLoading(true));
+      dispatch(setDeleteStep('verifying'));
       const token = await providerSignIn(provider).catch(() => null);
-      dispatch(setProfileLoading(false));
+      dispatch(setDeleteStep(''));
       if (!token) return;
       verification = { provider, idToken: token.idToken, nonce: token.nonce };
     }
@@ -62,7 +62,7 @@ export function deleteAccount(provider: Profile['provider'], password: string): 
       requestHandler({
         apiService: apiServices.deleteMe,
         param_data: verification,
-        setLoading: setProfileLoading,
+        setLoading: busy => setDeleteStep(busy ? 'deleting' : ''),
         setError: setProfileError,
         endOnUnauthorized: false,
         onDone: () => {

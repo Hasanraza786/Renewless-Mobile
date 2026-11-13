@@ -16,6 +16,8 @@ export const device_bell_icon = `<svg stroke="${COLORS.text_secondary}" width="2
 export const gear_accent_icon = `<svg stroke="${COLORS.primary}" width="21" height="21" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="${GEAR}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="12" cy="12" r="3" stroke-width="1.6"/></svg>`;
 
 // Reminder time field (18pt, like the date field's calendar).
+// Home's Next sync pill.
+export const clock_accent_icon = `<svg stroke="${COLORS.primary}" width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8" stroke-width="1.8"/><path d="M12 8v4l2.5 2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 export const clock_icon = `<svg stroke="${COLORS.text_primary}" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8" stroke-width="1.8"/><path d="M12 8v4l2.5 2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 // Loop chat composer and bubbles (prototype glyphs, 24 viewBox).

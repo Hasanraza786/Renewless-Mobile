@@ -13,6 +13,7 @@ export default function ForgotPasswordScreen() {
       <InputField
         variant="auth"
         label="Email"
+        placeholder="you@example.com"
         keyboardType="email-address"
         autoCapitalize="none"
         autoComplete="email"

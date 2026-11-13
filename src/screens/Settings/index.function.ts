@@ -1,5 +1,5 @@
 import { navigate } from '../../navigation/service';
-import { setAiConsent } from '../../redux/slices/constant-slice';
+import { changeAiConsent } from '../../redux/actions/ai-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import useProfile from '../Profile/index.function';
 import { trackEvent } from '../../utils/analytics';
@@ -13,7 +13,7 @@ export default function useSettings() {
   const ai_note = ai_consent ? 'You can turn this off at any time.' : 'AI chat will ask before you use it again.';
   const toggleAi = () => {
     trackEvent('ai_consent_changed', { enabled: String(!ai_consent) });
-    dispatch(setAiConsent(!ai_consent));
+    dispatch(changeAiConsent(!ai_consent));
   };
   const openWidget = () => navigate('Home', { add_widget: Date.now() });
   const openDelete = () => profile.setDialog('delete');

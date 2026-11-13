@@ -20,6 +20,7 @@ export { default as ThisMonthScreen } from './ThisMonth';
 export { default as SpendingBreakdownScreen } from './SpendingBreakdown';
 export { default as PlatformSubscriptionsScreen } from './PlatformSubscriptions';
 export { default as PriceHistoryScreen } from './PriceHistory';
+export { default as ReceiptsScreen } from './Receipts';
 export { default as LoginScreen } from './Login';
 export { default as Onboarding } from './Onboarding';
 export { default as OtpScreen } from './Otp';

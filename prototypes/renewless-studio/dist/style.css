@@ -947,3 +947,36 @@
 /* Loop sits inside the circle, centred (Gmail recovery). */
 .gmail-ob-mascot{display:grid;place-items:center}
 .gmail-ob-mascot .mascot-view{margin:0 auto}
+
+/* Receipts (approved and locked by the user, 13 Nov 2026). */
+.receipt-list{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.phone .receipt-row{padding:14px}
+.receipt-row .spend-heading{display:flex;justify-content:space-between;align-items:center}
+.receipt-kind{display:inline-block;margin-top:8px;font-size:10px;letter-spacing:.4px;padding:3px 8px;border-radius:999px;background:#2c3626;color:var(--accent)}
+.receipt-kind-failed_payment,.receipt-kind-access_ended,.receipt-kind-cancellation{background:#3a2626;color:#f29b8f}
+.receipt-kind-invoice,.receipt-kind-trial_started,.receipt-kind-trial_ending{background:#24303a;color:#9ebce0}
+.phone .receipt-subject{font-size:12px;margin:8px 0 2px}
+.phone .receipt-from{font-size:10px;margin:0}
+.phone .receipt-file{display:flex;justify-content:space-between;align-items:center;width:100%;margin-top:10px;padding:10px 12px;border:1px solid #ffffff12;border-radius:12px;background:#ffffff06;font-size:11px;color:var(--text)}
+.receipt-file span:last-child{color:var(--accent)}
+.phone .receipt-note{margin-top:14px}
+.receipt-viewer{position:absolute;inset:0;z-index:20;background:#0d0f10;display:flex;flex-direction:column;padding:54px 16px 24px}
+.receipt-viewer header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;font-size:12px}
+.receipt-viewer header button{width:36px;height:36px;border-radius:10px;background:var(--card);color:var(--text);font-size:18px}
+.receipt-paper{background:#fff;color:#1b1b1b;border-radius:6px;padding:22px 18px;font-size:12px}
+.phone .receipt-paper h3{margin:0 0 4px;color:#1b1b1b}
+.receipt-paper dl{margin:16px 0}.receipt-paper dl div{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee}
+.receipt-paper dt{color:#666}.receipt-paper dd{margin:0}
+.receipt-paper small{color:#999}
+
+/* Connect message (failed, cancelled, Gmail not allowed): coral border like other errors (user, 13 Nov 2026). */
+.ob-connection-feedback{border-color:#f29b8f}
+
+/* Add with AI · Add manually links and the sync-locked Home card (approved and locked by the user, 13 Nov 2026). */
+.add-choice-links{display:flex;justify-content:center;align-items:center;gap:8px;width:100%}
+.phone .add-choice-links .link{width:auto;margin:0;padding:10px 4px}
+.add-choice-links span{color:var(--muted)}
+.gmail-sync-pill{display:inline-flex;align-items:center;gap:6px;margin-top:16px;padding:5px 11px;border-radius:999px;background:#b9e58c14;border:1px solid #b9e58c30;color:var(--accent);font-size:11px}
+.gmail-sync-pill svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8}
+.phone .gmail-promo-locked h3{margin-top:12px}
+.gmail-promo-options{width:100%;margin-top:4px}

@@ -1,4 +1,4 @@
-import { fromReminder, setCategories, toAiReply, toDetail, toGmailCandidate, toHome, toRecord, toSubscriptionBody } from '../src/api_services/adapters';
+import { fromReminder, setCategories, toAiReply, toDetail, toGmailCandidate, toHome, toReceipt, toRecord, toSubscriptionBody } from '../src/api_services/adapters';
 import type { DetailDto, EventDto, HomeDto } from '../src/api_services/dto';
 import { platform_logos } from '../src/assets/icons';
 
@@ -97,4 +97,10 @@ test('the Gmail review leaves out rows it cannot show and maps an update with it
   expect(toGmailCandidate({ ...base, classification: 'tracked' })).toMatchObject({ kind: 'duplicate' });
   const update = toGmailCandidate({ ...base, classification: 'update', targetSubscriptionId: 's1', changes: { price: { from: { currency: 'USD', amountMinor: 9000 }, to: { currency: 'USD', amountMinor: 10000 } } } });
   expect(update).toMatchObject({ kind: 'update', target_id: 's1', old: { price: '90.00' }, next_date: '2026-11-30', revision: 1, selected: true });
+});
+
+test('a receipt shows its billing date, kind and kept files', () => {
+  const receipt = toReceipt({ id: 'r1', kind: 'failed_payment', subject: 'Payment declined', from: 'Google Play <g@google.com>', receivedAt: '2026-11-11T08:00:00.000Z', amount: { currency: 'INR', amount: '550.00' }, billingDate: '2026-11-11', attachments: [{ id: 'a1', filename: 'r.pdf', mimeType: 'application/pdf', size: 10 }, { id: 'a2', filename: 'r.jpg', mimeType: 'image/jpeg', size: 10 }] });
+  expect(receipt).toMatchObject({ kind_label: 'Payment failed', tone: 'alert', date: '2026-11-11', amount: { currency: 'INR', amount: '550.00' }, files: [{ id: 'a1', kind: 'pdf' }, { id: 'a2', kind: 'image' }] });
+  expect(toReceipt({ ...receipt, kind: 'mystery', receivedAt: '2026-11-11T08:00:00.000Z', billingDate: null, amount: null, attachments: [] } as never)).toMatchObject({ kind_label: 'Billing email', amount: null, files: [] });
 });

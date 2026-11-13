@@ -98,21 +98,49 @@ export function connectOnboardingGoogle(onDiscovering: () => void, onScannedBefo
   };
 }
 
+// A status check that can't reach the server doesn't end the scan: only 3 in a row do. The job keeps running on
+// the server, so a retry after that checks it again instead of starting (and paying for) a new scan.
+const POLL_FAILURES = 3;
+let poll_failures = 0;
+let lost_job = '';
+
 export function getOnboardingScan(job_id: string): AppThunk {
   return async dispatch => {
     await dispatch(
       requestHandler({
         apiService: apiServices.getScan,
         param_data: { id: job_id },
-        onDone: job => dispatch(setScanStatus(toScanStatus(job))),
-        onError: () => dispatch(setScanFailed('network')),
+        onDone: job => {
+          poll_failures = 0;
+          dispatch(setScanStatus(toScanStatus(job)));
+        },
+        onError: () => {
+          poll_failures += 1;
+          if (poll_failures < POLL_FAILURES) return;
+          poll_failures = 0;
+          lost_job = job_id;
+          dispatch(setScanFailed('network'));
+        },
       }),
     );
   };
 }
 
+// Retry on Interrupted: the job we lost contact with is checked again; a job the server itself failed starts anew.
+export function retryOnboardingScan(connector_id: string, job_id: string, onSyncLimit: () => void): AppThunk {
+  return async dispatch => {
+    if (job_id && job_id === lost_job) {
+      lost_job = '';
+      dispatch(setScanJob(job_id));
+      return;
+    }
+    await dispatch(startOnboardingScan(connector_id, onSyncLimit));
+  };
+}
+
 // A review edit is saved on the scan (not yet as a subscription); onSaved closes the sheet.
-export function editOnboardingCandidate(job_id: string, item: ScanCandidate, onSaved: () => void): AppThunk {
+// onFailed gets the server's message so the open sheet can show it (a toast would sit behind the sheet).
+export function editOnboardingCandidate(job_id: string, item: ScanCandidate, onSaved: () => void, onFailed: (message: string) => void): AppThunk {
   return async dispatch => {
     await dispatch(
       requestHandler({
@@ -123,7 +151,7 @@ export function editOnboardingCandidate(job_id: string, item: ScanCandidate, onS
           if (updated) dispatch(updateCandidate({ ...updated, selected: item.selected }));
           onSaved();
         },
-        onError: error => dispatch(setNotice(error.message)),
+        onError: error => onFailed(error.field_errors.price ?? error.field_errors['price.amount'] ?? error.message),
       }),
     );
   };
@@ -132,6 +160,8 @@ export function editOnboardingCandidate(job_id: string, item: ScanCandidate, onS
 // Imports only the selected, reviewed candidates; Ready opens only after the import succeeds.
 export function saveOnboardingFinds(job_id: string, candidate_ids: string[], onSaved: () => void): AppThunk {
   return async dispatch => {
+    // A new attempt starts clean, so a later Back to the review never shows an old failure.
+    dispatch(setSaveError(''));
     await dispatch(
       requestHandler({
         apiService: apiServices.importScan,

@@ -206,6 +206,8 @@ export type SubscriptionDetail = {
   record: SubscriptionRecord;
   today: string;
   receipts: { totals: MoneyTotal[]; count: number };
+  // Billing emails kept for this subscription (Receipts screen): how many and the newest one's date.
+  receipt_emails: { count: number; latest: string | null };
   annual_estimate: string;
   related_count: number;
   // Account default reminder days (Reminder settings), shown and used by "Account default".
@@ -362,6 +364,8 @@ export type ConstantState = {
   widget_prompt_seen: boolean;
   // AI chat consent (Google Gemini) given on this device for the signed-in account; cleared on sign-out.
   ai_consent: boolean;
+  // Turning AI off failed to reach the server; the next app open sends it again. Cleared on sign-out.
+  ai_withdrawal_unsent: boolean;
 };
 
 export type AuthRequest =
@@ -383,6 +387,8 @@ export type AuthState = {
 export type ProfileState = {
   user: Profile | null;
   loading: boolean;
+  // Account deletion runs in its dialog (Verifying… then Deleting…), not under the saving overlay.
+  delete_step: '' | 'verifying' | 'deleting';
   error: string;
   // null until the first successful load.
   overview: ProfileOverview | null;
@@ -486,8 +492,8 @@ export type AuthStackParamList = {
   ResetPassword: { reset_token: string };
 };
 
-// Where the user goes after authenticating: the Add form for manual entry, otherwise Home.
-export type AuthIntent = 'add_manual';
+// Where the user goes after authenticating: the Add form for manual entry, AI chat for Add with AI, otherwise Home.
+export type AuthIntent = 'add_manual' | 'add_ai';
 export type AuthProvider = 'google' | 'apple';
 
 export type TabParamList = {
@@ -515,6 +521,7 @@ export type AppStackParamList = {
   // From Detail exclude_id hides the current plan; from spending every plan on the platform shows.
   PlatformSubscriptions: { platform_id: string; name: string; exclude_id?: string };
   PriceHistory: { id: string };
+  Receipts: { id: string };
   Alerts: undefined;
   ReminderSettings: undefined;
   Settings: undefined;
@@ -528,4 +535,18 @@ export type AppStackParamList = {
   CalendarDay: { date: string };
   // Detail's View payments: the Payments screen scoped to one owned subscription.
   SubscriptionPayments: { id: string; name: string };
+};
+
+// One billing email in the Receipts screen; files open from a short-lived private link.
+export type ReceiptFile = { id: string; name: string; kind: 'pdf' | 'image' };
+export type ReceiptItem = {
+  id: string;
+  kind_label: string;
+  // Failed, cancelled or ended mail shows in coral; invoices and trials in blue; paid receipts in mint.
+  tone: 'paid' | 'alert' | 'info';
+  date: string;
+  amount: MoneyTotal | null;
+  subject: string;
+  from: string;
+  files: ReceiptFile[];
 };

@@ -5,6 +5,7 @@ import { Pressable, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { check_dark_icon, edit_icon } from '../../../../assets/icons';
 import AppSheet from '../../../../components/AppSheet';
+import AddChoiceLinks from '../../../../components/AddChoiceLinks';
 import CustomButton from '../../../../components/CustomButton';
 import RowView from '../../../../components/RowView';
 import CustomText from '../../../../components/CustomText';
@@ -22,6 +23,7 @@ import { dateLabel, formatTotals, moneyLabel, paidMonthlyTotals, upcomingWeek } 
 import type { OnboardingController } from '../../index.function';
 import { RING, RING_WIDTH, styles } from './styles';
 import { CURRENCIES, CURRENCY_NAMES, CURRENCY_SEARCH } from '../../../../utils/money';
+import { AMOUNT_ERROR, isValidAmount } from '../../../../utils/subscription-form';
 
 type Props = { onboarding: OnboardingController };
 
@@ -67,7 +69,7 @@ function EditSheet({ onboarding }: Props) {
   }, [item]);
 
   const price = Number(price_text);
-  const valid = price_text.trim() !== '' && Number.isFinite(price) && price >= 0 && (!draft?.trial || !!draft.next_date);
+  const valid = isValidAmount(price_text) && (!draft?.trial || !!draft.next_date);
 
   const submit = () => {
     if (!item || !draft || !valid) return;
@@ -84,10 +86,11 @@ function EditSheet({ onboarding }: Props) {
               <InputField
                 variant="sheet"
                 label={draft.trial ? 'Price after trial' : 'Amount'}
+                placeholder="0.00"
                 value={price_text}
                 onChangeText={setPriceText}
                 keyboardType="decimal-pad"
-                error={price_text && !valid ? 'Enter an amount of 0 or more.' : undefined}
+                error={price_text && !isValidAmount(price_text) ? AMOUNT_ERROR : onboarding.edit_error || undefined}
               />
             </View>
             <View style={styles.currency}>
@@ -222,7 +225,7 @@ export function YourSubscriptionsFooter({ onboarding }: Props) {
 
       <CustomButton
         variant="primary"
-        text={onboarding.save_loading ? 'Saving…' : `Save ${count} ${count === 1 ? 'subscription' : 'subscriptions'} →`}
+        text={onboarding.save_loading ? 'Saving…' : count ? `Save ${count} ${count === 1 ? 'subscription' : 'subscriptions'} →` : 'Select subscriptions to save'}
         disabled={!count || onboarding.save_loading}
         busy={onboarding.save_loading}
         onPress={onboarding.save}
@@ -231,7 +234,7 @@ export function YourSubscriptionsFooter({ onboarding }: Props) {
       <SizedBox height={SIZES.padding * 0.65} />
 
       {count ? (
-        <CustomButton variant="link" text="Add a subscription manually" onPress={onboarding.openManual} />
+        <AddChoiceLinks onAi={onboarding.openAi} onManual={onboarding.openManual} />
       ) : (
         <CustomButton variant="link" text="Continue without saving" onPress={onboarding.skipSave} />
       )}

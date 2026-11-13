@@ -1,8 +1,8 @@
-import { FlatList, Image, KeyboardAvoidingView, Modal, Pressable, View } from 'react-native';
+import ImagePreview from '../../components/ImagePreview';
+import { FlatList, KeyboardAvoidingView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { close_icon, logo_mark } from '../../assets/icons';
+import { logo_mark } from '../../assets/icons';
 import CustomText from '../../components/CustomText';
-import Icons from '../../components/Icons';
 import Container from '../../components/Container';
 import Header from '../../components/Header';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
@@ -71,14 +71,7 @@ export default function AiChatScreen() {
       <AttachSheet chat={chat} />
       <ConsentDialog chat={chat} />
       <DuplicateDialog chat={chat} />
-      <Modal visible={!!chat.preview_uri} animationType="fade" onRequestClose={chat.closePreview}>
-        <View style={styles.preview}>
-          {chat.preview_uri ? <Image source={{ uri: chat.preview_uri }} resizeMode="contain" style={styles.preview_image} accessibilityLabel="Sent image" /> : null}
-          <Pressable accessibilityRole="button" accessibilityLabel="Close preview" hitSlop={SIZES.padding3} onPress={chat.closePreview} style={styles.preview_close}>
-            <Icons name={close_icon} />
-          </Pressable>
-        </View>
-      </Modal>
+      <ImagePreview uri={chat.preview_uri} label="Sent image" onClose={chat.closePreview} />
     </Container>
   );
 }

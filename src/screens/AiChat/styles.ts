@@ -93,20 +93,6 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     width: SIZES.padding * 1.75,
   },
-  preview: {
-    backgroundColor: COLORS.background,
-    flex: 1,
-    justifyContent: 'center',
-  },
-  preview_image: {
-    height: '80%',
-    width: '100%',
-  },
-  preview_close: {
-    position: 'absolute',
-    right: SIZES.padding,
-    top: SIZES.padding * 3,
-  },
   bubble_wide: {
     alignSelf: 'stretch',
   },
