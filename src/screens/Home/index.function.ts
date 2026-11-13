@@ -4,10 +4,11 @@ import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { syncAiConsent } from '../../redux/actions/ai-action';
 import { registerPush, savePushToken } from '../../redux/actions/auth-action';
 import { getDashboard } from '../../redux/actions/dashboard-action';
-import { MAX_INBOXES, getSyncLockedInbox } from '../../redux/actions/gmail-action';
+import { INBOX_LIMIT_NOTICE, MAX_INBOXES, connectGmailInbox, getSyncLockedInbox } from '../../redux/actions/gmail-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { navigate } from '../../navigation/service';
 import { setWidgetPromptSeen } from '../../redux/slices/constant-slice';
+import { setNotice } from '../../redux/slices/profile-slice';
 import type { ProfileInbox, TabParamList } from '../../types';
 import { pinWidget, widgetEvent, widgetInstalled } from '../../utils/widget';
 import { trackEvent } from '../../utils/analytics';
@@ -106,7 +107,11 @@ export default function useHome(route: HomeRoute) {
     trackEvent('add_option_selected', { option: 'ai' });
     navigate('AiChat');
   };
-  // With both free inboxes connected there is no Connect another Gmail.
+  // Connect another Gmail adds a new inbox through Google, then scans that one (like Profile + Connect); the locked
+  // inbox is never scanned again. With both free inboxes connected the option is left out.
+  const onInboxConnected = (inbox: ProfileInbox) => navigate('GmailScan', { inbox_id: inbox.id });
+  const onInboxLimit = () => dispatch(setNotice(INBOX_LIMIT_NOTICE));
+  const connectAnother = () => dispatch(connectGmailInbox(onInboxConnected, onInboxLimit));
   const can_add_inbox = inbox_count < MAX_INBOXES;
   const next_sync = locked_inbox?.nextSync ? new Date(locked_inbox.nextSync).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
   const openConnectGmail = () => {
@@ -155,6 +160,7 @@ export default function useHome(route: HomeRoute) {
     closeAdd,
     locked_inbox,
     can_add_inbox,
+    connectAnother,
     next_sync,
     openAddManual,
     openAddAi,

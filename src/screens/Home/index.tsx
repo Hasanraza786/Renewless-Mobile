@@ -61,7 +61,7 @@ export default function HomeScreen({ route }: { route: HomeRoute }) {
                 align="center"
               />
               <SizedBox />
-              <AddOptions gmail={home.can_add_inbox ? { title: 'Connect another Gmail', copy: 'Find subscriptions in a second inbox' } : null} />
+              <AddOptions gmail={home.can_add_inbox ? { title: 'Connect another Gmail', copy: 'Find subscriptions in a second inbox', open: home.connectAnother } : null} />
             </Fragment>
           ) : (
             <Fragment>

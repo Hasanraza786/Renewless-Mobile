@@ -12,6 +12,7 @@ import { getProfileOverview } from './profile-action';
 
 // Free limit per account; the server also counts disconnected inboxes (GMAIL_INBOX_LIMIT).
 export const MAX_INBOXES = 2;
+export const INBOX_LIMIT_NOTICE = 'You’ve used your 2 Gmail inboxes. You can reconnect an inbox you used before.';
 
 const CONNECT_FAILED = 'We couldn’t connect this inbox. Please try again.';
 const GMAIL_DENIED = 'Allow Gmail access to connect this inbox.';

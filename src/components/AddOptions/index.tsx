@@ -14,7 +14,7 @@ type Props = {
   onPick?: () => void;
   // Home's sync-locked card says Connect another Gmail / Find subscriptions in a second inbox; null leaves the Gmail row
   // out (both free inboxes are connected).
-  gmail?: { title: string; copy: string } | null;
+  gmail?: { title: string; copy: string; open: () => void } | null;
 };
 
 const OPTIONS = [

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { goBack, navigate } from '../../navigation/service';
-import { connectGmailInbox, getGmailInboxes, getGmailScan, saveGmailResults, startGmailScan } from '../../redux/actions/gmail-action';
+import { connectGmailInbox, getGmailInboxes, getGmailScan, INBOX_LIMIT_NOTICE, saveGmailResults, startGmailScan } from '../../redux/actions/gmail-action';
 import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch } from '../../redux/store';
 import type { ApiError } from '../../api_services/http-provider';
@@ -19,7 +19,6 @@ const POLL_MS = 2000;
 // Like onboarding's Discovering: a short hold on the completed stages, then the review opens by itself.
 const ADVANCE_MS = 650;
 const POLL_FAILURES = 3;
-const INBOX_LIMIT = 'You’ve used your 2 Gmail inboxes. You can reconnect an inbox you used before.';
 const MONTHLY: Record<string, number> = { Weekly: 52 / 12, Monthly: 1, Quarterly: 1 / 3, Yearly: 1 / 12 };
 
 // Authenticated Gmail: scan the chosen inbox, review new plans and updates, save only what is selected.
@@ -118,7 +117,7 @@ export default function useGmailScan(route: GmailScanRoute) {
     [scan],
   );
   const onFirstLimit = useCallback(() => {
-    dispatch(setNotice(INBOX_LIMIT));
+    dispatch(setNotice(INBOX_LIMIT_NOTICE));
     goBack();
   }, [dispatch]);
 
@@ -196,7 +195,7 @@ export default function useGmailScan(route: GmailScanRoute) {
     setInboxes(current => [...current.filter(item => item.id !== target.id), target]);
     scan(target);
   };
-  const onInboxLimit = () => dispatch(setNotice(INBOX_LIMIT));
+  const onInboxLimit = () => dispatch(setNotice(INBOX_LIMIT_NOTICE));
   const connectAnother = () => {
     setSheet(null);
     dispatch(connectGmailInbox(onConnected, onInboxLimit));
