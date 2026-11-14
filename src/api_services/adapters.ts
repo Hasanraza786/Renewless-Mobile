@@ -153,7 +153,8 @@ export function toRecord(item: SummaryDto | DetailDto): SubscriptionRecord {
     inbox: connector ? { email: connector.email, last_sync: connector.lastSuccessfulSyncAt ?? '', disconnected: connector.status === 'disconnected' } : null,
     reminder: detail ? toReminder(detail.reminder) : { mode: 'default' },
     notes: detail?.note ?? null,
-    manage_url: null,
+    // Only a web link opens from Detail.
+    manage_url: detail?.manageUrl?.startsWith('https://') ? detail.manageUrl : null,
     price_history: [],
     revision: detail?.revision ?? 0,
   };

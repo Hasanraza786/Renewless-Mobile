@@ -38,20 +38,34 @@ client.interceptors.response.use(
   },
 );
 
-// A fresh key per create/import request, so a retry of the same tap is not saved twice.
-const idempotencyKey = () => `rl-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+// One key per user action: a Retry of the same request (same URL and body) resends the key it failed with, so a create
+// that reached the server before the connection dropped is not saved twice. The key is dropped once the server answers.
+const pending_keys = new Map<string, string>();
+const newKey = () => `rl-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 
 async function request<T>(config: AxiosRequestConfig & { idempotent?: boolean }): Promise<T> {
   const { idempotent, ...rest } = config;
-  const response = await client.request<T>({ ...rest, headers: { ...rest.headers, ...(idempotent ? { 'Idempotency-Key': idempotencyKey() } : {}) } });
-  return response.data;
+  const action = idempotent ? `${rest.url} ${JSON.stringify(rest.data ?? {})}` : '';
+  const key = idempotent ? pending_keys.get(action) ?? newKey() : '';
+  if (idempotent) pending_keys.set(action, key);
+  try {
+    const response = await client.request<T>({ ...rest, headers: { ...rest.headers, ...(idempotent ? { 'Idempotency-Key': key } : {}) } });
+    pending_keys.delete(action);
+    return response.data;
+  } catch (error) {
+    // No answer or a server failure may still have saved it, so the next Retry keeps the key.
+    if (error instanceof ApiError && error.status > 0 && error.status < 500) pending_keys.delete(action);
+    throw error;
+  }
 }
 
 // AI turns read files with Gemini and can take longer than a plain request.
 const LONG_TIMEOUT = 90000;
 export const postLong = <T>(url: string, data: object) => request<T>({ method: 'POST', url, data, timeout: LONG_TIMEOUT });
-// Raw file bytes; the server reads the type from the bytes.
-export const upload = <T>(url: string, file: Blob) => request<T>({ method: 'POST', url, data: file, timeout: LONG_TIMEOUT, headers: { 'Content-Type': 'application/octet-stream' } });
+// Raw file bytes; the server reads the type from the bytes. React Native's Blob is not recognised by axios, which would
+// send it as JSON, so the body skips axios's transform.
+export const upload = <T>(url: string, file: Blob) =>
+  request<T>({ method: 'POST', url, data: file, timeout: LONG_TIMEOUT, headers: { 'Content-Type': 'application/octet-stream' }, transformRequest: [(data: Blob) => data] });
 
 export const get = <T>(url: string, params?: object) => request<T>({ method: 'GET', url, params });
 export const post = <T>(url: string, data?: object, idempotent = false) => request<T>({ method: 'POST', url, data: data ?? {}, idempotent });

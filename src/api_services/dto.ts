@@ -57,6 +57,7 @@ export type SummaryDto = {
 export type DetailDto = SummaryDto & {
   startDate: string | null;
   note: string | null;
+  manageUrl: string | null;
   reminder: { offsets: number[]; custom: boolean };
   source: {
     type: 'manual' | 'ai' | 'gmail';

@@ -102,15 +102,19 @@ export const styles = StyleSheet.create({
   retry: {
     minHeight: SIZES.padding * 2.2,
   },
+  bubble_thinking: {
+    paddingHorizontal: SIZES.padding * 0.55,
+    paddingVertical: SIZES.padding * 0.4,
+  },
   dots: {
-    gap: SIZES.padding / 4,
-    height: SIZES.padding * 0.9,
+    gap: SIZES.padding / 5,
+    height: SIZES.padding * 0.6,
   },
   dot: {
     backgroundColor: COLORS.text_secondary,
-    borderRadius: SIZES.padding / 5,
-    height: SIZES.padding * 0.35,
-    width: SIZES.padding * 0.35,
+    borderRadius: SIZES.padding / 8,
+    height: SIZES.padding / 4,
+    width: SIZES.padding / 4,
   },
   voice_play: {
     alignItems: 'center',

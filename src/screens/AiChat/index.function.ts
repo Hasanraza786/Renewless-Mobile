@@ -24,7 +24,8 @@ export type ChatMessage = { id: string; role: 'user' | 'loop'; input: AiInput | 
 export type Attachment = { uri: string; name: string; file_kind: 'image' | 'pdf' };
 
 const TEXT_LIMIT = 2000;
-const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp', 'image/heic', 'image/heif'];
+// Uploads stay PNG/JPEG/WebP: the pickers hand iPhone HEIC photos over as JPEG (iOS 'compatible' mode, Android converts by default).
+const IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp'];
 const MB = 1024 * 1024;
 const OPENING = 'Which service would you like to add? Send its name and billing details.';
 
@@ -322,7 +323,7 @@ export default function useAiChat() {
 
   // Native pickers; a cancelled or rejected pick keeps the previous valid selection.
   const launchImage = async () => {
-    const result = await launchImageLibrary({ mediaType: 'photo', selectionLimit: 1 });
+    const result = await launchImageLibrary({ mediaType: 'photo', selectionLimit: 1, assetRepresentationMode: 'compatible' });
     const asset = result.assets?.[0];
     if (!asset?.uri) return;
     if (!asset.type || !IMAGE_TYPES.includes(asset.type)) return setAttachError('Choose a PNG, JPG or WebP image.');

@@ -13,7 +13,7 @@ const event = (over: Partial<EventDto> = {}): EventDto => ({
 const detail = (over: Partial<DetailDto> = {}): DetailDto => ({
   id: 'sub-1', name: 'Netflix', plan: null, platformId: NETFLIX_ID, categoryId: 'cat-streaming', logoUrl: null,
   price: { currency: 'USD', amount: '15.49' }, cycle: 'monthly', statusGroup: 'renewing_soon', nextEvent: event(), estimated: false, trial: null,
-  lifecycle: 'active', cancelledAt: null, accessUntil: null, expiredAt: null, startDate: '2025-03-14', note: 'Family',
+  lifecycle: 'active', cancelledAt: null, accessUntil: null, expiredAt: null, startDate: '2025-03-14', note: 'Family', manageUrl: null,
   reminder: { offsets: [3], custom: false }, source: { type: 'manual', email: 'qa@example.com', connector: null },
   spending: { totals: [], count: 0, annualEquivalent: { currency: 'USD', amount: '185.88' } }, samePlatformCount: 0, priceChangeCount: 0, revision: 4, ...over,
 });
@@ -25,6 +25,11 @@ test('a backend record maps to the app record, its logo and category', () => {
   expect(record).toMatchObject({ id: 'sub-1', platform_id: NETFLIX_ID, price: '15.49', cycle: 'Monthly', next_date: '2026-11-14', category: 'Entertainment', notes: 'Family', revision: 4, reminder: { mode: 'default' } });
   // The bundled logo is linked to the backend platform ID by name.
   expect(platform_logos[NETFLIX_ID]).toBe('netflix-logo');
+});
+
+test('Detail opens only a web Manage link from the backend', () => {
+  expect(toRecord(detail({ manageUrl: 'https://www.netflix.com/account' })).manage_url).toBe('https://www.netflix.com/account');
+  expect(toRecord(detail({ manageUrl: 'http://netflix.com' })).manage_url).toBeNull();
 });
 
 test('a trial keeps its end separate from the next renewal', () => {

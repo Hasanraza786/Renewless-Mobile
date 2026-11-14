@@ -5,6 +5,7 @@ import { pause_icon, pdf_icon, play_icon } from '../../../assets/icons';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
 import Icons from '../../../components/Icons';
+import Mascot from '../../../components/Mascot';
 import RowView from '../../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import type { AiDraft } from '../../../types';
@@ -115,7 +116,7 @@ export function MessageItem({ chat, message }: Props & { message: ChatMessage })
   const kind = message.input?.kind === 'file' ? message.input.file_kind : message.input?.kind;
   return (
     <View style={[styles.wrap, user ? styles.wrap_user : styles.wrap_loop, kind === 'voice' && styles.wrap_voice, kind === 'image' && styles.wrap_image, kind === 'pdf' && styles.wrap_pdf]}>
-      <CustomText text={user ? 'You' : 'Loop'} weight={FONTS.regular} color={COLORS.chat_author} size={SIZES.sm} style={styles.author} />
+      {user ? <CustomText text="You" weight={FONTS.regular} color={COLORS.chat_author} size={SIZES.sm} style={styles.author} /> : <LoopAuthor />}
       <View style={[styles.bubble, user ? styles.bubble_user : styles.bubble_loop, (kind === 'voice' || kind === 'image' || kind === 'pdf') && styles.bubble_wide, kind === 'image' && styles.bubble_image]} accessibilityLiveRegion={user ? 'none' : 'polite'}>
         {message.input?.kind === 'voice' ? (
           <VoiceBubble chat={chat} message={message} />
@@ -135,7 +136,19 @@ export function MessageItem({ chat, message }: Props & { message: ChatMessage })
   );
 }
 
-// Three staggered dots on Loop's side while a reply is pending; static under Reduce Motion.
+// Loop's messages carry a small mascot beside the name; it is decorative, the name is read.
+function LoopAuthor() {
+  return (
+    <RowView gap={SIZES.padding / 4} style={styles.author}>
+      <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
+        <Mascot expression="neutral" size={SIZES.padding * 1.2} label="" />
+      </View>
+      <CustomText text="Loop" weight={FONTS.regular} color={COLORS.chat_author} size={SIZES.sm} />
+    </RowView>
+  );
+}
+
+// Three small staggered dots on Loop's side while a reply is pending; static under Reduce Motion.
 export function ThinkingDots({ label }: { label: string }) {
   const values = useRef([0, 1, 2].map(() => new Animated.Value(0))).current;
   useEffect(() => {
@@ -154,11 +167,14 @@ export function ThinkingDots({ label }: { label: string }) {
   }, [values]);
   return (
     <View style={[styles.wrap, styles.wrap_loop]} accessibilityLabel={label} accessibilityLiveRegion="polite">
-      <CustomText text="Loop" weight={FONTS.regular} color={COLORS.chat_author} size={SIZES.sm} style={styles.author} />
-      <View style={[styles.bubble, styles.bubble_loop]}>
+      <LoopAuthor />
+      <View style={[styles.bubble, styles.bubble_loop, styles.bubble_thinking]}>
         <RowView style={styles.dots}>
           {values.map((value, index) => (
-            <Animated.View key={index} style={[styles.dot, { transform: [{ translateY: value.interpolate({ inputRange: [0, 1], outputRange: [0, -SIZES.padding / 4] }) }] }]} />
+            <Animated.View
+              key={index}
+              style={[styles.dot, { opacity: value.interpolate({ inputRange: [0, 1], outputRange: [0.4, 0.9] }), transform: [{ translateY: value.interpolate({ inputRange: [0, 1], outputRange: [0, -SIZES.padding * 0.15] }) }] }]}
+            />
           ))}
         </RowView>
       </View>
