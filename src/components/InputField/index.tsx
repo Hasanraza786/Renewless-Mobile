@@ -7,6 +7,7 @@ import RowView from '../RowView';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import { styles } from './styles';
+import { useIsTablet } from '../../utils/tablet';
 
 type Props = TextInputProps & {
   label: string;
@@ -40,6 +41,8 @@ export default function InputField({
   ...input_props
 }: Props) {
   const [focused, setFocused] = useState(false);
+  // Tablet auth fields sit on the auth card, so they take the page background to stay distinct.
+  const is_tablet = useIsTablet();
   const [shown, setShown] = useState(false);
 
   return (
@@ -61,7 +64,7 @@ export default function InputField({
           accessibilityLabel={label}
           accessibilityHint={error || undefined}
           // A caller's style extends the variant (e.g. a taller multiline field); it never replaces it.
-          style={[variant ? styles[`${variant}_input`] : styles.input, style, focused && styles.input_focused, !!error && styles.input_error]}
+          style={[variant ? styles[`${variant}_input`] : styles.input, variant === 'auth' && is_tablet && styles.auth_input_tablet, style, focused && styles.input_focused, !!error && styles.input_error]}
           onFocus={event => {
             setFocused(true);
             onFocus?.(event);

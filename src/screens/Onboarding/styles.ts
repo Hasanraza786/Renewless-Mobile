@@ -32,6 +32,10 @@ export const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: 'center',
   },
+  // Tablet split: the text column keeps its natural height so it centres with its actions.
+  split_scroll: {
+    flexShrink: 1,
+  },
   footer: {
     paddingBottom: SIZES.padding3 / 2,
   },

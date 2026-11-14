@@ -19,7 +19,7 @@ import { styles } from './styles';
 
 function Empty({ history, filtered }: { history: HistoryController; filtered: boolean }) {
   return (
-    <View style={styles.empty}>
+    <View style={[styles.empty, history.is_tablet && styles.empty_tablet]}>
       <View style={styles.mascot_ring} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         <Mascot expression={filtered ? 'sad' : 'neutral'} size={SIZES.padding * 5.65} label="Loop" />
       </View>

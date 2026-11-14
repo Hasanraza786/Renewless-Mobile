@@ -8,6 +8,7 @@ import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import CustomText from '../CustomText';
 import RowView from '../RowView';
+import { useIsTablet } from '../../utils/tablet';
 import { styles } from './styles';
 
 const UNDO_MS = 8000;
@@ -19,6 +20,7 @@ export default function UndoToast() {
   const removed = useAppSelector(state => state.detail.removed);
   const notice = useAppSelector(state => state.profile.notice);
   const insets = useSafeAreaInsets();
+  const is_tablet = useIsTablet();
 
   useEffect(() => {
     if (!removed) return;
@@ -34,8 +36,8 @@ export default function UndoToast() {
 
   if (!removed && !notice) return null;
   return (
-    <View pointerEvents="box-none" style={[styles.main_view, { bottom: insets.bottom + SIZES.padding * 4.5 }]}>
-      <RowView accessibilityRole="alert" justify_content="space-between" gap={SIZES.padding2} style={styles.toast}>
+    <View pointerEvents="box-none" style={[styles.main_view, is_tablet && styles.main_view_tablet, { bottom: insets.bottom + SIZES.padding * 4.5 }]}>
+      <RowView accessibilityRole="alert" justify_content="space-between" gap={SIZES.padding2} style={[styles.toast, is_tablet && styles.toast_tablet]}>
         <CustomText text={removed ? `Removed ${removed.name} from Renewless.` : notice!} weight={FONTS.regular} size={SIZES.sm} style={styles.text} />
         {removed ? (
           <Pressable accessibilityRole="button" accessibilityLabel={`Undo removing ${removed.name}`} hitSlop={SIZES.padding2} onPress={() => dispatch(restoreSubscription(removed.id, removed.undo_token))}>

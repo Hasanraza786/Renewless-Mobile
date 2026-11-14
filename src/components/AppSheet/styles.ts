@@ -20,6 +20,20 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding,
     paddingTop: SIZES.padding2,
   },
+  root_tablet: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: SIZES.padding * 2,
+  },
+  sheet_tablet: {
+    borderRadius: SIZES.padding * 1.2,
+    maxWidth: '100%',
+    paddingBottom: SIZES.padding * 1.2,
+    width: SIZES.padding * 27,
+  },
+  sheet_tablet_full: {
+    height: '80%',
+  },
   handle: {
     alignSelf: 'center',
     backgroundColor: COLORS.handle,

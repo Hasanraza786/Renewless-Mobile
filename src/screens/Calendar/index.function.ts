@@ -8,6 +8,7 @@ import { nearestEvent, shiftMonth } from '../../utils/calendar';
 import { localToday } from '../../utils/dates';
 import { trackEvent } from '../../utils/analytics';
 import { money } from '../../utils/money';
+import { useIsTablet } from '../../utils/tablet';
 
 const EMPTY: HomeEvent[] = [];
 
@@ -17,6 +18,7 @@ export type PickerAnchor = { x: number; y: number; height: number };
 export type CalendarRoute = RouteProp<TabParamList, 'Calendar'>;
 
 export default function useCalendar(route: CalendarRoute) {
+  const is_tablet = useIsTablet();
   const dispatch = useAppDispatch();
   const { months, loading, error } = useAppSelector(state => state.calendar);
   const [month, setMonth] = useState(() => localToday().slice(0, 7));
@@ -85,6 +87,7 @@ export default function useCalendar(route: CalendarRoute) {
   };
 
   return {
+    is_tablet,
     month,
     today,
     events,

@@ -87,7 +87,7 @@ export default function ReminderSettingsScreen() {
   const device = settings.device ? DEVICE[settings.device] : null;
 
   return (
-    <Container is_auth style={styles.main_view}>
+    <Container is_auth readable style={styles.main_view}>
       <Header title="Reminder settings" onBack={goBack} />
       {settings.status !== 'ready' || !draft ? (
         <StateView status={settings.status === 'failed' ? 'failed' : 'loading'} message={settings.status === 'failed' ? settings.load_error : 'Loop is getting your reminder settings…'} onRetry={settings.retry} />

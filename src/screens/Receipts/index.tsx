@@ -61,7 +61,7 @@ export default function ReceiptsScreen({ route }: { route: ReceiptsRoute }) {
   const { record } = receipts;
 
   return (
-    <Container style={styles.main_view}>
+    <Container readable style={styles.main_view}>
       <Header title="Receipts" onBack={goBack} />
       {receipts.status !== 'ready' || !receipts.receipts ? (
         <StateView status={receipts.status === 'failed' ? 'failed' : 'loading'} message={receipts.status === 'failed' ? receipts.load_error : 'Loop is finding your receipts…'} onRetry={receipts.load} />
@@ -87,7 +87,7 @@ export default function ReceiptsScreen({ route }: { route: ReceiptsRoute }) {
               <CustomText text="Only billing details and attached files are kept. Full emails are never stored." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
             </>
           ) : (
-            <View style={styles.empty}>
+            <View style={[styles.empty, receipts.is_tablet && styles.empty_tablet]}>
               <Mascot expression="neutral" size={SIZES.padding * 5.4} label="Loop" />
               <CustomText mt={SIZES.padding * 0.9} text="No receipts yet" size={SIZES.lg} align="center" />
               <CustomText mt={SIZES.padding2} text="Billing emails Gmail finds for this subscription appear here, with their PDF or image." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />

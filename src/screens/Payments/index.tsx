@@ -41,7 +41,7 @@ function Empty({ kind, payments }: { kind: EmptyKind; payments: PaymentsControll
   const action = { none: payments.openList, period: () => payments.chooseMonth('all'), search: () => payments.setQuery('') }[kind];
   const small = kind === 'period';
   return (
-    <View style={[styles.empty, small && styles.empty_period]}>
+    <View style={[styles.empty, small && styles.empty_period, kind === 'none' && payments.is_tablet && styles.empty_tablet]}>
       <View style={[styles.mascot_ring, small && styles.mascot_ring_small]} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         <Mascot expression={kind === 'search' ? 'sad' : 'neutral'} size={SIZES.padding * (small ? 5.05 : 5.65)} label="Loop" />
       </View>

@@ -66,9 +66,12 @@ function RecoveryBody({ kind, onboarding }: { kind: Kind } & Props) {
   const access = kind === 'interrupted' && onboarding.scan_failure === 'access';
   return (
     <Fragment>
-      <RecoveryArt badge={content.badge} reduce_motion={onboarding.reduce_motion} />
-
-      <SizedBox height={SIZES.padding2 * 2} />
+      {onboarding.is_tablet ? null : (
+        <Fragment>
+          <RecoveryArt badge={content.badge} reduce_motion={onboarding.reduce_motion} />
+          <SizedBox height={SIZES.padding2 * 2} />
+        </Fragment>
+      )}
 
       <OnboardingTitle eyebrow={content.eyebrow} title={content.title} emphasis={content.emphasis} copy={access ? ACCESS_COPY : content.copy} align="center" />
 
@@ -107,6 +110,8 @@ function RecoveryFooter({ kind, onboarding }: { kind: Kind } & Props) {
   );
 }
 
+export const ScanNoResultsArt = ({ onboarding }: Props) => <RecoveryArt badge={COPY.no_results.badge} reduce_motion={onboarding.reduce_motion} />;
+export const ScanInterruptedArt = ({ onboarding }: Props) => <RecoveryArt badge={COPY.interrupted.badge} reduce_motion={onboarding.reduce_motion} />;
 export const ScanNoResultsBody = (props: Props) => <RecoveryBody kind="no_results" {...props} />;
 export const ScanNoResultsFooter = (props: Props) => <RecoveryFooter kind="no_results" {...props} />;
 export const ScanInterruptedBody = (props: Props) => <RecoveryBody kind="interrupted" {...props} />;

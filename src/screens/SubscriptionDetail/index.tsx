@@ -177,7 +177,7 @@ export default function SubscriptionDetailScreen({ route }: Props) {
   const { view } = detail;
 
   return (
-    <Container style={styles.main_view} edges={['left', 'top', 'right', 'bottom']}>
+    <Container readable style={styles.main_view} edges={['left', 'top', 'right', 'bottom']}>
       <Header title="Subscription" onBack={goBack} onDelete={view ? () => detail.setSheet('delete') : undefined} />
       {!view ? (
         <StateView status={detail.status === 'failed' ? 'failed' : 'loading'} message={detail.status === 'failed' ? detail.error : 'Loop is opening your subscription…'} onRetry={detail.retry} />

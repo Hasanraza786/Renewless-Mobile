@@ -32,7 +32,7 @@ export default function InboxSubscriptionsScreen({ route }: { route: InboxSubscr
               ))}
             </View>
           ) : (
-            <View style={styles.empty}>
+            <View style={[styles.empty, imports.is_tablet && styles.empty_tablet]}>
               <View style={styles.mascot_ring} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
                 <Mascot expression="neutral" size={SIZES.padding * 5.05} label="Loop" />
               </View>

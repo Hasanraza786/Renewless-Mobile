@@ -7,11 +7,12 @@ import CustomText from '../../components/CustomText';
 import Icons from '../../components/Icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import type { AuthStackParamList, OnboardingStep } from '../../types';
-import { ConnectInboxBody, ConnectInboxFooter } from './components/ConnectInbox';
+import { ConnectArt, ConnectInboxBody, ConnectInboxFooter } from './components/ConnectInbox';
 import { DiscoveringBody, DiscoveringFooter } from './components/Discovering';
-import { ReadyConfetti, ReadyToGoBody, ReadyToGoFooter } from './components/ReadyToGo';
-import { ScanInterruptedBody, ScanInterruptedFooter, ScanNoResultsBody, ScanNoResultsFooter } from './components/ScanRecovery';
-import { WelcomeBody, WelcomeFooter } from './components/Welcome';
+import { ReadyArt, ReadyConfetti, ReadyToGoBody, ReadyToGoFooter } from './components/ReadyToGo';
+import { ScanInterruptedArt, ScanInterruptedBody, ScanInterruptedFooter, ScanNoResultsArt, ScanNoResultsBody, ScanNoResultsFooter } from './components/ScanRecovery';
+import TabletSplit from './components/TabletSplit';
+import { WelcomeArt, WelcomeBody, WelcomeFooter } from './components/Welcome';
 import { YourSubscriptionsBody, YourSubscriptionsFooter } from './components/YourSubscriptions';
 import useOnboarding, { type OnboardingController } from './index.function';
 import { common_styles } from '../../utils/common_styles';
@@ -23,25 +24,44 @@ type Props = Pick<NativeStackScreenProps<AuthStackParamList, 'Onboarding'>, 'rou
 type Panel = {
   Body: (props: { onboarding: OnboardingController }) => ReactNode;
   Footer: Panel['Body'];
+  // Tablets show the panel's artwork beside the text instead of above it.
+  Art?: Panel['Body'];
   // Ready and recovery fit one view: content is centred and the footer has no divider.
   fitted?: boolean;
 };
 
 const PANELS: Record<OnboardingStep, Panel> = {
-  welcome: { Body: WelcomeBody, Footer: WelcomeFooter },
-  connectInbox: { Body: ConnectInboxBody, Footer: ConnectInboxFooter },
+  welcome: { Body: WelcomeBody, Footer: WelcomeFooter, Art: WelcomeArt },
+  connectInbox: { Body: ConnectInboxBody, Footer: ConnectInboxFooter, Art: ConnectArt },
   discovering: { Body: DiscoveringBody, Footer: DiscoveringFooter },
   yourSubscriptions: { Body: YourSubscriptionsBody, Footer: YourSubscriptionsFooter },
-  readyToGo: { Body: ReadyToGoBody, Footer: ReadyToGoFooter, fitted: true },
-  scanNoResults: { Body: ScanNoResultsBody, Footer: ScanNoResultsFooter, fitted: true },
-  scanInterrupted: { Body: ScanInterruptedBody, Footer: ScanInterruptedFooter, fitted: true },
+  readyToGo: { Body: ReadyToGoBody, Footer: ReadyToGoFooter, fitted: true, Art: ReadyArt },
+  scanNoResults: { Body: ScanNoResultsBody, Footer: ScanNoResultsFooter, fitted: true, Art: ScanNoResultsArt },
+  scanInterrupted: { Body: ScanInterruptedBody, Footer: ScanInterruptedFooter, fitted: true, Art: ScanInterruptedArt },
 };
 
 const STAGE_COUNT = 5;
 
 export default function Onboarding({ route }: Props) {
   const onboarding = useOnboarding(route);
-  const { Body, Footer, fitted } = PANELS[onboarding.step];
+  const { Body, Footer, fitted, Art } = PANELS[onboarding.step];
+  const split = onboarding.is_tablet && !!Art;
+  // The panel's content and actions; on tablets they sit in the right column beside the artwork.
+  const panel = (
+    <Fragment>
+      <Animated.View
+        pointerEvents={onboarding.animating ? 'none' : 'auto'}
+        onLayout={event => onboarding.setPanelWidth(event.nativeEvent.layout.width)}
+        style={[split ? styles.split_scroll : common_styles.flex_1, onboarding.panel_style]}>
+        <ScrollView key={onboarding.step} showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scroll, fitted && styles.scroll_fitted]}>
+          <Body onboarding={onboarding} />
+        </ScrollView>
+      </Animated.View>
+      <Animated.View pointerEvents={onboarding.animating ? 'none' : 'auto'} style={[styles.footer, !fitted && styles.footer_divider, onboarding.footer_style]}>
+        <Footer onboarding={onboarding} />
+      </Animated.View>
+    </Fragment>
+  );
 
   return (
     <Container is_auth>
@@ -76,17 +96,13 @@ export default function Onboarding({ route }: Props) {
 
         <SizedBox />
 
-        <Animated.View
-          pointerEvents={onboarding.animating ? 'none' : 'auto'}
-          onLayout={event => onboarding.setPanelWidth(event.nativeEvent.layout.width)}
-          style={[common_styles.flex_1, onboarding.panel_style]}>
-          <ScrollView key={onboarding.step} showsVerticalScrollIndicator={false} contentContainerStyle={[styles.scroll, fitted && styles.scroll_fitted]}>
-            <Body onboarding={onboarding} />
-          </ScrollView>
-        </Animated.View>
-        <Animated.View pointerEvents={onboarding.animating ? 'none' : 'auto'} style={[styles.footer, !fitted && styles.footer_divider, onboarding.footer_style]}>
-          <Footer onboarding={onboarding} />
-        </Animated.View>
+        {split && Art ? (
+          <TabletSplit art={<Art onboarding={onboarding} />} art_style={onboarding.panel_style}>
+            {panel}
+          </TabletSplit>
+        ) : (
+          panel
+        )}
       </View>
       {onboarding.step === 'readyToGo' && !onboarding.reduce_motion ? <ReadyConfetti /> : null}
     </Container>

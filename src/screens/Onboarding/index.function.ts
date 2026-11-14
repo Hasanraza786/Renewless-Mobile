@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList, OnboardingStep, ScanCandidate } from '../../types';
 import { navigate, resetRoot } from '../../navigation/service';
 import { PRIVACY_URL, TERMS_URL, openLegal } from '../../config/legal';
+import { useIsTablet } from '../../utils/tablet';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>['route'];
 
@@ -36,6 +37,7 @@ export const SCAN_POLL_MS = 1000;
 export const SCAN_COMPLETE_HOLD_MS = 650;
 
 export default function useOnboarding(route: Route) {
+  const is_tablet = useIsTablet();
   const dispatch = useAppDispatch();
   const onboarding_state = useAppSelector(state => state.onboarding);
   const user_name = useAppSelector(state => state.profile.user?.name ?? '');
@@ -170,6 +172,7 @@ export default function useOnboarding(route: Route) {
   const openPrivacy = () => openLegal(PRIVACY_URL);
 
   return {
+    is_tablet,
     ...onboarding_state,
     step,
     stage,

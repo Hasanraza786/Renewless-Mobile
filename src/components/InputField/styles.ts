@@ -47,6 +47,9 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding * 0.7,
     paddingVertical: 0,
   },
+  auth_input_tablet: {
+    backgroundColor: COLORS.background,
+  },
   form_input: {
     backgroundColor: COLORS.checkbox_fill,
     borderColor: COLORS.select_border,

@@ -46,7 +46,7 @@ export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxR
   const busy = inbox.syncing || inbox.reconnecting;
 
   return (
-    <Container is_auth style={styles.main_view}>
+    <Container is_auth readable style={styles.main_view}>
       <Header title="Connected inbox" onBack={goBack} />
       {inbox.status !== 'ready' || !view ? (
         <StateView status={inbox.status === 'failed' ? 'failed' : 'loading'} message={inbox.status === 'failed' ? inbox.error : 'Loop is checking your inbox…'} onRetry={inbox.retry} />

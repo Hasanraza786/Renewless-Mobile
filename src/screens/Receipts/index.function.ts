@@ -5,11 +5,13 @@ import { getSubscriptionDetail } from '../../redux/actions/detail-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, ReceiptFile, ReceiptItem } from '../../types';
 import { clearReceiptFiles } from '../../utils/receipt-file';
+import { useIsTablet } from '../../utils/tablet';
 
 export type ReceiptsRoute = NativeStackScreenProps<AppStackParamList, 'Receipts'>['route'];
 
 // One subscription's billing emails with their kept files; a downloaded PDF is removed when the screen closes.
 export default function useReceipts(route: ReceiptsRoute) {
+  const is_tablet = useIsTablet();
   const { id } = route.params;
   const dispatch = useAppDispatch();
   const detail = useAppSelector(state => state.detail.detail);
@@ -43,7 +45,7 @@ export default function useReceipts(route: ReceiptsRoute) {
   };
   const closeImage = () => setImageUrl(null);
 
-  return { record, receipts, status, load_error, load, opening_id, file_error, image_url, openFile, closeImage };
+  return { is_tablet, record, receipts, status, load_error, load, opening_id, file_error, image_url, openFile, closeImage };
 }
 
 export type ReceiptsController = ReturnType<typeof useReceipts>;

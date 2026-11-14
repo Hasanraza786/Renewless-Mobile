@@ -20,7 +20,7 @@ export default function SettingsScreen() {
   const user = profile.user;
 
   return (
-    <Container style={styles.main_view}>
+    <Container readable style={styles.main_view}>
       <Header title="Settings" onBack={goBack} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
         <MenuGroup title="Notifications" style={styles.first} items={[{ label: 'Reminder settings', icon: refresh_icon, subtitle: 'When and how you’re reminded', onPress: profile.openReminders }]} />

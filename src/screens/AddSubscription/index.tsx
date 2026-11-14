@@ -33,7 +33,7 @@ export default function AddSubscriptionScreen({ route }: { route: SubscriptionFo
   }, [focus_request, keyboard.scroll_ref]);
 
   return (
-    <Container is_auth style={styles.main_view}>
+    <Container is_auth readable style={styles.main_view}>
       <Header title={form.title} onBack={goBack} />
       {form.status !== 'ready' || !form.draft ? (
         <StateView status={form.status === 'failed' ? 'failed' : 'loading'} message={form.status === 'failed' ? form.load_error : 'Loop is opening your subscription…'} onRetry={form.retry} />

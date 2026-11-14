@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { Modal, Pressable, ScrollView, View } from 'react-native';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
+import { useIsTablet } from '../../utils/tablet';
 import CustomText from '../CustomText';
 import RowView from '../RowView';
 import { styles } from './styles';
@@ -17,11 +18,12 @@ type Props = {
 
 // Centered graphite dialog (Sort by, Status filters): fixed header and footer, scrollable options.
 export default function DialogCard({ title, subtitle, onClose, close_label, children, footer }: Props) {
+  const is_tablet = useIsTablet();
   return (
     <Modal transparent visible animationType="fade" onRequestClose={onClose}>
       <Pressable accessibilityLabel={close_label} onPress={onClose} style={styles.scrim} />
       <View pointerEvents="box-none" style={styles.wrap}>
-        <View accessibilityViewIsModal style={styles.dialog}>
+        <View accessibilityViewIsModal style={[styles.dialog, is_tablet && styles.dialog_tablet]}>
           <RowView align_items="flex-start" gap={SIZES.padding2} style={styles.header}>
             <View style={common_styles.flex_1}>
               <CustomText text={title} size={SIZES.lg} accessibility_role="header" />

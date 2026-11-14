@@ -27,6 +27,10 @@ export const styles = StyleSheet.create({
     height: SIZES.padding * 2.3,
     justifyContent: 'center',
   },
+  // Tablet: the code cells sit on the auth card, so they take the page background.
+  cell_tablet: {
+    backgroundColor: COLORS.background,
+  },
   cell_focused: {
     borderColor: COLORS.primary,
   },

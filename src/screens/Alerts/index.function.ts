@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { SentAlert } from '../../types';
 import { groupAlerts } from '../../utils/alerts';
 import { localToday } from '../../utils/dates';
+import { useIsTablet } from '../../utils/tablet';
 
 // The OS notification permission, re-read whenever the app returns to the foreground (e.g. from Settings).
 export function useNotificationPermission() {
@@ -28,6 +29,7 @@ export function useNotificationPermission() {
 
 // Sent reminders only, grouped Today / Yesterday / Earlier; Back returns to wherever the bell was tapped.
 export default function useAlerts() {
+  const is_tablet = useIsTablet();
   const dispatch = useAppDispatch();
   const { alerts, settings, loading, error } = useAppSelector(state => state.alerts);
   const { permission } = useNotificationPermission();
@@ -51,7 +53,7 @@ export default function useAlerts() {
   const openAlert = (alert: SentAlert) =>
     alert.subscription_available ? navigate('SubscriptionDetail', { id: alert.subscription_id }) : dispatch(setNotice('This subscription is no longer available.'));
 
-  return { status, error: error.alerts, today, groups, banner, retry, openSettings, openDeviceSettings, openAlert };
+  return { is_tablet, status, error: error.alerts, today, groups, banner, retry, openSettings, openDeviceSettings, openAlert };
 }
 
 export type AlertsController = ReturnType<typeof useAlerts>;

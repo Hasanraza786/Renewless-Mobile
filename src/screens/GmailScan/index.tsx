@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { back_icon, logo_mark } from '../../assets/icons';
 import Container from '../../components/Container';
@@ -10,7 +11,9 @@ import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { goBack } from '../../navigation/service';
 import { styles as onboarding_styles } from '../Onboarding/styles';
 import GmailSheets from './components/GmailSheets';
-import { RecoveryFooter, RecoveryView, ReviewFooter, ReviewView, ScanningFooter, ScanningView } from './components/GmailViews';
+import { GmailRecoveryArt, RecoveryFooter, RecoveryView, ReviewFooter, ReviewView, ScanningFooter, ScanningView } from './components/GmailViews';
+import TabletSplit from '../Onboarding/components/TabletSplit';
+import { styles } from './styles';
 import useGmailScan, { type GmailScanRoute } from './index.function';
 
 // Signed-in Gmail scan → review → save in onboarding's frame and components (locked 13 Nov 2026): the same header
@@ -18,6 +21,21 @@ import useGmailScan, { type GmailScanRoute } from './index.function';
 export default function GmailScanScreen({ route }: { route: GmailScanRoute }) {
   const gmail = useGmailScan(route);
   const fitted = gmail.phase === 'nothing' || gmail.phase === 'interrupted';
+  // Tablets: recovery art beside the text; the review footer keeps the 680pt readable width.
+  const split = gmail.is_tablet && fitted;
+  const panel = (
+    <Fragment>
+      {/* Keyed by phase so each state (e.g. the review after scanning) opens at the top. */}
+      <ScrollView key={gmail.phase} showsVerticalScrollIndicator={false} style={split && onboarding_styles.split_scroll} contentContainerStyle={[onboarding_styles.scroll, fitted && onboarding_styles.scroll_fitted]}>
+        {gmail.phase === 'scanning' ? <ScanningView gmail={gmail} /> : gmail.phase === 'review' ? <ReviewView gmail={gmail} /> : <RecoveryView gmail={gmail} />}
+      </ScrollView>
+      <View style={[onboarding_styles.footer, !fitted && onboarding_styles.footer_divider]}>
+        <View style={gmail.is_tablet && !fitted && styles.footer_readable}>
+          {gmail.phase === 'scanning' ? <ScanningFooter gmail={gmail} /> : gmail.phase === 'review' ? <ReviewFooter gmail={gmail} /> : <RecoveryFooter gmail={gmail} />}
+        </View>
+      </View>
+    </Fragment>
+  );
 
   return (
     <Container is_auth>
@@ -35,15 +53,11 @@ export default function GmailScanScreen({ route }: { route: GmailScanRoute }) {
         {gmail.phase === 'loading' ? (
           <StateView status="loading" message="Getting your inbox ready." />
         ) : (
-          <>
-            {/* Keyed by phase so each state (e.g. the review after scanning) opens at the top. */}
-            <ScrollView key={gmail.phase} showsVerticalScrollIndicator={false} contentContainerStyle={[onboarding_styles.scroll, fitted && onboarding_styles.scroll_fitted]}>
-              {gmail.phase === 'scanning' ? <ScanningView gmail={gmail} /> : gmail.phase === 'review' ? <ReviewView gmail={gmail} /> : <RecoveryView gmail={gmail} />}
-            </ScrollView>
-            <View style={[onboarding_styles.footer, !fitted && onboarding_styles.footer_divider]}>
-              {gmail.phase === 'scanning' ? <ScanningFooter gmail={gmail} /> : gmail.phase === 'review' ? <ReviewFooter gmail={gmail} /> : <RecoveryFooter gmail={gmail} />}
-            </View>
-          </>
+          split ? (
+            <TabletSplit art={<GmailRecoveryArt gmail={gmail} />}>{panel}</TabletSplit>
+          ) : (
+            panel
+          )
         )}
       </View>
       <GmailSheets gmail={gmail} />

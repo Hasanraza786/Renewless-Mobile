@@ -22,7 +22,7 @@ import SizedBox from '../../components/SizedBox';
 // Account empty and zero-match states share the sad Loop and one compact Add manually action.
 function Empty({ list, account }: { list: ListController; account: boolean }) {
   return (
-    <View style={styles.empty}>
+    <View style={[styles.empty, list.is_tablet && styles.empty_tablet]}>
       <View style={styles.mascot_ring} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         <Mascot expression="sad" size={SIZES.padding * 6.5} label="Loop" />
       </View>

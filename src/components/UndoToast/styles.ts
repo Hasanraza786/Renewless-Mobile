@@ -7,6 +7,14 @@ export const styles = StyleSheet.create({
     position: 'absolute',
     right: SIZES.padding,
   },
+  // Tablets: a compact toast (the standard 440pt dialog width), centred.
+  main_view_tablet: {
+    alignItems: 'center',
+  },
+  toast_tablet: {
+    maxWidth: '100%',
+    width: SIZES.padding * 22,
+  },
   toast: {
     backgroundColor: COLORS.dialog_raised,
     borderColor: COLORS.line_menu,

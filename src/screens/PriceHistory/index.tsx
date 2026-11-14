@@ -17,12 +17,14 @@ import { common_styles } from '../../utils/common_styles';
 import { dateLabel } from '../../utils/scan';
 import { styles } from './styles';
 import { money } from '../../utils/money';
+import { useIsTablet } from '../../utils/tablet';
 
 type Props = Pick<NativeStackScreenProps<AppStackParamList, 'PriceHistory'>, 'route'>;
 
 // Audit of tracked price changes for one subscription ID, newest first; past receipts never change.
 export default function PriceHistoryScreen({ route }: Props) {
   const dispatch = useAppDispatch();
+  const is_tablet = useIsTablet();
   const { id } = route.params;
   const detail = useAppSelector(state => state.detail.detail);
   const { loading, error } = useAppSelector(state => state.detail);
@@ -33,7 +35,7 @@ export default function PriceHistoryScreen({ route }: Props) {
   }, [dispatch, id, record]);
 
   return (
-    <Container style={styles.main_view}>
+    <Container readable style={styles.main_view}>
       <Header title="Price history" onBack={goBack} />
       {!record ? (
         <StateView status={error.detail && !loading.detail ? 'failed' : 'loading'} message={error.detail || 'Loop is finding your price history…'} onRetry={() => dispatch(getSubscriptionDetail(id))} />
@@ -77,7 +79,7 @@ export default function PriceHistoryScreen({ route }: Props) {
               <CustomText text="Price changes don’t alter your previous payment receipts." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
             </>
           ) : (
-            <View style={styles.empty}>
+            <View style={[styles.empty, is_tablet && styles.empty_tablet]}>
               <Mascot expression="neutral" size={SIZES.padding * 5.4} label="Loop" />
               <CustomText mt={SIZES.padding * 0.9} text="No price changes yet" size={SIZES.lg} align="center" />
               <CustomText mt={SIZES.padding2} text="Changes appear here when you update a price or Gmail finds a verified change." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />

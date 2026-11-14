@@ -20,7 +20,7 @@ export default function ChangePasswordScreen() {
 
   if (!form.has_password) {
     return (
-      <Container is_auth style={styles.main_view}>
+      <Container is_auth readable style={styles.main_view}>
         <Header title="Change password" onBack={goBack} />
         <View style={styles.provider}>
           <View style={styles.mark}>
@@ -56,7 +56,7 @@ export default function ChangePasswordScreen() {
   );
 
   return (
-    <Container is_auth style={styles.main_view}>
+    <Container is_auth readable style={styles.main_view}>
       <Header title="Change password" onBack={goBack} />
       <KeyboardAvoidingView behavior="padding" style={common_styles.flex_1}>
         <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.content}>

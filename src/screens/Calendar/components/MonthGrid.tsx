@@ -16,6 +16,8 @@ type Props = {
   onPressDate: (date: string) => void;
   // Horizontal swipes move months alongside the explicit arrows: -1 previous, 1 next.
   onSwipe: (direction: -1 | 1) => void;
+  // Tablets: taller, near-square day cells (112pt).
+  tall?: boolean;
 };
 
 // Distance-based, so a slow drag counts too; vertical drags stay with the scroll view.
@@ -35,7 +37,7 @@ function WeekdayHeader() {
 }
 
 // react-native-calendars owns the month layout and swipe; each date renders the approved cell.
-function MonthGrid({ month, today, events, onPressDate, onSwipe }: Props) {
+function MonthGrid({ month, today, events, onPressDate, onSwipe, tall = false }: Props) {
   const pan = useMemo(
     () =>
       PanResponder.create({
@@ -48,7 +50,7 @@ function MonthGrid({ month, today, events, onPressDate, onSwipe }: Props) {
   );
 
   const renderDay = ({ date }: { date?: DateData }) => {
-    if (!date) return <View style={styles.cell} />;
+    if (!date) return <View style={[styles.cell, tall && styles.cell_tall]} />;
     const on_date = events.filter(event => event.date === date.dateString);
     const marker = dayMarker(on_date, date.dateString, today);
     const is_today = date.dateString === today;
@@ -61,7 +63,7 @@ function MonthGrid({ month, today, events, onPressDate, onSwipe }: Props) {
         accessibilityRole="button"
         accessibilityLabel={`${dateLabel(date.dateString)}, ${spoken}${is_today ? ', today' : ''}`}
         onPress={() => onPressDate(date.dateString)}
-        style={({ pressed }) => [styles.cell, styles.day, !!marker && styles.day_event, is_today && styles.day_today, pressed && common_styles.pressed]}>
+        style={({ pressed }) => [styles.cell, styles.day, tall && styles.cell_tall, tall && styles.day_tall, !!marker && styles.day_event, is_today && styles.day_today, pressed && common_styles.pressed]}>
         <CustomText text={String(date.day)} weight={FONTS.regular} size={SIZES.sm} />
         <CustomText
           text={marker ? marker.label : '—'}
@@ -106,6 +108,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding2 / 2,
     paddingVertical: SIZES.padding3 / 2,
     height: SIZES.padding * 2.5
+  },
+  cell_tall: {
+    height: SIZES.padding * 5.6,
+  },
+  day_tall: {
+    padding: SIZES.padding3,
   },
   day_event: {
     backgroundColor: COLORS.surface_accent,

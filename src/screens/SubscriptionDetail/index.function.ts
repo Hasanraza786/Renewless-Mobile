@@ -11,6 +11,7 @@ import { amountLabel, daysBetween, recordStatus } from '../../utils/events';
 import { defaultTooClose, reminderText } from '../../utils/reminders';
 import { dateLabel } from '../../utils/scan';
 import { formatAmount, money } from '../../utils/money';
+import { useIsTablet } from '../../utils/tablet';
 
 export type Route = NativeStackScreenProps<AppStackParamList, 'SubscriptionDetail'>['route'];
 export type Sheet = 'reminder' | 'cancel' | 'delete' | 'resume' | 'notes' | null;
@@ -104,6 +105,7 @@ export default function useSubscriptionDetail(route: Route) {
   const detail = useAppSelector(state => state.detail.detail);
   const loading = useAppSelector(state => state.detail.loading);
   const error = useAppSelector(state => state.detail.error);
+  const is_tablet = useIsTablet();
   const [sheet, setSheet] = useState<Sheet>(null);
   const [message, setMessage] = useState('');
 
@@ -145,6 +147,7 @@ export default function useSubscriptionDetail(route: Route) {
     view,
     today,
     status,
+    is_tablet,
     error: error.detail,
     saving: loading.mutation,
     save_error: error.mutation,

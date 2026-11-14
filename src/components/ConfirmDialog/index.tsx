@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Modal, Pressable, ScrollView, View } from 'react-native';
 import { FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
+import { useIsTablet } from '../../utils/tablet';
 import CustomText from '../CustomText';
 import RowView from '../RowView';
 import { styles } from './styles';
@@ -19,6 +20,7 @@ type Props = {
 
 // Compact centered confirmation (Log out, Delete account): title with ×, then the caller's copy and actions.
 export default function ConfirmDialog({ title, close_label, onClose, locked, art, children }: Props) {
+  const is_tablet = useIsTablet();
   const close = () => {
     if (!locked) onClose();
   };
@@ -26,7 +28,7 @@ export default function ConfirmDialog({ title, close_label, onClose, locked, art
     <Modal transparent visible animationType="fade" onRequestClose={close}>
       <Pressable accessibilityLabel={close_label} onPress={close} style={styles.scrim} />
       <KeyboardAvoidingView behavior="padding" pointerEvents="box-none" style={styles.wrap}>
-        <View accessibilityViewIsModal style={styles.dialog}>
+        <View accessibilityViewIsModal style={[styles.dialog, is_tablet && styles.dialog_tablet]}>
           <ScrollView bounces={false} keyboardShouldPersistTaps="handled" contentContainerStyle={styles.body}>
             {art ? (
               <>

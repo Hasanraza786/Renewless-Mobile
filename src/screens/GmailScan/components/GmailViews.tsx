@@ -183,12 +183,21 @@ export function ReviewFooter({ gmail }: Props) {
 }
 
 // Onboarding's no-results and interrupted layout: the sad Loop centred in its circle with a badge.
+// Tablets show it beside the text, as in onboarding.
+export function GmailRecoveryArt({ gmail }: Props) {
+  return <RecoveryArt badge={gmail.phase === 'interrupted' ? offline_badge_icon : inbox_badge_icon} reduce_motion={gmail.reduce_motion} />;
+}
+
 export function RecoveryView({ gmail }: Props) {
   const interrupted = gmail.phase === 'interrupted';
   return (
     <Fragment>
-      <RecoveryArt badge={interrupted ? offline_badge_icon : inbox_badge_icon} reduce_motion={gmail.reduce_motion} />
-      <SizedBox height={SIZES.padding2 * 2} />
+      {gmail.is_tablet ? null : (
+        <Fragment>
+          <GmailRecoveryArt gmail={gmail} />
+          <SizedBox height={SIZES.padding2 * 2} />
+        </Fragment>
+      )}
       <OnboardingTitle
         eyebrow={interrupted ? 'LET’S GET BACK ON TRACK' : 'YOU’RE UP TO DATE'}
         title={interrupted ? 'Your scan' : 'Nothing new'}

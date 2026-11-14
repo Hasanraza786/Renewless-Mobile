@@ -33,7 +33,7 @@ function Banner({ alerts }: { alerts: AlertsController }) {
 
 function Empty({ alerts }: { alerts: AlertsController }) {
   return (
-    <View style={styles.empty}>
+    <View style={[styles.empty, alerts.is_tablet && styles.empty_tablet]}>
       <View style={styles.mascot_ring} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         <Mascot expression="neutral" size={SIZES.padding * 5.65} label="Loop" />
       </View>

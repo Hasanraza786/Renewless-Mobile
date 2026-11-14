@@ -37,4 +37,8 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding * 0.6,
     paddingTop: SIZES.padding * 4,
   },
+  // Tablets: the empty state sits in the optical centre of the page.
+  empty_tablet: {
+    paddingTop: SIZES.padding * 11,
+  },
 });

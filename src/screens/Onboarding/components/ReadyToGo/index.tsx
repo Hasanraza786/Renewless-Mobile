@@ -19,9 +19,8 @@ import { HALO_SIZE, styles } from './styles';
 
 type Props = { onboarding: OnboardingController };
 
-export function ReadyToGoBody({ onboarding }: Props) {
-  const saved = onboarding.saved;
-  const next = nextEvent(saved, localToday());
+// Loop's celebration; the tablet onboarding host shows it beside the text.
+export function ReadyArt({ onboarding }: Props) {
   const mascot = useRef(new Animated.Value(onboarding.reduce_motion ? 1 : 0)).current;
   const badge = useRef(new Animated.Value(onboarding.reduce_motion ? 1 : 0)).current;
 
@@ -34,40 +33,49 @@ export function ReadyToGoBody({ onboarding }: Props) {
   }, [badge, mascot, onboarding.reduce_motion]);
 
   return (
-    <Fragment>
-      <View style={styles.celebration}>
-        <View style={styles.halo}>
-          <Svg width={HALO_SIZE} height={HALO_SIZE}>
-            <Defs>
-              <RadialGradient id="ready_halo" cx="50%" cy="50%" r="50%">
-                <Stop offset="0" stopColor={COLORS.primary} stopOpacity={0.08} />
-                <Stop offset="0.7" stopColor={COLORS.primary} stopOpacity={0} />
-              </RadialGradient>
-            </Defs>
-            <Circle cx={HALO_SIZE / 2} cy={HALO_SIZE / 2} r={HALO_SIZE / 2} fill="url(#ready_halo)" />
-          </Svg>
-        </View>
-        <Animated.View
-          style={[common_styles.absolute, {
-            opacity: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 1, 1] }),
-            transform: [
-              { translateY: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [SIZES.padding * 0.45, -SIZES.padding / 4, 0] }) },
-              { scale: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0.92, 1.03, 1] }) },
-            ],
-          }]}>
-          <Mascot expression="happy" size={SIZES.padding * 6} label="Loop celebrates your saved subscriptions" draw={!onboarding.reduce_motion} />
-        </Animated.View>
-        <Animated.View
-          style={[styles.badge, {
-            opacity: badge,
-            transform: [
-              { translateY: badge.interpolate({ inputRange: [0, 1], outputRange: [SIZES.padding * 0.9, 0] }) },
-              { scale: badge.interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) },
-            ],
-          }]}>
-          <Icons name={check_dark_icon} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} />
-        </Animated.View>
+    <View style={styles.celebration}>
+      <View style={styles.halo}>
+        <Svg width={HALO_SIZE} height={HALO_SIZE}>
+          <Defs>
+            <RadialGradient id="ready_halo" cx="50%" cy="50%" r="50%">
+              <Stop offset="0" stopColor={COLORS.primary} stopOpacity={0.08} />
+              <Stop offset="0.7" stopColor={COLORS.primary} stopOpacity={0} />
+            </RadialGradient>
+          </Defs>
+          <Circle cx={HALO_SIZE / 2} cy={HALO_SIZE / 2} r={HALO_SIZE / 2} fill="url(#ready_halo)" />
+        </Svg>
       </View>
+      <Animated.View
+        style={[common_styles.absolute, {
+          opacity: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0, 1, 1] }),
+          transform: [
+            { translateY: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [SIZES.padding * 0.45, -SIZES.padding / 4, 0] }) },
+            { scale: mascot.interpolate({ inputRange: [0, 0.6, 1], outputRange: [0.92, 1.03, 1] }) },
+          ],
+        }]}>
+        <Mascot expression="happy" size={SIZES.padding * 6} label="Loop celebrates your saved subscriptions" draw={!onboarding.reduce_motion} />
+      </Animated.View>
+      <Animated.View
+        style={[styles.badge, {
+          opacity: badge,
+          transform: [
+            { translateY: badge.interpolate({ inputRange: [0, 1], outputRange: [SIZES.padding * 0.9, 0] }) },
+            { scale: badge.interpolate({ inputRange: [0, 1], outputRange: [0.95, 1] }) },
+          ],
+        }]}>
+        <Icons name={check_dark_icon} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} />
+      </Animated.View>
+    </View>
+  );
+}
+
+export function ReadyToGoBody({ onboarding }: Props) {
+  const saved = onboarding.saved;
+  const next = nextEvent(saved, localToday());
+
+  return (
+    <Fragment>
+      {onboarding.is_tablet ? null : <ReadyArt onboarding={onboarding} />}
 
       <OnboardingTitle
         eyebrow="A LITTLE LESS TO REMEMBER"

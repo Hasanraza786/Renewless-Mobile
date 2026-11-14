@@ -55,4 +55,10 @@ export const styles = StyleSheet.create({
     borderRadius: SIZES.padding * 1.2,
     padding: SIZES.padding,
   },
+  // Tablets: the standard 440pt dialog width, centred.
+  dialog_tablet: {
+    alignSelf: 'center',
+    maxWidth: '100%',
+    width: SIZES.padding * 22,
+  },
 });

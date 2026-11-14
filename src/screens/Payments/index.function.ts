@@ -7,6 +7,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, PaymentRecord, TabParamList } from '../../types';
 import { alignedMonth, defaultYear, inPeriod, matchesQuery, monthlySeries, paymentCurrencies, paymentTotals, paymentYears, periodLabel, type PaymentMonth } from '../../utils/payments';
 import { trackEvent } from '../../utils/analytics';
+import { useIsTablet } from '../../utils/tablet';
 
 export type PaymentsRoute = RouteProp<TabParamList, 'Payments'> | RouteProp<AppStackParamList, 'SubscriptionPayments'>;
 
@@ -16,6 +17,7 @@ export const sourceLabel = (source: PaymentRecord['source']) => ({ gmail: 'Gmail
 
 // One screen for the account Payments tab and Detail's scoped SubscriptionPayments route.
 export default function usePayments(route: PaymentsRoute) {
+  const is_tablet = useIsTablet();
   const dispatch = useAppDispatch();
   const navigation = useNavigation();
   const scoped = route.name === 'SubscriptionPayments' ? route.params : null;
@@ -96,6 +98,7 @@ export default function usePayments(route: PaymentsRoute) {
   };
 
   return {
+    is_tablet,
     scoped,
     status,
     error,

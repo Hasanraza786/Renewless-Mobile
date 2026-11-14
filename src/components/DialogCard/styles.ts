@@ -20,6 +20,12 @@ export const styles = StyleSheet.create({
     flexShrink: 1,
     overflow: 'hidden',
   },
+  // Tablets: one standard dialog width, centred.
+  dialog_tablet: {
+    alignSelf: 'center',
+    maxWidth: '100%',
+    width: SIZES.padding * 22,
+  },
   header: {
     borderBottomColor: COLORS.line_quiet,
     borderBottomWidth: 1,

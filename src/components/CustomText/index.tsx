@@ -1,11 +1,5 @@
 import { memo, useMemo, type ReactNode } from 'react';
-import {
-  StyleSheet,
-  Text,
-  type StyleProp,
-  type TextProps,
-  type TextStyle,
-} from 'react-native';
+import { Platform, StyleSheet, Text, type StyleProp, type TextProps, type TextStyle } from 'react-native';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { SIGN_PATTERN, spokenMoney } from '../../utils/money';
 
@@ -88,12 +82,16 @@ function CustomText({
       style={[base_style, style]}
       onLayout={onLayout}
       onPress={onPress}
-      selectable
-      textBreakStrategy="highQuality">
+      selectable={IOS}
+      textBreakStrategy={IOS ? 'highQuality' : 'simple'}>
       {content}
     </Text>
   );
 }
+
+// Android measures selectable or high-quality-wrapped text a hair short and hides a line's last word
+// ("Create account" drew "Create" on tablets), so text is selectable on iOS only.
+const IOS = Platform.OS === 'ios';
 
 const styles = StyleSheet.create({ symbol: { fontFamily: FONTS.symbol } });
 

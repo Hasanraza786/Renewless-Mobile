@@ -57,9 +57,12 @@ export function TrustRows() {
 export function ConnectInboxBody({ onboarding }: Props) {
   return (
     <Fragment>
-      <ConnectArt />
-
-      <SizedBox />
+      {onboarding.is_tablet ? null : (
+        <Fragment>
+          <ConnectArt />
+          <SizedBox />
+        </Fragment>
+      )}
 
       <OnboardingTitle
         eyebrow="START WITH YOUR INBOX"

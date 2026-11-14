@@ -203,7 +203,7 @@ export function DraftCard({ chat, draft }: Props & { draft: AiDraft }) {
   if (draft.trial) cells.push({ label: 'Auto-renew tracking', value: draft.trial.auto_renew ? 'On' : 'Off' });
   if (draft.notes) cells.push({ label: 'Notes', value: draft.notes, full: true });
   return (
-    <View style={styles.draft} accessibilityLabel={`${draft.name ?? 'Subscription'} draft, ${chat.draft_status}`}>
+    <View style={[styles.draft, chat.is_tablet && styles.draft_tablet]} accessibilityLabel={`${draft.name ?? 'Subscription'} draft, ${chat.draft_status}`}>
       <RowView align_items="flex-start" gap={SIZES.padding * 0.45}>
         <View style={styles.draft_tile}><PlatformLogo platform_id={draft.platform_id ?? ''} name={draft.name ?? '?'} /></View>
         <View style={common_styles.flex_1}>

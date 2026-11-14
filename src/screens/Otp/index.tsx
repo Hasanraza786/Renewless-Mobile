@@ -45,7 +45,7 @@ export default function OtpScreen({ route }: Props) {
         accessibilityHint={otp.code_error || undefined}
         onSubmitEditing={otp.onSubmit}
         renderCell={({ index, symbol, isFocused }) => (
-          <View key={index} onLayout={getCellOnLayoutHandler(index)} style={[styles.cell, isFocused && styles.cell_focused, !!otp.code_error && styles.cell_error]}>
+          <View key={index} onLayout={getCellOnLayoutHandler(index)} style={[styles.cell, otp.is_tablet && styles.cell_tablet, isFocused && styles.cell_focused, !!otp.code_error && styles.cell_error]}>
             <CustomText text={symbol} weight={FONTS.regular} size={SIZES.sm} />
           </View>
         )}

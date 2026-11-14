@@ -5,9 +5,11 @@ import { getSubscriptions } from '../../redux/actions/list-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { filterHistory, historyRecords, type HistoryStatus } from '../../utils/history';
 import { trackEvent } from '../../utils/analytics';
+import { useIsTablet } from '../../utils/tablet';
 
 // Cancelled and expired subscriptions from the same records as List; search and filters survive visits to Detail.
 export default function useHistory() {
+  const is_tablet = useIsTablet();
   const dispatch = useAppDispatch();
   const { records, loading, error } = useAppSelector(state => state.list);
   const [query, setQuery] = useState('');
@@ -42,7 +44,7 @@ export default function useHistory() {
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });
   const openList = () => navigate('List');
 
-  return { status, error, has_history, query, setQuery, statuses, matching, counts, filters_open, toggleStatus, clearAll, openFilters, closeFilters, retry, openDetail, openList };
+  return { is_tablet, status, error, has_history, query, setQuery, statuses, matching, counts, filters_open, toggleStatus, clearAll, openFilters, closeFilters, retry, openDetail, openList };
 }
 
 export type HistoryController = ReturnType<typeof useHistory>;

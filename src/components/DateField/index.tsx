@@ -7,6 +7,7 @@ import AppSheet from '../AppSheet';
 import CustomButton from '../CustomButton';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
+import { common_styles } from '../../utils/common_styles';
 import { styles } from './styles';
 import RowView from '../RowView';
 
@@ -64,7 +65,8 @@ export default function DateField({ label, label_end, value, minimum, maximum, o
   return (
     <View>
       <RowView justify_content="space-between" style={styles.label_row}>
-        <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        {/* Takes the row's free width: Android measures a shrink-wrapped label short and drops its last word. */}
+        <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} style={common_styles.flex_1} />
         {label_end ? <CustomText text={label_end} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
       </RowView>
       <RowView justify_content="space-between"

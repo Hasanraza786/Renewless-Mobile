@@ -129,7 +129,7 @@ function DeleteDialog({ view, detail }: Props) {
     <Modal transparent visible animationType="fade" onRequestClose={detail.close}>
       <Pressable accessibilityLabel="Go back" onPress={detail.close} style={styles.scrim} />
       <View style={styles.dialog_wrap} pointerEvents="box-none">
-        <View accessibilityViewIsModal style={styles.dialog}>
+        <View accessibilityViewIsModal style={[styles.dialog, detail.is_tablet && styles.dialog_tablet]}>
           <CustomText text={`Remove ${name} from Renewless?`} size={SIZES.lg} accessibility_role="header" />
           <CustomText mt={SIZES.padding2} text={`This removes its tracking and stops future reminders. Your ${name} subscription won’t be cancelled.`} weight={FONTS.regular} size={SIZES.sm} />
           <CustomText mt={SIZES.padding2} text="Recorded payment history stays available." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

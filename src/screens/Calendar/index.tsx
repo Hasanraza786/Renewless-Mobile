@@ -1,5 +1,5 @@
 import { useRef, type ComponentRef } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { chevron_down_icon, nav_next_icon, nav_prev_icon } from '../../assets/icons';
 import AddSheet from '../../components/AddSheet';
@@ -28,9 +28,11 @@ const LEGEND = [
 ];
 
 // Mint wash fading into the card surface, top-left to bottom-right.
+// Keyed by the window width so it redraws at the new size when an iPad rotates or resizes.
 function SummaryWash() {
+  const { width } = useWindowDimensions();
   return (
-    <Svg style={StyleSheet.absoluteFill} preserveAspectRatio="none">
+    <Svg key={width} style={StyleSheet.absoluteFill} preserveAspectRatio="none">
       <Defs>
         <LinearGradient id="calendar_wash" x1="0" y1="0" x2="1" y2="0.7">
           {/* SVG stops ignore hex alpha; the prototype wash is mint at 7% opacity. */}
@@ -119,7 +121,7 @@ export default function CalendarScreen({ route }: { route: CalendarRoute }) {
             </View>
 
             <View style={styles.board} accessibilityLabel={`${monthTitle(calendar.month)} renewal calendar`}>
-              <MonthGrid month={calendar.month} today={calendar.today} events={calendar.events} onPressDate={calendar.pressDate} onSwipe={calendar.swipeMonth} />
+              <MonthGrid month={calendar.month} today={calendar.today} events={calendar.events} onPressDate={calendar.pressDate} onSwipe={calendar.swipeMonth} tall={calendar.is_tablet} />
             </View>
 
             <RowView gap={SIZES.padding * 0.45} style={styles.legend}>

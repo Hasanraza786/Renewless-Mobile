@@ -44,6 +44,8 @@ export const styles = StyleSheet.create({
   },
   social: {
     alignItems: 'center',
+    // The page colour: identical on the phone screen, and distinct on the tablet auth card.
+    backgroundColor: COLORS.background,
     borderColor: COLORS.social_border,
     borderRadius: SIZES.padding2,
     borderWidth: 1,

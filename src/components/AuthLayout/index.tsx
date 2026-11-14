@@ -10,6 +10,7 @@ import RowView from '../RowView';
 import SizedBox from '../SizedBox';
 import Icons from '../Icons';
 import { common_styles } from '../../utils/common_styles';
+import { useIsTablet } from '../../utils/tablet';
 import { styles } from './styles';
 
 type Props = {
@@ -22,11 +23,14 @@ type Props = {
   children: ReactNode;
 };
 
+// Tablets: the same column sits in a centred 480pt card in the vertical centre of the screen.
 export default function AuthLayout({ title, copy, onBack, compact, children }: Props) {
+  const is_tablet = useIsTablet();
   return (
     <Container is_auth>
       <KeyboardAvoidingView behavior={behavior} style={common_styles.flex_1}>
-        <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive" showsVerticalScrollIndicator={false} contentContainerStyle={[styles.content, onBack ? styles.content_recovery : styles.content_brand]}>
+        <ScrollView keyboardShouldPersistTaps="handled" keyboardDismissMode="interactive" showsVerticalScrollIndicator={false} contentContainerStyle={[styles.content, onBack ? styles.content_recovery : styles.content_brand, is_tablet && styles.content_tablet]}>
+          <View style={is_tablet ? styles.card : undefined}>
           {onBack ? (
             <RowView justify_content="space-between" style={styles.recovery_top}>
               <Pressable accessibilityRole="button" accessibilityLabel="Go back" hitSlop={SIZES.padding3 / 4} onPress={onBack} style={styles.back}>
@@ -48,6 +52,7 @@ export default function AuthLayout({ title, copy, onBack, compact, children }: P
           <SizedBox height={onBack ? SIZES.padding * 1.6 : compact ? SIZES.padding * 1.2 : SIZES.padding * 1.45} />
 
           {children}
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </Container>

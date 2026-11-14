@@ -6,11 +6,13 @@ import { getImportedSubscriptions } from '../../redux/actions/inbox-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
 import { localToday } from '../../utils/dates';
+import { useIsTablet } from '../../utils/tablet';
 
 export type InboxSubscriptionsRoute = NativeStackScreenProps<AppStackParamList, 'InboxSubscriptions'>['route'];
 
 // Subscriptions originally imported from this inbox; manual/AI records are excluded.
 export default function useInboxSubscriptions(route: InboxSubscriptionsRoute) {
+  const is_tablet = useIsTablet();
   const { id } = route.params;
   const dispatch = useAppDispatch();
   const { inbox, imported, loading, error } = useAppSelector(state => state.inbox);
@@ -30,5 +32,5 @@ export default function useInboxSubscriptions(route: InboxSubscriptionsRoute) {
   const retry = () => dispatch(getImportedSubscriptions(id));
   const openDetail = (record_id: string) => navigate('SubscriptionDetail', { id: record_id });
 
-  return { records, status, error: error.imported, email, today, count_text, retry, openDetail };
+  return { is_tablet, records, status, error: error.imported, email, today, count_text, retry, openDetail };
 }

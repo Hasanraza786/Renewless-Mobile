@@ -34,4 +34,8 @@ export const styles = StyleSheet.create({
     overflow: 'visible',
     width: SIZES.padding * 4.8,
   },
+  // Tablets: the empty state sits in the optical centre of the page.
+  empty_tablet: {
+    paddingTop: SIZES.padding * 11,
+  },
 });

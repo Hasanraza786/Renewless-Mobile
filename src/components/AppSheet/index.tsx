@@ -7,6 +7,7 @@ import RowView from '../RowView';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
 import { common_styles } from '../../utils/common_styles';
+import { useIsTablet } from '../../utils/tablet';
 import { styles } from './styles';
 
 type Props = {
@@ -24,9 +25,11 @@ type Props = {
 };
 
 // Graphite bottom sheet: dimmed backdrop (no blur), handle, title row with close; outside tap closes.
+// Tablets present it as a centred 540pt form sheet: all corners rounded, no handle.
 export default function AppSheet({ visible, title, subtitle, onClose, onDismiss, full, header, children }: Props) {
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
+  const is_tablet = useIsTablet();
   const rise = useRef(new Animated.Value(0)).current;
 
   // The backdrop fades with the modal while the sheet itself rises from the bottom edge.
@@ -38,17 +41,17 @@ export default function AppSheet({ visible, title, subtitle, onClose, onDismiss,
 
   return (
     <Modal transparent visible={visible} animationType="fade" onRequestClose={onClose} onDismiss={onDismiss}>
-      <KeyboardAvoidingView behavior={behavior} style={styles.root}>
+      <KeyboardAvoidingView behavior={behavior} style={[styles.root, is_tablet && styles.root_tablet]}>
         <Pressable accessibilityLabel="Close" onPress={onClose} style={styles.scrim} />
         <Animated.View
           accessibilityViewIsModal
           style={[
             styles.sheet,
-            { paddingBottom: Math.max(insets.bottom, SIZES.padding * 1.5) },
-            full && { height: height - insets.top - SIZES.padding / 2, maxHeight: undefined },
+            is_tablet ? styles.sheet_tablet : { paddingBottom: Math.max(insets.bottom, SIZES.padding * 1.5) },
+            full && (is_tablet ? styles.sheet_tablet_full : { height: height - insets.top - SIZES.padding / 2, maxHeight: undefined }),
             { transform: [{ translateY: rise.interpolate({ inputRange: [0, 1], outputRange: [height, 0] }) }] },
           ]}>
-          <View style={styles.handle} />
+          {is_tablet ? null : <View style={styles.handle} />}
           <RowView align_items="flex-start" gap={SIZES.padding2} style={styles.header}>
             <View style={common_styles.flex_1}>
               <CustomText text={title} size={SIZES.lg} />

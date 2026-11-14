@@ -13,6 +13,7 @@ import { missingQuestion } from '../../utils/ai-draft';
 import { tapHaptic } from '../../utils/haptics';
 import { afterModalClose } from '../../utils/modal';
 import { trackEvent } from '../../utils/analytics';
+import { useIsTablet } from '../../utils/tablet';
 
 const SPEEDS = [1, 1.5, 2] as const;
 const LIVE_BARS = 32;
@@ -40,6 +41,7 @@ const usageDate = (iso: string) => {
 
 // Loop: one free chat for text, voice and one image/PDF. Nothing is saved until Add subscription.
 export default function useAiChat() {
+  const is_tablet = useIsTablet();
   const dispatch = useAppDispatch();
   // Nothing is sent to Google Gemini until the user agrees (App Store 5.1.2(i)); Settings can withdraw it.
   const ai_consent = useAppSelector(state => state.constant.ai_consent);
@@ -387,6 +389,7 @@ export default function useAiChat() {
   const openPrivacy = () => openLegal(PRIVACY_URL);
 
   return {
+    is_tablet,
     ai_consent,
     show_consent,
     usage,

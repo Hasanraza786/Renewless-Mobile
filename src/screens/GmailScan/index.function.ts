@@ -9,6 +9,7 @@ import type { ApiError } from '../../api_services/http-provider';
 import type { AppStackParamList, GmailCandidate, GmailSelection, ProfileInbox } from '../../types';
 import { afterModalClose } from '../../utils/modal';
 import { money as moneyLabel } from '../../utils/money';
+import { useIsTablet } from '../../utils/tablet';
 
 export type GmailScanRoute = NativeStackScreenProps<AppStackParamList, 'GmailScan'>['route'];
 export type GmailPhase = 'loading' | 'scanning' | 'review' | 'nothing' | 'interrupted';
@@ -24,6 +25,7 @@ const MONTHLY: Record<string, number> = { Weekly: 52 / 12, Monthly: 1, Quarterly
 
 // Authenticated Gmail: scan the chosen inbox, review new plans and updates, save only what is selected.
 export default function useGmailScan(route: GmailScanRoute) {
+  const is_tablet = useIsTablet();
   const dispatch = useAppDispatch();
   const [inboxes, setInboxes] = useState<ProfileInbox[]>([]);
   const [inbox, setInbox] = useState<ProfileInbox | null>(null);
@@ -231,6 +233,7 @@ export default function useGmailScan(route: GmailScanRoute) {
   };
 
   return {
+    is_tablet,
     inboxes,
     inbox,
     phase,

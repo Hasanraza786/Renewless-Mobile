@@ -65,4 +65,9 @@ export const styles = StyleSheet.create({
   tracked: {
     opacity: 0.7,
   },
+  footer_readable: {
+    alignSelf: 'center',
+    maxWidth: SIZES.padding * 34,
+    width: '100%',
+  },
 });

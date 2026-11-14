@@ -147,6 +147,10 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     width: SIZES.padding * 2,
   },
+  // Tablets: the draft card stays at most 560pt wide.
+  draft_tablet: {
+    maxWidth: SIZES.padding * 28,
+  },
   draft: {
     backgroundColor: COLORS.draft_card,
     borderColor: COLORS.draft_line,

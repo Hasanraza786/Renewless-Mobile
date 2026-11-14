@@ -4,6 +4,7 @@ import { resendCode, verifyCode } from '../../redux/actions/auth-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList } from '../../types';
 import { goBack } from '../../navigation/service';
+import { useIsTablet } from '../../utils/tablet';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'Otp'>['route'];
 
@@ -20,6 +21,7 @@ export default function useOtp(route: Route) {
   // Resend issues a new challenge; the newest one is the one to verify.
   const dispatch = useAppDispatch();
   const loading = useAppSelector(state => state.auth.loading.otp);
+  const is_tablet = useIsTablet();
   const [code, setCode] = useState('');
   const [code_error, setCodeError] = useState('');
   const [challenge_id, setChallengeId] = useState(route.params.challenge_id);
@@ -77,5 +79,6 @@ export default function useOtp(route: Route) {
     resend_label,
     can_resend,
     onBack: goBack,
+    is_tablet,
   };
 }

@@ -2,6 +2,9 @@ import { Dimensions, Platform } from 'react-native';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 const { width, height } = Dimensions.get('window');
+// Device class for fonts and the tab navigator; screen layouts use useIsTablet, which follows the window.
+const screen = Dimensions.get('screen');
+export const IS_TABLET = Math.min(screen.width, screen.height) >= 600;
 
 export const is_ios = Platform.OS === 'ios';
 export const behavior = is_ios ? 'padding' : 'padding';
@@ -154,13 +157,14 @@ export const SIZES = {
   padding2: 12,
   padding3: 8,
 
-  // font sizes: 766 = 844pt Studio iPhone frame minus RFValue's 78pt notch offset, so prototype sizes match exactly there
-  xs: RFValue(10, 766),
-  sm: RFValue(12, 766),
-  md: RFValue(14, 766),
-  lg: RFValue(16, 766),
-  h4: RFValue(20, 766),
-  h3: RFValue(22, 766),
+  // font sizes: 766 = 844pt Studio iPhone frame minus RFValue's 78pt notch offset, so prototype sizes match exactly there.
+  // Tablets keep the Studio sizes unscaled: height-based scaling would enlarge every font by about half on an iPad.
+  xs: IS_TABLET ? 10 : RFValue(10, 766),
+  sm: IS_TABLET ? 12 : RFValue(12, 766),
+  md: IS_TABLET ? 14 : RFValue(14, 766),
+  lg: IS_TABLET ? 16 : RFValue(16, 766),
+  h4: IS_TABLET ? 20 : RFValue(20, 766),
+  h3: IS_TABLET ? 22 : RFValue(22, 766),
 
   control_height: 44,
   button_height: 48,

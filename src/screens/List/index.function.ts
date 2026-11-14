@@ -6,10 +6,12 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { SubscriptionRecord, TabParamList } from '../../types';
 import { LIST_SORTS, filterRecords, groupCounts, listGroup, sortRecords, type ListGroup, type ListSort } from '../../utils/list';
 import { trackEvent } from '../../utils/analytics';
+import { useIsTablet } from '../../utils/tablet';
 
 export type ListRoute = RouteProp<TabParamList, 'List'>;
 
 export default function useList(route: ListRoute) {
+  const is_tablet = useIsTablet();
   const dispatch = useAppDispatch();
   const { records, today, loading, error } = useAppSelector(state => state.list);
   const [query, setQuery] = useState('');
@@ -63,6 +65,7 @@ export default function useList(route: ListRoute) {
   };
 
   return {
+    is_tablet,
     status,
     error,
     today,
