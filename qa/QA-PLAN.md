@@ -15,7 +15,7 @@ Last updated: 8 November 2026.
    - Replies to the user are in Roman Urdu. Code, commits and documents stay in English.
    - Commits carry only the user's name. No Claude or AI attribution.
 2. The approved design lives in three places:
-   - the prototype: `prototypes/renewless-studio/dist/index.html#<route>`, opened in a browser;
+   - the prototype: `../Renewless/prototypes/renewless-studio/dist/index.html#<route>` (the docs repo), opened in a browser;
    - the screen specs: `docs/product-screens.md`;
    - the shared rules: `docs/design-system.md`.
 

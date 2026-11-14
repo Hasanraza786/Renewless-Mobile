@@ -31,7 +31,7 @@
 
 - Every authorized screen/feature change updates its owning canonical specification and all affected API, design-system, product and billing contracts in the same task. This rule applies during design and future implementation.
 - Replace superseded requirements; do not append conflicting “latest update” notes. Update the lock register, relevant routes and final approval date/scope when appropriate.
-- Keep the Design Studio `screenDesignLocks` badge map in `prototypes/renewless-studio/dist/app.js` synchronized with the Product screens lock register on finalization, scoped unlock and reapproval. Locked = lock icon; partial base = Base lock; pending = no icon. Viewing a locked screen remains allowed.
+- Keep the Design Studio `screenDesignLocks` badge map in `../Renewless/prototypes/renewless-studio/dist/app.js` (the prototype lives in the docs repo) synchronized with the Product screens lock register on finalization, scoped unlock and reapproval. Locked = lock icon; partial base = Base lock; pending = no icon. Viewing a locked screen remains allowed.
 - On finalizing a pending section, record its exact screens/states, pending exceptions and lock status. Keep final design separate from implementation readiness.
 - Preserve stable subscription/platform IDs, local date/recurrence semantics, separate currencies, trial vs renewal events, explicit payment confirmation and actually-sent Alerts consistently across surfaces.
 - Do not claim backend capability from HTML behavior or client wrapper presence. The separate backend needs its own schema/integration verification; document known gaps.
