@@ -29,3 +29,7 @@ export { default as ResetPasswordScreen } from './ResetPassword';
 export { default as SignupScreen } from './Signup';
 export { default as Splash } from './Splash';
 export { default as SubscriptionDetailScreen } from './SubscriptionDetail';
+export { default as HelpSupportScreen } from './HelpSupport';
+export { default as ContactUsScreen } from './ContactUs';
+export { default as SupportMessagesScreen } from './SupportMessages';
+export { default as SupportMessageScreen } from './SupportMessage';

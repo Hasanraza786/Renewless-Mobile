@@ -16,6 +16,8 @@ type Props = TextInputProps & {
   error?: string;
   // Help text under the field, above any error (e.g. Use at least 8 characters.).
   hint?: string;
+  // Right-aligned count right under the field, above any error (Contact us: 0 / 2000).
+  counter?: string;
   // 'sheet' is the compact field used inside bottom sheets; 'auth' is the approved auth form field;
   // 'form' is the account form field (Edit profile, Change password).
   variant?: 'sheet' | 'auth' | 'form';
@@ -31,6 +33,7 @@ export default function InputField({
   onChangeText,
   error,
   hint,
+  counter,
   onFocus,
   onBlur,
   variant,
@@ -86,6 +89,7 @@ export default function InputField({
           </Pressable>
         ) : null}
       </View>
+      {counter ? <CustomText mt={SIZES.padding * 0.3} text={counter} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} align="right" /> : null}
       {hint ? <CustomText mt={SIZES.padding3} text={hint} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
       {error && variant ? (
         <CustomText mt={SIZES.padding * 0.35} text={error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} />

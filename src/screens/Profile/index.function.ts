@@ -73,7 +73,7 @@ export default function useProfile() {
   const openSettings = () => navigate('Settings');
   const openChangePassword = () => navigate('ChangePassword');
   const showProvider = () => notice(`You sign in with ${provider_name}. Manage your password through your ${provider_name} account.`);
-  const showSupport = () => notice('Support is currently unavailable. Please try again later.');
+  const showSupport = () => navigate('HelpSupport');
   // Settings › How we use your data and Privacy Policy open the privacy page; Terms of Service the terms page.
   const openPrivacy = () => openLegal(PRIVACY_URL);
   const openTerms = () => openLegal(TERMS_URL);

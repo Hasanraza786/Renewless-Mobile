@@ -265,6 +265,30 @@ export type AlertsState = {
   error: { alerts: string; settings: string; save: string };
 };
 
+// Help & support › Contact us. Topic keys are the backend's; labels are what the app shows.
+export type SupportTopic = 'gmail' | 'reminders' | 'subscriptions' | 'ai_chat' | 'account' | 'other';
+export type SupportMessage = {
+  id: string;
+  topic: SupportTopic;
+  message: string;
+  // The backend's open shows as Sent until the team replies.
+  status: 'sent' | 'replied' | 'closed';
+  // A reply the user has not opened yet.
+  unread: boolean;
+  // Local day label (14 Nov) and the replies with day and time (11 Nov · 2:14 PM).
+  sent_label: string;
+  replies: { body: string; sent_label: string }[];
+};
+export type SupportInput = { topic: SupportTopic; message: string };
+
+export type SupportState = {
+  // null until the first load; Help & support hides Your messages until then.
+  messages: SupportMessage[] | null;
+  loading: boolean;
+  sending: boolean;
+  send_error: string;
+};
+
 // A Gmail scan result for review: a new plan, an update to a tracked one, or an already-tracked match.
 export type GmailCandidate = {
   id: string;
@@ -434,6 +458,7 @@ export type RootState = {
   alerts: AlertsState;
   inbox: InboxState;
   onboarding: OnboardingState;
+  support: SupportState;
 };
 
 export type OnboardingStep =
@@ -535,6 +560,11 @@ export type AppStackParamList = {
   CalendarDay: { date: string };
   // Detail's View payments: the Payments screen scoped to one owned subscription.
   SubscriptionPayments: { id: string; name: string };
+  HelpSupport: undefined;
+  // Send another message keeps the topic of the message it came from.
+  ContactUs: { topic?: SupportTopic } | undefined;
+  SupportMessages: undefined;
+  SupportMessage: { id: string };
 };
 
 // An Add form suggestion from the backend catalog (never a price or date).

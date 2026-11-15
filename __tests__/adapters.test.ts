@@ -1,4 +1,4 @@
-import { fromReminder, setCategories, toAiReply, toDetail, toGmailCandidate, toHome, toReceipt, toRecord, toSubscriptionBody } from '../src/api_services/adapters';
+import { fromReminder, setCategories, toAiReply, toDetail, toGmailCandidate, toHome, toReceipt, toRecord, toSubscriptionBody, toSupportMessage } from '../src/api_services/adapters';
 import type { DetailDto, EventDto, HomeDto } from '../src/api_services/dto';
 import { platform_logos } from '../src/assets/icons';
 
@@ -108,4 +108,29 @@ test('a receipt shows its billing date, kind and kept files', () => {
   const receipt = toReceipt({ id: 'r1', kind: 'failed_payment', subject: 'Payment declined', from: 'Google Play <g@google.com>', receivedAt: '2026-11-11T08:00:00.000Z', amount: { currency: 'INR', amount: '550.00' }, billingDate: '2026-11-11', attachments: [{ id: 'a1', filename: 'r.pdf', mimeType: 'application/pdf', size: 10 }, { id: 'a2', filename: 'r.jpg', mimeType: 'image/jpeg', size: 10 }] });
   expect(receipt).toMatchObject({ kind_label: 'Payment failed', tone: 'alert', date: '2026-11-11', amount: { currency: 'INR', amount: '550.00' }, files: [{ id: 'a1', kind: 'pdf' }, { id: 'a2', kind: 'image' }] });
   expect(toReceipt({ ...receipt, kind: 'mystery', receivedAt: '2026-11-11T08:00:00.000Z', billingDate: null, amount: null, attachments: [] } as never)).toMatchObject({ kind_label: 'Billing email', amount: null, files: [] });
+});
+
+describe('toSupportMessage', () => {
+  it('shows an answered open message as Replied', () => {
+    expect(toSupportMessage({ id: 'm3', topic: 'other', message: 'Hello support team', status: 'open', createdAt: '2026-11-15T12:00:00', unread: false, replies: [{ body: 'Hi', sentAt: '2026-11-15T13:00:00' }] }).status).toBe('replied');
+  });
+
+  it('shows open as Sent, keeps unread and labels the sent day and reply time', () => {
+    const message = toSupportMessage({
+      id: 'm1',
+      topic: 'gmail',
+      message: 'Gmail stopped scanning.',
+      status: 'replied',
+      createdAt: '2026-11-10T09:00:00',
+      unread: false,
+      replies: [{ body: 'Reconnect it.', sentAt: '2026-11-11T14:14:00' }],
+    });
+    expect(toSupportMessage({ id: 'm0', topic: 'gmail', message: 'Gmail stopped scanning.', status: 'open', createdAt: '2026-11-10T09:00:00', unread: false, replies: [] }).status).toBe('sent');
+    expect(message).toMatchObject({ id: 'm1', topic: 'gmail', status: 'replied', unread: false, sent_label: '10 Nov' });
+    expect(message.replies[0]).toEqual({ body: 'Reconnect it.', sent_label: '11 Nov · 2:14 PM' });
+  });
+
+  it('falls back to Something else for an unknown topic', () => {
+    expect(toSupportMessage({ id: 'm2', topic: 'billing', message: 'Hi there team', status: 'replied', createdAt: '2026-11-10T09:00:00', unread: true, replies: [] })).toMatchObject({ topic: 'other', status: 'replied', unread: true });
+  });
 });

@@ -13,6 +13,11 @@ export const styles = StyleSheet.create({
     marginTop: SIZES.padding3,
     paddingHorizontal: SIZES.padding2,
   },
+  // A taller touch area around the link text that leaves the heading's height unchanged.
+  action: {
+    marginVertical: -SIZES.padding2,
+    paddingVertical: SIZES.padding2,
+  },
   menu_row: {
     paddingVertical: SIZES.padding / 2,
   },

@@ -2,4 +2,6 @@
 <resources>
     <!-- Mirrors COLORS.background in src/constants/theme.ts. -->
     <color name="app_background">#151719</color>
+    <!-- Notification accent (icon tint in the shade); mirrors COLORS.primary. -->
+    <color name="notification_accent">#B9E58C</color>
 </resources>

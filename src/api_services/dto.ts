@@ -215,3 +215,14 @@ export type ScanImportDto = { created: string[]; updated: string[]; alreadyAppli
 
 export type PlatformDto = { id: string; name: string; categoryId: string | null; logoUrl: string | null };
 export type CategoryDto = { id: string; key: string; name: string };
+
+// Help & support messages; the backend's open status shows as Sent until the team replies.
+export type SupportMessageDto = {
+  id: string;
+  topic: string;
+  message: string;
+  status: 'open' | 'sent' | 'replied' | 'closed';
+  createdAt: string;
+  unread: boolean;
+  replies: { body: string; sentAt: string }[];
+};

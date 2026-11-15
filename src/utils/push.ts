@@ -1,6 +1,8 @@
 import { getInitialNotification, getMessaging, getToken, onNotificationOpenedApp, onTokenRefresh } from '@react-native-firebase/messaging';
 import { requestNotifications, RESULTS } from 'react-native-permissions';
 import { navigate } from '../navigation/service';
+import { getSupportMessages } from '../redux/actions/support-action';
+import store from '../redux/store';
 
 const messaging = getMessaging();
 let initial_checked = false;
@@ -12,10 +14,14 @@ export async function pushToken() {
   return getToken(messaging).catch(() => null);
 }
 
-// A reminder push carries its subscription; tapping it opens Detail.
+// A reminder push carries its subscription and opens Detail. A support reply opens Help & support with the
+// messages reloaded (Help & support may already be the open screen), so the reply shows as New reply.
 function openReminder(message: { data?: Record<string, unknown> } | null) {
-  const id = message?.data?.subscriptionId;
-  if (typeof id === 'string') navigate('SubscriptionDetail', { id });
+  const data = message?.data;
+  if (data?.type === 'support_reply') {
+    store.dispatch(getSupportMessages());
+    navigate('HelpSupport');
+  } else if (typeof data?.subscriptionId === 'string') navigate('SubscriptionDetail', { id: data.subscriptionId });
 }
 
 // Token refreshes and taps while the app runs; the push that launched the app is opened once.

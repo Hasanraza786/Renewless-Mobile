@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppSelector } from '../redux/store';
-import { AiChatScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, GmailScanScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, SettingsScreen, CalendarDayScreen, ChangePasswordScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, ReceiptsScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, SubscriptionDetailScreen } from '../screens';
+import { AiChatScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, GmailScanScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, SettingsScreen, CalendarDayScreen, ChangePasswordScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, ReceiptsScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, SubscriptionDetailScreen, HelpSupportScreen, ContactUsScreen, SupportMessagesScreen, SupportMessageScreen } from '../screens';
 import type { AppStackParamList } from '../types';
 import AuthStack from './AuthStack';
 import { stack_options } from '../config';
@@ -53,6 +53,10 @@ export default function MainNavigator() {
         <AppStack.Screen name="EditSubscription" component={AddSubscriptionScreen} />
         <AppStack.Screen name="EditProfile" component={EditProfileScreen} />
         <AppStack.Screen name="ChangePassword" component={ChangePasswordScreen} />
+        <AppStack.Screen name="HelpSupport" component={HelpSupportScreen} />
+        <AppStack.Screen name="ContactUs" component={ContactUsScreen} />
+        <AppStack.Screen name="SupportMessages" component={SupportMessagesScreen} />
+        <AppStack.Screen name="SupportMessage" component={SupportMessageScreen} />
         <AppStack.Screen name="Upcoming" component={UpcomingScreen} />
         <AppStack.Screen name="ThisMonth" component={ThisMonthScreen} />
         <AppStack.Screen name="SpendingBreakdown" component={SpendingBreakdownScreen} />

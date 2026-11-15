@@ -37,7 +37,8 @@ export type AnalyticsEvent =
   | 'profile_updated'
   | 'logout'
   | 'account_deleted'
-  | 'inbox_disconnected';
+  | 'inbox_disconnected'
+  | 'support_message_sent';
 
 export function trackEvent(name: AnalyticsEvent, params?: Record<string, string>) {
   // The typed overloads split standard (login, sign_up) and custom names; the native call is the same.

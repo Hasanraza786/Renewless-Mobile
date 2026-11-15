@@ -11,12 +11,20 @@ import { styles } from './styles';
 export type MenuItem = { label: string; icon: string; subtitle?: string; tone?: 'danger'; onPress: () => void };
 
 // Titled card of navigation rows (Profile, Settings): icon tile, label, optional subtitle and chevron.
-type Props = { title: string; items?: MenuItem[]; children?: ReactNode; style?: StyleProp<ViewStyle> };
+// action: a green link at the right of the title (Help & support › Your messages › View all).
+type Props = { title: string; items?: MenuItem[]; children?: ReactNode; style?: StyleProp<ViewStyle>; action?: { label: string; onPress: () => void } };
 
-export default function MenuGroup({ title, items, children, style }: Props) {
+export default function MenuGroup({ title, items, children, style, action }: Props) {
   return (
     <View style={[styles.section, style]}>
-      <CustomText text={title} color={COLORS.text_secondary} size={SIZES.lg} accessibility_role="header" />
+      {action ? (
+        <RowView justify_content="space-between">
+          <CustomText text={title} color={COLORS.text_secondary} size={SIZES.lg} accessibility_role="header" />
+          <CustomText text={action.label} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} accessibility_role="button" onPress={action.onPress} style={styles.action} />
+        </RowView>
+      ) : (
+        <CustomText text={title} color={COLORS.text_secondary} size={SIZES.lg} accessibility_role="header" />
+      )}
       <View style={styles.group}>
         {items?.map((item, index) => (
           <RowView

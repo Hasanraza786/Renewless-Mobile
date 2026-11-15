@@ -24,6 +24,8 @@ import type {
   ScanCycle,
   ScanStatus,
   SentAlert,
+  SupportMessage,
+  SupportTopic,
   SubscriptionDetail,
   SubscriptionFormInput,
   SubscriptionRecord,
@@ -31,6 +33,7 @@ import type {
 import { localToday } from '../utils/dates';
 import type {
   AlertDto,
+  SupportMessageDto,
   CalendarDto,
   CandidateDto,
   CategoryDto,
@@ -490,5 +493,22 @@ export function toReceipt(dto: ReceiptDto): ReceiptItem {
     subject: dto.subject,
     from: dto.from,
     files: dto.attachments.map(file => ({ id: file.id, name: file.filename, kind: file.mimeType === 'application/pdf' ? 'pdf' : 'image' })),
+  };
+}
+
+const SUPPORT_TOPICS: SupportTopic[] = ['gmail', 'reminders', 'subscriptions', 'ai_chat', 'account', 'other'];
+const dayLabel = (iso: string) => new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+const timeLabel = (iso: string) => new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+
+export function toSupportMessage(message: SupportMessageDto): SupportMessage {
+  return {
+    id: message.id,
+    topic: SUPPORT_TOPICS.includes(message.topic as SupportTopic) ? (message.topic as SupportTopic) : 'other',
+    message: message.message,
+    // Open shows as Sent only while no reply exists; an open message the team has answered (reopened) shows Replied.
+    status: message.status === 'closed' ? 'closed' : message.status === 'replied' || message.replies.length ? 'replied' : 'sent',
+    unread: message.unread,
+    sent_label: dayLabel(message.createdAt),
+    replies: message.replies.map(reply => ({ body: reply.body, sent_label: `${dayLabel(reply.sentAt)} · ${timeLabel(reply.sentAt)}` })),
   };
 }

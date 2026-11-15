@@ -14,6 +14,7 @@ import {
   alertsReducer,
   inboxReducer,
   profileReducer,
+  supportReducer,
 } from './slices';
 import { redux_storage } from './storage';
 
@@ -32,6 +33,7 @@ const root_reducer = combineReducers({
   alerts: alertsReducer,
   inbox: inboxReducer,
   onboarding: onboardingReducer,
+  support: supportReducer,
 });
 
 const persisted_reducer = persistReducer(

@@ -14,6 +14,7 @@ import { resetCalendar } from './slices/calendar-slice';
 import { resetAlerts } from './slices/alerts-slice';
 import { resetInbox } from './slices/inbox-slice';
 import { resetProfile } from './slices/profile-slice';
+import { resetSupport } from './slices/support-slice';
 
 export function endSession(): ThunkAction<void, RootState, undefined, UnknownAction> {
   return dispatch => {
@@ -28,6 +29,7 @@ export function endSession(): ThunkAction<void, RootState, undefined, UnknownAct
     dispatch(resetCalendar());
     dispatch(resetAlerts());
     dispatch(resetInbox());
+    dispatch(resetSupport());
     dispatch(resetAuth());
     // Signed out (logout, deletion or an expired token): back to Login.
     resetRoot([{ name: 'AuthStack' }]);

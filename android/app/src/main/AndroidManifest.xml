@@ -32,6 +32,8 @@
             <data android:scheme="renewless" />
         </intent-filter>
       </activity>
+      <!-- Push small icon (reminders and support replies); the colour is set in firebase.json. -->
+      <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_notification" />
       <receiver android:name=".RenewlessWidgetProvider" android:exported="false" android:label="Renewless">
         <intent-filter>
             <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

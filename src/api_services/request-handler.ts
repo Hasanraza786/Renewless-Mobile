@@ -20,6 +20,7 @@ import type {
   ReminderSettingsDto,
   ScanImportDto,
   ScanJobDto,
+  SupportMessageDto,
   SessionDto,
   SpendingDto,
   SubscriptionListDto,
@@ -62,6 +63,7 @@ export const SERVICE_URLS = {
   conversations: '/conversations',
   drafts: '/drafts',
   receipts: '/receipts',
+  supportMessages: '/support/messages',
 };
 
 const subscription = (id: string, action = '') => `${SERVICE_URLS.subscriptions}/${id}${action}`;
@@ -159,7 +161,16 @@ const sendChatMessage = ({ id, ...data }: Id<{ clientMessageId: string; text: st
   postLong<ChatTurnDto>(`${SERVICE_URLS.conversations}/${id}/messages`, data);
 const createFromDraft = ({ id, ...data }: Id<{ revision: number; separatePlan: boolean }>) => post<{ subscriptionId: string }>(`${SERVICE_URLS.drafts}/${id}/create`, data, true);
 
+// Help & support. A retry of the same message is saved once (Idempotency-Key).
+const getSupportMessages = () => get<{ items: SupportMessageDto[] }>(SERVICE_URLS.supportMessages);
+const sendSupportMessage = (data: { topic: string; message: string; appVersion: string; platform: string; osVersion: string; deviceModel: string }) =>
+  post<{ id: string; createdAt: string }>(SERVICE_URLS.supportMessages, data, true);
+const markSupportRead = ({ id }: Id) => post<void>(`${SERVICE_URLS.supportMessages}/${id}/read`);
+
 const apiServices = {
+  getSupportMessages,
+  sendSupportMessage,
+  markSupportRead,
   startConversation,
   uploadFile,
   sendChatMessage,
