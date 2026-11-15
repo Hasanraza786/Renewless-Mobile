@@ -115,6 +115,7 @@ export function toProfile(user: UserDto): Profile {
     gender: user.gender,
     provider: user.providers.includes('password') ? 'email' : user.providers[0] === 'apple' ? 'apple' : 'google',
     hasPassword: user.hasPassword,
+    productUpdates: user.productUpdates ?? false,
     revision: user.revision,
   };
 }

@@ -14,11 +14,17 @@ export async function pushToken() {
   return getToken(messaging).catch(() => null);
 }
 
+// An admin push names the screen it opens (api-mobile-contract.md#admin-push-payload); unknown opens Home.
+const ADMIN_SCREENS = { home: 'Home', add_subscription: 'AddSubscription', inboxes: 'Profile', help_support: 'HelpSupport' } as const;
+
 // A reminder push carries its subscription and opens Detail. A support reply opens Help & support with the
 // messages reloaded (Help & support may already be the open screen), so the reply shows as New reply.
-function openReminder(message: { data?: Record<string, unknown> } | null) {
+export function openReminder(message: { data?: Record<string, unknown> } | null) {
   const data = message?.data;
-  if (data?.type === 'support_reply') {
+  if (data?.type === 'admin_push') {
+    const screen = typeof data.screen === 'string' && Object.hasOwn(ADMIN_SCREENS, data.screen) ? ADMIN_SCREENS[data.screen as keyof typeof ADMIN_SCREENS] : 'Home';
+    navigate(screen);
+  } else if (data?.type === 'support_reply') {
     store.dispatch(getSupportMessages());
     navigate('HelpSupport');
   } else if (typeof data?.subscriptionId === 'string') navigate('SubscriptionDetail', { id: data.subscriptionId });

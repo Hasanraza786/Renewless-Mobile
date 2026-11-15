@@ -17,6 +17,8 @@ export type UserDto = {
   onboardingCompleted: boolean;
   // The account's AI chat consent (PUT /me/ai-consent).
   aiConsent?: { consented: boolean; consentedAt: string | null; copyVersion: string | null };
+  // Settings › Product updates: admin pushes of kind update (PATCH /me/preferences).
+  productUpdates?: boolean;
   revision: number;
 };
 

@@ -23,7 +23,23 @@ export default function SettingsScreen() {
     <Container readable style={styles.main_view}>
       <Header title="Settings" onBack={goBack} />
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
-        <MenuGroup title="Notifications" style={styles.first} items={[{ label: 'Reminder settings', icon: refresh_icon, subtitle: 'When and how you’re reminded', onPress: profile.openReminders }]} />
+        <MenuGroup title="Notifications" style={styles.first} items={[{ label: 'Reminder settings', icon: refresh_icon, subtitle: 'When and how you’re reminded', onPress: profile.openReminders }]}>
+          <RowView
+            justify_content="space-between"
+            gap={SIZES.padding2}
+            accessibilityRole="switch"
+            accessibilityLabel="Product updates"
+            accessibilityHint="News, tips and offers from Renewless"
+            accessibilityState={{ checked: settings.product_updates }}
+            onPress={settings.toggleProductUpdates}
+            style={[styles.toggle, styles.top_divider]}>
+            <View style={common_styles.flex_1}>
+              <CustomText text="Product updates" size={SIZES.sm} />
+              <CustomText mt={SIZES.padding / 4} text="News, tips and offers from Renewless" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+            </View>
+            <Icons name={settings.product_updates ? switch_on_icon : switch_off_icon} />
+          </RowView>
+        </MenuGroup>
 
         <MenuGroup title="AI assistant">
           <RowView

@@ -13,6 +13,8 @@ export type Profile = {
   // How the account signs in; social-only accounts have no Renewless password.
   provider: 'email' | AuthProvider;
   hasPassword: boolean;
+  // Settings › Product updates: news, tips and offers pushes; off until the user turns it on.
+  productUpdates: boolean;
   // Server revision, sent back with profile edits.
   revision: number;
 };

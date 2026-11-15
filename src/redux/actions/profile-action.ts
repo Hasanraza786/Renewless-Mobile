@@ -45,6 +45,37 @@ export function updateProfile(input: ProfileInput, onSaved: () => void): AppThun
   };
 }
 
+// Settings › Product updates: the switch moves at once; a failed save puts it back with the server's message.
+// Only the latest tap's answer counts, so quick on/off taps answered out of order never leave the wrong state.
+let product_updates_tap = 0;
+
+export function changeProductUpdates(on: boolean): AppThunk {
+  return async (dispatch, getState) => {
+    const before = getState().constant.user;
+    if (!before) return;
+    const tap = ++product_updates_tap;
+    const show = (profile: Profile) => {
+      dispatch(setUser(profile));
+      dispatch(setProfileUser(profile));
+    };
+    show({ ...before, productUpdates: on });
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.savePreferences,
+        param_data: { productUpdates: on },
+        onDone: ({ user }) => {
+          if (tap === product_updates_tap) show(toProfile(user));
+        },
+        onError: error => {
+          if (tap !== product_updates_tap) return;
+          show(before);
+          dispatch(setNotice(error.message));
+        },
+      }),
+    );
+  };
+}
+
 // Deletion ends the session locally only after the server confirms it. A Google/Apple account first verifies
 // its sign-in in the provider sheet; closing the sheet keeps the dialog open.
 // A password account sends the password typed in the dialog.

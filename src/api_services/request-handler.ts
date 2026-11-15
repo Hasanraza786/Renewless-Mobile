@@ -60,6 +60,7 @@ export const SERVICE_URLS = {
   outlookConnect: '/connectors/outlook',
   onboardingComplete: '/me/onboarding/complete',
   aiConsent: '/me/ai-consent',
+  preferences: '/me/preferences',
   scans: '/scans',
   uploads: '/uploads',
   conversations: '/conversations',
@@ -89,6 +90,7 @@ const logout = () => post<void>(SERVICE_URLS.logout);
 const getMe = () => get<{ user: UserDto }>(SERVICE_URLS.me);
 const updateMe = (data: { revision: number; name: string; phone: string | null; dateOfBirth: string | null; gender: string | null }) => patch<{ user: UserDto }>(SERVICE_URLS.me, data);
 const updateDevice = (data: { timezone?: string; fcmToken?: string | null }) => put<void>(SERVICE_URLS.device, data);
+const savePreferences = (data: { productUpdates: boolean }) => patch<{ user: UserDto }>(SERVICE_URLS.preferences, data);
 const saveAiConsent = (data: { consented: boolean; copyVersion?: string }) => put<{ user: UserDto }>(SERVICE_URLS.aiConsent, data);
 // Google/Apple accounts verify with a fresh provider token; password accounts with the password.
 const deleteMe = (data: { password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string }) => del<{ deleted: true }>(SERVICE_URLS.me, data);
@@ -200,6 +202,7 @@ const apiServices = {
   updateMe,
   updateDevice,
   saveAiConsent,
+  savePreferences,
   deleteMe,
   getPlatforms,
   getCategories,
