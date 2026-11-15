@@ -66,12 +66,15 @@ export default function useProfile() {
   const openInboxLimit = () => setDialog('inbox_limit');
   // + Connect opens Choose inbox (Gmail or Outlook); at the limit the inbox-limit dialog opens instead.
   const openConnect = () => {
-    trackEvent('gmail_connect_tapped', { from: 'profile' });
     if ((overview?.inboxes.length ?? 0) >= MAX_INBOXES) openInboxLimit();
     else setChooseOpen(true);
   };
   const closeChoose = () => setChooseOpen(false);
-  const pickProvider = (provider: InboxProvider) => dispatch(connectInbox(provider, onInboxConnected, openInboxLimit));
+  // Gmail's funnel event counts a Gmail pick only; Outlook's is sent by its connect action.
+  const pickProvider = (provider: InboxProvider) => {
+    if (provider === 'gmail') trackEvent('gmail_connect_tapped', { from: 'profile' });
+    dispatch(connectInbox(provider, onInboxConnected, openInboxLimit));
+  };
   const openInbox = () => inbox && navigate('ConnectedInbox', { id: inbox.id });
   const openHistory = () => navigate('History');
   const openPayments = () => navigate('Payments');

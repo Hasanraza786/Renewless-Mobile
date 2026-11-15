@@ -3,6 +3,7 @@ import type { ApiError } from '../../api_services/http-provider';
 import apiServices from '../../api_services/request-handler';
 import type { GmailCandidate, GmailScanStatus, GmailSelection, InboxProvider, ProfileInbox } from '../../types';
 import { successHaptic } from '../../utils/haptics';
+import { trackEvent } from '../../utils/analytics';
 import { gmailSignIn, outlookSignIn } from '../../utils/social-sign-in';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { setNotice } from '../slices/profile-slice';
@@ -158,9 +159,10 @@ export function connectGmailInbox(onConnected: (inbox: ProfileInbox) => void, on
 }
 
 // Signed in: the Microsoft sheet for an Outlook, Hotmail or Live inbox, then the backend exchanges the code.
-// Same outcomes as connectGmailInbox; a closed sheet does nothing.
+// Same outcomes as connectGmailInbox; a closed sheet does nothing. Every attempt counts for the connect funnel.
 export function connectOutlookInbox(onConnected: (inbox: ProfileInbox) => void, onLimit: () => void, onNotConnected: () => void = () => {}): AppThunk {
   return async dispatch => {
+    trackEvent('outlook_connect_tapped', { from: 'app' });
     const grant = await outlookSignIn().catch(() => undefined);
     if (grant === undefined) dispatch(setNotice(CONNECT_FAILED));
     if (!grant) {

@@ -23,6 +23,7 @@ export type AnalyticsEvent =
   | 'ai_consent_changed'
   | 'add_option_selected'
   | 'gmail_connect_tapped'
+  | 'outlook_connect_tapped'
   | 'social_login_tapped'
   | 'list_sorted'
   | 'list_filtered'

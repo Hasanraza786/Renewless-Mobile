@@ -2,6 +2,7 @@ import { fromScanCandidate, isAuthExpired, toInbox, toProfile, toScanCandidate, 
 import apiServices from '../../api_services/request-handler';
 import type { ScanCandidate } from '../../types';
 import { gmailSignIn, outlookSignIn, type GmailGrant, type OutlookGrant } from '../../utils/social-sign-in';
+import { trackEvent } from '../../utils/analytics';
 import { requestHandler, type AppThunk } from '../request-handler';
 import {
   addSaved,
@@ -53,6 +54,7 @@ export function startOnboardingScan(connector_id: string, onSyncLimit: () => voi
 // (by a deleted account, or synced this week) connects without a scan: onScannedBefore ends onboarding with a notice.
 export function connectOnboardingGoogle(onDiscovering: () => void, onScannedBefore: () => void): AppThunk {
   return async dispatch => {
+    trackEvent('gmail_connect_tapped', { from: 'onboarding' });
     dispatch(setConnectMessage(''));
     let grant: GmailGrant | null;
     try {
@@ -104,6 +106,7 @@ export function connectOnboardingGoogle(onDiscovering: () => void, onScannedBefo
 // first scan starts. Same outcomes as connectOnboardingGoogle; a closed sheet says so and stays on Connect.
 export function connectOnboardingOutlook(onDiscovering: () => void, onScannedBefore: () => void): AppThunk {
   return async dispatch => {
+    trackEvent('outlook_connect_tapped', { from: 'onboarding' });
     dispatch(setConnectMessage(''));
     let grant: OutlookGrant | null;
     try {

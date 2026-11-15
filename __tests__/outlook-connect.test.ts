@@ -3,6 +3,8 @@ import { ApiError } from '../src/api_services/http-provider';
 import { INBOX_LIMIT_NOTICE, connectOutlookInbox } from '../src/redux/actions/gmail-action';
 
 jest.mock('../src/config/api', () => ({ API_BASE_URL: '' }));
+const mockTrack = jest.fn();
+jest.mock('../src/utils/analytics', () => ({ trackEvent: (...args: unknown[]) => mockTrack(...args) }));
 jest.mock('../src/redux/actions/profile-action', () => ({ getProfileOverview: () => ({ type: 'overview' }) }));
 const mockOutlookSignIn = jest.fn();
 jest.mock('../src/utils/social-sign-in', () => ({ outlookSignIn: () => mockOutlookSignIn(), gmailSignIn: jest.fn() }));
@@ -28,6 +30,7 @@ beforeEach(() => {
   actions.length = 0;
   mockOutlookSignIn.mockReset();
   mockOutlookConnect.mockReset();
+  mockTrack.mockReset();
 });
 
 test('a connector without provider (older backend) is Gmail; Outlook keeps its provider', () => {
@@ -46,6 +49,8 @@ test('the code goes to the backend, never exchanged on the phone, and the new in
   mockOutlookConnect.mockResolvedValueOnce({ connector, scannedBefore: false });
   const result = await connect();
   expect(mockOutlookConnect).toHaveBeenCalledWith(grant);
+  // The connect funnel counts every Outlook attempt.
+  expect(mockTrack).toHaveBeenCalledWith('outlook_connect_tapped', { from: 'app' });
   expect(result.connected).toHaveBeenCalledWith(expect.objectContaining({ id: 'o1', provider: 'outlook' }));
 });
 
