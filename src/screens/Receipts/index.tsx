@@ -74,7 +74,7 @@ export default function ReceiptsScreen({ route }: { route: ReceiptsRoute }) {
               </View>
               <View style={common_styles.flex_1}>
                 <CustomText text={record.plan ? `${record.name} · ${record.plan}` : record.name} size={SIZES.lg} />
-                <CustomText mt={SIZES.padding * 0.3} text="Billing emails found in your Gmail" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+                <CustomText mt={SIZES.padding * 0.3} text="Billing emails found in your inbox" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
               </View>
             </RowView>
           ) : null}
@@ -90,7 +90,7 @@ export default function ReceiptsScreen({ route }: { route: ReceiptsRoute }) {
             <View style={[styles.empty, receipts.is_tablet && styles.empty_tablet]}>
               <Mascot expression="neutral" size={SIZES.padding * 5.4} label="Loop" />
               <CustomText mt={SIZES.padding * 0.9} text="No receipts yet" size={SIZES.lg} align="center" />
-              <CustomText mt={SIZES.padding2} text="Billing emails Gmail finds for this subscription appear here, with their PDF or image." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
+              <CustomText mt={SIZES.padding2} text="Billing emails found for this subscription appear here, with their PDF or image." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
             </View>
           )}
         </ScrollView>

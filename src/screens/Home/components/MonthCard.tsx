@@ -48,7 +48,7 @@ export default function MonthCard({ home }: { home: HomeController }) {
         <Column
           label="Paid this month"
           value={totalsText(month.paid, 'No receipts yet')}
-          meta={month.receipt_count ? `${month.receipt_count} Gmail receipt${month.receipt_count === 1 ? '' : 's'}` : 'Not yet confirmed'}
+          meta={month.receipt_count ? `${month.receipt_count} inbox receipt${month.receipt_count === 1 ? '' : 's'}` : 'Not yet confirmed'}
           onPress={home.openPayments}
           accessibility_label="View confirmed payments this month"
         />
@@ -61,7 +61,7 @@ export default function MonthCard({ home }: { home: HomeController }) {
           accessibility_label="View upcoming charges this month"
         />
       </RowView>
-      <CustomText mt={SIZES.padding} text="Upcoming charges are estimates. Paid amounts come from Gmail receipts." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <CustomText mt={SIZES.padding} text="Upcoming charges are estimates. Paid amounts come from your inbox receipts." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
     </View>
   );
 }

@@ -56,7 +56,7 @@ export default function PriceHistoryScreen({ route }: Props) {
                   <RowView justify_content="space-between">
                     <CustomText text={change.reason === 'correction' ? 'Price corrected' : 'Price changed'} size={SIZES.lg} />
                     <View style={styles.badge}>
-                      <CustomText text={change.source === 'gmail' ? 'Found in Gmail' : 'Updated by you'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+                      <CustomText text={change.source === 'gmail' ? 'Found in your inbox' : 'Updated by you'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
                     </View>
                   </RowView>
                   <CustomText
@@ -82,7 +82,7 @@ export default function PriceHistoryScreen({ route }: Props) {
             <View style={[styles.empty, is_tablet && styles.empty_tablet]}>
               <Mascot expression="neutral" size={SIZES.padding * 5.4} label="Loop" />
               <CustomText mt={SIZES.padding * 0.9} text="No price changes yet" size={SIZES.lg} align="center" />
-              <CustomText mt={SIZES.padding2} text="Changes appear here when you update a price or Gmail finds a verified change." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
+              <CustomText mt={SIZES.padding2} text="Changes appear here when you update a price or your inbox shows a verified change." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
             </View>
           )}
         </ScrollView>

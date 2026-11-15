@@ -9,6 +9,7 @@ import type {
   ChatTurnDto,
   CandidateDto,
   ConnectorDto,
+  OutlookConnectDto,
   GoogleConnectDto,
   DetailDto,
   HomeDto,
@@ -56,6 +57,7 @@ export const SERVICE_URLS = {
   alerts: '/alerts',
   connectors: '/connectors',
   googleConnect: '/auth/google-connect',
+  outlookConnect: '/connectors/outlook',
   onboardingComplete: '/me/onboarding/complete',
   aiConsent: '/me/ai-consent',
   scans: '/scans',
@@ -129,6 +131,9 @@ const getAlerts = (data: { cursor?: string; limit: number }) => get<AlertsDto>(S
 const getConnectors = () => get<{ connectors: ConnectorDto[] }>(SERVICE_URLS.connectors);
 const getConnector = ({ id }: Id) => get<ConnectorDto>(`${SERVICE_URLS.connectors}/${id}`);
 const disconnectConnector = ({ id }: Id) => del<void>(`${SERVICE_URLS.connectors}/${id}`);
+
+// Outlook connect (signed in): the backend exchanges the Microsoft code and keeps the refresh token.
+const outlookConnect = (data: { code: string; codeVerifier: string; redirectUri: string }) => post<OutlookConnectDto>(SERVICE_URLS.outlookConnect, data);
 
 // Gmail connect and scans
 // Another connect for this account or inbox may still be running (409 REQUEST_IN_PROGRESS, retryable): wait and ask
@@ -224,6 +229,7 @@ const apiServices = {
   getConnectors,
   getConnector,
   disconnectConnector,
+  outlookConnect,
 };
 
 export default apiServices;

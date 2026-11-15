@@ -115,6 +115,10 @@ export const styles = StyleSheet.create({
   empty_primary: {
     marginTop: SIZES.padding * 1.1,
   },
+  empty_providers: {
+    alignSelf: 'stretch',
+    marginTop: SIZES.padding * 1.1,
+  },
   sync_pill: {
     alignSelf: 'center',
     backgroundColor: COLORS.accent_chip,

@@ -17,10 +17,13 @@ export type Profile = {
   revision: number;
 };
 
-// A Gmail inbox the account connected for receipts; lastSync is an ISO time or null.
+export type InboxProvider = 'gmail' | 'outlook';
+
+// A Gmail or Outlook inbox the account connected for receipts; lastSync is an ISO time or null.
 export type ProfileInbox = {
   id: string;
   email: string;
+  provider: InboxProvider;
   status: 'synced' | 'paused' | 'reconnect';
   lastSync: string | null;
   // When the weekly Sync opens again (ISO); null until the first scan is done.
@@ -190,7 +193,8 @@ export type SubscriptionRecord = {
   cancelled_on: string | null;
   access_until: string | null;
   start_date: string | null;
-  source: { kind: 'manual' | 'gmail'; email: string };
+  // kind gmail = imported from a connected inbox; provider names that inbox's mail service.
+  source: { kind: 'manual' | 'gmail'; email: string; provider: InboxProvider };
   // disconnected: the inbox was disconnected; the source still names it (Profile contract).
   inbox: { email: string; last_sync: string; disconnected?: boolean } | null;
   reminder: ReminderPreference;
@@ -434,6 +438,8 @@ export type OnboardingState = {
   connect_loading: boolean;
   connect_message: string;
   inbox_email: string;
+  // The onboarding inbox's mail service, for the recovery copy (Reconnect Gmail / Outlook).
+  inbox_provider: InboxProvider;
   connector_id: string;
   scan_job_id: string;
   scan_stages: number;
@@ -508,7 +514,8 @@ export type GoogleConnection =
 
 export type AuthStackParamList = {
   Splash: undefined;
-  Onboarding: { step?: OnboardingStep } | undefined;
+  // connect: after Sign up for Continue with Outlook, Connect inbox opens the Microsoft sheet by itself once.
+  Onboarding: { step?: OnboardingStep; connect?: 'outlook' } | undefined;
   Login: { intent?: AuthIntent } | undefined;
   Signup: { intent?: AuthIntent } | undefined;
   ForgotPassword: undefined;
@@ -517,8 +524,9 @@ export type AuthStackParamList = {
   ResetPassword: { reset_token: string };
 };
 
-// Where the user goes after authenticating: the Add form for manual entry, AI chat for Add with AI, otherwise Home.
-export type AuthIntent = 'add_manual' | 'add_ai';
+// Where the user goes after authenticating: the Add form for manual entry, AI chat for Add with AI, back to onboarding's
+// Connect inbox for Continue with Outlook (Microsoft sign-in is not an app login), otherwise Home.
+export type AuthIntent = 'add_manual' | 'add_ai' | 'connect_outlook';
 export type AuthProvider = 'google' | 'apple';
 
 export type TabParamList = {
@@ -553,7 +561,8 @@ export type AppStackParamList = {
   History: undefined;
   ConnectedInbox: { id: string };
   // Authenticated Gmail scan and review; without an inbox the first connected one is used.
-  GmailScan: { inbox_id?: string } | undefined;
+  // connect: the Add sheet's provider tile; that provider's inbox is scanned, or connected first.
+  GmailScan: { inbox_id?: string; connect?: InboxProvider } | undefined;
   AiChat: undefined;
   InboxSubscriptions: { id: string };
   // Calendar date with several events; date is YYYY-MM-DD.

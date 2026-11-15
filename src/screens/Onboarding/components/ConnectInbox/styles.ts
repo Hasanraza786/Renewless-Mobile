@@ -9,6 +9,11 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: SIZES.padding / 2,
   },
+  // Gmail and Outlook share one tile, as wide as both logos.
+  icon_dual: {
+    paddingHorizontal: SIZES.padding * 0.7,
+    width: undefined,
+  },
   icon_view: {
     height: SIZES.padding * 3.25,
     width: SIZES.padding * 3.25,
@@ -44,9 +49,6 @@ export const styles = StyleSheet.create({
   trust_divider: {
     borderBottomColor: COLORS.line_soft,
     borderBottomWidth: 1,
-  },
-  connect_button: {
-    height: SIZES.padding * 2.4,
   },
   // The legal row ends flush with the footer, so it absorbs the footer's bottom padding.
   legal: {

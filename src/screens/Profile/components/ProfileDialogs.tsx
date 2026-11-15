@@ -25,7 +25,7 @@ function LogoutDialog({ profile }: { profile: ProfileController }) {
 function DeleteDialog({ profile }: { profile: ProfileController }) {
   return (
     <ConfirmDialog title="Delete your Renewless account?" close_label="Close deletion confirmation" onClose={profile.closeDialog} locked={profile.deleting}>
-      <CustomText mt={SIZES.padding * 0.7} text="This permanently removes your account and saved tracking data, disconnects your Gmail inboxes and stops Renewless reminders." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <CustomText mt={SIZES.padding * 0.7} text="This permanently removes your account and saved tracking data, disconnects your connected inboxes and stops Renewless reminders." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       <CustomText mt={SIZES.padding * 0.7} text="Your subscriptions with other services won’t be cancelled." weight={FONTS.regular} size={SIZES.sm} />
       <CustomText mt={SIZES.padding * 0.7} mb={SIZES.padding * 0.7} text={profile.needs_password ? 'Enter your password and type DELETE to confirm.' : 'We’ll ask you to verify your sign-in before deleting your account.'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       {profile.needs_password ? (
@@ -72,7 +72,7 @@ function DeleteDialog({ profile }: { profile: ProfileController }) {
 // + Connect after 2 Gmail inboxes (disconnected ones count): the limit, nothing to confirm.
 function InboxLimitDialog({ profile }: { profile: ProfileController }) {
   return (
-    <ConfirmDialog title="You’ve used your 2 Gmail inboxes" close_label="Close" onClose={profile.closeDialog}>
+    <ConfirmDialog title="You’ve used your 2 inboxes" close_label="Close" onClose={profile.closeDialog}>
       <CustomText mt={SIZES.padding * 0.7} text="That’s the limit for now. You can reconnect an inbox you used before." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       <SizedBox height={SIZES.padding * 0.7} />
       <CustomButton variant="primary" text="OK" onPress={profile.closeDialog} />

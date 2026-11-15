@@ -152,7 +152,7 @@ export function toRecord(item: SummaryDto | DetailDto): SubscriptionRecord {
     cancelled_on: item.cancelledAt,
     access_until: item.accessUntil ?? item.expiredAt,
     start_date: start,
-    source: { kind: detail?.source.type === 'gmail' ? 'gmail' : 'manual', email: detail?.source.email ?? '' },
+    source: { kind: detail?.source.type === 'gmail' ? 'gmail' : 'manual', email: detail?.source.email ?? '', provider: detail?.source.connector?.provider ?? 'gmail' },
     inbox: connector ? { email: connector.email, last_sync: connector.lastSuccessfulSyncAt ?? '', disconnected: connector.status === 'disconnected' } : null,
     reminder: detail ? toReminder(detail.reminder) : { mode: 'default' },
     notes: detail?.note ?? null,
@@ -346,6 +346,7 @@ export function toInbox(connector: ConnectorDto): ProfileInbox {
   return {
     id: connector.id,
     email: connector.email,
+    provider: connector.provider ?? 'gmail',
     status: connector.status === 'connected' ? 'synced' : 'reconnect',
     lastSync: connector.lastSuccessfulSyncAt,
     nextSync: connector.nextSyncAt ?? null,
@@ -379,7 +380,7 @@ export function toScanStatus(dto: ScanJobDto): ScanStatus {
     job_id: dto.id,
     completed_stages: dto.stages.filter(stage => stage.status === 'done').length,
     status,
-    failure: status === 'failed' ? (dto.error?.code === 'GMAIL_AUTH_EXPIRED' ? 'access' : 'network') : undefined,
+    failure: status === 'failed' ? (isAuthExpired(dto.error?.code) ? 'access' : 'network') : undefined,
     candidates: dto.candidates.map(toScanCandidate).filter((item): item is ScanCandidate => !!item),
   };
 }
@@ -511,4 +512,9 @@ export function toSupportMessage(message: SupportMessageDto): SupportMessage {
     sent_label: dayLabel(message.createdAt),
     replies: message.replies.map(reply => ({ body: reply.body, sent_label: `${dayLabel(reply.sentAt)} · ${timeLabel(reply.sentAt)}` })),
   };
+}
+
+// Expired inbox permission: Outlook reports its own code and is handled exactly like Gmail's.
+export function isAuthExpired(code?: string) {
+  return code === 'GMAIL_AUTH_EXPIRED' || code === 'OUTLOOK_AUTH_EXPIRED';
 }

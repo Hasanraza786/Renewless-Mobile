@@ -1,21 +1,22 @@
 import { fromGmailSelection, toGmailScan, toInbox } from '../../api_services/adapters';
 import type { ApiError } from '../../api_services/http-provider';
 import apiServices from '../../api_services/request-handler';
-import type { GmailCandidate, GmailScanStatus, GmailSelection, ProfileInbox } from '../../types';
+import type { GmailCandidate, GmailScanStatus, GmailSelection, InboxProvider, ProfileInbox } from '../../types';
 import { successHaptic } from '../../utils/haptics';
-import { gmailSignIn } from '../../utils/social-sign-in';
+import { gmailSignIn, outlookSignIn } from '../../utils/social-sign-in';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { setNotice } from '../slices/profile-slice';
 import { getDashboard } from './dashboard-action';
 import { getSubscriptions } from './list-action';
 import { getProfileOverview } from './profile-action';
 
-// Free limit per account; the server also counts disconnected inboxes (GMAIL_INBOX_LIMIT).
+// Free limit per account, Gmail and Outlook together; the server also counts disconnected inboxes (GMAIL_INBOX_LIMIT).
 export const MAX_INBOXES = 2;
-export const INBOX_LIMIT_NOTICE = 'You’ve used your 2 Gmail inboxes. You can reconnect an inbox you used before.';
+export const INBOX_LIMIT_NOTICE = 'You’ve used your 2 inboxes. You can reconnect an inbox you used before.';
 
 const CONNECT_FAILED = 'We couldn’t connect this inbox. Please try again.';
 const GMAIL_DENIED = 'Allow Gmail access to connect this inbox.';
+const OUTLOOK_DENIED = 'Allow Outlook access to connect this inbox.';
 
 const day = (iso: string | null) => (iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '');
 
@@ -43,7 +44,7 @@ export function getGmailInboxes(onLoaded: (inboxes: ProfileInbox[]) => void, onF
 }
 
 // Home's empty card: the connected inbox when none can sync yet (each syncs once a week), else null, and how many inboxes
-// are connected. It runs in the background, so a failure just leaves the usual Connect Gmail card.
+// are connected. It runs in the background, so a failure just leaves the usual connect card.
 export function getSyncLockedInbox(onLoaded: (inbox: ProfileInbox | null, inbox_count: number) => void): AppThunk {
   return async dispatch => {
     await dispatch(
@@ -154,4 +155,42 @@ export function connectGmailInbox(onConnected: (inbox: ProfileInbox) => void, on
       }),
     );
   };
+}
+
+// Signed in: the Microsoft sheet for an Outlook, Hotmail or Live inbox, then the backend exchanges the code.
+// Same outcomes as connectGmailInbox; a closed sheet does nothing.
+export function connectOutlookInbox(onConnected: (inbox: ProfileInbox) => void, onLimit: () => void, onNotConnected: () => void = () => {}): AppThunk {
+  return async dispatch => {
+    const grant = await outlookSignIn().catch(() => undefined);
+    if (grant === undefined) dispatch(setNotice(CONNECT_FAILED));
+    if (!grant) {
+      onNotConnected();
+      return;
+    }
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.outlookConnect,
+        param_data: grant,
+        onDone: result => {
+          dispatch(getProfileOverview());
+          const inbox = toInbox(result.connector);
+          if (result.scannedBefore) {
+            dispatch(setNotice(scannedBeforeNotice(inbox)));
+            onNotConnected();
+            return;
+          }
+          onConnected(inbox);
+        },
+        onError: error => {
+          if (error.code === 'GMAIL_INBOX_LIMIT') return onLimit();
+          dispatch(setNotice(error.code === 'OUTLOOK_ACCESS_DENIED' ? OUTLOOK_DENIED : CONNECT_FAILED));
+          onNotConnected();
+        },
+      }),
+    );
+  };
+}
+
+export function connectInbox(provider: InboxProvider, onConnected: (inbox: ProfileInbox) => void, onLimit: () => void, onNotConnected?: () => void): AppThunk {
+  return provider === 'outlook' ? connectOutlookInbox(onConnected, onLimit, onNotConnected) : connectGmailInbox(onConnected, onLimit, onNotConnected);
 }

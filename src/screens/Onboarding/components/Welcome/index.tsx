@@ -81,7 +81,7 @@ export function WelcomeBody({ onboarding }: Props) {
         eyebrow="LESS GUESSWORK. MORE CONTROL."
         title="Know what renews."
         emphasis="Before it does."
-        copy="Find subscriptions in your Gmail, understand their cost, and stay ahead of renewals."
+        copy="Find subscriptions in your inbox, understand their cost, and stay ahead of renewals."
       />
 
       <SizedBox />

@@ -2,14 +2,14 @@ import { useCallback, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { navigate } from '../../navigation/service';
 import { logoutUser } from '../../redux/actions/auth-action';
-import { MAX_INBOXES, connectGmailInbox } from '../../redux/actions/gmail-action';
+import { MAX_INBOXES, connectInbox } from '../../redux/actions/gmail-action';
 import { deleteAccount, getProfileOverview } from '../../redux/actions/profile-action';
 import { selectUser, setNotice, setProfileError } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { trackEvent } from '../../utils/analytics';
 import { money } from '../../utils/money';
 import { PRIVACY_URL, TERMS_URL, openLegal } from '../../config/legal';
-import type { ProfileInbox } from '../../types';
+import type { InboxProvider, ProfileInbox } from '../../types';
 
 export const PROVIDER_LABEL = { email: 'Email', google: 'Google', apple: 'Apple' } as const;
 
@@ -22,6 +22,7 @@ export default function useProfile() {
   const { overview, delete_step, error } = useAppSelector(state => state.profile);
   const logging_out = useAppSelector(state => state.auth.loading.logout);
   const [dialog, setDialog] = useState<'logout' | 'delete' | 'inbox_limit' | null>(null);
+  const [choose_open, setChooseOpen] = useState(false);
   const [delete_text, setDeleteText] = useState('');
   // Email accounts confirm deletion with their password; Google/Apple verify in the provider sheet.
   const [delete_password, setDeletePassword] = useState('');
@@ -35,6 +36,8 @@ export default function useProfile() {
 
   const totals = overview?.payment_totals ?? [];
   const inbox = overview?.inboxes[0] ?? null;
+  // Gmail and Outlook count together toward the free limit.
+  const inbox_count_label = `${overview?.inboxes.length ?? 0} of ${MAX_INBOXES}`;
   // Never synced yet is not Synced.
   const inbox_status = !inbox ? '' : inbox.status === 'reconnect' ? 'Reconnect needed' : inbox.status === 'paused' ? 'Updates paused' : inbox.lastSync ? 'Synced' : 'Not synced yet';
   // Hidden until the overview loads, so the No inbox state never flashes for a connected account.
@@ -61,11 +64,14 @@ export default function useProfile() {
   // The list leaves out disconnected inboxes, so the server's GMAIL_INBOX_LIMIT also opens the dialog.
   const onInboxConnected = (connected: ProfileInbox) => navigate('GmailScan', { inbox_id: connected.id });
   const openInboxLimit = () => setDialog('inbox_limit');
+  // + Connect opens Choose inbox (Gmail or Outlook); at the limit the inbox-limit dialog opens instead.
   const openConnect = () => {
     trackEvent('gmail_connect_tapped', { from: 'profile' });
     if ((overview?.inboxes.length ?? 0) >= MAX_INBOXES) openInboxLimit();
-    else dispatch(connectGmailInbox(onInboxConnected, openInboxLimit));
+    else setChooseOpen(true);
   };
+  const closeChoose = () => setChooseOpen(false);
+  const pickProvider = (provider: InboxProvider) => dispatch(connectInbox(provider, onInboxConnected, openInboxLimit));
   const openInbox = () => inbox && navigate('ConnectedInbox', { id: inbox.id });
   const openHistory = () => navigate('History');
   const openPayments = () => navigate('Payments');
@@ -91,6 +97,10 @@ export default function useProfile() {
   return {
     user,
     inbox,
+    inbox_count_label,
+    choose_open,
+    closeChoose,
+    pickProvider,
     inbox_status,
     inboxes_ready,
     payment_text,

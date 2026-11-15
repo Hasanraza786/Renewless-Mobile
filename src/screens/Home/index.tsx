@@ -4,6 +4,8 @@ import { clock_accent_icon } from '../../assets/icons';
 import AddChoiceLinks from '../../components/AddChoiceLinks';
 import AddOptions from '../../components/AddOptions';
 import AddSheet from '../../components/AddSheet';
+import ChooseInboxSheet from '../../components/ChooseInboxSheet';
+import InboxProviders from '../../components/InboxProviders';
 import Container from '../../components/Container';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
@@ -41,8 +43,8 @@ export default function HomeScreen({ route }: { route: HomeRoute }) {
           <CustomButton variant="primary" text="Try again" onPress={home.retry} style={styles.empty_primary} />
         </View>
       ) : data && !data.has_subscriptions ? (
-        // Gmail hero (locked 13 Nov 2026): Connect Gmail leads in the onboarding style, then Add with AI · Add manually.
-        // When the connected inbox can't sync yet there is no Connect Gmail: the sync date and the three add options.
+        // Inbox hero (Outlook inboxes, locked 16 Nov 2026): Continue with Gmail / Outlook lead in the onboarding style, then
+        // Add with AI · Add manually. When the connected inbox can't sync yet: the sync date and the add options.
         <ScrollView showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="scrollableAxes" contentContainerStyle={styles.empty}>
           <ConnectArt />
           {home.locked_inbox ? (
@@ -61,21 +63,23 @@ export default function HomeScreen({ route }: { route: HomeRoute }) {
                 align="center"
               />
               <SizedBox />
-              <AddOptions gmail={home.can_add_inbox ? { title: 'Connect another Gmail', copy: 'Find subscriptions in a second inbox', open: home.connectAnother } : null} />
+              <AddOptions inbox={home.can_add_inbox ? { title: 'Connect another inbox', copy: 'Find subscriptions in a second inbox', open: home.connectAnother } : null} />
             </Fragment>
           ) : (
             <Fragment>
               <CustomText mt={SIZES.padding} text="Let Loop find your subscriptions" size={SIZES.h4} align="center" />
               <CustomText
                 mt={SIZES.padding2}
-                text="Connect Gmail and Loop lists what you pay for from your receipts. It takes about a minute."
+                text="Connect your inbox and Loop lists what you pay for from your receipts. It takes about a minute."
                 weight={FONTS.regular}
                 color={COLORS.text_secondary}
                 size={SIZES.sm}
                 align="center"
               />
               <TrustRows />
-              <CustomButton variant="primary" text="Connect Gmail" onPress={home.openConnectGmail} style={styles.empty_primary} />
+              <View style={styles.empty_providers}>
+                <InboxProviders variant="buttons" onPick={home.openConnect} />
+              </View>
               <SizedBox height={SIZES.padding * 0.6} />
               <AddChoiceLinks onAi={home.openAddAi} onManual={home.openAddManual} />
             </Fragment>
@@ -93,6 +97,7 @@ export default function HomeScreen({ route }: { route: HomeRoute }) {
         </ScrollView>
       )}
       <AddSheet visible={home.add_open} onClose={home.closeAdd} />
+      <ChooseInboxSheet visible={home.choose_open} onClose={home.closeChoose} onPick={home.pickProvider} />
       <AddWidget home={home} />
     </Container>
   );

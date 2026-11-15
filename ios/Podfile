@@ -36,6 +36,13 @@ target 'Renewless' do
   # Firebase (Analytics, Crashlytics) Swift pods import these as modules; avoids switching the app to use_frameworks.
   %w[FirebaseCore FirebaseCoreExtension FirebaseCoreInternal FirebaseInstallations FirebaseSessions GoogleDataTransport nanopb].each { |name| pod name, :modular_headers => true }
 
+  # The Swift AppDelegate imports react-native-app-auth's flow-manager protocol as a module (Outlook sign-in).
+  pre_install do |installer|
+    installer.pod_targets.each do |pod|
+      def pod.defines_module?; true; end if pod.name == 'react-native-app-auth'
+    end
+  end
+
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.

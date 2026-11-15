@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { goBack, navigate } from '../../navigation/service';
-import { connectGmailInbox, getGmailInboxes, getGmailScan, INBOX_LIMIT_NOTICE, saveGmailResults, startGmailScan } from '../../redux/actions/gmail-action';
+import { connectInbox, getGmailInboxes, getGmailScan, INBOX_LIMIT_NOTICE, saveGmailResults, startGmailScan } from '../../redux/actions/gmail-action';
 import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch } from '../../redux/store';
 import type { ApiError } from '../../api_services/http-provider';
-import type { AppStackParamList, GmailCandidate, GmailSelection, ProfileInbox } from '../../types';
+import type { AppStackParamList, GmailCandidate, GmailSelection, InboxProvider, ProfileInbox } from '../../types';
 import { afterModalClose } from '../../utils/modal';
 import { money as moneyLabel } from '../../utils/money';
 import { useIsTablet } from '../../utils/tablet';
@@ -37,6 +37,7 @@ export default function useGmailScan(route: GmailScanRoute) {
   const [edits, setEdits] = useState<Record<string, CandidateEdit>>({});
   const [replace_date, setReplaceDate] = useState(false);
   const [sheet, setSheet] = useState<GmailSheet>(null);
+  const [choose_open, setChooseOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [save_error, setSaveError] = useState('');
   const [reduce_motion, setReduceMotion] = useState(false);
@@ -132,16 +133,17 @@ export default function useGmailScan(route: GmailScanRoute) {
       getGmailInboxes(list => {
         if (visit !== scan_token.current) return;
         setInboxes(list);
-        const first = list.find(item => item.id === route.params?.inbox_id) ?? list[0];
+        // An Add sheet tile scans that provider's inbox, or connects one first; closing its sign-in sheet leaves the screen.
+        const provider = route.params?.connect;
+        const first = list.find(item => item.id === route.params?.inbox_id) ?? (provider ? list.find(item => item.provider === provider) : list[0]);
         if (first) return scan(first);
-        // No inbox yet (Home or the Add sheet): connect one first; closing Google leaves the screen.
-        dispatch(connectGmailInbox(onFirstInbox, onFirstLimit, goBack));
+        dispatch(connectInbox(provider ?? 'gmail', onFirstInbox, onFirstLimit, goBack));
       }, onFailed),
     );
     return () => {
       scan_token.current += 1;
     };
-  }, [dispatch, onFirstInbox, onFirstLimit, route.params?.inbox_id, scan]);
+  }, [dispatch, onFirstInbox, onFirstLimit, route.params?.inbox_id, route.params?.connect, scan]);
 
   const scan_done = phase === 'scanning' && stage >= 3;
   const actionable = candidates.filter(item => item.kind !== 'duplicate' && !item.saved);
@@ -199,10 +201,13 @@ export default function useGmailScan(route: GmailScanRoute) {
     scan(target);
   };
   const onInboxLimit = () => dispatch(setNotice(INBOX_LIMIT_NOTICE));
+  // Connect another inbox closes the picker and opens Choose inbox (Gmail or Outlook).
   const connectAnother = () => {
     setSheet(null);
-    afterModalClose(() => dispatch(connectGmailInbox(onConnected, onInboxLimit)));
+    afterModalClose(() => setChooseOpen(true));
   };
+  const closeChoose = () => setChooseOpen(false);
+  const pickProvider = (provider: InboxProvider) => dispatch(connectInbox(provider, onConnected, onInboxLimit));
   const retry = () => {
     if (!inbox) return;
     if (!lost_job.current) return scan(inbox);
@@ -264,6 +269,9 @@ export default function useGmailScan(route: GmailScanRoute) {
     keepChanges,
     chooseInbox,
     connectAnother,
+    choose_open,
+    closeChoose,
+    pickProvider,
     retry,
     addManually,
     addWithAi,

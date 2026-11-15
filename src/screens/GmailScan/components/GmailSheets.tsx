@@ -3,7 +3,8 @@ import { amountKeyboard, amountPlaceholder, formatAmount } from '../../../utils/
 import PlatformLogo from '../../../components/PlatformLogo';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { gmail_logo, option_check_icon } from '../../../assets/icons';
+import { option_check_icon } from '../../../assets/icons';
+import { INBOX_BRAND } from '../../../utils/inbox';
 import AppSheet from '../../../components/AppSheet';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
@@ -119,7 +120,7 @@ function ChangesSheet({ gmail, item }: Props & { item: GmailCandidate }) {
   );
 }
 
-// Owned inboxes only; a new inbox needs Google consent, which is not available yet.
+// Owned inboxes only; Connect another inbox opens Choose inbox for a Gmail or Outlook inbox.
 function InboxSheet({ gmail }: Props) {
   return (
     <AppSheet visible title="Choose an inbox" onClose={gmail.closeSheet}>
@@ -127,14 +128,14 @@ function InboxSheet({ gmail }: Props) {
         const current = inbox.id === gmail.inbox?.id;
         return (
           <RowView key={inbox.id} gap={SIZES.padding2} accessibilityRole="button" accessibilityState={{ selected: current }} onPress={() => gmail.chooseInbox(inbox)} style={styles.inbox_option}>
-            <Icons name={gmail_logo} icon_height={SIZES.padding * 1.2} icon_width={SIZES.padding * 1.2} />
+            <Icons name={INBOX_BRAND[inbox.provider].logo} icon_height={SIZES.padding * 1.2} icon_width={SIZES.padding * 1.2} />
             <CustomText text={inbox.email} weight={FONTS.medium} size={SIZES.sm} style={common_styles.flex_1} />
             {current ? <Icons name={option_check_icon} /> : null}
           </RowView>
         );
       })}
-      <CustomButton variant="secondary" text="Connect another Gmail inbox" onPress={gmail.connectAnother} style={styles.sheet_button} />
-      <CustomText mt={SIZES.padding2} text="Gmail access is separate from signing in. Connect your inboxes and keep subscriptions up to date at no cost." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <CustomButton variant="secondary" text="Connect another inbox" onPress={gmail.connectAnother} style={styles.sheet_button} />
+      <CustomText mt={SIZES.padding2} text="Inbox access is separate from signing in. Connect your inboxes and keep subscriptions up to date at no cost." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
     </AppSheet>
   );
 }

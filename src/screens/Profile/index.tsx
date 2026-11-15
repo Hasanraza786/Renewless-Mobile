@@ -1,5 +1,6 @@
 import { Pressable, ScrollView, View } from 'react-native';
-import { chevron_right_icon, edit_box_icon, gmail_logo, help_icon, history_icon, logout_icon, mail_icon, payments_icon, settings_icon } from '../../assets/icons';
+import { chevron_right_icon, edit_box_icon, help_icon, history_icon, logout_icon, mail_icon, payments_icon, settings_icon } from '../../assets/icons';
+import ChooseInboxSheet from '../../components/ChooseInboxSheet';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Header from '../../components/Header';
@@ -8,6 +9,7 @@ import MenuGroup from '../../components/MenuGroup';
 import RowView from '../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
+import { INBOX_BRAND } from '../../utils/inbox';
 import ProfileDialogs from './components/ProfileDialogs';
 import useProfile, { PROVIDER_LABEL, initials } from './index.function';
 import { styles } from './styles';
@@ -52,9 +54,12 @@ export default function ProfileScreen() {
 
         <View style={styles.inboxes}>
           <RowView justify_content="space-between" style={inbox && styles.inbox_heading}>
-            <CustomText text="Connected inboxes" color={COLORS.text_secondary} size={SIZES.lg} accessibility_role="header" />
+            <RowView gap={SIZES.padding * 0.3}>
+              <CustomText text="Connected inboxes" color={COLORS.text_secondary} size={SIZES.lg} accessibility_role="header" />
+              {profile.inboxes_ready ? <CustomText text={profile.inbox_count_label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} /> : null}
+            </RowView>
             {inbox ? (
-              <Pressable accessibilityRole="button" accessibilityLabel="Connect another Gmail inbox" hitSlop={SIZES.padding3} onPress={profile.openConnect}>
+              <Pressable accessibilityRole="button" accessibilityLabel="Connect another inbox" hitSlop={SIZES.padding3} onPress={profile.openConnect}>
                 <CustomText text="+ Connect" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
               </Pressable>
             ) : null}
@@ -62,7 +67,7 @@ export default function ProfileScreen() {
           {!profile.inboxes_ready ? null : inbox ? (
             <RowView accessibilityRole="button" accessibilityLabel={`${inbox.email}, ${profile.inbox_status}`} gap={SIZES.padding / 2} onPress={profile.openInbox} style={styles.inbox_row}>
               <View style={styles.inbox_logo}>
-                <Icons name={gmail_logo} icon_height={SIZES.padding * 1.15} icon_width={SIZES.padding * 1.15} />
+                <Icons name={INBOX_BRAND[inbox.provider].logo} icon_height={SIZES.padding * 1.15} icon_width={SIZES.padding * 1.15} />
               </View>
               <View style={common_styles.flex_1}>
                 <CustomText text={inbox.email} size={SIZES.sm} number_of_lines={1} />
@@ -112,6 +117,7 @@ export default function ProfileScreen() {
         <CustomText mt={SIZES.padding * 0.65} text={`Renewless · Version ${APP_VERSION}`} weight={FONTS.regular} color={COLORS.text_faint} size={SIZES.sm} align="center" />
       </ScrollView>
       <ProfileDialogs profile={profile} />
+      <ChooseInboxSheet visible={profile.choose_open} onClose={profile.closeChoose} onPick={profile.pickProvider} />
     </Container>
   );
 }

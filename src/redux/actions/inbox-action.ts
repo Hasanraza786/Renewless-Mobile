@@ -1,11 +1,12 @@
 import { toInbox } from '../../api_services/adapters';
+import type { InboxProvider } from '../../types';
 import apiServices from '../../api_services/request-handler';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { setImported, setInbox, setInboxError, setInboxLoading } from '../slices/inbox-slice';
 import { setNotice } from '../slices/profile-slice';
 import { getAllSubscriptions } from './list-action';
 import { getProfileOverview } from './profile-action';
-import { connectGmailInbox } from './gmail-action';
+import { INBOX_LIMIT_NOTICE, connectInbox } from './gmail-action';
 import { trackEvent } from '../../utils/analytics';
 
 
@@ -34,8 +35,8 @@ export function getImportedSubscriptions(id: string): AppThunk {
   };
 }
 
-// Reconnect signs in to the same Google account again with Gmail access; the server keeps the inbox's history.
-export function reconnectInbox(id: string): AppThunk {
+// Reconnect runs the inbox's own sign-in again (Google with Gmail access, or Microsoft for Outlook); the server keeps its history.
+export function reconnectInbox(id: string, provider: InboxProvider): AppThunk {
   return async dispatch => {
     dispatch(setInboxLoading({ key: 'reconnect', value: true }));
     const done = () => {
@@ -44,10 +45,10 @@ export function reconnectInbox(id: string): AppThunk {
     };
     // A reconnect is never over the limit (used inboxes can always come back); the notice covers a stray one.
     const onLimit = () => {
-      dispatch(setNotice('You’ve used your 2 Gmail inboxes. You can reconnect an inbox you used before.'));
+      dispatch(setNotice(INBOX_LIMIT_NOTICE));
       done();
     };
-    await dispatch(connectGmailInbox(done, onLimit, done));
+    await dispatch(connectInbox(provider, done, onLimit, done));
   };
 }
 

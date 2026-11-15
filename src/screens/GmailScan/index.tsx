@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
 import { back_icon, logo_mark } from '../../assets/icons';
+import ChooseInboxSheet from '../../components/ChooseInboxSheet';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Icons from '../../components/Icons';
@@ -17,7 +18,7 @@ import { styles } from './styles';
 import useGmailScan, { type GmailScanRoute } from './index.function';
 
 // Signed-in Gmail scan → review → save in onboarding's frame and components (locked 13 Nov 2026): the same header
-// (Back, RENEWLESS, mark; no step bars), scrolling content and pinned footer. Every Gmail entry opens this screen.
+// (Back, RENEWLESS, mark; no step bars), scrolling content and pinned footer. Every Gmail and Outlook entry opens this screen.
 export default function GmailScanScreen({ route }: { route: GmailScanRoute }) {
   const gmail = useGmailScan(route);
   const fitted = gmail.phase === 'nothing' || gmail.phase === 'interrupted';
@@ -61,6 +62,7 @@ export default function GmailScanScreen({ route }: { route: GmailScanRoute }) {
         )}
       </View>
       <GmailSheets gmail={gmail} />
+      <ChooseInboxSheet visible={gmail.choose_open} onClose={gmail.closeChoose} onPick={gmail.pickProvider} />
     </Container>
   );
 }

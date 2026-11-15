@@ -1,7 +1,8 @@
 import { Fragment } from 'react';
 import { Pressable, View } from 'react-native';
-import { arrow_icon, gmail_logo, logo_mark } from '../../../../assets/icons';
+import { arrow_icon, gmail_logo, logo_mark, outlook_logo } from '../../../../assets/icons';
 import CustomButton from '../../../../components/CustomButton';
+import InboxProviders from '../../../../components/InboxProviders';
 import RowView from '../../../../components/RowView';
 import CustomText from '../../../../components/CustomText';
 import Icons from '../../../../components/Icons';
@@ -14,21 +15,25 @@ import { styles } from './styles';
 
 type Props = { onboarding: OnboardingController };
 
+// Each button names its provider (user, 16 November 2026).
+const CONNECT_LABELS = { gmail: 'Connect Gmail and Login', outlook: 'Connect Outlook/Hotmail and Login' };
+
 const TRUST_ROWS = [
   ['Read-only access', 'We can’t send or delete emails'],
   ['You’re in control', 'Review before saving'],
   ['Scans & updates', 'Free to use'],
 ];
 
-// Gmail → Renewless art and the three trust rows; also used by the empty Home (Gmail hero).
+// Gmail · Outlook → Renewless art and the three trust rows; also used by the empty Home (inbox hero).
 export function ConnectArt() {
   return (
-    <RowView justify_content="center" gap={SIZES.padding * 0.75} style={styles.art} accessible accessibilityRole="image" accessibilityLabel="Connect Gmail to Renewless">
+    <RowView justify_content="center" gap={SIZES.padding * 0.75} style={styles.art} accessible accessibilityRole="image" accessibilityLabel="Connect your inbox to Renewless">
       <View style={styles.brand_view}>
-        <View style={styles.icon_view}>
-          <Icons name={gmail_logo} />
-        </View>
-        <CustomText text="Gmail" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        <RowView gap={SIZES.padding / 2} style={[styles.icon_view, styles.icon_dual]}>
+          <Icons name={gmail_logo} icon_height={SIZES.padding * 1.5} icon_width={SIZES.padding * 1.5} />
+          <Icons name={outlook_logo} icon_height={SIZES.padding * 1.5} icon_width={SIZES.padding * 1.5} />
+        </RowView>
+        <CustomText text="Gmail · Outlook" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </View>
       <Icons name={arrow_icon} style={styles.arrow} />
       <View style={styles.brand_view}>
@@ -68,15 +73,15 @@ export function ConnectInboxBody({ onboarding }: Props) {
         eyebrow="START WITH YOUR INBOX"
         title="Less typing."
         emphasis="More tracking."
-        copy="Connect the Gmail account where you receive subscription receipts."
+        copy="Connect the inbox where you receive subscription receipts."
       />
 
       <CustomText
         mt={SIZES.padding * 1.3}
         text={
           onboarding.signed_in
-            ? 'You’re already signed in. We’ll ask permission to find subscriptions in your Gmail.'
-            : 'We’ll use this Google account to sign you in and ask permission to find subscriptions in your inbox.'
+            ? 'You’re already signed in. We’ll ask permission to find subscriptions in your inbox.'
+            : 'Gmail also signs you in with Google. With Outlook, you’ll create your Renewless account first.'
         }
         weight={FONTS.regular}
         color={COLORS.text_secondary}
@@ -95,7 +100,7 @@ export function ConnectInboxBody({ onboarding }: Props) {
       <InfoTooltip
         label="How we use your email"
         paragraphs={[
-          'Google grants read access to your mailbox. Renewless filters relevant receipts and renewal emails from the last 12 months, then uses AI to extract subscription details.',
+          'Google or Microsoft grants read access to your mailbox. Renewless filters relevant receipts and renewal emails from the last 12 months, then uses AI to extract subscription details.',
           'You can disconnect your inbox. Your permission is required before processing.',
         ]}
       />
@@ -108,14 +113,7 @@ export function ConnectInboxFooter({ onboarding }: Props) {
     <Fragment>
       <SizedBox height={SIZES.padding * 1.1} />
 
-      <CustomButton
-        variant="primary"
-        style={styles.connect_button}
-        text={onboarding.connect_loading ? 'Connecting…' : 'Connect Gmail and Login'}
-        disabled={onboarding.connect_loading}
-        busy={onboarding.connect_loading}
-        onPress={onboarding.connectGoogle}
-      />
+      <InboxProviders variant="buttons" onPick={onboarding.connectProvider} busy={onboarding.connect_busy} labels={CONNECT_LABELS} />
 
       <SizedBox height={SIZES.padding * 0.65} />
 

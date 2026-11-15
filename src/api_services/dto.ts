@@ -1,6 +1,7 @@
 // Backend wire shapes (renewless-backend /v1). Screens never use these; adapters.ts maps them once.
 export type MoneyDto = { currency: string; amount: string };
 export type CycleDto = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
+export type InboxProvider = 'gmail' | 'outlook';
 
 export type UserDto = {
   id: string;
@@ -62,7 +63,7 @@ export type DetailDto = SummaryDto & {
   source: {
     type: 'manual' | 'ai' | 'gmail';
     email: string;
-    connector: { id: string; email: string; status: string; lastSuccessfulSyncAt: string | null } | null;
+    connector: { id: string; email: string; provider?: InboxProvider; status: string; lastSuccessfulSyncAt: string | null } | null;
   };
   spending: { totals: MoneyDto[]; count: number; annualEquivalent: MoneyDto };
   samePlatformCount: number;
@@ -135,7 +136,10 @@ export type AlertDto = {
 };
 export type AlertsDto = { items: AlertDto[]; total: number; nextCursor: string | null };
 
-export type ConnectorDto = { id: string; email: string; status: 'connected' | 'reconnect_needed' | 'disconnected'; lastSuccessfulSyncAt: string | null; nextSyncAt: string | null; importedCount?: number };
+// provider is missing on an older backend: treat it as gmail.
+export type ConnectorDto = { id: string; email: string; provider?: InboxProvider; status: 'connected' | 'reconnect_needed' | 'disconnected'; lastSuccessfulSyncAt: string | null; nextSyncAt: string | null; importedCount?: number };
+
+export type OutlookConnectDto = { connector: ConnectorDto; scannedBefore: boolean };
 
 // Google sign-in plus the Gmail grant; a token comes back only when the app had no session.
 // scannedBefore: a deleted account already read this inbox, so no first scan runs.

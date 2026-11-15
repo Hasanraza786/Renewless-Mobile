@@ -1,7 +1,7 @@
 import type { SupportMessage, SupportTopic } from '../types';
 
 export const SUPPORT_TOPIC_LABELS: Record<SupportTopic, string> = {
-  gmail: 'Gmail and sync',
+  gmail: 'Inbox and sync',
   reminders: 'Reminders',
   subscriptions: 'Subscriptions and payments',
   ai_chat: 'AI chat',

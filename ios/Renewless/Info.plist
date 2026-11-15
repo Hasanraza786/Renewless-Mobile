@@ -34,6 +34,14 @@
 		</dict>
 		<dict>
 			<key>CFBundleURLName</key>
+			<string>outlook-sign-in</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.renewless</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
 			<string>google-sign-in</string>
 			<key>CFBundleURLSchemes</key>
 			<array>

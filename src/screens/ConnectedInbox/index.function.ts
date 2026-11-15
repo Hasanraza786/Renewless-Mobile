@@ -6,6 +6,7 @@ import { disconnectInbox, getInbox, reconnectInbox } from '../../redux/actions/i
 import { setInboxError, setSyncError } from '../../redux/slices/inbox-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList } from '../../types';
+import { INBOX_BRAND } from '../../utils/inbox';
 
 export type ConnectedInboxRoute = NativeStackScreenProps<AppStackParamList, 'ConnectedInbox'>['route'];
 
@@ -25,7 +26,7 @@ const syncLabel = (iso: string | null) => {
   return `${date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
 };
 
-// One owned Gmail connector: real sync state from the server, Sync now / Reconnect, and disconnect.
+// One owned Gmail or Outlook connector: real sync state from the server, Sync now / Reconnect, and disconnect.
 export default function useConnectedInbox(route: ConnectedInboxRoute) {
   const { id } = route.params;
   const dispatch = useAppDispatch();
@@ -47,15 +48,16 @@ export default function useConnectedInbox(route: ConnectedInboxRoute) {
   // Sync runs once a week per inbox; until it opens again the button says when.
   const next_sync = view?.nextSync && new Date(view.nextSync) > new Date() ? new Date(view.nextSync).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
   const sync_locked = !reconnect_needed && !syncing && !!next_sync;
-  const main_label = reconnect_needed ? 'Reconnect Gmail' : syncing ? 'Syncing…' : sync_locked ? `Sync opens ${next_sync}` : 'Sync now';
-  const sync_hint = reconnect_needed ? 'Gmail needs your permission again. Your saved subscriptions are still available.' : sync_locked ? 'You can check this inbox once a week. Renewals you track are still checked.' : 'Check this inbox for new receipts and subscription updates.';
+  const brand = INBOX_BRAND[view?.provider ?? 'gmail'];
+  const main_label = reconnect_needed ? `Reconnect ${brand.name}` : syncing ? 'Syncing…' : sync_locked ? `Sync opens ${next_sync}` : 'Sync now';
+  const sync_hint = reconnect_needed ? `${brand.name} needs your permission again. Your saved subscriptions are still available.` : sync_locked ? 'You can check this inbox once a week. Renewals you track are still checked.' : 'Check this inbox for new receipts and subscription updates.';
   const status_label = STATUS[state];
   const last_sync = syncLabel(view?.lastSync ?? null);
 
   const retry = () => dispatch(getInbox(id));
   const openImported = () => navigate('InboxSubscriptions', { id });
-  // Sync now runs the same scan and review as every other Gmail entry (onboarding look); Back returns here.
-  const runMain = () => (reconnect_needed ? dispatch(reconnectInbox(id)) : navigate('GmailScan', { inbox_id: id }));
+  // Sync now runs the same scan and review as every other inbox entry (onboarding look); Back returns here.
+  const runMain = () => (reconnect_needed ? dispatch(reconnectInbox(id, view?.provider ?? 'gmail')) : navigate('GmailScan', { inbox_id: id }));
   const openConfirm = () => {
     dispatch(setInboxError({ key: 'disconnect', value: '' }));
     setConfirmOpen(true);
@@ -69,6 +71,7 @@ export default function useConnectedInbox(route: ConnectedInboxRoute) {
 
   return {
     view,
+    brand,
     status,
     error: error.inbox,
     state,

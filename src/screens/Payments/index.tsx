@@ -34,7 +34,7 @@ const EMPTY_COPY: Record<EmptyKind, { title: string; action: string }> = {
 
 function Empty({ kind, payments }: { kind: EmptyKind; payments: PaymentsController }) {
   const copy = {
-    none: 'Payments appear here when Gmail sync finds a matching successful-payment receipt.',
+    none: 'Payments appear here when an inbox sync finds a matching successful-payment receipt.',
     period: `No confirmed payments for ${payments.period_label}.`,
     search: 'Try a different subscription name.',
   }[kind];
@@ -57,7 +57,7 @@ function Empty({ kind, payments }: { kind: EmptyKind; payments: PaymentsControll
 // Account Payments tab and Detail's scoped payments: confirmed Gmail receipts only, never scheduled charges.
 export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
   const payments = usePayments(route);
-  const intro = `${payments.scoped ? `${payments.scoped.name} · ` : ''}Based on receipts found in Gmail.`;
+  const intro = `${payments.scoped ? `${payments.scoped.name} · ` : ''}Based on receipts found in your inbox.`;
 
   return (
     <Container tab_bar style={styles.main_view}>

@@ -11,6 +11,7 @@ import SizedBox from '../../../../components/SizedBox';
 import { COLORS, FONTS, SIZES } from '../../../../constants/theme';
 import type { OnboardingController } from '../../index.function';
 import { common_styles } from '../../../../utils/common_styles';
+import { INBOX_BRAND } from '../../../../utils/inbox';
 import { styles } from './styles';
 
 type Kind = 'no_results' | 'interrupted';
@@ -25,9 +26,9 @@ const COPY: Record<Kind, { badge: string; hint_icon: string; eyebrow: string; ti
     emphasis: 'found this time.',
     copy: 'We didn’t find subscription receipts in this inbox from the last 12 months.',
     hint_title: 'Using another email for payments?',
-    hint: 'Your receipts may be in a different inbox. Try the Gmail account you use for subscriptions.',
+    hint: 'Your receipts may be in a different inbox. Try the inbox you use for subscriptions.',
     reassurance: 'You can still track any subscription by adding it yourself.',
-    retry: 'Try another Gmail account',
+    retry: 'Try another inbox',
   },
   interrupted: {
     badge: offline_badge_icon,
@@ -37,14 +38,14 @@ const COPY: Record<Kind, { badge: string; hint_icon: string; eyebrow: string; ti
     emphasis: 'was interrupted.',
     copy: 'We couldn’t finish checking your inbox. Check your connection and try again.',
     hint_title: 'A quick check before retrying',
-    hint: 'Check your internet connection. If Google asks, allow read-only Gmail access so we can complete your scan.',
+    hint: 'Check your internet connection. If asked, allow read-only access to your inbox so we can complete your scan.',
     reassurance: 'You can also add subscriptions yourself and connect your inbox later.',
     retry: 'Try again',
   },
 };
 
-// Lost Gmail access needs a reconnect rather than a retry.
-const ACCESS_COPY = 'Gmail access needs to be renewed before we can continue.';
+// Lost inbox access needs a reconnect rather than a retry; the copy names the inbox's mail service.
+const accessCopy = (name: string) => `${name} access needs to be renewed before we can continue.`;
 
 // The sad Loop in its circle with a corner badge, drawn at 122pt so it sits centred inside the circle on every recovery
 // screen (no results, interrupted and the Gmail recovery; user, 13 November 2026).
@@ -73,7 +74,7 @@ function RecoveryBody({ kind, onboarding }: { kind: Kind } & Props) {
         </Fragment>
       )}
 
-      <OnboardingTitle eyebrow={content.eyebrow} title={content.title} emphasis={content.emphasis} copy={access ? ACCESS_COPY : content.copy} align="center" />
+      <OnboardingTitle eyebrow={content.eyebrow} title={content.title} emphasis={content.emphasis} copy={access ? accessCopy(INBOX_BRAND[onboarding.inbox_provider].name) : content.copy} align="center" />
 
       <RowView align_items="stretch" gap={SIZES.padding * 0.55} style={styles.hint}>
         <View style={styles.hint_icon}>
@@ -96,7 +97,7 @@ function RecoveryFooter({ kind, onboarding }: { kind: Kind } & Props) {
       <SizedBox height={SIZES.padding2} />
 
       {kind === 'interrupted' ? (
-        <CustomButton variant="primary" text={onboarding.scan_failure === 'access' ? 'Reconnect Gmail' : COPY[kind].retry} onPress={onboarding.retryScan} />
+        <CustomButton variant="primary" text={onboarding.scan_failure === 'access' ? `Reconnect ${INBOX_BRAND[onboarding.inbox_provider].name}` : COPY[kind].retry} onPress={onboarding.retryScan} />
       ) : (
         <CustomButton variant="primary" text={COPY[kind].retry} onPress={() => onboarding.goTo('connectInbox', -1)} />
       )}

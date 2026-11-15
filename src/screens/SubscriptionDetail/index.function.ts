@@ -12,6 +12,7 @@ import { defaultTooClose, reminderText } from '../../utils/reminders';
 import { dateLabel } from '../../utils/scan';
 import { formatAmount, money } from '../../utils/money';
 import { useIsTablet } from '../../utils/tablet';
+import { INBOX_BRAND } from '../../utils/inbox';
 
 export type Route = NativeStackScreenProps<AppStackParamList, 'SubscriptionDetail'>['route'];
 export type Sheet = 'reminder' | 'cancel' | 'delete' | 'resume' | 'notes' | null;
@@ -77,7 +78,7 @@ export function detailView({ record, today, receipts, receipt_emails, annual_est
     cancelled,
     receipts: {
       total: receipts.totals.length ? receipts.totals.map(item => money(item.currency, item.amount)).join('\n') : 'No receipts yet',
-      caption: `${receipts.count ? `${receipts.count} payment${receipts.count === 1 ? '' : 's'}` : 'No payments'} found · Available Gmail receipts only`,
+      caption: `${receipts.count ? `${receipts.count} payment${receipts.count === 1 ? '' : 's'}` : 'No payments'} found · Available inbox receipts only`,
     },
     since: record.start_date ? dateLabel(record.start_date) : 'Not set',
     annual_label: cancelled ? 'Last price · annual equivalent' : in_trial ? 'After trial · annual equivalent' : 'Current price · annual equivalent',
@@ -86,9 +87,9 @@ export function detailView({ record, today, receipts, receipt_emails, annual_est
       ? `${money(latest.currency, latest.from_amount)} · ${latest.from_cycle} → ${money(latest.currency, latest.to_amount)} · ${latest.to_cycle}`
       : 'No price changes recorded',
     // Receipts row: how many billing emails are kept and the newest one's date.
-    receipt_emails: receipt_emails.count && receipt_emails.latest ? { title: `Receipts · ${receipt_emails.count}`, caption: `Latest ${dateLabel(receipt_emails.latest)} · from your Gmail` } : { title: 'Receipts', caption: 'No receipts yet' },
+    receipt_emails: receipt_emails.count && receipt_emails.latest ? { title: `Receipts · ${receipt_emails.count}`, caption: `Latest ${dateLabel(receipt_emails.latest)} · from your inbox` } : { title: 'Receipts', caption: 'No receipts yet' },
     source: record.source.kind === 'gmail'
-      ? { title: 'Scanned inbox', badge: 'Found in Gmail', caption: record.inbox?.disconnected ? 'The inbox this subscription was found in. It is now disconnected.' : 'The connected inbox this subscription was found in.' }
+      ? { title: 'Scanned inbox', badge: `Found in ${INBOX_BRAND[record.source.provider].name}`, caption: record.inbox?.disconnected ? 'The inbox this subscription was found in. It is now disconnected.' : 'The connected inbox this subscription was found in.' }
       : { title: 'Added under', badge: 'Added manually', caption: 'Your Renewless account when this subscription was added.' },
     related: related_count ? `${related_count} other subscription${related_count === 1 ? '' : 's'}` : null,
     related_count,

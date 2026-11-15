@@ -1,10 +1,11 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { OnboardingState, ScanCandidate, ScanFailure, ScanStatus } from '../../types';
+import type { InboxProvider, OnboardingState, ScanCandidate, ScanFailure, ScanStatus } from '../../types';
 
 const initial_state: OnboardingState = {
   connect_loading: false,
   connect_message: '',
   inbox_email: '',
+  inbox_provider: 'gmail',
   connector_id: '',
   scan_job_id: '',
   scan_stages: 0,
@@ -27,9 +28,10 @@ const onboardingSlice = createSlice({
     setConnectMessage(state, action: PayloadAction<string>) {
       state.connect_message = action.payload;
     },
-    setInboxConnector(state, action: PayloadAction<{ id: string; email: string }>) {
+    setInboxConnector(state, action: PayloadAction<{ id: string; email: string; provider: InboxProvider }>) {
       state.connector_id = action.payload.id;
       state.inbox_email = action.payload.email;
+      state.inbox_provider = action.payload.provider;
     },
     // A new scan discards the previous job's results and drafts; already saved records stay saved.
     setScanJob(state, action: PayloadAction<string>) {

@@ -4,12 +4,12 @@ import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { syncAiConsent } from '../../redux/actions/ai-action';
 import { registerPush, savePushToken } from '../../redux/actions/auth-action';
 import { getDashboard } from '../../redux/actions/dashboard-action';
-import { INBOX_LIMIT_NOTICE, MAX_INBOXES, connectGmailInbox, getSyncLockedInbox } from '../../redux/actions/gmail-action';
+import { INBOX_LIMIT_NOTICE, MAX_INBOXES, connectInbox, getSyncLockedInbox } from '../../redux/actions/gmail-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { navigate } from '../../navigation/service';
 import { setWidgetPromptSeen } from '../../redux/slices/constant-slice';
 import { setNotice } from '../../redux/slices/profile-slice';
-import type { ProfileInbox, TabParamList } from '../../types';
+import type { InboxProvider, ProfileInbox, TabParamList } from '../../types';
 import { pinWidget, widgetEvent, widgetInstalled } from '../../utils/widget';
 import { trackEvent } from '../../utils/analytics';
 import { listenToPush } from '../../utils/push';
@@ -22,6 +22,7 @@ export default function useHome(route: HomeRoute) {
   const [selected_event, setSelectedEvent] = useState('');
   const [reduce_motion, setReduceMotion] = useState(false);
   const [add_open, setAddOpen] = useState(false);
+  const [choose_open, setChooseOpen] = useState(false);
   const widget_prompt_seen = useAppSelector(state => state.constant.widget_prompt_seen);
   const [widget_prompt, setWidgetPrompt] = useState<'closed' | 'prompt' | 'video'>('closed');
   const widget_checked = useRef(false);
@@ -98,7 +99,7 @@ export default function useHome(route: HomeRoute) {
   const retry = () => dispatch(getDashboard());
   const openAdd = () => setAddOpen(true);
   const closeAdd = () => setAddOpen(false);
-  // Empty Home's own Add manually / Connect Gmail buttons.
+  // Empty Home's own Add manually / Continue with Gmail or Outlook buttons.
   const openAddManual = () => {
     trackEvent('add_option_selected', { option: 'manual' });
     navigate('AddSubscription');
@@ -107,16 +108,18 @@ export default function useHome(route: HomeRoute) {
     trackEvent('add_option_selected', { option: 'ai' });
     navigate('AiChat');
   };
-  // Connect another Gmail adds a new inbox through Google, then scans that one (like Profile + Connect); the locked
-  // inbox is never scanned again. With both free inboxes connected the option is left out.
+  // Connect another inbox opens Choose inbox; the new Gmail or Outlook inbox is then scanned (like Profile + Connect) and
+  // the locked inbox is never scanned again. With both free inboxes connected the option is left out.
   const onInboxConnected = (inbox: ProfileInbox) => navigate('GmailScan', { inbox_id: inbox.id });
   const onInboxLimit = () => dispatch(setNotice(INBOX_LIMIT_NOTICE));
-  const connectAnother = () => dispatch(connectGmailInbox(onInboxConnected, onInboxLimit));
+  const connectAnother = () => setChooseOpen(true);
+  const closeChoose = () => setChooseOpen(false);
+  const pickProvider = (provider: InboxProvider) => dispatch(connectInbox(provider, onInboxConnected, onInboxLimit));
   const can_add_inbox = inbox_count < MAX_INBOXES;
   const next_sync = locked_inbox?.nextSync ? new Date(locked_inbox.nextSync).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
-  const openConnectGmail = () => {
-    trackEvent('add_option_selected', { option: 'gmail' });
-    navigate('GmailScan');
+  const openConnect = (provider: InboxProvider) => {
+    trackEvent('add_option_selected', { option: provider });
+    navigate('GmailScan', { connect: provider });
   };
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });
   const openUpcoming = () => navigate('Upcoming');
@@ -164,7 +167,10 @@ export default function useHome(route: HomeRoute) {
     next_sync,
     openAddManual,
     openAddAi,
-    openConnectGmail,
+    openConnect,
+    choose_open,
+    closeChoose,
+    pickProvider,
     openDetail,
     openUpcoming,
     openPayments,

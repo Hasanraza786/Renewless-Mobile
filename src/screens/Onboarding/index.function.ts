@@ -4,6 +4,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   connectOnboardingGoogle,
+  connectOnboardingOutlook,
   editOnboardingCandidate,
   finishOnboarding,
   getOnboardingScan,
@@ -12,7 +13,7 @@ import {
 } from '../../redux/actions/onboarding-action';
 import { setConnectMessage, toggleCandidate } from '../../redux/slices/onboarding-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { AuthStackParamList, OnboardingStep, ScanCandidate } from '../../types';
+import type { AuthStackParamList, InboxProvider, OnboardingStep, ScanCandidate } from '../../types';
 import { navigate, resetRoot } from '../../navigation/service';
 import { PRIVACY_URL, TERMS_URL, openLegal } from '../../config/legal';
 import { useIsTablet } from '../../utils/tablet';
@@ -47,6 +48,9 @@ export default function useOnboarding(route: Route) {
   // The last save error of the open review sheet.
   const [edit_error, setEditError] = useState('');
   const [step, setStep] = useState<OnboardingStep>(route.params?.step ?? 'welcome');
+  // Which provider button started the running connect (its label says Connecting…).
+  const [connect_provider, setConnectProvider] = useState<InboxProvider>('gmail');
+  const outlook_resumed = useRef(false);
   const [animating, setAnimating] = useState(false);
   const [panel_width, setPanelWidth] = useState(0);
   const [reduce_motion, setReduceMotion] = useState(false);
@@ -136,6 +140,14 @@ export default function useOnboarding(route: Route) {
 
   const openScan = () => goTo('discovering');
 
+  // Back from Sign up for Continue with Outlook: the Microsoft sheet opens once, as the user asked.
+  useEffect(() => {
+    if (route.params?.connect !== 'outlook' || !signed_in || outlook_resumed.current) return;
+    outlook_resumed.current = true;
+    setConnectProvider('outlook');
+    dispatch(connectOnboardingOutlook(() => goTo('discovering'), () => dispatch(finishOnboarding(() => resetRoot([{ name: 'Tabs' }])))));
+  }, [dispatch, goTo, route.params?.connect, signed_in]);
+
   // A network failure retries with the existing Gmail grant; lost access goes back to Connect.
   const retryScan = () => {
     if (scan_failure === 'access' || !connector_id) return goTo('connectInbox', -1);
@@ -146,7 +158,18 @@ export default function useOnboarding(route: Route) {
   const save = () => dispatch(saveOnboardingFinds(scan_job_id, selected_ids, () => goTo('readyToGo')));
 
   const openDashboard = () => dispatch(finishOnboarding(() => resetRoot([{ name: 'Tabs' }])));
-  const connectGoogle = () => dispatch(connectOnboardingGoogle(openScan, openDashboard));
+  const connectGoogle = () => {
+    setConnectProvider('gmail');
+    dispatch(connectOnboardingGoogle(openScan, openDashboard));
+  };
+  // Microsoft sign-in is not an app login: signed out, Sign up comes first and returns here (connect: 'outlook').
+  const connectOutlook = () => {
+    if (!signed_in) return navigate('Signup', { intent: 'connect_outlook' });
+    setConnectProvider('outlook');
+    dispatch(connectOnboardingOutlook(openScan, openDashboard));
+  };
+  const connectProvider = (provider: InboxProvider) => (provider === 'outlook' ? connectOutlook() : connectGoogle());
+  const connect_busy = onboarding_state.connect_loading ? connect_provider : null;
 
   const stage = ONBOARDING_STEPS[step].stage;
   const back = back_target ? onBack : undefined;
@@ -182,7 +205,8 @@ export default function useOnboarding(route: Route) {
     onBack: back,
     goTo,
     signed_in,
-    connectGoogle,
+    connectProvider,
+    connect_busy,
     retryScan,
     toggleCandidate: toggle,
     editing,

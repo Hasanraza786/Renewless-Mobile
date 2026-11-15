@@ -4,7 +4,7 @@ import { filterRecords, groupCounts, listGroup, sortRecords } from '../src/utils
 const today = '2026-10-27';
 const base: SubscriptionRecord = {
   id: '', platform_id: '', name: '', plan: null, category: 'Entertainment', price: '1.00', currency: 'USD', cycle: 'Monthly', next_date: null, estimated: false,
-  auto_renew: true, trial: null, status: 'active', cancelled_on: null, access_until: null, start_date: null, source: { kind: 'manual', email: '' }, inbox: null,
+  auto_renew: true, trial: null, status: 'active', cancelled_on: null, access_until: null, start_date: null, source: { kind: 'manual', email: '', provider: 'gmail' }, inbox: null,
   reminder: { mode: 'default' }, notes: null, manage_url: null, price_history: [],
   revision: 0,
 };

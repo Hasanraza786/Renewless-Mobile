@@ -1,7 +1,7 @@
-import { fromScanCandidate, toInbox, toProfile, toScanCandidate, toScanStatus } from '../../api_services/adapters';
+import { fromScanCandidate, isAuthExpired, toInbox, toProfile, toScanCandidate, toScanStatus } from '../../api_services/adapters';
 import apiServices from '../../api_services/request-handler';
 import type { ScanCandidate } from '../../types';
-import { gmailSignIn, type GmailGrant } from '../../utils/social-sign-in';
+import { gmailSignIn, outlookSignIn, type GmailGrant, type OutlookGrant } from '../../utils/social-sign-in';
 import { requestHandler, type AppThunk } from '../request-handler';
 import {
   addSaved,
@@ -22,6 +22,8 @@ import { beginSession } from './auth-action';
 const SIGN_IN_FAILED = 'We couldn’t sign you in. Try again or add subscriptions manually.';
 const SIGN_IN_CANCELLED = 'Sign-in was cancelled. You can try again or add subscriptions manually.';
 const GMAIL_DENIED = 'You’re signed in. Allow Gmail access to scan, or add subscriptions manually.';
+const OUTLOOK_DENIED = 'You’re signed in. Allow Outlook access to scan, or add subscriptions manually.';
+const CONNECT_FAILED = 'We couldn’t connect this inbox. Try again or add subscriptions manually.';
 const SAVE_FAILED = 'Couldn’t save your subscriptions. Please try again.';
 
 // The first scan of an inbox reads a year of receipts. An inbox this account synced this week answers SYNC_LIMIT:
@@ -35,7 +37,7 @@ export function startOnboardingScan(connector_id: string, onSyncLimit: () => voi
         onDone: ({ jobId }) => dispatch(setScanJob(jobId)),
         onError: error => {
           if (error.code !== 'SYNC_LIMIT') {
-            dispatch(setScanFailed(error.code === 'GMAIL_AUTH_EXPIRED' ? 'access' : 'network'));
+            dispatch(setScanFailed(isAuthExpired(error.code) ? 'access' : 'network'));
             return;
           }
           dispatch(setNotice(error.message));
@@ -82,7 +84,7 @@ export function connectOnboardingGoogle(onDiscovering: () => void, onScannedBefo
             onScannedBefore();
             return;
           }
-          dispatch(setInboxConnector({ id: result.connector.id, email: result.connector.email }));
+          dispatch(setInboxConnector({ id: result.connector.id, email: result.connector.email, provider: 'gmail' }));
           let ended = false;
           await dispatch(
             startOnboardingScan(result.connector.id, () => {
@@ -93,6 +95,49 @@ export function connectOnboardingGoogle(onDiscovering: () => void, onScannedBefo
           if (!ended) onDiscovering();
         },
         onError: error => dispatch(setConnectMessage(error.field_errors.serverAuthCode ? GMAIL_DENIED : error.code === 'GMAIL_INBOX_LIMIT' ? error.message : SIGN_IN_FAILED)),
+      }),
+    );
+  };
+}
+
+// Signed in (after Sign up for Continue with Outlook): the Microsoft sheet, then the backend exchanges the code and the
+// first scan starts. Same outcomes as connectOnboardingGoogle; a closed sheet says so and stays on Connect.
+export function connectOnboardingOutlook(onDiscovering: () => void, onScannedBefore: () => void): AppThunk {
+  return async dispatch => {
+    dispatch(setConnectMessage(''));
+    let grant: OutlookGrant | null;
+    try {
+      grant = await outlookSignIn();
+    } catch {
+      dispatch(setConnectMessage(CONNECT_FAILED));
+      return;
+    }
+    if (!grant) {
+      dispatch(setConnectMessage(SIGN_IN_CANCELLED));
+      return;
+    }
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.outlookConnect,
+        param_data: grant,
+        setLoading: setConnectLoading,
+        onDone: async result => {
+          if (result.scannedBefore) {
+            dispatch(setNotice(scannedBeforeNotice(toInbox(result.connector))));
+            onScannedBefore();
+            return;
+          }
+          dispatch(setInboxConnector({ id: result.connector.id, email: result.connector.email, provider: 'outlook' }));
+          let ended = false;
+          await dispatch(
+            startOnboardingScan(result.connector.id, () => {
+              ended = true;
+              onScannedBefore();
+            }),
+          );
+          if (!ended) onDiscovering();
+        },
+        onError: error => dispatch(setConnectMessage(error.code === 'OUTLOOK_ACCESS_DENIED' ? OUTLOOK_DENIED : error.code === 'GMAIL_INBOX_LIMIT' ? error.message : CONNECT_FAILED)),
       }),
     );
   };

@@ -1,5 +1,6 @@
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 import { GoogleSignin, isErrorWithCode, isSuccessResponse, statusCodes } from '@react-native-google-signin/google-signin';
+import { authorize } from 'react-native-app-auth';
 import Config from 'react-native-config';
 import type { AuthProvider } from '../types';
 
@@ -64,4 +65,40 @@ export async function gmailSignIn(): Promise<GmailGrant | null> {
     await GoogleSignin.signOut().catch(() => undefined);
     GoogleSignin.configure(LOGIN_CONFIG);
   }
+}
+
+export type OutlookGrant = { code: string; codeVerifier: string; redirectUri: string };
+
+// Microsoft public client (no secret). The phone only gets the code: the backend exchanges it and keeps the refresh token.
+const OUTLOOK_REDIRECT_URI = 'com.renewless://oauth/outlook';
+const OUTLOOK_CONFIG = {
+  issuer: 'https://login.microsoftonline.com/common/v2.0',
+  clientId: '571797b5-9598-4c70-998e-861cee8203bc',
+  redirectUrl: OUTLOOK_REDIRECT_URI,
+  scopes: ['openid', 'email', 'offline_access', 'https://graph.microsoft.com/Mail.Read', 'https://graph.microsoft.com/User.Read'],
+  usePKCE: true,
+  skipCodeExchange: true,
+  additionalParameters: { prompt: 'select_account' as const },
+  serviceConfiguration: {
+    authorizationEndpoint: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
+    tokenEndpoint: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
+  },
+};
+
+// The Microsoft sheet for an Outlook, Hotmail or Live inbox. null when the person closes it (like a cancelled Google sign-in).
+export async function outlookSignIn(): Promise<OutlookGrant | null> {
+  try {
+    const result = await authorize(OUTLOOK_CONFIG);
+    if (!result.authorizationCode || !result.codeVerifier) return null;
+    return { code: result.authorizationCode, codeVerifier: result.codeVerifier, redirectUri: OUTLOOK_REDIRECT_URI };
+  } catch (caught) {
+    if (isOutlookCancel(caught)) return null;
+    throw caught;
+  }
+}
+
+// iOS reports a closed sheet as a user-cancel error; Android as "User cancelled flow".
+function isOutlookCancel(caught: unknown) {
+  const { code = '', message = '' } = (caught ?? {}) as { code?: string; message?: string };
+  return /cancel/i.test(code) || /cancel/i.test(message);
 }

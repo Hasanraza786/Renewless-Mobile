@@ -33,6 +33,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
     guard let url = URLContexts.first?.url else { return }
+    // The Outlook sign-in redirect (com.renewless://oauth/outlook) goes back to react-native-app-auth.
+    if let appDelegate = UIApplication.shared.delegate as? AppDelegate,
+       appDelegate.authorizationFlowManagerDelegate?.resumeExternalUserAgentFlow(with: url) == true {
+      return
+    }
     RCTLinkingManager.application(UIApplication.shared, open: url, options: [:])
   }
 }

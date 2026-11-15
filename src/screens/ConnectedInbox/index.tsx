@@ -1,5 +1,5 @@
 import { ActivityIndicator, ScrollView, View } from 'react-native';
-import { chevron_right_icon, gmail_logo } from '../../assets/icons';
+import { chevron_right_icon } from '../../assets/icons';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import Container from '../../components/Container';
 import CustomButton from '../../components/CustomButton';
@@ -28,7 +28,7 @@ const PILL = {
 function DisconnectDialog({ inbox }: { inbox: ConnectedInboxController }) {
   return (
     <ConfirmDialog title="Disconnect this inbox?" close_label="Close confirmation" onClose={inbox.closeConfirm} locked={inbox.disconnecting}>
-      <CustomText mt={SIZES.padding * 0.7} text="Your saved subscriptions stay. We’ll stop reading this inbox. It still counts toward your 2 Gmail inboxes, and you can reconnect it anytime." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <CustomText mt={SIZES.padding * 0.7} text="Your saved subscriptions stay. We’ll stop reading this inbox. It still counts toward your 2 inboxes, and you can reconnect it anytime." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       {inbox.disconnect_error ? <CustomText mt={SIZES.padding3} text={inbox.disconnect_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} /> : null}
       <RowView gap={SIZES.padding * 0.45} mt={SIZES.padding * 0.7}>
         <CustomButton variant="secondary" text="Cancel" disabled={inbox.disconnecting} onPress={inbox.closeConfirm} style={common_styles.flex_1} />
@@ -38,7 +38,7 @@ function DisconnectDialog({ inbox }: { inbox: ConnectedInboxController }) {
   );
 }
 
-// Connected inbox: identity and live state, facts, Sync now (or Reconnect Gmail) and disconnect.
+// Connected inbox: identity and live state, facts, Sync now (or Reconnect Gmail/Outlook) and disconnect.
 export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxRoute }) {
   const inbox = useConnectedInbox(route);
   const view = inbox.view;
@@ -53,7 +53,7 @@ export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxR
       ) : (
         <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
           <View style={styles.identity}>
-            <Icons name={gmail_logo} icon_height={SIZES.padding * 1.9} icon_width={SIZES.padding * 1.9} />
+            <Icons name={inbox.brand.logo} icon_height={SIZES.padding * 1.9} icon_width={SIZES.padding * 1.9} />
             <CustomText mt={SIZES.padding2} text={view.email} size={SIZES.lg} align="center" />
             <RowView gap={SIZES.padding * 0.3} accessibilityLiveRegion="polite" style={[styles.pill, pill.style]}>
               {inbox.syncing ? <ActivityIndicator size="small" color={COLORS.trial} /> : null}
@@ -77,8 +77,8 @@ export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxR
                 <InfoTooltip
                   label="Mailbox access"
                   paragraphs={[
-                    'Gmail authorizes read-only access to this inbox. Renewless cannot send, edit or delete your emails.',
-                    'Relevant receipt details are filtered and may be processed by AI to identify subscriptions. This does not mean Google limits access to receipts only.',
+                    `${inbox.brand.name} authorizes read-only access to this inbox. Renewless cannot send, edit or delete your emails.`,
+                    `Relevant receipt details are filtered and may be processed by AI to identify subscriptions. This does not mean ${inbox.brand.company} limits access to receipts only.`,
                     'You can disconnect at any time. Your saved subscriptions stay.',
                   ]}
                 />
@@ -106,7 +106,7 @@ export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxR
           <RowView accessibilityRole="button" disabled={busy} onPress={inbox.openConfirm} style={styles.disconnect}>
             <CustomText text="Disconnect inbox" weight={FONTS.regular} color={COLORS.danger} size={SIZES.sm} />
           </RowView>
-          <CustomText mt={SIZES.padding / 2} text="Your saved subscriptions stay. Only new Gmail updates stop." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          <CustomText mt={SIZES.padding / 2} text="Your saved subscriptions stay. Only new updates from this inbox stop." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </ScrollView>
       )}
       {inbox.confirm_open ? <DisconnectDialog inbox={inbox} /> : null}

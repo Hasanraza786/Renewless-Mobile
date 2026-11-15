@@ -96,6 +96,8 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
+        // Outlook sign-in redirect com.renewless://oauth/outlook (react-native-app-auth); renewless:// deep links are separate.
+        manifestPlaceholders = [appAuthRedirectScheme: 'com.renewless']
     }
     signingConfigs {
         debug {
