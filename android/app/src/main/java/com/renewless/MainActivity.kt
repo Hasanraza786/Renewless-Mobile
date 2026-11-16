@@ -1,5 +1,7 @@
 package com.renewless
 
+import android.content.pm.ActivityInfo
+import android.content.res.Configuration
 import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
@@ -20,6 +22,21 @@ class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     supportFragmentManager.fragmentFactory = RNScreensFragmentFactory()
     super.onCreate(savedInstanceState)
+    lockPhonesToPortrait(resources.configuration)
+  }
+
+  // Unfolding a foldable changes the screen without recreating the activity (configChanges), so check again.
+  override fun onConfigurationChanged(newConfig: Configuration) {
+    super.onConfigurationChanged(newConfig)
+    lockPhonesToPortrait(newConfig)
+  }
+
+  // Phones are portrait-only like iPhone; tablets and open foldables (shorter side 600dp+, as useIsTablet) rotate freely.
+  private fun lockPhonesToPortrait(config: Configuration) {
+    val wanted =
+        if (config.smallestScreenWidthDp < 600) ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        else ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+    if (requestedOrientation != wanted) requestedOrientation = wanted
   }
 
   /**
