@@ -76,6 +76,7 @@ function CustomText({
     <Text
       accessibilityLabel={signs ? spokenMoney(text) : undefined}
       numberOfLines={number_of_lines}
+      maxFontSizeMultiplier={MAX_FONT_SCALE}
       adjustsFontSizeToFit={fit_width}
       minimumFontScale={fit_width ? 0.7 : undefined}
       accessibilityRole={accessibility_role}
@@ -88,6 +89,10 @@ function CustomText({
     </Text>
   );
 }
+
+// System text size still grows the text (all the standard sizes fit), but the largest accessibility sizes stop at
+// 1.5x, so labels inside fixed-height buttons, pills and tabs stay inside them.
+const MAX_FONT_SCALE = 1.5;
 
 // Android measures selectable or high-quality-wrapped text a hair short and hides a line's last word
 // ("Create account" drew "Create" on tablets), so text is selectable on iOS only.

@@ -22,7 +22,8 @@ async function getAllAlerts() {
     items.push(...page.items);
     cursor = page.nextCursor ?? undefined;
   } while (cursor);
-  return items.map(toAlert);
+  // The server pages by offset: a reminder sent between two pages pushes a row onto the next page too.
+  return [...new Map(items.map(item => [item.id, item])).values()].map(toAlert);
 }
 
 export function getAlerts(): AppThunk {

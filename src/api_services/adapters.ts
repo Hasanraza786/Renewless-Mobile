@@ -327,6 +327,7 @@ export function toReminderSettings(settings: ReminderSettingsDto): ReminderSetti
     trials: settings.trialsEnabled,
     days: settings.defaultOffsets,
     time: settings.sendTime,
+    timezone: settings.timezone,
     revision: settings.revision,
   };
 }

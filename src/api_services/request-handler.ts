@@ -170,7 +170,7 @@ const uploadFile = (file: Blob) => upload<{ uploadId: string; kind: string }>(SE
 // The client message ID makes a Retry of the same message answer once.
 const sendChatMessage = ({ id, ...data }: Id<{ clientMessageId: string; text: string | null; uploadId: string | null }>) =>
   postLong<ChatTurnDto>(`${SERVICE_URLS.conversations}/${id}/messages`, data);
-const createFromDraft = ({ id, ...data }: Id<{ revision: number; separatePlan: boolean }>) => post<{ subscriptionId: string }>(`${SERVICE_URLS.drafts}/${id}/create`, data, true);
+const createFromDraft = ({ id, ...data }: Id<{ revision: number; separatePlan: boolean }>) => post<{ subscriptionId: string; subscription?: DetailDto | null }>(`${SERVICE_URLS.drafts}/${id}/create`, data, true);
 
 // Help & support. A retry of the same message is saved once (Idempotency-Key).
 const getSupportMessages = () => get<{ items: SupportMessageDto[] }>(SERVICE_URLS.supportMessages);

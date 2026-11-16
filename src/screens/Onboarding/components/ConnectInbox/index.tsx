@@ -80,8 +80,8 @@ export function ConnectInboxBody({ onboarding }: Props) {
         mt={SIZES.padding * 1.3}
         text={
           onboarding.signed_in
-            ? 'You’re already signed in. We’ll ask permission to find subscriptions in your inbox.'
-            : 'We’ll use your Google or Microsoft account to sign you in and ask permission to find subscriptions in your inbox.'
+            ? 'You’re already signed in. We’ll ask permission to find subscriptions in your inbox. Google Gemini reads the billing emails we find to fill in the details.'
+            : 'We’ll use your Google or Microsoft account to sign you in and ask permission to find subscriptions in your inbox. Google Gemini reads the billing emails we find to fill in the details.'
         }
         weight={FONTS.regular}
         color={COLORS.text_secondary}
@@ -100,7 +100,7 @@ export function ConnectInboxBody({ onboarding }: Props) {
       <InfoTooltip
         label="How we use your email"
         paragraphs={[
-          'Google or Microsoft grants read access to your mailbox. Renewless filters relevant receipts and renewal emails from the last 12 months, then uses AI to extract subscription details.',
+          'Google or Microsoft grants read access to your mailbox. Renewless filters relevant receipts and renewal emails from the last 12 months, then sends them to Google Gemini to extract subscription details.',
           'You can disconnect your inbox. Your permission is required before processing.',
         ]}
       />

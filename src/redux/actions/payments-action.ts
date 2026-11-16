@@ -7,8 +7,8 @@ import { setPayments, setPaymentsError, setPaymentsLoading } from '../slices/pay
 
 // The backend pages one year at a time; Payments filters years and months on the phone, so read them all.
 async function getAllPayments(subscriptionId?: string) {
-  const items: PaymentDto[] = [];
   const readYear = async (year?: number) => {
+    const items: PaymentDto[] = [];
     let cursor: string | undefined;
     let years: number[] = [];
     do {
@@ -17,12 +17,13 @@ async function getAllPayments(subscriptionId?: string) {
       years = page.years;
       cursor = page.nextCursor ?? undefined;
     } while (cursor);
-    return years;
+    return { items, years };
   };
   const current = Number(localToday().slice(0, 4));
-  const years = await readYear(current);
-  for (const year of years.filter(item => item !== current)) await readYear(year);
-  return items.map(toPayment);
+  const first = await readYear(current);
+  // The other years are read together instead of one after another.
+  const rest = await Promise.all(first.years.filter(item => item !== current).map(year => readYear(year)));
+  return [first, ...rest].flatMap(year => year.items).map(toPayment);
 }
 
 // scope is 'account' or an owned subscription ID; each scope is cached separately.

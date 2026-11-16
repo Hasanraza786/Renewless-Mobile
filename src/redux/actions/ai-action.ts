@@ -1,13 +1,14 @@
-import { toAiReply } from '../../api_services/adapters';
+import { toAiReply, toRecord } from '../../api_services/adapters';
 import apiServices from '../../api_services/request-handler';
 import type { AiInput, AiReply, AiUsage, ChatDraft } from '../../types';
 import { trackEvent } from '../../utils/analytics';
 import { successHaptic } from '../../utils/haptics';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { setAiConsent, setAiWithdrawalUnsent } from '../slices/constant-slice';
+import { upsertListRecords } from '../slices/list-slice';
 import { setNotice } from '../slices/profile-slice';
-import { getSubscriptions } from './list-action';
 import { getDashboard } from './dashboard-action';
+import { getSubscriptions } from './list-action';
 
 // Version of the approved AI consent text (AI chat consent dialog and Settings, 8 Nov 2026), sent with an acceptance.
 const AI_CONSENT_COPY_VERSION = '2026-11-08';
@@ -103,10 +104,11 @@ export function addAiDraft(draft: ChatDraft, onAdded: (id: string) => void, onDo
       requestHandler({
         apiService: apiServices.createFromDraft,
         param_data: { id: draft.id, revision: draft.revision, separatePlan: separate_plan },
-        onDone: ({ subscriptionId }) => {
+        onDone: ({ subscriptionId, subscription }) => {
           trackEvent('subscription_added', { source: 'ai' });
+          // The saved record goes straight into List; a backend that does not send it yet means one full read.
+          dispatch(subscription ? upsertListRecords([toRecord(subscription)]) : getSubscriptions());
           dispatch(getDashboard());
-          dispatch(getSubscriptions());
           successHaptic();
           dispatch(setNotice('Subscription added.'));
           onDone();

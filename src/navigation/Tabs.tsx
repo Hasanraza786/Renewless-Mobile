@@ -1,4 +1,4 @@
-import { Image, Platform, StyleSheet } from 'react-native';
+import { Image, Platform, StyleSheet, useWindowDimensions } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeBottomTabNavigator } from '@react-navigation/bottom-tabs/unstable';
 import { COLORS, IS_TABLET, SIZES } from '../constants/theme';
@@ -34,9 +34,16 @@ const RAIL_ICONS = {
 // Android tablets follow Material 3: a navigation rail on the left instead of the bottom bar.
 const ANDROID_RAIL = Platform.OS === 'android' && IS_TABLET;
 
+// Android draws the tab labels itself at Material's 12 sp, which grows with the system text size; past this scale
+// five labels no longer fit and truncate (Cale…), so the size stops growing there, like CustomText's cap.
+const MATERIAL_LABEL_SP = 12;
+const MAX_TAB_LABEL_SCALE = 1.3;
+
 // Native tab bar (system Liquid Glass where supported): Home / List / Calendar / Payments / Profile, no center Add.
 // iPadOS draws the same native tab bar as a floating pill at the top.
 export default function Tabs() {
+  const { fontScale } = useWindowDimensions();
+  const label_style = Platform.OS === 'android' && fontScale > MAX_TAB_LABEL_SCALE ? { fontSize: (MATERIAL_LABEL_SP * MAX_TAB_LABEL_SCALE) / fontScale } : undefined;
   if (ANDROID_RAIL) {
     return (
       <RailStack.Navigator
@@ -66,6 +73,7 @@ export default function Tabs() {
         tabBarInactiveTintColor: COLORS.text_secondary,
         // Android: every tab keeps its label, as in the prototype (Material hides inactive labels by default).
         tabBarLabelVisibilityMode: 'labeled',
+        tabBarLabelStyle: label_style,
       }}>
       <TabsStack.Screen name="Home" component={HomeScreen} options={{ tabBarIcon: tab_icon(ICONS.Home) }} />
       <TabsStack.Screen name="List" component={ListScreen} options={{ tabBarIcon: tab_icon(ICONS.List) }} />

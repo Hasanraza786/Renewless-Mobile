@@ -1,4 +1,4 @@
-import { fromReminder, toDetail, toPlatformSuggestion, toSubscriptionBody } from '../../api_services/adapters';
+import { fromReminder, toDetail, toPlatformSuggestion, toRecord, toSubscriptionBody } from '../../api_services/adapters';
 import type { DetailDto } from '../../api_services/dto';
 import apiServices from '../../api_services/request-handler';
 import type { PlatformSuggestion, ReminderPreference, SubscriptionFormInput, SubscriptionRecord } from '../../types';
@@ -6,9 +6,10 @@ import { trackEvent, type AnalyticsEvent } from '../../utils/analytics';
 import { successHaptic } from '../../utils/haptics';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { setDetail, setDetailError, setDetailLoading, setPlatformRecords, setRemoved } from '../slices/detail-slice';
+import { removeListRecord, upsertListRecords } from '../slices/list-slice';
 import { setNotice } from '../slices/profile-slice';
 import { getDashboard } from './dashboard-action';
-import { getAllSubscriptions, getCategoryList, getSubscriptions } from './list-action';
+import { getAllSubscriptions, getCategoryList } from './list-action';
 
 const flag = (key: 'detail' | 'platform' | 'mutation') => ({
   setLoading: (value: boolean) => setDetailLoading({ key, value }),
@@ -31,10 +32,15 @@ async function getDetailData({ id }: { id: string }) {
   return toDetail(detail, history, settings, receipts);
 }
 
+// The record Detail asked for last; an older answer that lands later is dropped, or it would replace the record on
+// screen and leave the spinner waiting for one that already arrived.
+let requested_detail = '';
+
 export function getSubscriptionDetail(id: string): AppThunk {
   return async (dispatch, getState) => {
+    requested_detail = id;
     if (getState().detail.detail?.record.id !== id) dispatch(setDetail(null));
-    await dispatch(requestHandler({ apiService: getDetailData, param_data: { id }, ...flag('detail'), onDone: detail => dispatch(setDetail(detail)) }));
+    await dispatch(requestHandler({ apiService: getDetailData, param_data: { id }, ...flag('detail'), onDone: detail => id === requested_detail && dispatch(setDetail(detail)) }));
   };
 }
 
@@ -60,20 +66,21 @@ export function getPlatformSubscriptions(platform_id: string, exclude_id?: strin
 const current = (state: { detail: { detail: { record: SubscriptionRecord } | null } }, id: string) =>
   state.detail.detail?.record.id === id ? state.detail.detail.record : null;
 
-// Mutations refresh Detail, Home and List, then let the screen close its sheet. onFieldErrors gets the server's
+// Mutations put the saved record into List and History from the server's answer, refresh Detail and Home (the Home
+// snapshot screens read it), then let the screen close its sheet. onFieldErrors gets the server's
 // per-field messages (the form places them under its fields).
-function saveChange<Param>(id: string, event: AnalyticsEvent, apiService: (param_data: Param) => Promise<unknown>, param_data: Param, onSaved: () => void, notice?: string, onFieldErrors?: (field_errors: Record<string, string>) => void): AppThunk {
+function saveChange<Param>(id: string, event: AnalyticsEvent, apiService: (param_data: Param) => Promise<DetailDto>, param_data: Param, onSaved: () => void, notice?: string, onFieldErrors?: (field_errors: Record<string, string>) => void): AppThunk {
   return async dispatch => {
     await dispatch(
       requestHandler({
         apiService,
         param_data,
         ...flag('mutation'),
-        onDone: () => {
+        onDone: saved => {
           trackEvent(event);
+          dispatch(upsertListRecords([toRecord(saved)]));
           dispatch(getSubscriptionDetail(id));
           dispatch(getDashboard());
-          dispatch(getSubscriptions());
           if (notice) {
             successHaptic();
             dispatch(setNotice(notice));
@@ -176,8 +183,8 @@ export function createSubscription(input: SubscriptionFormInput, onAdded: (id: s
         ...flag('mutation'),
         onDone: (created: DetailDto) => {
           trackEvent('subscription_added', { source });
+          dispatch(upsertListRecords([toRecord(created)]));
           dispatch(getDashboard());
-          dispatch(getSubscriptions());
           successHaptic();
           dispatch(setNotice('Subscription added.'));
           onAdded(created.id);
@@ -200,8 +207,8 @@ export function deleteSubscription(id: string, name: string, onRemoved: () => vo
           trackEvent('subscription_removed');
           dispatch(setRemoved({ id, name, undo_token: undoToken }));
           dispatch(setDetail(null));
+          dispatch(removeListRecord(id));
           dispatch(getDashboard());
-          dispatch(getSubscriptions());
           onRemoved();
         },
       }),
@@ -217,10 +224,11 @@ export function restoreSubscription(id: string, undo_token: string): AppThunk {
         apiService: apiServices.restoreSubscription,
         param_data: { id, undoToken: undo_token },
         ...flag('mutation'),
-        onDone: () => {
+        onDone: restored => {
           trackEvent('subscription_restored');
           dispatch(getDashboard());
-          dispatch(getSubscriptions());
+          // Undo runs while List may already be on screen: the restored record goes straight back into it.
+          dispatch(upsertListRecords([toRecord(restored)]));
           if (shown_platform) dispatch(getPlatformSubscriptions(shown_platform.platform_id, shown_platform.exclude_id));
         },
       }),

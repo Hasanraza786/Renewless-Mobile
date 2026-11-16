@@ -37,7 +37,8 @@ export default function useReminderSettings() {
 
   const status = draft ? 'ready' : error.settings && !loading.settings ? 'failed' : 'loading';
   const display = draft ? accountDisplay(draft.values) : '';
-  const timezone = (Intl.DateTimeFormat().resolvedOptions().timeZone || 'Device timezone').replace(/_/g, ' ');
+  // Reminders go out in the account's zone, so that is the one shown; the phone's only until settings load.
+  const timezone = (settings?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || 'Device timezone').replace(/_/g, ' ');
   const device: 'allowed' | 'blocked' | 'unavailable' | 'not_asked' | null = permission === 'granted' || permission === 'limited' ? 'allowed' : permission === 'blocked' ? 'blocked' : permission === 'unavailable' ? 'unavailable' : permission === 'denied' ? 'not_asked' : null;
 
   const update = <Key extends keyof Draft>(key: Key, value: Draft[Key]) => setDraft(current => (current ? { ...current, [key]: value } : current));
@@ -71,7 +72,7 @@ export default function useReminderSettings() {
     const custom_days = draft.values.includes('custom') ? Number(draft.custom) : null;
     dispatch(
       saveReminderSettings(
-        { push_enabled: draft.push_enabled, renewals: draft.renewals, trials: draft.trials, days: normalizeOffsets(draft.values, custom_days), time: draft.time, revision: settings.revision },
+        { push_enabled: draft.push_enabled, renewals: draft.renewals, trials: draft.trials, days: normalizeOffsets(draft.values, custom_days), time: draft.time, timezone: settings.timezone, revision: settings.revision },
         { existing, keep_custom },
         onSaved,
       ),

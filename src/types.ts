@@ -258,6 +258,8 @@ export type ReminderSettings = {
   trials: boolean;
   days: number[];
   time: string;
+  // The account's zone from the server: reminders are sent in it, not in the phone's.
+  timezone: string;
   revision: number;
 };
 

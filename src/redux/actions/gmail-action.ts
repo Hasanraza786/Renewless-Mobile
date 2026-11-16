@@ -1,4 +1,4 @@
-import { fromGmailSelection, toGmailScan, toInbox } from '../../api_services/adapters';
+import { fromGmailSelection, toGmailScan, toInbox, toRecord } from '../../api_services/adapters';
 import type { ApiError } from '../../api_services/http-provider';
 import apiServices from '../../api_services/request-handler';
 import type { GmailCandidate, GmailScanStatus, GmailSelection, InboxProvider, ProfileInbox } from '../../types';
@@ -6,6 +6,7 @@ import { successHaptic } from '../../utils/haptics';
 import { trackEvent } from '../../utils/analytics';
 import { gmailSignIn, outlookSignIn } from '../../utils/social-sign-in';
 import { requestHandler, type AppThunk } from '../request-handler';
+import { upsertListRecords } from '../slices/list-slice';
 import { setNotice } from '../slices/profile-slice';
 import { getDashboard } from './dashboard-action';
 import { getSubscriptions } from './list-action';
@@ -104,9 +105,10 @@ export function saveGmailResults(job_id: string, chosen: GmailCandidate[], selec
       requestHandler({
         apiService: saveReview,
         param_data: { job_id, chosen, selections },
-        onDone: () => {
+        onDone: ({ subscriptions }) => {
+          // The imported records go straight into List; a backend that does not send them yet means one full read.
+          dispatch(subscriptions ? upsertListRecords(subscriptions.map(toRecord)) : getSubscriptions());
           dispatch(getDashboard());
-          dispatch(getSubscriptions());
           dispatch(getProfileOverview());
           successHaptic();
           dispatch(setNotice('Selected subscriptions and updates saved.'));

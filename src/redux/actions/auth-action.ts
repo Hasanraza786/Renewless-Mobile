@@ -15,7 +15,7 @@ import { endSession } from '../endSession';
 import { INBOX_LIMIT_NOTICE, scannedBeforeNotice } from './gmail-action';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { authError, authLoading } from '../slices/auth-slice';
-import { setSession } from '../slices/constant-slice';
+import { setSession, setUser } from '../slices/constant-slice';
 import { setNotice, setProfileUser } from '../slices/profile-slice';
 
 const timezone = () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
@@ -37,7 +37,9 @@ export function beginSession(session: SessionDto): AppThunk {
 // The phone's zone last confirmed with the server; a traveller's new zone is sent on app start and on return.
 let synced_timezone: string | null = null;
 
-export function syncTimezone(): AppThunk {
+// App start (and a return after the zone moved): the profile is read from the server, since it is not kept in
+// storage, and the account timezone follows the phone.
+export function syncAccount(): AppThunk {
   return async dispatch => {
     const zone = timezone();
     if (zone === synced_timezone) return;
@@ -45,6 +47,9 @@ export function syncTimezone(): AppThunk {
       requestHandler({
         apiService: apiServices.getMe,
         onDone: ({ user }) => {
+          const profile = toProfile(user);
+          dispatch(setUser(profile));
+          dispatch(setProfileUser(profile));
           if (user.timezone === zone) synced_timezone = zone;
           else dispatch(requestHandler({ apiService: apiServices.updateDevice, param_data: { timezone: zone }, onDone: () => (synced_timezone = zone) }));
         },

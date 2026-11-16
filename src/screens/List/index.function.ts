@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { navigate } from '../../navigation/service';
 import { getSubscriptions } from '../../redux/actions/list-action';
@@ -33,7 +33,9 @@ export default function useList(route: ListRoute) {
   );
 
   const all = useMemo(() => records ?? [], [records]);
-  const matching = useMemo(() => filterRecords(all, query, groups, today), [all, groups, query, today]);
+  // The field updates on every key; filtering 500 records follows a moment later, so typing never stutters.
+  const search = useDeferredValue(query);
+  const matching = useMemo(() => filterRecords(all, search, groups, today), [all, groups, search, today]);
   // SectionList shape: only on-screen rows render, so 500+ records stay smooth on low-end Android.
   const sections = useMemo(() => sortRecords(matching, sort, today).map(section => ({ title: section.title, data: section.records })), [matching, sort, today]);
   // Counts are global: every record before search or status filtering.

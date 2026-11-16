@@ -17,12 +17,25 @@ const listSlice = createSlice({
     setListError(state, action: PayloadAction<string>) {
       state.error = action.payload;
     },
+    // A saved change puts its records in place from the server's answer, so List and History show it the moment the
+    // user returns, without reading every page again. A list never loaded is read in full on its first visit.
+    upsertListRecords(state, action: PayloadAction<SubscriptionRecord[]>) {
+      if (!state.records) return;
+      for (const record of action.payload) {
+        const index = state.records.findIndex(item => item.id === record.id);
+        if (index >= 0) state.records[index] = record;
+        else state.records.push(record);
+      }
+    },
+    removeListRecord(state, action: PayloadAction<string>) {
+      if (state.records) state.records = state.records.filter(item => item.id !== action.payload);
+    },
     resetList() {
       return initial_state;
     },
   },
 });
 
-export const { setListRecords, setListLoading, setListError, resetList } = listSlice.actions;
+export const { setListRecords, setListLoading, setListError, upsertListRecords, removeListRecord, resetList } = listSlice.actions;
 
 export default listSlice.reducer;

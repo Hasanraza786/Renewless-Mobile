@@ -219,7 +219,8 @@ export type ReceiptDto = {
 };
 export type ReceiptsDto = { items: ReceiptDto[]; total: number; nextCursor: string | null };
 
-export type ScanImportDto = { created: string[]; updated: string[]; alreadyApplied: string[] };
+// subscriptions: the created and updated records (missing from a backend before 16 November 2026).
+export type ScanImportDto = { created: string[]; updated: string[]; alreadyApplied: string[]; subscriptions?: DetailDto[] };
 
 export type PlatformDto = { id: string; name: string; categoryId: string | null; logoUrl: string | null };
 export type CategoryDto = { id: string; key: string; name: string };

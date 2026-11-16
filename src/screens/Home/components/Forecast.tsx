@@ -31,7 +31,7 @@ function Chart({ currency, months }: { currency: string; months: { month: string
               accessibilityLabel={`${shortMonth(item.month)}: ${currency} ${item.amount} expected`}
               onPress={() => setSelected(index)}
               style={styles.bar_column}>
-              <CustomText text={item.amount} weight={FONTS.regular} color={tone} size={SIZES.sm} align="center" />
+              <CustomText text={item.amount} weight={FONTS.regular} color={tone} size={SIZES.sm} align="center" number_of_lines={1} fit_width />
               <View style={styles.bar_space}>
                 <View style={[styles.bar, { height: `${(Number(item.amount) / max) * 100}%` }, active && styles.bar_active]} />
               </View>

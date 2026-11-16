@@ -18,8 +18,9 @@ import {
 } from './slices';
 import { redux_storage } from './storage';
 
-// The login token is never written to storage here; it lives in the Keychain (utils/session-token).
-const constant_reducer = persistReducer({ key: 'constant', storage: redux_storage, blacklist: ['token'] }, constantReducer);
+// The login token is never written to storage here; it lives in the Keychain (utils/session-token). The profile
+// (name, email, phone, birth date) is not written either: storage is unencrypted, so Home reads it from the server.
+const constant_reducer = persistReducer({ key: 'constant', storage: redux_storage, blacklist: ['token', 'user'] }, constantReducer);
 
 const root_reducer = combineReducers({
   constant: constant_reducer,
