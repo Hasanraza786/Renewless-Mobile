@@ -59,6 +59,8 @@ jest.mock('@react-native-firebase/analytics', () => ({
   setAnalyticsCollectionEnabled: jest.fn(),
 }));
 
+jest.mock('@react-native-firebase/crashlytics', () => ({ getCrashlytics: jest.fn(() => ({})), recordError: jest.fn() }));
+
 // Native push: no OS prompt or FCM token in tests.
 jest.mock('./src/utils/push', () => ({ pushToken: jest.fn(async () => null), listenToPush: jest.fn(() => () => undefined), forgetPushToken: jest.fn(async () => undefined) }));
 // Native Google/Apple sheets; tests set what the provider returns.

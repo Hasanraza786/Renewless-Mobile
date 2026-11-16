@@ -1,4 +1,5 @@
 import type { ThunkAction, UnknownAction } from '@reduxjs/toolkit';
+import { getCrashlytics, recordError } from '@react-native-firebase/crashlytics';
 import { ApiError } from '../api_services/http-provider';
 import type { RootState } from '../types';
 import { sessionToken } from '../utils/session-token';
@@ -27,18 +28,29 @@ export function requestHandler<Param, Data>({ apiService, param_data, setLoading
     if (setLoading) dispatch(setLoading(true));
     if (setError) dispatch(setError(''));
     const token = sessionToken();
+    // A response that lands after logout (or a new login) belongs to the old session: drop it.
+    const stale = () => Boolean(token) && sessionToken() !== token;
     try {
-      const data = await apiService(param_data as Param);
-      // A response that lands after logout (or a new login) belongs to the old session: drop it.
-      if (token && sessionToken() !== token) return;
-      onDone?.(data);
-    } catch (caught) {
-      if (token && sessionToken() !== token) return;
-      const error = caught instanceof ApiError ? caught : new ApiError(0, 'INTERNAL', caught instanceof Error ? caught.message : 'Something went wrong. Please try again.');
-      // Only a dead session signs out; Gmail/Outlook expiry and provider token checks are 401s too.
-      if (endOnUnauthorized && SESSION_ENDED.has(error.code)) dispatch(endSession());
-      if (setError) dispatch(setError(error.message));
-      onError?.(error);
+      let data: Data;
+      try {
+        data = await apiService(param_data as Param);
+      } catch (caught) {
+        if (stale()) return;
+        // Only server messages are user copy; a JS error's own text never reaches the screen.
+        const error = caught instanceof ApiError ? caught : new ApiError(0, 'INTERNAL', 'Something went wrong. Please try again.');
+        // Only a dead session signs out; Gmail/Outlook expiry and provider token checks are 401s too.
+        if (endOnUnauthorized && SESSION_ENDED.has(error.code)) dispatch(endSession());
+        if (setError) dispatch(setError(error.message));
+        onError?.(error);
+        return;
+      }
+      if (stale()) return;
+      try {
+        onDone?.(data);
+      } catch (bug) {
+        // The request succeeded (a POST is already saved), so a crash in onDone is an app bug, not a failed request.
+        recordError(getCrashlytics(), bug instanceof Error ? bug : new Error(String(bug)));
+      }
     } finally {
       if (setLoading) dispatch(setLoading(false));
     }

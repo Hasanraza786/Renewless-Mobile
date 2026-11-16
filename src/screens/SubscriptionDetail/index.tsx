@@ -17,6 +17,7 @@ import { common_styles } from '../../utils/common_styles';
 import DetailSheets from './components/DetailSheets';
 import useSubscriptionDetail, { type DetailView } from './index.function';
 import { styles } from './styles';
+import { syncLabel } from '../../utils/dates';
 import { money } from '../../utils/money';
 
 type Props = Pick<NativeStackScreenProps<AppStackParamList, 'SubscriptionDetail'>, 'route'>;
@@ -133,7 +134,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
               <CustomText text={`Receipt inbox · ${record.inbox.email}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
               <CustomText
                 mt={SIZES.padding / 4}
-                text={record.inbox.disconnected ? 'Disconnected · no longer read' : `Last successful sync · ${new Date(record.inbox.last_sync).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} · ${new Date(record.inbox.last_sync).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`}
+                text={record.inbox.disconnected ? 'Disconnected · no longer read' : record.inbox.last_sync ? `Last successful sync · ${syncLabel(record.inbox.last_sync)}` : syncLabel(null)}
                 weight={FONTS.regular}
                 color={COLORS.text_secondary}
                 size={SIZES.sm}

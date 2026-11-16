@@ -46,3 +46,19 @@ test('requests that started signed out still finish (login, onboarding)', async 
   await run({ apiService: () => saveSessionToken('token-b').then(() => 'session'), onDone });
   expect(onDone).toHaveBeenCalledWith('session');
 });
+
+test('a crash inside onDone is reported, not shown as a failed request', async () => {
+  const { recordError } = jest.requireMock('@react-native-firebase/crashlytics');
+  const onError = jest.fn();
+  const setError = jest.fn((value: string) => ({ type: 'test/error', payload: value }));
+  await run({ apiService: async () => 'saved', onDone: () => { throw new TypeError('x is undefined'); }, onError, setError });
+  expect(onError).not.toHaveBeenCalled();
+  expect(setError).not.toHaveBeenCalledWith('x is undefined');
+  expect(recordError).toHaveBeenCalled();
+});
+
+test('a JS error from the service shows the generic message, not its own text', async () => {
+  const onError = jest.fn();
+  await run({ apiService: async () => { throw new TypeError('Cannot read property id of undefined'); }, onError });
+  expect(onError.mock.calls[0][0].message).toBe('Something went wrong. Please try again.');
+});

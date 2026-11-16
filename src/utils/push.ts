@@ -1,7 +1,10 @@
-import { deleteToken, getInitialNotification, getMessaging, getToken, onNotificationOpenedApp, onTokenRefresh } from '@react-native-firebase/messaging';
+import { Platform } from 'react-native';
+import notifee, { EventType } from '@notifee/react-native';
+import { deleteToken, getInitialNotification, getMessaging, getToken, onMessage, onNotificationOpenedApp, onTokenRefresh } from '@react-native-firebase/messaging';
 import { requestNotifications, RESULTS } from 'react-native-permissions';
 import { navigate } from '../navigation/service';
 import { getSupportMessages } from '../redux/actions/support-action';
+import { COLORS } from '../constants/theme';
 import store from '../redux/store';
 
 const messaging = getMessaging();
@@ -33,12 +36,32 @@ export function openReminder(message: { data?: Record<string, unknown> } | null)
   } else if (typeof data?.subscriptionId === 'string') navigate('SubscriptionDetail', { id: data.subscriptionId });
 }
 
+// iOS shows a push that arrives while the app is open as its own banner; Android does not, so Notifee shows it.
+// FCM's own fallback channel (the one background pushes already use), so no second channel appears in Settings.
+const ANDROID_CHANNEL = 'fcm_fallback_notification_channel';
+export async function showInApp(message: { notification?: { title?: string; body?: string }; data?: Record<string, unknown> }) {
+  if (Platform.OS !== 'android' || !message.notification) return;
+  const channelId = await notifee.createChannel({ id: ANDROID_CHANNEL, name: 'Miscellaneous' });
+  await notifee.displayNotification({
+    title: message.notification.title,
+    body: message.notification.body,
+    data: message.data as Record<string, string> | undefined,
+    android: { channelId, smallIcon: 'ic_notification', color: COLORS.primary, pressAction: { id: 'default' } },
+  });
+}
+
 // Token refreshes and taps while the app runs; the push that launched the app is opened once.
 export function listenToPush(onToken: (token: string) => void) {
   if (!initial_checked) {
     initial_checked = true;
     getInitialNotification(messaging).then(openReminder).catch(() => undefined);
   }
-  const offs = [onTokenRefresh(messaging, onToken), onNotificationOpenedApp(messaging, openReminder)];
+  const offs = [
+    onTokenRefresh(messaging, onToken),
+    onNotificationOpenedApp(messaging, openReminder),
+    onMessage(messaging, showInApp),
+    // A tap on a banner Notifee showed opens the same screen as a tap on an FCM one.
+    notifee.onForegroundEvent(({ type, detail }) => type === EventType.PRESS && openReminder({ data: detail.notification?.data })),
+  ];
   return () => offs.forEach(off => off());
 }

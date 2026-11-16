@@ -25,5 +25,6 @@ export default function PlatformLogo({ platform_id, name, size, letter_size = SI
     const side = size ?? SIZES.padding * 1.2;
     return <Image source={{ uri: hosted }} style={{ width: side, height: side }} resizeMode="contain" accessible={false} onError={() => setFailed(true)} />;
   }
-  return name ? <CustomText text={name.charAt(0)} size={letter_size} /> : null;
+  // By code point, not UTF-16 unit, so a name starting with an emoji shows the emoji instead of half of it.
+  return name ? <CustomText text={Array.from(name.trim())[0] ?? ''} size={letter_size} /> : null;
 }

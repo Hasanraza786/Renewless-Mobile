@@ -169,9 +169,13 @@ export function connectOnboardingOutlook(onDiscovering: () => void, onScannedBef
 const POLL_FAILURES = 3;
 let poll_failures = 0;
 let lost_job = '';
+// The poll ticks every second; a slow answer must not stack a second request behind it.
+let poll_in_flight = false;
 
 export function getOnboardingScan(job_id: string): AppThunk {
   return async dispatch => {
+    if (poll_in_flight) return;
+    poll_in_flight = true;
     await dispatch(
       requestHandler({
         apiService: apiServices.getScan,
@@ -189,6 +193,7 @@ export function getOnboardingScan(job_id: string): AppThunk {
         },
       }),
     );
+    poll_in_flight = false;
   };
 }
 

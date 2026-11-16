@@ -35,8 +35,7 @@ Last updated: 8 November 2026.
 - Store-submission readiness (section 7).
 
 **Current state, as of 8 Nov 2026**
-- The frontend is complete against the locked prototype, driven by mock adapters. Development builds always use mocks (`USE_MOCK_API = __DEV__` in `src/config/api.ts`).
-- The real backend, Gmail OAuth, AI provider and push delivery are **not integrated yet**.
+- The frontend is complete against the locked prototype. Every screen, debug builds included, calls the backend set by `API_BASE_URL` in `.env` (`src/config/api.ts`); no mock data remains in the app (updated 16 Nov 2026).
 
 **Real-data QA can start only when all of these are true**
 - [ ] A staging backend exists and implements `docs/api-mobile-contract.md`.
@@ -46,7 +45,7 @@ Last updated: 8 November 2026.
 - [ ] Push notifications are wired up (APNs key, FCM project) for staging.
 - [ ] Sentry (or a similar tool) is configured with `environment=staging`, and release builds upload source maps and dSYMs.
 
-Until then, run the **mock regression** (every suite in section 6 against the mock scenarios in 4.4). This catches layout and flow bugs early.
+Until then, run the suites in section 6 on a debug build against the backend in `.env`, with QA accounts only (5.1). This catches layout and flow bugs early.
 
 ---
 
@@ -66,11 +65,11 @@ Until then, run the **mock regression** (every suite in section 6 against the mo
 
 | Purpose | iOS | Android |
 |---|---|---|
-| Mock regression (debug) | `xcodebuild -workspace ios/Renewless.xcworkspace -scheme Renewless -configuration Debug -sdk iphonesimulator -destination 'id=<SIM_ID>' -derivedDataPath ios/build/widget`, then `xcrun simctl install <SIM_ID> ios/build/widget/Build/Products/Debug-iphonesimulator/Renewless.app` | `npx react-native run-android --no-packager` with JDK 17. Run `adb reverse tcp:8081 tcp:8081` first |
+| Debug (backend from `.env`) | `xcodebuild -workspace ios/Renewless.xcworkspace -scheme Renewless -configuration Debug -sdk iphonesimulator -destination 'id=<SIM_ID>' -derivedDataPath ios/build/widget`, then `xcrun simctl install <SIM_ID> ios/build/widget/Build/Products/Debug-iphonesimulator/Renewless.app` | `npx react-native run-android --no-packager` with JDK 17. Run `adb reverse tcp:8081 tcp:8081` first |
 | Real data (staging) | Release configuration with `.env` → `API_BASE_URL=<staging>` | `cd android && ./gradlew assembleRelease` with the staging `.env` |
 | Store candidate | Archive in Xcode, upload to TestFlight | `./gradlew bundleRelease`, upload to the Play internal or closed track |
 
-- **Gap to raise before real-data QA:** a debug build cannot talk to staging, because `__DEV__` forces mocks. Either test release builds (slower, no Fast Refresh) or ask the user to approve a separate flag, such as `USE_MOCK_API` read from `.env`. Never let a release build fall back to mocks (AGENTS.md).
+- Debug and release builds both read `API_BASE_URL` from `.env`, so pointing `.env` at staging is enough for a debug build. Never let any build fall back to mock data (AGENTS.md).
 - One Debug `.app` from `ios/build/widget/...` installs on **any** iOS simulator. Use this to cover several screen sizes without rebuilding.
 - Release signing:
   - iOS: team `7K3NY3SR6K`. App ID `com.renewless`, widget `com.renewless.RenewlessWidget`, App Group `group.com.renewless`.
@@ -134,23 +133,11 @@ Emulator tips:
 - Crashes: iOS through `mobile_list_crashes`; Android through `adb logcat -d | grep -iE "FATAL|ReactNativeJS"`.
 
 ### 4.3 Data reset
-- The mock repository lives in memory. Restarting the app resets it to fixtures. Onboarding saves replace the fixture account until the next restart.
+- Data lives on the backend in `.env`. Reset a QA account by deleting it in the app (Profile › Delete account) and signing up again.
 - Reset the one-time prompts by reinstalling the app (`constant.widget_prompt_seen` and `splash_seen` are persisted).
 
-### 4.4 Mock scenarios (`src/config/mock-data.ts`)
-Change one value, reload the app, test, then **restore the default**.
-
-| Key | Values (default first) | Covers |
-|---|---|---|
-| `home_scenario` | account, two_events, multiple_events, quiet, empty, error | Home event tabs, See all → Upcoming, Calendar day (multiple_events), empty and error states |
-| `payments_scenario` | receipts, none | Payments empty; Home and Detail with no receipts |
-| `alerts_scenario` | sent, empty | Alerts empty |
-| `gmail_scan_scenario` | found, nothing, interrupted | Gmail review, nothing found, interrupted |
-| `scan_scenario` / `connect_scenario` | found / granted … | Onboarding scan and connect outcomes |
-| `inbox_scenario` | synced, reconnect, sync_fails | Connected inbox states |
-| `profile_inbox_scenario` | connected, none | Profile with no inbox |
-
-Sample login: `alex@example.com` / `sample123`.
+### 4.4 Test data
+There are no mock scenarios any more. Empty, error and edge states come from real QA accounts: a new account for empty states, seeded QA inboxes (5.2) for scan results, and airplane mode for offline and retry states.
 
 ---
 
@@ -388,7 +375,7 @@ Researched 8 Nov 2026. Items marked **[verify]** come from secondary sources or 
 
 | # | Item | Severity | Owner / next step |
 |---|---|---|---|
-| 1 | Debug builds always use mocks (`USE_MOCK_API = __DEV__`). There is no way to point a dev build at staging | Blocks real-data QA | Ask the user: test release builds, or approve an `.env` flag |
+| 1 | Debug builds always used mocks (`USE_MOCK_API = __DEV__`) | Resolved | Every build now reads `API_BASE_URL` from `.env` |
 | 2 | AI consent is device-local only (App Store 5.1.2(i) UI done 8 Nov) | Must fix before release | Backend records consent per account and AI endpoints refuse without it |
 | 3 | Widget privacy manifest | Resolved 8 Nov | Check the archive in Xcode's privacy report before upload |
 | 4 | Haptics and the signed-build App Group not checked on a real iPhone | Must test | Real-device run (6.4, 6.8, 6.10) |
@@ -396,8 +383,8 @@ Researched 8 Nov 2026. Items marked **[verify]** come from secondary sources or 
 | 6 | Platform logos bundled for only 7 platforms (app and widget) | Cosmetic | Needs the backend platform catalog |
 | 7 | iPhone SE: Login "Sign up" line and Calendar legend need a scroll | Accepted | Re-check only |
 | 8 | Android widget uses the system font, not Raleway (launcher limitation) | Accepted | None |
-| 9 | Push delivery, Gmail OAuth and the AI provider are not integrated; all such flows are mock-only | Blocks real-data QA | Backend integration |
-| 10 | Mock AI always returns the same receipt draft for any image or PDF | Mock only | Real extraction on staging |
+| 9 | Push delivery, Gmail OAuth and the AI provider were mock-only | Resolved (integrated 13 Nov) | Verify on real devices with real QA inboxes |
+| 10 | Mock AI always returned the same receipt draft | Resolved (real extraction) | Check drafts against the golden receipts |
 | 11 | AI provider is Google Gemini via API key. **[verify]** On the unpaid tier Google may use content to improve its products; Gmail Limited Use forbids that for Gmail data | Release blocker if Gmail content reaches Gemini | Use the paid (billing-enabled) Gemini API tier and confirm current terms; then the consent dialog can also say it is not used for training |
 | 12 | Prototype 600/700 text (13 places) renders in Raleway Medium; Bold/SemiBold are not bundled | Accepted (9 Nov) | None: the prototype only loads Regular and Medium, so its bold is synthesized |
 
