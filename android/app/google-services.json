@@ -22,6 +22,22 @@
           }
         },
         {
+          "client_id": "144689953825-ichvqtlgjf799294edk7qfdgmhe2p7v6.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.renewless",
+            "certificate_hash": "807417ffdbd172eede140875814cefccc8f98f6d"
+          }
+        },
+        {
+          "client_id": "144689953825-j7aa5bfuhcmfqojgrta7cfcr5t67gkhi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.renewless",
+            "certificate_hash": "3525732b8e40a311c5ce1943f9dc6a2cf0e5b0cd"
+          }
+        },
+        {
           "client_id": "144689953825-p7vppcan22ad9ljbj9j8a9arlr23toom.apps.googleusercontent.com",
           "client_type": 3
         }

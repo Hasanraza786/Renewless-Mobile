@@ -93,7 +93,7 @@ export function deleteAccount(provider: Profile['provider'], password: string): 
       const token = await providerSignIn(provider).catch(() => null);
       dispatch(setDeleteStep(''));
       if (!token) return;
-      verification = { provider, idToken: token.idToken, nonce: token.nonce };
+      verification = { provider, idToken: token.idToken, nonce: token.nonce, authorizationCode: token.authorizationCode };
     }
     await dispatch(
       requestHandler({

@@ -62,7 +62,8 @@ export default function InputField({
         <TextInput
           ref={ref}
           value={value}
-          onChangeText={onChangeText}
+          // Comma-decimal regions (EU, Brazil, Turkey) get a "," key on the decimal pad; amounts always use ".".
+          onChangeText={onChangeText && input_props.keyboardType === 'decimal-pad' ? text => onChangeText(text.replace(/,/g, '.')) : onChangeText}
           placeholderTextColor={COLORS.text_secondary}
           accessibilityLabel={label}
           accessibilityHint={error || undefined}

@@ -95,7 +95,7 @@ const updateDevice = (data: { timezone?: string; fcmToken?: string | null }) => 
 const savePreferences = (data: { productUpdates: boolean }) => patch<{ user: UserDto }>(SERVICE_URLS.preferences, data);
 const saveAiConsent = (data: { consented: boolean; copyVersion?: string }) => put<{ user: UserDto }>(SERVICE_URLS.aiConsent, data);
 // Google/Apple accounts verify with a fresh provider token; password accounts with the password.
-const deleteMe = (data: { password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string } | { provider: 'microsoft'; code: string; codeVerifier: string; redirectUri: string }) => del<{ deleted: true }>(SERVICE_URLS.me, data);
+const deleteMe = (data: { password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string; authorizationCode?: string } | { provider: 'microsoft'; code: string; codeVerifier: string; redirectUri: string }) => del<{ deleted: true }>(SERVICE_URLS.me, data);
 
 // Catalog
 const getPlatforms = (data: { q: string }) => get<{ platforms: PlatformDto[] }>(SERVICE_URLS.platforms, data);

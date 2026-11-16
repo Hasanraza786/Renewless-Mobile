@@ -60,6 +60,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Renewless never opens your camera. You add a bill by choosing a photo you already have.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Renewless opens only the photo you choose, so Loop can read the subscription or bill details from it.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Renewless records your voice message only while you hold the microphone, so Loop can add your subscription.</string>
 	<key>RCTNewArchEnabled</key>

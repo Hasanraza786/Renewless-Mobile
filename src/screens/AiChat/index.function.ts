@@ -4,6 +4,7 @@ import { pick, types } from '@react-native-documents/picker';
 import { viewDocument } from '@react-native-documents/viewer';
 import { launchImageLibrary } from 'react-native-image-picker';
 import { createSound } from 'react-native-nitro-sound';
+import { PERMISSIONS, RESULTS, request } from 'react-native-permissions';
 import { focusedTab, goBack, navigate } from '../../navigation/service';
 import { PRIVACY_URL, openLegal } from '../../config/legal';
 import { addAiDraft, changeAiConsent, sendAiMessage, startAiChat } from '../../redux/actions/ai-action';
@@ -19,6 +20,8 @@ const SPEEDS = [1, 1.5, 2] as const;
 const LIVE_BARS = 32;
 // Metering is dBFS (about -60 quiet to 0 loud); bars keep a small floor so silence still shows.
 const meterLevel = (db?: number) => (db == null ? 0.15 : Math.min(1, Math.max(0.12, (db + 60) / 60)));
+// Android grants the microphone only at runtime; iOS asks by itself when the recorder starts.
+const micAllowed = async () => Platform.OS !== 'android' || (await request(PERMISSIONS.ANDROID.RECORD_AUDIO)) === RESULTS.GRANTED;
 
 export type Recording = { elapsed_ms: number; locked: boolean; paused: boolean; levels: number[] };
 export type ChatMessage = { id: string; role: 'user' | 'loop'; input: AiInput | null; text: string; failed: boolean };
@@ -202,7 +205,7 @@ export default function useAiChat() {
     tapHaptic();
     setRecording({ elapsed_ms: 0, locked: false, paused: false, levels: [] });
     const start = { at: Date.now(), started: false, elapsed_ms: 0, ready: Promise.resolve(false) };
-    start.ready = recorder.startRecorder(undefined, undefined, true).then(
+    start.ready = micAllowed().then(allowed => (allowed ? recorder.startRecorder(undefined, undefined, true) : Promise.reject(new Error('mic denied')))).then(
       () => {
         start.started = true;
         return true;

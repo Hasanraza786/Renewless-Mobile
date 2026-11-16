@@ -8,7 +8,7 @@ const LOGIN_CONFIG = { webClientId: Config.GOOGLE_WEB_CLIENT_ID };
 GoogleSignin.configure(LOGIN_CONFIG);
 const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly';
 
-export type ProviderToken = { provider: 'google' | 'apple'; idToken: string; nonce?: string; name?: string };
+export type ProviderToken = { provider: 'google' | 'apple'; idToken: string; nonce?: string; name?: string; authorizationCode?: string };
 
 // The native Google sheet. Only the ID token is kept; the SDK session is dropped so the next sign-in can pick another account.
 async function google(): Promise<ProviderToken | null> {
@@ -32,7 +32,8 @@ async function apple(): Promise<ProviderToken | null> {
     const response = await appleAuth.performRequest({ requestedOperation: appleAuth.Operation.LOGIN, requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL] });
     if (!response.identityToken) return null;
     const name = [response.fullName?.givenName, response.fullName?.familyName].filter(Boolean).join(' ');
-    return { provider: 'apple', idToken: response.identityToken, nonce: response.nonce, name: name || undefined };
+    // authorizationCode lets the backend revoke the Apple grant when the account is deleted (guideline 5.1.1(v)).
+    return { provider: 'apple', idToken: response.identityToken, nonce: response.nonce, name: name || undefined, authorizationCode: response.authorizationCode ?? undefined };
   } catch (caught) {
     if ((caught as { code?: string }).code === appleAuth.Error.CANCELED) return null;
     throw caught;

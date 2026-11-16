@@ -354,8 +354,7 @@ Researched 8 Nov 2026. Items marked **[verify]** come from secondary sources or 
   - check that every pod ships its own manifest.
 - Nutrition labels must match what the app actually collects (email, name, user ID, email content, audio, photos, other content, crash data).
 - **Usage strings:**
-  - `NSMicrophoneUsageDescription` is present;
-  - add a photo library string only if the app reads the library directly (the picker does not need one);
+  - `NSMicrophoneUsageDescription`, `NSCameraUsageDescription` and `NSPhotoLibraryUsageDescription` are present: the picker itself needs no permission, but the linked image-picker library references the camera and photo-library APIs, which App Store Connect checks (ITMS-90683);
   - show the notification prompt only after an explanation.
 - Widget App Group on both App IDs and both provisioning profiles. Test on an Archive / TestFlight build.
 - **Age rating:**
