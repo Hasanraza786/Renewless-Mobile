@@ -11,6 +11,7 @@ import { COLORS } from '../constants/theme';
 import { navigationRef } from './service';
 import UndoToast from '../components/UndoToast';
 import LoaderModal from '../components/LoaderModal';
+import AppUpdate from '../components/AppUpdate';
 import { listenForWidgetUrls } from '../utils/widget';
 import { trackScreen } from '../utils/analytics';
 
@@ -76,6 +77,7 @@ export default function MainNavigator() {
       </AppStack.Navigator>
       <UndoToast />
       <LoaderModal />
+      <AppUpdate />
     </NavigationContainer>
   );
 }

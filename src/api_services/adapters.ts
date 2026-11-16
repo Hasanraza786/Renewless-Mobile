@@ -2,6 +2,7 @@ import { formatAmount, minorDigits } from '../utils/money';
 import { platform_logos } from '../assets/icons';
 import { bundledLogoKey } from '../assets/icons/platform_logos';
 import type {
+  AppConfig,
   CalendarMonth,
   HomeEvent,
   HomePlatformSpend,
@@ -32,6 +33,7 @@ import type {
 } from '../types';
 import { localToday } from '../utils/dates';
 import type {
+  AppConfigDto,
   AlertDto,
   SupportMessageDto,
   CalendarDto,
@@ -524,3 +526,12 @@ export function toSupportMessage(message: SupportMessageDto): SupportMessage {
 export function isAuthExpired(code?: string) {
   return code === 'GMAIL_AUTH_EXPIRED' || code === 'OUTLOOK_AUTH_EXPIRED';
 }
+
+// Admin release notes: one bullet per non-empty line.
+export const toAppConfig = (dto: AppConfigDto): AppConfig => ({
+  latest_version: dto.latestVersion,
+  latest_build: dto.latestBuild,
+  min_build: dto.minBuild,
+  notes: dto.releaseNotes.map(note => note.trim()).filter(Boolean),
+  store_url: dto.storeUrl,
+});

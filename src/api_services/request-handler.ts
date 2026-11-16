@@ -2,6 +2,7 @@ import { ApiError, del, get, patch, post, postLong, put, upload } from './http-p
 import { deviceInfo } from '../utils/device-id';
 import type {
   AiUsageDto,
+  AppConfigDto,
   AlertsDto,
   CalendarDto,
   CategoryDto,
@@ -69,11 +70,15 @@ export const SERVICE_URLS = {
   drafts: '/drafts',
   receipts: '/receipts',
   supportMessages: '/support/messages',
+  appConfig: '/app-config',
 };
 
 const subscription = (id: string, action = '') => `${SERVICE_URLS.subscriptions}/${id}${action}`;
 
 type Id<T = object> = { id: string } & T;
+
+// App config (public, no session): the update prompt's builds and notes for this platform.
+const getAppConfig = (data: { platform: 'ios' | 'android' }) => get<{ appConfig: AppConfigDto | null }>(SERVICE_URLS.appConfig, data);
 
 // Auth
 const signup = (data: { name: string; email: string; password: string; timezone: string }) => post<ChallengeDto>(SERVICE_URLS.signup, data);
@@ -238,6 +243,7 @@ const apiServices = {
   disconnectConnector,
   outlookConnect,
   outlookLogin,
+  getAppConfig,
 };
 
 export default apiServices;

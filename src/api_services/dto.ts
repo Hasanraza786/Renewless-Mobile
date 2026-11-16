@@ -235,3 +235,14 @@ export type SupportMessageDto = {
   unread: boolean;
   replies: { body: string; sentAt: string }[];
 };
+
+// GET /app-config?platform= (public): the newest store build, the oldest build still allowed, and that build's notes.
+// Builds are integers (Android versionCode, iOS CFBundleVersion); latestVersion is only shown. null until the admin sets it.
+export type AppConfigDto = {
+  platform: 'ios' | 'android';
+  latestVersion: string;
+  latestBuild: number;
+  minBuild: number;
+  releaseNotes: string[];
+  storeUrl: string;
+};
