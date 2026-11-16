@@ -10,6 +10,7 @@ import type {
   CandidateDto,
   ConnectorDto,
   OutlookConnectDto,
+  OutlookLoginDto,
   GoogleConnectDto,
   DetailDto,
   HomeDto,
@@ -58,6 +59,7 @@ export const SERVICE_URLS = {
   connectors: '/connectors',
   googleConnect: '/auth/google-connect',
   outlookConnect: '/connectors/outlook',
+  outlookLogin: '/auth/outlook',
   onboardingComplete: '/me/onboarding/complete',
   aiConsent: '/me/ai-consent',
   preferences: '/me/preferences',
@@ -93,7 +95,7 @@ const updateDevice = (data: { timezone?: string; fcmToken?: string | null }) => 
 const savePreferences = (data: { productUpdates: boolean }) => patch<{ user: UserDto }>(SERVICE_URLS.preferences, data);
 const saveAiConsent = (data: { consented: boolean; copyVersion?: string }) => put<{ user: UserDto }>(SERVICE_URLS.aiConsent, data);
 // Google/Apple accounts verify with a fresh provider token; password accounts with the password.
-const deleteMe = (data: { password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string }) => del<{ deleted: true }>(SERVICE_URLS.me, data);
+const deleteMe = (data: { password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string } | { provider: 'microsoft'; code: string; codeVerifier: string; redirectUri: string }) => del<{ deleted: true }>(SERVICE_URLS.me, data);
 
 // Catalog
 const getPlatforms = (data: { q: string }) => get<{ platforms: PlatformDto[] }>(SERVICE_URLS.platforms, data);
@@ -136,6 +138,8 @@ const disconnectConnector = ({ id }: Id) => del<void>(`${SERVICE_URLS.connectors
 
 // Outlook connect (signed in): the backend exchanges the Microsoft code and keeps the refresh token.
 const outlookConnect = (data: { code: string; codeVerifier: string; redirectUri: string }) => post<OutlookConnectDto>(SERVICE_URLS.outlookConnect, data);
+// Continue with Outlook (signed out): the same Microsoft code logs in or opens the account and connects the inbox.
+const outlookLogin = async (data: { code: string; codeVerifier: string; redirectUri: string }) => post<OutlookLoginDto>(SERVICE_URLS.outlookLogin, { ...data, device: await deviceInfo() });
 
 // Gmail connect and scans
 // Another connect for this account or inbox may still be running (409 REQUEST_IN_PROGRESS, retryable): wait and ask
@@ -233,6 +237,7 @@ const apiServices = {
   getConnector,
   disconnectConnector,
   outlookConnect,
+  outlookLogin,
 };
 
 export default apiServices;

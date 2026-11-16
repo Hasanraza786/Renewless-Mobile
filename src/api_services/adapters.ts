@@ -113,7 +113,7 @@ export function toProfile(user: UserDto): Profile {
     phone: user.phone ?? '',
     dateOfBirth: user.dateOfBirth,
     gender: user.gender,
-    provider: user.providers.includes('password') ? 'email' : user.providers[0] === 'apple' ? 'apple' : 'google',
+    provider: user.providers.includes('password') ? 'email' : user.providers[0] === 'apple' || user.providers[0] === 'microsoft' ? user.providers[0] : 'google',
     hasPassword: user.hasPassword,
     productUpdates: user.productUpdates ?? false,
     revision: user.revision,

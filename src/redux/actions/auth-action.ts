@@ -1,5 +1,5 @@
 import { Alert } from 'react-native';
-import { toProfile } from '../../api_services/adapters';
+import { toInbox, toProfile } from '../../api_services/adapters';
 import type { ChallengeDto, SessionDto } from '../../api_services/dto';
 import type { ApiError } from '../../api_services/http-provider';
 import apiServices from '../../api_services/request-handler';
@@ -10,8 +10,9 @@ import { trackEvent } from '../../utils/analytics';
 import { successHaptic } from '../../utils/haptics';
 import { saveSessionToken } from '../../utils/session-token';
 import { pushToken } from '../../utils/push';
-import { providerSignIn, type ProviderToken } from '../../utils/social-sign-in';
+import { outlookSignIn, providerSignIn, type OutlookGrant, type ProviderToken } from '../../utils/social-sign-in';
 import { endSession } from '../endSession';
+import { INBOX_LIMIT_NOTICE, scannedBeforeNotice } from './gmail-action';
 import { requestHandler, type AppThunk } from '../request-handler';
 import { authError, authLoading } from '../slices/auth-slice';
 import { setSession } from '../slices/constant-slice';
@@ -119,8 +120,40 @@ export function signup(input: { name: string; email: string; password: string },
 
 // Google/Apple: the native sheet, then the backend verifies the ID token and starts the session (no OTP).
 // Closing the sheet keeps the person on the screen they started from.
+// Continue with Outlook/Hotmail: one Microsoft sign-in logs in or opens the account and connects that inbox. The
+// server's message covers EMAIL_TAKEN (another sign-in owns that address) and OUTLOOK_NO_MAILBOX. A closed sheet does nothing.
+function outlookLogin(intent: AuthIntent | undefined): AppThunk {
+  return async dispatch => {
+    trackEvent('outlook_connect_tapped', { from: 'login' });
+    let grant: OutlookGrant | null;
+    try {
+      grant = await outlookSignIn();
+    } catch {
+      Alert.alert('Outlook sign-in didn’t work. Please try again.');
+      return;
+    }
+    if (!grant) return;
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.outlookLogin,
+        param_data: grant,
+        setLoading: authLoading('social'),
+        endOnUnauthorized: false,
+        onDone: async session => {
+          trackEvent(session.isNewUser ? 'sign_up' : 'login', { method: 'microsoft' });
+          await dispatch(startSession(session, intent));
+          if (session.inboxLimit) dispatch(setNotice(INBOX_LIMIT_NOTICE));
+          else if (session.scannedBefore && session.connector) dispatch(setNotice(scannedBeforeNotice(toInbox(session.connector))));
+        },
+        onError: error => Alert.alert(error.message),
+      }),
+    );
+  };
+}
+
 export function socialLogin(provider: AuthProvider, intent: AuthIntent | undefined): AppThunk {
   return async dispatch => {
+    if (provider === 'microsoft') return dispatch(outlookLogin(intent));
     const label = provider === 'google' ? 'Google' : 'Apple';
     let token: ProviderToken | null;
     try {

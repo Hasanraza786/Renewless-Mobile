@@ -76,9 +76,7 @@ export function useAuthForm<K extends AuthField>(fields: K[], initial: Partial<R
   return { form_data: latest.current, errors, setErrors, validateAll, fieldProps, focusField };
 }
 
-// After authentication: the Add form for manual entry or AI chat for Add with AI (above Home), onboarding's Connect inbox
-// to continue with Outlook, otherwise Home.
+// After authentication: the Add form for manual entry or AI chat for Add with AI (above Home), otherwise Home.
 export function enterApp(intent?: AuthIntent) {
-  if (intent === 'connect_outlook') return resetRoot([{ name: 'AuthStack', params: { screen: 'Onboarding', params: { step: 'connectInbox', connect: 'outlook' } } }]);
   resetRoot(intent === 'add_manual' ? [{ name: 'Tabs' }, { name: 'AddSubscription' }] : intent === 'add_ai' ? [{ name: 'Tabs' }, { name: 'AiChat' }] : [{ name: 'Tabs' }]);
 }

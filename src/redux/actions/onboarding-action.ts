@@ -1,4 +1,5 @@
 import { fromScanCandidate, isAuthExpired, toInbox, toProfile, toScanCandidate, toScanStatus } from '../../api_services/adapters';
+import type { OutlookConnectDto, OutlookLoginDto } from '../../api_services/dto';
 import apiServices from '../../api_services/request-handler';
 import type { ScanCandidate } from '../../types';
 import { gmailSignIn, outlookSignIn, type GmailGrant, type OutlookGrant } from '../../utils/social-sign-in';
@@ -25,6 +26,7 @@ const SIGN_IN_CANCELLED = 'Sign-in was cancelled. You can try again or add subsc
 const GMAIL_DENIED = 'You’re signed in. Allow Gmail access to scan, or add subscriptions manually.';
 const OUTLOOK_DENIED = 'You’re signed in. Allow Outlook access to scan, or add subscriptions manually.';
 const CONNECT_FAILED = 'We couldn’t connect this inbox. Try again or add subscriptions manually.';
+const INBOX_LIMIT_SIGNED_IN = 'You’re signed in. You’ve used your 2 inboxes, so this one wasn’t connected.';
 const SAVE_FAILED = 'Couldn’t save your subscriptions. Please try again.';
 
 // The first scan of an inbox reads a year of receipts. An inbox this account synced this week answers SYNC_LIMIT:
@@ -102,10 +104,11 @@ export function connectOnboardingGoogle(onDiscovering: () => void, onScannedBefo
   };
 }
 
-// Signed in (after Sign up for Continue with Outlook): the Microsoft sheet, then the backend exchanges the code and the
-// first scan starts. Same outcomes as connectOnboardingGoogle; a closed sheet says so and stays on Connect.
+// One Microsoft sign-in, like Connect Gmail and Login: signed out it logs in or opens the account (POST /auth/outlook),
+// signed in it adds the inbox (POST /connectors/outlook); then the first scan starts. A closed sheet says so and stays.
 export function connectOnboardingOutlook(onDiscovering: () => void, onScannedBefore: () => void): AppThunk {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const signed_in = !!getState().constant.token;
     trackEvent('outlook_connect_tapped', { from: 'onboarding' });
     dispatch(setConnectMessage(''));
     let grant: OutlookGrant | null;
@@ -121,10 +124,20 @@ export function connectOnboardingOutlook(onDiscovering: () => void, onScannedBef
     }
     await dispatch(
       requestHandler({
-        apiService: apiServices.outlookConnect,
+        apiService: (data: OutlookGrant): Promise<OutlookConnectDto | OutlookLoginDto> => (signed_in ? apiServices.outlookConnect(data) : apiServices.outlookLogin(data)),
         param_data: grant,
         setLoading: setConnectLoading,
+        endOnUnauthorized: false,
         onDone: async result => {
+          if ('token' in result) {
+            await dispatch(beginSession({ token: result.token, user: result.user }));
+            trackEvent(result.isNewUser ? 'sign_up' : 'login', { method: 'microsoft' });
+          }
+          // Signing in still works when the account already has 2 inboxes; only the connect is missing.
+          if (!result.connector) {
+            dispatch(setConnectMessage(INBOX_LIMIT_SIGNED_IN));
+            return;
+          }
           if (result.scannedBefore) {
             dispatch(setNotice(scannedBeforeNotice(toInbox(result.connector))));
             onScannedBefore();
@@ -140,7 +153,7 @@ export function connectOnboardingOutlook(onDiscovering: () => void, onScannedBef
           );
           if (!ended) onDiscovering();
         },
-        onError: error => dispatch(setConnectMessage(error.code === 'OUTLOOK_ACCESS_DENIED' ? OUTLOOK_DENIED : error.code === 'GMAIL_INBOX_LIMIT' ? error.message : CONNECT_FAILED)),
+        onError: error => dispatch(setConnectMessage(error.code === 'OUTLOOK_ACCESS_DENIED' ? OUTLOOK_DENIED : ['GMAIL_INBOX_LIMIT', 'EMAIL_TAKEN', 'OUTLOOK_NO_MAILBOX'].includes(error.code) ? error.message : CONNECT_FAILED)),
       }),
     );
   };

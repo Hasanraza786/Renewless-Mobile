@@ -2,14 +2,13 @@ import { appleAuth } from '@invertase/react-native-apple-authentication';
 import { GoogleSignin, isErrorWithCode, isSuccessResponse, statusCodes } from '@react-native-google-signin/google-signin';
 import { authorize } from 'react-native-app-auth';
 import Config from 'react-native-config';
-import type { AuthProvider } from '../types';
 
 // iOS reads its client ID from GoogleService-Info.plist; the web client ID is the token audience the backend accepts.
 const LOGIN_CONFIG = { webClientId: Config.GOOGLE_WEB_CLIENT_ID };
 GoogleSignin.configure(LOGIN_CONFIG);
 const GMAIL_SCOPE = 'https://www.googleapis.com/auth/gmail.readonly';
 
-export type ProviderToken = { provider: AuthProvider; idToken: string; nonce?: string; name?: string };
+export type ProviderToken = { provider: 'google' | 'apple'; idToken: string; nonce?: string; name?: string };
 
 // The native Google sheet. Only the ID token is kept; the SDK session is dropped so the next sign-in can pick another account.
 async function google(): Promise<ProviderToken | null> {
@@ -41,7 +40,7 @@ async function apple(): Promise<ProviderToken | null> {
 }
 
 // null when the person closes the provider sheet: they stay on the screen they started from.
-export function providerSignIn(provider: AuthProvider) {
+export function providerSignIn(provider: 'google' | 'apple') {
   return provider === 'google' ? google() : apple();
 }
 

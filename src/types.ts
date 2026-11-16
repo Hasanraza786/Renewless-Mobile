@@ -516,8 +516,7 @@ export type GoogleConnection =
 
 export type AuthStackParamList = {
   Splash: undefined;
-  // connect: after Sign up for Continue with Outlook, Connect inbox opens the Microsoft sheet by itself once.
-  Onboarding: { step?: OnboardingStep; connect?: 'outlook' } | undefined;
+  Onboarding: { step?: OnboardingStep } | undefined;
   Login: { intent?: AuthIntent } | undefined;
   Signup: { intent?: AuthIntent } | undefined;
   ForgotPassword: undefined;
@@ -526,10 +525,9 @@ export type AuthStackParamList = {
   ResetPassword: { reset_token: string };
 };
 
-// Where the user goes after authenticating: the Add form for manual entry, AI chat for Add with AI, back to onboarding's
-// Connect inbox for Continue with Outlook (Microsoft sign-in is not an app login), otherwise Home.
-export type AuthIntent = 'add_manual' | 'add_ai' | 'connect_outlook';
-export type AuthProvider = 'google' | 'apple';
+// Where the user goes after authenticating: the Add form for manual entry, AI chat for Add with AI, otherwise Home.
+export type AuthIntent = 'add_manual' | 'add_ai';
+export type AuthProvider = 'google' | 'apple' | 'microsoft';
 
 export type TabParamList = {
   // Settings › Add the widget opens the add-widget prompt; the value is a timestamp so each tap reopens it.

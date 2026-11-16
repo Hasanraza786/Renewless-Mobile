@@ -81,7 +81,7 @@ export function ConnectInboxBody({ onboarding }: Props) {
         text={
           onboarding.signed_in
             ? 'You’re already signed in. We’ll ask permission to find subscriptions in your inbox.'
-            : 'Gmail also signs you in with Google. With Outlook, you’ll create your Renewless account first.'
+            : 'We’ll use your Google or Microsoft account to sign you in and ask permission to find subscriptions in your inbox.'
         }
         weight={FONTS.regular}
         color={COLORS.text_secondary}

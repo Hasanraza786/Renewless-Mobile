@@ -8,7 +8,7 @@ export type UserDto = {
   name: string;
   email: string;
   emailVerified: boolean;
-  providers: ('password' | 'google' | 'apple')[];
+  providers: ('password' | 'google' | 'apple' | 'microsoft')[];
   hasPassword: boolean;
   phone: string | null;
   dateOfBirth: string | null;
@@ -142,6 +142,8 @@ export type AlertsDto = { items: AlertDto[]; total: number; nextCursor: string |
 export type ConnectorDto = { id: string; email: string; provider?: InboxProvider; status: 'connected' | 'reconnect_needed' | 'disconnected'; lastSuccessfulSyncAt: string | null; nextSyncAt: string | null; importedCount?: number };
 
 export type OutlookConnectDto = { connector: ConnectorDto; scannedBefore: boolean };
+// Continue with Outlook: logs in or opens the account and connects that inbox; connector is null when inboxLimit.
+export type OutlookLoginDto = SessionDto & { isNewUser: boolean; inboxLimit: boolean; scannedBefore: boolean; connector: ConnectorDto | null };
 
 // Google sign-in plus the Gmail grant; a token comes back only when the app had no session.
 // scannedBefore: a deleted account already read this inbox, so no first scan runs.

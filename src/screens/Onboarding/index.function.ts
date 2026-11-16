@@ -50,7 +50,6 @@ export default function useOnboarding(route: Route) {
   const [step, setStep] = useState<OnboardingStep>(route.params?.step ?? 'welcome');
   // Which provider button started the running connect (its label says Connecting…).
   const [connect_provider, setConnectProvider] = useState<InboxProvider>('gmail');
-  const outlook_resumed = useRef(false);
   const [animating, setAnimating] = useState(false);
   const [panel_width, setPanelWidth] = useState(0);
   const [reduce_motion, setReduceMotion] = useState(false);
@@ -140,14 +139,6 @@ export default function useOnboarding(route: Route) {
 
   const openScan = () => goTo('discovering');
 
-  // Back from Sign up for Continue with Outlook: the Microsoft sheet opens once, as the user asked.
-  useEffect(() => {
-    if (route.params?.connect !== 'outlook' || !signed_in || outlook_resumed.current) return;
-    outlook_resumed.current = true;
-    setConnectProvider('outlook');
-    dispatch(connectOnboardingOutlook(() => goTo('discovering'), () => dispatch(finishOnboarding(() => resetRoot([{ name: 'Tabs' }])))));
-  }, [dispatch, goTo, route.params?.connect, signed_in]);
-
   // A network failure retries with the existing Gmail grant; lost access goes back to Connect.
   const retryScan = () => {
     if (scan_failure === 'access' || !connector_id) return goTo('connectInbox', -1);
@@ -162,9 +153,8 @@ export default function useOnboarding(route: Route) {
     setConnectProvider('gmail');
     dispatch(connectOnboardingGoogle(openScan, openDashboard));
   };
-  // Microsoft sign-in is not an app login: signed out, Sign up comes first and returns here (connect: 'outlook').
+  // One Microsoft sign-in logs in (or opens the account) and connects the inbox, like Connect Gmail and Login.
   const connectOutlook = () => {
-    if (!signed_in) return navigate('Signup', { intent: 'connect_outlook' });
     setConnectProvider('outlook');
     dispatch(connectOnboardingOutlook(openScan, openDashboard));
   };

@@ -11,7 +11,7 @@ import { money } from '../../utils/money';
 import { PRIVACY_URL, TERMS_URL, openLegal } from '../../config/legal';
 import type { InboxProvider, ProfileInbox } from '../../types';
 
-export const PROVIDER_LABEL = { email: 'Email', google: 'Google', apple: 'Apple' } as const;
+export const PROVIDER_LABEL = { email: 'Email', google: 'Google', apple: 'Apple', microsoft: 'Outlook' } as const;
 
 export const initials = (name: string) =>
   name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(word => word[0]).join('').toUpperCase() || 'R';
@@ -49,7 +49,7 @@ export default function useProfile() {
   const delete_ready = delete_text.trim() === 'DELETE' && (!needs_password || !!delete_password);
   // A wrong password says so; other failures keep the general message.
   const delete_error = !error ? '' : needs_password ? error : 'We couldn’t delete your account. Please try again.';
-  const provider_name = user?.provider === 'apple' ? 'Apple' : 'Google';
+  const provider_name = PROVIDER_LABEL[user?.provider ?? 'google'];
 
   const notice = (text: string) => dispatch(setNotice(text));
 

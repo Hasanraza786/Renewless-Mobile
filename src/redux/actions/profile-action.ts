@@ -7,7 +7,7 @@ import { requestHandler, type AppThunk } from '../request-handler';
 import { setUser } from '../slices/constant-slice';
 import { setDeleteStep, setNotice, setOverview, setOverviewError, setOverviewLoading, setProfileError, setProfileLoading, setProfileUser } from '../slices/profile-slice';
 import { trackEvent } from '../../utils/analytics';
-import { providerSignIn } from '../../utils/social-sign-in';
+import { providerSignIn, outlookSignIn } from '../../utils/social-sign-in';
 import type { Profile } from '../../types';
 
 // Connected inboxes and all-time confirmed payment totals per currency.
@@ -76,13 +76,19 @@ export function changeProductUpdates(on: boolean): AppThunk {
   };
 }
 
-// Deletion ends the session locally only after the server confirms it. A Google/Apple account first verifies
-// its sign-in in the provider sheet; closing the sheet keeps the dialog open.
+// Deletion ends the session locally only after the server confirms it. A Google/Apple/Outlook account first verifies
+// its sign-in in the provider sheet (Outlook: a fresh Microsoft sign-in); closing the sheet keeps the dialog open.
 // A password account sends the password typed in the dialog.
 export function deleteAccount(provider: Profile['provider'], password: string): AppThunk {
   return async dispatch => {
-    let verification: { password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string } = { password };
-    if (provider !== 'email') {
+    let verification: Parameters<typeof apiServices.deleteMe>[0] = { password };
+    if (provider === 'microsoft') {
+      dispatch(setDeleteStep('verifying'));
+      const grant = await outlookSignIn().catch(() => null);
+      dispatch(setDeleteStep(''));
+      if (!grant) return;
+      verification = { provider, ...grant };
+    } else if (provider !== 'email') {
       dispatch(setDeleteStep('verifying'));
       const token = await providerSignIn(provider).catch(() => null);
       dispatch(setDeleteStep(''));

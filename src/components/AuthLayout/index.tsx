@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, View, type StyleProp, type ViewStyle } from 'react-native';
-import { apple_icon, back_icon, google_icon, logo_mark } from '../../assets/icons';
+import { apple_icon, back_icon, google_icon, logo_mark, outlook_logo } from '../../assets/icons';
 import { COLORS, FONTS, SIZES, behavior } from '../../constants/theme';
 import type { AuthProvider } from '../../types';
 import Container from '../Container';
@@ -69,12 +69,16 @@ export function AuthDivider({ style }: { style: StyleProp<ViewStyle> }) {
   );
 }
 
+// The official Outlook icon at the 20pt size of the other social icons.
+const OUTLOOK_SOCIAL_ICON = outlook_logo.replace('width="31" height="31"', 'width="20" height="20"');
+
 export function SocialButtons({ onPress, disabled }: { onPress: (provider: AuthProvider) => void; disabled?: boolean }) {
   return (
     <View style={styles.social}>
       <CustomButton variant="social" icon={google_icon} text="Continue with Google" disabled={disabled} onPress={() => onPress('google')} />
       {/* Sign in with Apple is iOS only; Android has no Apple flow. */}
       {Platform.OS === 'ios' ? <CustomButton variant="social" icon={apple_icon} text="Continue with Apple" disabled={disabled} onPress={() => onPress('apple')} /> : null}
+      <CustomButton variant="social" icon={OUTLOOK_SOCIAL_ICON} text="Continue with Outlook/Hotmail" disabled={disabled} onPress={() => onPress('microsoft')} />
     </View>
   );
 }
