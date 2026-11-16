@@ -1,4 +1,4 @@
-import { getInitialNotification, getMessaging, getToken, onNotificationOpenedApp, onTokenRefresh } from '@react-native-firebase/messaging';
+import { deleteToken, getInitialNotification, getMessaging, getToken, onNotificationOpenedApp, onTokenRefresh } from '@react-native-firebase/messaging';
 import { requestNotifications, RESULTS } from 'react-native-permissions';
 import { navigate } from '../navigation/service';
 import { getSupportMessages } from '../redux/actions/support-action';
@@ -13,6 +13,9 @@ export async function pushToken() {
   if (status !== RESULTS.GRANTED && status !== RESULTS.LIMITED) return null;
   return getToken(messaging).catch(() => null);
 }
+
+// On sign-out the token dies with the session, even offline, so the old account's reminders stop arriving here.
+export const forgetPushToken = () => deleteToken(messaging).catch(() => undefined);
 
 // An admin push names the screen it opens (api-mobile-contract.md#admin-push-payload); unknown opens Home.
 const ADMIN_SCREENS = { home: 'Home', add_subscription: 'AddSubscription', inboxes: 'Profile', help_support: 'HelpSupport' } as const;

@@ -1,5 +1,4 @@
-import { Fragment } from 'react';
-import { ScrollView, View } from 'react-native';
+import { SectionList, View } from 'react-native';
 import { filter_icon, sort_icon } from '../../assets/icons';
 import AddSheet from '../../components/AddSheet';
 import Container from '../../components/Container';
@@ -56,65 +55,74 @@ export default function ListScreen({ route }: { route: ListRoute }) {
         <Empty list={list} account />
       ) : (
         // scrollableAxes: the floating tab bar inset at the bottom, no second top inset under the fixed header.
-        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled" contentInsetAdjustmentBehavior="scrollableAxes" contentContainerStyle={styles.content}>
-          <InputField
-            variant="sheet"
-            label="Search"
-            value={list.query}
-            onChangeText={list.setQuery}
-            placeholder="Search subscriptions"
-            returnKeyType="search"
-          />
-
-          <SizedBox height={SIZES.padding2} />
-
-          <RowView justify_content="space-between">
-            <RowView accessibilityRole="button" accessibilityLabel={`Sort by, ${list.sort_label}`} gap={SIZES.padding * 0.35} onPress={() => list.setDialog('sort')} style={styles.tool}>
-              <Icons name={sort_icon} />
-              <View>
-                <CustomText text="Sort by" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-                <CustomText text={list.sort_label} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
-              </View>
-            </RowView>
-            <RowView
-              accessibilityRole="button"
-              accessibilityLabel={`Status filters${list.groups.length ? `, ${list.groups.length} selected` : ''}`}
-              gap={SIZES.padding * 0.35}
-              onPress={() => list.setDialog('filters')}
-              style={styles.tool}>
-              <Icons name={filter_icon} />
-              <CustomText text="Status filters" weight={FONTS.regular} size={SIZES.sm} />
-              {list.groups.length ? (
-                <View style={styles.badge}>
-                  <CustomText text={String(list.groups.length)} color={COLORS.background} size={SIZES.xs} line_height={null} />
-                </View>
-              ) : null}
-            </RowView>
-          </RowView>
-          <RowView justify_content="space-between" style={styles.count}>
-            <CustomText text={`${list.matching_count} ${list.query.trim() ? 'result' : 'subscription'}${list.matching_count === 1 ? '' : 's'}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-            <CustomText text={dateLabel(list.today)} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-          </RowView>
-          {list.matching_count ? (
-            list.sections.map(section => (
-              <Fragment key={section.title ?? 'all'}>
-                {section.title ? <CustomText mt={SIZES.padding2} mb={SIZES.padding3} text={section.title} size={SIZES.lg} accessibility_role="header" /> : null}
-                <View style={styles.rows}>
-                  {section.records.map((record, index) => (
-                    <View key={record.id} style={index < section.records.length - 1 && styles.divider}>
-                      <SubscriptionCard {...recordCardProps(record, list.today)} onPress={() => list.open(record)} />
-                    </View>
-                  ))}
-                </View>
-              </Fragment>
-            ))
-          ) : (
-            <Empty list={list} account={false} />
+        // SectionList renders only the rows on screen, so 500+ records stay smooth on low-end Android.
+        <SectionList
+          sections={list.matching_count ? list.sections : []}
+          keyExtractor={record => record.id}
+          stickySectionHeadersEnabled={false}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          contentInsetAdjustmentBehavior="scrollableAxes"
+          contentContainerStyle={styles.content}
+          renderSectionHeader={({ section }) => (section.title ? <CustomText mt={SIZES.padding2} mb={SIZES.padding3} text={section.title} size={SIZES.lg} accessibility_role="header" /> : null)}
+          // Each section reads as one card: its first and last rows carry the rounded corners.
+          renderItem={({ item, index, section }) => (
+            <View style={[styles.row, index === 0 && styles.row_first, index === section.data.length - 1 ? styles.row_last : styles.divider]}>
+              <SubscriptionCard {...recordCardProps(item, list.today)} onPress={() => list.open(item)} />
+            </View>
           )}
-        </ScrollView>
+          ListHeaderComponent={<ListTools list={list} />}
+          ListEmptyComponent={<Empty list={list} account={false} />}
+        />
       )}
       <ListDialogs list={list} />
       <AddSheet visible={list.add_open} onClose={list.closeAdd} />
     </Container>
+  );
+}
+
+// Search, sort, filters and the count scroll above the rows.
+function ListTools({ list }: { list: ListController }) {
+  return (
+    <>
+      <InputField
+        variant="sheet"
+        label="Search"
+        value={list.query}
+        onChangeText={list.setQuery}
+        placeholder="Search subscriptions"
+        returnKeyType="search"
+      />
+
+      <SizedBox height={SIZES.padding2} />
+
+      <RowView justify_content="space-between">
+        <RowView accessibilityRole="button" accessibilityLabel={`Sort by, ${list.sort_label}`} gap={SIZES.padding * 0.35} onPress={() => list.setDialog('sort')} style={styles.tool}>
+          <Icons name={sort_icon} />
+          <View>
+            <CustomText text="Sort by" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+            <CustomText text={list.sort_label} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+          </View>
+        </RowView>
+        <RowView
+          accessibilityRole="button"
+          accessibilityLabel={`Status filters${list.groups.length ? `, ${list.groups.length} selected` : ''}`}
+          gap={SIZES.padding * 0.35}
+          onPress={() => list.setDialog('filters')}
+          style={styles.tool}>
+          <Icons name={filter_icon} />
+          <CustomText text="Status filters" weight={FONTS.regular} size={SIZES.sm} />
+          {list.groups.length ? (
+            <View style={styles.badge}>
+              <CustomText text={String(list.groups.length)} color={COLORS.background} size={SIZES.xs} line_height={null} />
+            </View>
+          ) : null}
+        </RowView>
+      </RowView>
+      <RowView justify_content="space-between" style={styles.count}>
+        <CustomText text={`${list.matching_count} ${list.query.trim() ? 'result' : 'subscription'}${list.matching_count === 1 ? '' : 's'}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        <CustomText text={dateLabel(list.today)} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      </RowView>
+    </>
   );
 }

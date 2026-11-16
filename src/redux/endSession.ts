@@ -3,6 +3,7 @@ import type { ThunkAction } from '@reduxjs/toolkit';
 import type { RootState } from '../types';
 import { clearWidgetSnapshot } from '../utils/widget';
 import { clearSessionToken } from '../utils/session-token';
+import { forgetPushToken } from '../utils/push';
 import { resetRoot } from '../navigation/service';
 import { resetAuth } from './slices/auth-slice';
 import { clearSession } from './slices/constant-slice';
@@ -20,6 +21,7 @@ export function endSession(): ThunkAction<void, RootState, undefined, UnknownAct
   return dispatch => {
     clearWidgetSnapshot();
     clearSessionToken();
+    forgetPushToken();
     dispatch(clearSession());
     dispatch(resetProfile());
     dispatch(resetDashboard());

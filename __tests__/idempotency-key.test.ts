@@ -36,3 +36,10 @@ test('an upload sends the file bytes as they are, not as JSON', async () => {
   const config = mockRequest.mock.calls[0][0];
   expect(config.transformRequest.map((transform: (data: unknown) => unknown) => transform(file))).toEqual([file]);
 });
+
+test('a 409 REQUEST_IN_PROGRESS keeps the key, so the Retry cannot save a duplicate', async () => {
+  mockRequest.mockRejectedValueOnce(new ApiError(409, 'REQUEST_IN_PROGRESS', 'busy')).mockResolvedValue({ data: {} });
+  await expect(post('/subscriptions', { name: 'Max' }, true)).rejects.toMatchObject({ code: 'REQUEST_IN_PROGRESS' });
+  await post('/subscriptions', { name: 'Max' }, true);
+  expect(sentKey(1)).toBe(sentKey(0));
+});

@@ -79,6 +79,11 @@ export function connectOnboardingGoogle(onDiscovering: () => void, onScannedBefo
           // An existing app session is never replaced by another inbox's identity.
           if (result.token) await dispatch(beginSession({ token: result.token, user: result.user }));
           else dispatch(setProfileUser(toProfile(result.user)));
+          // Signed out into an account that already has 2 inboxes: signed in, but this inbox was not connected.
+          if (result.inboxLimit) {
+            dispatch(setConnectMessage(INBOX_LIMIT_SIGNED_IN));
+            return;
+          }
           if (!result.gmailGranted || !result.connector) {
             dispatch(setConnectMessage(GMAIL_DENIED));
             return;

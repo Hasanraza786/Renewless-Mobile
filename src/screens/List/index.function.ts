@@ -34,7 +34,8 @@ export default function useList(route: ListRoute) {
 
   const all = useMemo(() => records ?? [], [records]);
   const matching = useMemo(() => filterRecords(all, query, groups, today), [all, groups, query, today]);
-  const sections = useMemo(() => sortRecords(matching, sort, today), [matching, sort, today]);
+  // SectionList shape: only on-screen rows render, so 500+ records stay smooth on low-end Android.
+  const sections = useMemo(() => sortRecords(matching, sort, today).map(section => ({ title: section.title, data: section.records })), [matching, sort, today]);
   // Counts are global: every record before search or status filtering.
   const counts = useMemo(() => groupCounts(all, today), [all, today]);
 

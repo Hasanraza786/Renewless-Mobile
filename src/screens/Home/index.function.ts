@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, AppState } from 'react-native';
 import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { syncAiConsent } from '../../redux/actions/ai-action';
-import { registerPush, savePushToken } from '../../redux/actions/auth-action';
+import { registerPush, savePushToken, syncTimezone } from '../../redux/actions/auth-action';
 import { getDashboard } from '../../redux/actions/dashboard-action';
 import { INBOX_LIMIT_NOTICE, MAX_INBOXES, connectInbox, getSyncLockedInbox } from '../../redux/actions/gmail-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
@@ -33,7 +33,11 @@ export default function useHome(route: HomeRoute) {
   // a usable snapshot stays on screen while it reloads.
   useFocusEffect(
     useCallback(() => {
-      const reload = () => dispatch(getDashboard());
+      // The timezone check costs nothing unless the phone moved zones since the last check.
+      const reload = () => {
+        dispatch(getDashboard());
+        dispatch(syncTimezone());
+      };
       reload();
       const app_state = AppState.addEventListener('change', state => state === 'active' && reload());
       const now = new Date();

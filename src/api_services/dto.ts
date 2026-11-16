@@ -147,7 +147,7 @@ export type OutlookLoginDto = SessionDto & { isNewUser: boolean; inboxLimit: boo
 
 // Google sign-in plus the Gmail grant; a token comes back only when the app had no session.
 // scannedBefore: a deleted account already read this inbox, so no first scan runs.
-export type GoogleConnectDto = { token?: string; user: UserDto; isNewUser: boolean; gmailGranted: boolean; scannedBefore: boolean; connector: ConnectorDto | null };
+export type GoogleConnectDto = { token?: string; user: UserDto; isNewUser: boolean; gmailGranted: boolean; inboxLimit: boolean; scannedBefore: boolean; connector: ConnectorDto | null };
 
 export type CandidateDto = {
   id: string;

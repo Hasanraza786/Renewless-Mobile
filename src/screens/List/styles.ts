@@ -30,10 +30,17 @@ export const styles = StyleSheet.create({
     marginBottom: SIZES.padding * 0.45,
     marginTop: SIZES.padding / 2,
   },
-  rows: {
+  row: {
     backgroundColor: COLORS.card,
-    borderRadius: SIZES.padding * 0.8,
     overflow: 'hidden',
+  },
+  row_first: {
+    borderTopLeftRadius: SIZES.padding * 0.8,
+    borderTopRightRadius: SIZES.padding * 0.8,
+  },
+  row_last: {
+    borderBottomLeftRadius: SIZES.padding * 0.8,
+    borderBottomRightRadius: SIZES.padding * 0.8,
   },
   divider: {
     borderBottomColor: COLORS.line_quiet,

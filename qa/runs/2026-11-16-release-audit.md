@@ -18,6 +18,19 @@ All seven blockers below are closed or in progress. A release build still has to
 | B6 | Google OAuth verification submitted with demo video and demo account | Waiting for Google |
 | B7 | `MICROSOFT_CLIENT_ID` and `MICROSOFT_REDIRECT_URIS` (`com.renewless://oauth/outlook`) set on the VM | Match the app |
 
+Mobile findings fixed the same day (unit tests and typecheck; not yet run on a device):
+
+| # | Status |
+|---|---|
+| M19 | Only `UNAUTHORIZED` and `ACCOUNT_DISABLED` end the session (`request-handler.test.ts`) |
+| M20 | endSession deletes the FCM token, offline too |
+| M21 | requestHandler drops a response or error when the session token changed while it was in flight (`request-handler.test.ts`) |
+| M22 | The idempotency key survives a 409 `REQUEST_IN_PROGRESS` (`idempotency-key.test.ts`) |
+| M23 | Widget links accept only word-character ids and never decode (`widget.test.ts`) |
+| M25 | Home sends the phone's timezone on start and on return when it differs from the account's. Reminder settings still shows the device zone |
+| M26 | Onboarding Google connect shows the signed-in inbox-limit message when `inboxLimit` is true |
+| M28 | List renders with SectionList, so only the rows on screen are drawn. All pages are still fetched up front, which is bounded by the 500-record cap |
+
 ## 1. Verdict (before fixes)
 
 | Store | Verdict | Reason |

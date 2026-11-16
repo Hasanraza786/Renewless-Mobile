@@ -6,7 +6,7 @@ import { deleteAccount } from '../src/redux/actions/profile-action';
 
 jest.mock('../src/config/api', () => ({ API_BASE_URL: '' }));
 jest.mock('../src/navigation/service', () => ({ navigate: jest.fn(), popTo: jest.fn(), goBack: jest.fn(), resetRoot: jest.fn() }));
-jest.mock('../src/utils/session-token', () => ({ saveSessionToken: jest.fn(), clearSessionToken: jest.fn() }));
+jest.mock('../src/utils/session-token', () => ({ saveSessionToken: jest.fn(), clearSessionToken: jest.fn(), sessionToken: () => null }));
 const mockTrack = jest.fn();
 jest.mock('../src/utils/analytics', () => ({ trackEvent: (...args: unknown[]) => mockTrack(...args) }));
 const mockOutlookSignIn = jest.fn();

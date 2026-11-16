@@ -65,10 +65,11 @@ export function pinWidget(): Promise<boolean> {
 // Widget taps: renewless://subscription/<id> opens Detail, renewless://home opens Home. Signed out, the URL is ignored.
 export function openWidgetUrl(url: string | null | undefined, signed_in: boolean) {
   if (!url || !signed_in) return;
-  const match = /^renewless:\/\/subscription\/([^/?#]+)$/.exec(url);
+  // Ids are plain word characters; anything else (a malformed %-escape included) is ignored, never decoded.
+  const match = /^renewless:\/\/subscription\/([\w-]+)$/.exec(url);
   if (match) {
     trackEvent('widget_opened', { target: 'subscription' });
-    navigate('SubscriptionDetail', { id: decodeURIComponent(match[1]) });
+    navigate('SubscriptionDetail', { id: match[1] });
   } else if (url === 'renewless://home') {
     trackEvent('widget_opened', { target: 'home' });
     navigate('Home');

@@ -30,6 +30,26 @@ export function beginSession(session: SessionDto): AppThunk {
     dispatch(setProfileUser(user));
     // Reminders are sent in the account timezone; keep it in step with the phone.
     if (session.user.timezone !== timezone()) dispatch(requestHandler({ apiService: apiServices.updateDevice, param_data: { timezone: timezone() } }));
+    synced_timezone = timezone();
+  };
+}
+
+// The phone's zone last confirmed with the server; a traveller's new zone is sent on app start and on return.
+let synced_timezone: string | null = null;
+
+export function syncTimezone(): AppThunk {
+  return async dispatch => {
+    const zone = timezone();
+    if (zone === synced_timezone) return;
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.getMe,
+        onDone: ({ user }) => {
+          if (user.timezone === zone) synced_timezone = zone;
+          else dispatch(requestHandler({ apiService: apiServices.updateDevice, param_data: { timezone: zone }, onDone: () => (synced_timezone = zone) }));
+        },
+      }),
+    );
   };
 }
 

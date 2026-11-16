@@ -53,8 +53,8 @@ async function request<T>(config: AxiosRequestConfig & { idempotent?: boolean })
     pending_keys.delete(action);
     return response.data;
   } catch (error) {
-    // No answer or a server failure may still have saved it, so the next Retry keeps the key.
-    if (error instanceof ApiError && error.status > 0 && error.status < 500) pending_keys.delete(action);
+    // No answer, a server failure or the first try still running may still save it, so the next Retry keeps the key.
+    if (error instanceof ApiError && error.status > 0 && error.status < 500 && error.code !== 'REQUEST_IN_PROGRESS') pending_keys.delete(action);
     throw error;
   }
 }

@@ -16,6 +16,7 @@ describe('widget links', () => {
   it('ignores signed-out taps and unknown links', () => {
     openWidgetUrl('renewless://subscription/sub_42', false);
     openWidgetUrl('renewless://subscription/a/b', true);
+    openWidgetUrl('renewless://subscription/%E0%A4%A', true);
     openWidgetUrl('https://example.com', true);
     openWidgetUrl(null, true);
     expect(navigate).not.toHaveBeenCalled();
