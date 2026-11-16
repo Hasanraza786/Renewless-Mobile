@@ -63,7 +63,7 @@ export type DetailDto = SummaryDto & {
   manageUrl: string | null;
   reminder: { offsets: number[]; custom: boolean };
   source: {
-    type: 'manual' | 'ai' | 'gmail';
+    type: 'manual' | 'ai' | 'gmail' | 'outlook';
     email: string;
     connector: { id: string; email: string; provider?: InboxProvider; status: string; lastSuccessfulSyncAt: string | null } | null;
   };
@@ -111,7 +111,7 @@ export type PaymentsSummaryDto = { totals: MoneyDto[]; count: number };
 
 export type PriceHistoryDto = {
   current: { price: MoneyDto; cycle: CycleDto };
-  changes: { id: string; old: { price: MoneyDto; cycle: CycleDto }; new: { price: MoneyDto; cycle: CycleDto }; reason: 'price_change' | 'correction'; effectiveDate: string | null; recordedAt: string; source: 'user' | 'gmail' }[];
+  changes: { id: string; old: { price: MoneyDto; cycle: CycleDto }; new: { price: MoneyDto; cycle: CycleDto }; reason: 'price_change' | 'correction'; effectiveDate: string | null; recordedAt: string; source: 'user' | 'gmail' | 'outlook' }[];
 };
 
 export type ReminderSettingsDto = {

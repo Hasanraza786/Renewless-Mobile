@@ -36,10 +36,10 @@
     "semantic_hash": "3558da132e3915da104c6ac3ccec99d6"
   },
   "__tests__/adapters.test.ts": {
-    "mtime": 1794748107.4350507,
-    "seen": 1794832885.9764962,
-    "ast_hash": "ebe561e92d104550c073fd3472d10204",
-    "semantic_hash": "ebe561e92d104550c073fd3472d10204"
+    "mtime": 1794856873.4930317,
+    "seen": 1794856889.39968,
+    "ast_hash": "c028b5a9f865156fb26c59aff9b93154",
+    "semantic_hash": ""
   },
   "__tests__/ai-consent.test.ts": {
     "mtime": 1794591732.0305912,
@@ -402,15 +402,15 @@
     "semantic_hash": "6705fc7359a33211606c594655ce95ce"
   },
   "src/api_services/adapters.ts": {
-    "mtime": 1794840932.1429887,
-    "seen": 1794854709.784547,
-    "ast_hash": "43b387b12221b80e628c0ca2455a5f49",
+    "mtime": 1794856864.4163587,
+    "seen": 1794856889.399722,
+    "ast_hash": "bf9bcaf36a917f8effb80bba7ff1992e",
     "semantic_hash": ""
   },
   "src/api_services/dto.ts": {
-    "mtime": 1794854066.6630466,
-    "seen": 1794854709.784548,
-    "ast_hash": "0c02d91e82aee77037e80bfda8a360fe",
+    "mtime": 1794856205.2131193,
+    "seen": 1794856889.399723,
+    "ast_hash": "cbc8a211b0d452cd4723e310a7e7ae3d",
     "semantic_hash": ""
   },
   "src/api_services/http-provider.ts": {
@@ -2154,9 +2154,9 @@
     "semantic_hash": "b5783f87a2a7475a698005e681560a34"
   },
   "AGENTS.md": {
-    "mtime": 1794836567.270532,
-    "seen": 1794838997.908025,
-    "ast_hash": "09183820d126b9213efe38005fd373cb",
+    "mtime": 1794855016.7775915,
+    "seen": 1794856889.3999,
+    "ast_hash": "5ca10d754eb5302a3483922d23e0ba55",
     "semantic_hash": ""
   },
   "README.md": {
@@ -2172,9 +2172,9 @@
     "semantic_hash": ""
   },
   "qa/runs/2026-11-16-release-audit.md": {
-    "mtime": 1794854427.438678,
-    "seen": 1794854709.7847319,
-    "ast_hash": "77833ba3ae3876bf558b01fae2989f0b",
+    "mtime": 1794856458.325818,
+    "seen": 1794856889.3999019,
+    "ast_hash": "f166cc2fe0707dca2de60c6fbc118d08",
     "semantic_hash": ""
   },
   "src/assets/fonts/OFL.txt": {

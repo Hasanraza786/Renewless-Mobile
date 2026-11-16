@@ -22,6 +22,8 @@ Mobile findings fixed the same day (unit tests and typecheck; not yet run on a d
 
 | # | Status |
 |---|---|
+| M1 | Backend (17 Nov 2026): `POST /uploads` checks consent, the rate limits, a declared size over 14 MB and two uploads in flight per account before `express.raw` reads the body (`uploadGate`); Caddy `max_size` is 15MB (the VM's /etc/caddy/Caddyfile must be updated by hand). The 60-parallel-upload memory test was not run again |
+| M4 | Backend (17 Nov 2026): on start, the server fails every scan created before it started (retryable `INTERNAL`) and drops its half-written results (`failInterruptedScans`), so the app shows Scan · interrupted / Try again instead of Discovering. Relies on the single API process (M35) |
 | M19 | Only `UNAUTHORIZED` and `ACCOUNT_DISABLED` end the session (`request-handler.test.ts`) |
 | M20 | endSession deletes the FCM token, offline too |
 | M21 | requestHandler drops a response or error when the session token changed while it was in flight (`request-handler.test.ts`) |

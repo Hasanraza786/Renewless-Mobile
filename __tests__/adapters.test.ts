@@ -134,3 +134,10 @@ describe('toSupportMessage', () => {
     expect(toSupportMessage({ id: 'm2', topic: 'billing', message: 'Hi there team', status: 'replied', createdAt: '2026-11-10T09:00:00', unread: true, replies: [] })).toMatchObject({ topic: 'other', status: 'replied', unread: true });
   });
 });
+
+test('an inbox import reads as an inbox record whether the backend stores gmail or outlook', () => {
+  const base = { id: 's1', name: 'Max', platformId: null, logoUrl: null, categoryId: null, price: { currency: 'USD', amount: '9.99' }, cycle: 'monthly', lifecycle: 'active', revision: 1, startDate: null, note: null, manageUrl: null, reminder: { useDefault: true, offsets: [] }, spending: { totals: [], count: 0, annualEquivalent: { currency: 'USD', amount: '0' } } };
+  const outlook = toRecord({ ...base, source: { type: 'outlook', email: 'a@outlook.com', connector: null } } as unknown as DetailDto);
+  expect(outlook.source).toEqual({ kind: 'gmail', email: 'a@outlook.com', provider: 'outlook' });
+  expect(toRecord({ ...base, source: { type: 'manual', email: '', connector: null } } as unknown as DetailDto).source.kind).toBe('manual');
+});

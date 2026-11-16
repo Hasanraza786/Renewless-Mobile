@@ -130,6 +130,10 @@ export function fromReminder(reminder: ReminderPreference) {
   return { offsets: reminder.mode === 'off' ? [] : reminder.days };
 }
 
+// Records and payments from a connected inbox carry its provider, 'gmail' or 'outlook' (older Outlook records say
+// 'gmail' until the backend's one-off migration runs).
+const inboxSource = (source: string | undefined) => source === 'gmail' || source === 'outlook';
+
 export function toRecord(item: SummaryDto | DetailDto): SubscriptionRecord {
   const detail = 'revision' in item ? item : null;
   const platform_id = logoKey(item.name, item.platformId ?? item.id, item.logoUrl);
@@ -153,7 +157,7 @@ export function toRecord(item: SummaryDto | DetailDto): SubscriptionRecord {
     cancelled_on: item.cancelledAt,
     access_until: item.accessUntil ?? item.expiredAt,
     start_date: start,
-    source: { kind: detail?.source.type === 'gmail' ? 'gmail' : 'manual', email: detail?.source.email ?? '', provider: detail?.source.connector?.provider ?? 'gmail' },
+    source: { kind: inboxSource(detail?.source.type) ? 'gmail' : 'manual', email: detail?.source.email ?? '', provider: detail?.source.connector?.provider ?? (detail?.source.type === 'outlook' ? 'outlook' : 'gmail') },
     inbox: connector ? { email: connector.email, last_sync: connector.lastSuccessfulSyncAt ?? '', disconnected: connector.status === 'disconnected' } : null,
     reminder: detail ? toReminder(detail.reminder) : { mode: 'default' },
     notes: detail?.note ?? null,
@@ -174,7 +178,7 @@ function toPriceChanges(history: PriceHistoryDto): PriceChange[] {
     to_cycle: toCycle(change.new.cycle),
     currency: change.new.price.currency,
     effective_on: change.effectiveDate ?? change.recordedAt.slice(0, 10),
-    source: change.source,
+    source: inboxSource(change.source) ? 'gmail' : 'user',
   }));
 }
 
@@ -299,7 +303,7 @@ export function toPayment(payment: PaymentDto): PaymentRecord {
     name: payment.name,
     platform_id: platformOf(payment.subscriptionId, payment.name, payment.logoUrl),
     billing_date: payment.billingDate,
-    source: payment.source === 'gmail' ? 'gmail' : payment.source === 'manual' ? 'manual' : 'reviewed',
+    source: inboxSource(payment.source) ? 'gmail' : payment.source === 'manual' ? 'manual' : 'reviewed',
     inbox_email: payment.inboxEmail,
     subscription_available: payment.subscriptionAvailable,
   };
