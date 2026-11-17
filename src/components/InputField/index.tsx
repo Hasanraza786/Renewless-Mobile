@@ -1,13 +1,14 @@
 import { useState, type ComponentRef, type Ref } from 'react';
 import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 import { eye_icon, eye_off_icon } from '../../assets/icons';
-import CustomText from '../CustomText';
+import CustomText, { MAX_FONT_SCALE } from '../CustomText';
 import Icons from '../Icons';
 import RowView from '../RowView';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import { styles } from './styles';
 import { useIsTablet } from '../../utils/tablet';
+import { latinDigits } from '../../utils/digits';
 
 type Props = TextInputProps & {
   label: string;
@@ -60,10 +61,12 @@ export default function InputField({
       )}
       <View>
         <TextInput
+          maxFontSizeMultiplier={MAX_FONT_SCALE}
           ref={ref}
           value={value}
-          // Comma-decimal regions (EU, Brazil, Turkey) get a "," key on the decimal pad; amounts always use ".".
-          onChangeText={onChangeText && input_props.keyboardType === 'decimal-pad' ? text => onChangeText(text.replace(/,/g, '.')) : onChangeText}
+          // Comma-decimal regions (EU, Brazil, Turkey) get a "," key on the decimal pad and Arabic/Persian keypads their own
+          // digits; amounts and day counts always use 0-9 and ".".
+          onChangeText={onChangeText && (input_props.keyboardType === 'decimal-pad' || input_props.keyboardType === 'number-pad') ? text => onChangeText(latinDigits(text).replace(/,/g, '.')) : onChangeText}
           placeholderTextColor={COLORS.text_secondary}
           accessibilityLabel={label}
           accessibilityHint={error || undefined}

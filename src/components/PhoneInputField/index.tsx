@@ -5,7 +5,7 @@ import { COUNTRIES, countryFlag } from '../../config/countries';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import AppSheet from '../AppSheet';
-import CustomText from '../CustomText';
+import CustomText, { MAX_FONT_SCALE } from '../CustomText';
 import Icons from '../Icons';
 import RowView from '../RowView';
 import { styles } from './styles';
@@ -54,6 +54,7 @@ export default function PhoneInputField({ label, country, national, onChangeCoun
           <Icons name={chevron_down_icon} />
         </RowView>
         <TextInput
+          maxFontSizeMultiplier={MAX_FONT_SCALE}
           value={national}
           onChangeText={onChangeNational}
           editable={editable}
@@ -76,6 +77,7 @@ export default function PhoneInputField({ label, country, national, onChangeCoun
         onClose={close}
         header={
           <TextInput
+            maxFontSizeMultiplier={MAX_FONT_SCALE}
             value={query}
             onChangeText={setQuery}
             placeholder="Search country or code"

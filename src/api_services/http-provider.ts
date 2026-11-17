@@ -62,10 +62,12 @@ async function request<T>(config: AxiosRequestConfig & { idempotent?: boolean })
 // AI turns read files with Gemini and can take longer than a plain request.
 const LONG_TIMEOUT = 90000;
 export const postLong = <T>(url: string, data: object) => request<T>({ method: 'POST', url, data, timeout: LONG_TIMEOUT });
+// A 14 MB PDF needs about 300 s on a slow (~0.4 Mbps) upload.
+const UPLOAD_TIMEOUT = 300000;
 // Raw file bytes; the server reads the type from the bytes. React Native's Blob is not recognised by axios, which would
 // send it as JSON, so the body skips axios's transform.
 export const upload = <T>(url: string, file: Blob) =>
-  request<T>({ method: 'POST', url, data: file, timeout: LONG_TIMEOUT, headers: { 'Content-Type': 'application/octet-stream' }, transformRequest: [(data: Blob) => data] });
+  request<T>({ method: 'POST', url, data: file, timeout: UPLOAD_TIMEOUT, headers: { 'Content-Type': 'application/octet-stream' }, transformRequest: [(data: Blob) => data] });
 
 export const get = <T>(url: string, params?: object) => request<T>({ method: 'GET', url, params });
 export const post = <T>(url: string, data?: object, idempotent = false) => request<T>({ method: 'POST', url, data: data ?? {}, idempotent });

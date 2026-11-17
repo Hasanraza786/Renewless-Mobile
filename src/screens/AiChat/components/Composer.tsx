@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Image, PanResponder, TextInput, View } from 'react-native';
 import { chevron_right_icon, close_small_icon, image_icon, mic_active_icon, mic_icon, paperclip_icon, pdf_icon, send_icon } from '../../../assets/icons';
 import AppSheet from '../../../components/AppSheet';
-import CustomText from '../../../components/CustomText';
+import CustomText, { MAX_FONT_SCALE } from '../../../components/CustomText';
 import Icons from '../../../components/Icons';
 import RowView from '../../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
@@ -122,6 +122,7 @@ export default function Composer({ chat }: Props) {
             <HoldBar chat={chat} drag_x={drag.x} />
           ) : (
             <TextInput
+              maxFontSizeMultiplier={MAX_FONT_SCALE}
               value={chat.limit_reached ? '' : chat.text}
               onChangeText={chat.changeText}
               placeholder={chat.limit_reached ? `Free messages renew on ${chat.resets_label}` : 'Message Loop…'}

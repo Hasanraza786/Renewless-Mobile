@@ -102,7 +102,7 @@ export function ReadyToGoBody({ onboarding }: Props) {
           <View style={styles.logo_tile}>
             <PlatformLogo platform_id={next.platform_id} name={next.name} />
           </View>
-          <View>
+          <View style={common_styles.flex_1}>
             <CustomText text={next.trial ? 'NEXT TRIAL ENDING' : next.estimated ? 'NEXT ESTIMATED RENEWAL' : 'NEXT RENEWAL'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} letter_spacing={0.8} />
             <CustomText mt={SIZES.padding / 4} text={next.name} size={SIZES.sm} />
             <CustomText mt={SIZES.padding / 4} text={`${dateLabel(next.next_date!)} · ${moneyLabel(next)}${next.trial ? ' after trial' : ''}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

@@ -72,3 +72,10 @@ test('Undo past the 500-subscription cap shows the server message in the app-wid
   await dispatch(restoreSubscription('s1', 'undo-token'));
   expect(payloadsOf('profile/setNotice')).toEqual(['You can track up to 500 subscriptions.']);
 });
+
+test('Undo that fails offline shows the error instead of closing silently', async () => {
+  const { ApiError } = jest.requireActual('../src/api_services/http-provider');
+  mockApi.restoreSubscription.mockRejectedValue(new ApiError(0, 'NETWORK', 'No internet connection.'));
+  await dispatch(restoreSubscription('s1', 'undo-token'));
+  expect(payloadsOf('profile/setNotice')).toEqual(['No internet connection.']);
+});

@@ -3,7 +3,7 @@ import { Keyboard, Modal, Pressable, ScrollView, TextInput, View, useWindowDimen
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { chevron_down_icon, option_check_icon } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
-import CustomText from '../CustomText';
+import CustomText, { MAX_FONT_SCALE } from '../CustomText';
 import Icons from '../Icons';
 import { OPTION_DETAIL_HEIGHT, OPTION_HEIGHT, SEARCH_HEIGHT, styles } from './styles';
 import { common_styles } from '../../utils/common_styles';
@@ -115,6 +115,7 @@ export default function Dropdown<T extends string>(props: Single<T> | Multiple) 
             {search ? (
               <View style={styles.search}>
                 <TextInput
+                  maxFontSizeMultiplier={MAX_FONT_SCALE}
                   value={query}
                   onChangeText={setQuery}
                   placeholder={search.placeholder}

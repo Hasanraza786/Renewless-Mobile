@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList } from '../../types';
 import { goBack } from '../../navigation/service';
 import { useIsTablet } from '../../utils/tablet';
+import { latinDigits } from '../../utils/digits';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'Otp'>['route'];
 
@@ -44,7 +45,7 @@ export default function useOtp(route: Route) {
   const can_resend = !resend_in && !resending;
 
   const onChangeCode = (value: string) => {
-    setCode(value.replace(/\D/g, '').slice(0, CODE_LENGTH));
+    setCode(latinDigits(value).replace(/\D/g, '').slice(0, CODE_LENGTH));
     setCodeError('');
   };
 

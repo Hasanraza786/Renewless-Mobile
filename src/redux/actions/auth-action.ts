@@ -94,6 +94,8 @@ function offerDisabledDelete(message: string, proof: () => Promise<DeleteProof |
         requestHandler({
           apiService: apiServices.deleteDisabledAccount,
           param_data: body,
+          // Login's button shows the wait (email, Google, Apple and Outlook all start from there).
+          setLoading: authLoading('login'),
           endOnUnauthorized: false,
           onDone: () => {
             trackEvent('account_deleted');

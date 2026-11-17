@@ -14,7 +14,7 @@ import type { InboxProvider, ProfileInbox } from '../../types';
 export const PROVIDER_LABEL = { email: 'Email', google: 'Google', apple: 'Apple', microsoft: 'Outlook' } as const;
 
 export const initials = (name: string) =>
-  name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(word => word[0]).join('').toUpperCase() || 'R';
+  name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map(word => Array.from(word)[0]).join('').toUpperCase() || 'R';
 
 export default function useProfile() {
   const dispatch = useAppDispatch();

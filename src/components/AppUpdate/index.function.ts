@@ -31,7 +31,7 @@ export default function useAppUpdate() {
   };
   // The admin's store link; without one, this app's own store page.
   const openStore = () => {
-    const url = update?.store_url || (Platform.OS === 'android' ? `market://details?id=${DeviceInfo.getBundleId()}` : APP_STORE_URL);
+    const url = update?.store_url || (Platform.OS === 'android' ? `https://play.google.com/store/apps/details?id=${DeviceInfo.getBundleId()}` : APP_STORE_URL);
     Linking.openURL(url).catch(() => undefined);
   };
 
