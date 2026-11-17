@@ -65,3 +65,10 @@ test('Undo puts the restored record straight back into List, without reading eve
   expect(payloadsOf('list/upsertListRecords')).toEqual([[{ id: 's1', name: 'Netflix' }]]);
   expect(payloadsOf('list/setListRecords')).toEqual([]);
 });
+
+test('Undo past the 500-subscription cap shows the server message in the app-wide notice', async () => {
+  const { ApiError } = jest.requireActual('../src/api_services/http-provider');
+  mockApi.restoreSubscription.mockRejectedValue(new ApiError(409, 'SUBSCRIPTION_LIMIT', 'You can track up to 500 subscriptions.'));
+  await dispatch(restoreSubscription('s1', 'undo-token'));
+  expect(payloadsOf('profile/setNotice')).toEqual(['You can track up to 500 subscriptions.']);
+});

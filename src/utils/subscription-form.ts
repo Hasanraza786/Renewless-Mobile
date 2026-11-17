@@ -147,6 +147,8 @@ const SERVER_FIELDS: Record<string, keyof DraftErrors> = {
   anchorDate: 'next_date',
   trial: 'custom_days',
   'trial.days': 'custom_days',
+  // The form has no trial end field: an exact end before the start belongs to the trial choice.
+  'trial.endDate': 'custom_days',
   priceChange: 'price_reason',
   'priceChange.reason': 'price_reason',
   'priceChange.effectiveDate': 'effective_on',

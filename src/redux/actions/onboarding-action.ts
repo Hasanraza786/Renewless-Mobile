@@ -222,7 +222,7 @@ export function editOnboardingCandidate(job_id: string, item: ScanCandidate, onS
           if (updated) dispatch(updateCandidate({ ...updated, selected: item.selected }));
           onSaved();
         },
-        onError: error => onFailed(error.field_errors.price ?? error.field_errors['price.amount'] ?? error.message),
+        onError: error => onFailed(error.field_errors.price ?? error.field_errors['price.amount'] ?? error.field_errors['trial.endDate'] ?? error.field_errors.startDate ?? error.message),
       }),
     );
   };

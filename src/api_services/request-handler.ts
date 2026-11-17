@@ -71,11 +71,16 @@ export const SERVICE_URLS = {
   receipts: '/receipts',
   supportMessages: '/support/messages',
   appConfig: '/app-config',
+  deleteDisabledAccount: '/auth/delete-account',
 };
 
 const subscription = (id: string, action = '') => `${SERVICE_URLS.subscriptions}/${id}${action}`;
 
 type Id<T = object> = { id: string } & T;
+
+// A disabled account deletes itself without a session, with the proof it just gave at login (App Store 5.1.1(v)).
+export type DeleteProof = { email: string; password: string } | { provider: 'google' | 'apple'; idToken: string; nonce?: string; authorizationCode?: string } | { provider: 'microsoft'; code: string; codeVerifier: string; redirectUri: string };
+const deleteDisabledAccount = (data: DeleteProof) => post<{ deleted: true }>(SERVICE_URLS.deleteDisabledAccount, data);
 
 // App config (public, no session): the update prompt's builds and notes for this platform.
 const getAppConfig = (data: { platform: 'ios' | 'android' }) => get<{ appConfig: AppConfigDto | null }>(SERVICE_URLS.appConfig, data);
@@ -244,6 +249,7 @@ const apiServices = {
   outlookConnect,
   outlookLogin,
   getAppConfig,
+  deleteDisabledAccount,
 };
 
 export default apiServices;

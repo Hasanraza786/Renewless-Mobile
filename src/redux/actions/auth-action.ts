@@ -2,7 +2,7 @@ import { Alert } from 'react-native';
 import { toInbox, toProfile } from '../../api_services/adapters';
 import type { ChallengeDto, SessionDto } from '../../api_services/dto';
 import type { ApiError } from '../../api_services/http-provider';
-import apiServices from '../../api_services/request-handler';
+import apiServices, { type DeleteProof } from '../../api_services/request-handler';
 import { navigate, popTo } from '../../navigation/service';
 import type { AuthIntent, AuthProvider } from '../../types';
 import { enterApp } from '../../utils/auth-form';
@@ -83,6 +83,38 @@ export function registerPush(): AppThunk {
 // fields clean for the retry.
 const formWide = (error: ApiError) => error.status === 0 || error.status >= 500;
 
+// A disabled account can still delete itself (App Store 5.1.1(v)): the login error offers Delete my account, then the
+// Settings deletion copy confirms it, and the proof just given at login goes with the request (no session exists).
+function offerDisabledDelete(message: string, proof: () => Promise<DeleteProof | null>): AppThunk {
+  return async dispatch => {
+    const remove = async () => {
+      const body = await proof().catch(() => null);
+      if (!body) return;
+      await dispatch(
+        requestHandler({
+          apiService: apiServices.deleteDisabledAccount,
+          param_data: body,
+          endOnUnauthorized: false,
+          onDone: () => {
+            trackEvent('account_deleted');
+            dispatch(setNotice('Account deleted.'));
+          },
+          onError: error => Alert.alert(error.message),
+        }),
+      );
+    };
+    const confirm = () =>
+      Alert.alert('Delete your Renewless account?', 'This permanently removes your account and saved tracking data, disconnects your connected inboxes and stops Renewless reminders.\n\nYour subscriptions with other services won’t be cancelled.', [
+        { text: 'Keep account', style: 'cancel' },
+        { text: 'Delete account', style: 'destructive', onPress: remove },
+      ]);
+    Alert.alert(message, undefined, [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Delete my account', style: 'destructive', onPress: confirm },
+    ]);
+  };
+}
+
 // Wrong credentials stay under Password; an unverified account goes to its code screen.
 export function login(email: string, password: string, intent: AuthIntent | undefined, onFieldError: (field: 'email' | 'password', message: string) => void): AppThunk {
   return async dispatch => {
@@ -98,6 +130,7 @@ export function login(email: string, password: string, intent: AuthIntent | unde
         },
         onError: (error: ApiError) => {
           if (formWide(error)) dispatch(setNotice(error.message));
+          else if (error.code === 'ACCOUNT_DISABLED') dispatch(offerDisabledDelete(error.message, async () => ({ email: email.trim(), password })));
           else if (error.code === 'EMAIL_NOT_VERIFIED') navigate('Otp', { purpose: 'signup', email: email.trim(), challenge_id: String(error.extra.challengeId), intent });
           else if (error.field_errors.email) onFieldError('email', error.field_errors.email);
           else onFieldError('password', error.field_errors.password ?? error.message);
@@ -170,7 +203,14 @@ function outlookLogin(intent: AuthIntent | undefined): AppThunk {
           if (session.inboxLimit) dispatch(setNotice(INBOX_LIMIT_NOTICE));
           else if (session.scannedBefore && session.connector) dispatch(setNotice(scannedBeforeNotice(toInbox(session.connector))));
         },
-        onError: error => Alert.alert(error.message),
+        // The login code is spent: deleting runs a fresh Microsoft sign-in.
+        onError: error =>
+          error.code === 'ACCOUNT_DISABLED'
+            ? dispatch(offerDisabledDelete(error.message, async () => {
+                const fresh = await outlookSignIn();
+                return fresh ? { provider: 'microsoft', ...fresh } : null;
+              }))
+            : Alert.alert(error.message),
       }),
     );
   };
@@ -198,7 +238,11 @@ export function socialLogin(provider: AuthProvider, intent: AuthIntent | undefin
           trackEvent(session.isNewUser ? 'sign_up' : 'login', { method: token.provider });
           dispatch(startSession(session, intent));
         },
-        onError: error => Alert.alert(error.message),
+        // Apple's one-time authorizationCode is unused by login, so the delete can revoke the Apple grant with it.
+        onError: error =>
+          error.code === 'ACCOUNT_DISABLED'
+            ? dispatch(offerDisabledDelete(error.message, async () => ({ provider: token.provider, idToken: token.idToken, nonce: token.nonce, authorizationCode: token.authorizationCode })))
+            : Alert.alert(error.message),
       }),
     );
   };

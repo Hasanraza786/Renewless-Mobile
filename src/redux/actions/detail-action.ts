@@ -231,6 +231,8 @@ export function restoreSubscription(id: string, undo_token: string): AppThunk {
           dispatch(upsertListRecords([toRecord(restored)]));
           if (shown_platform) dispatch(getPlatformSubscriptions(shown_platform.platform_id, shown_platform.exclude_id));
         },
+        // Undo runs from the app-wide toast, often with no Detail open: the 500-subscription cap says so there.
+        onError: error => error.code === 'SUBSCRIPTION_LIMIT' && dispatch(setNotice(error.message)),
       }),
     );
   };

@@ -1,5 +1,5 @@
 import type { SubscriptionRecord } from '../src/types';
-import { draftFromRecord, draftToInput, emptyDraft, trialEnd, validateDraft, firstInvalid } from '../src/utils/subscription-form';
+import { draftFromRecord, draftToInput, emptyDraft, trialEnd, validateDraft, firstInvalid, draftServerErrors } from '../src/utils/subscription-form';
 
 const today = '2026-11-06';
 
@@ -53,4 +53,8 @@ test('a failed submit focuses the topmost invalid field', () => {
   expect(firstInvalid({ start_date: 'x', price: 'x' })).toBe('price');
   expect(firstInvalid({ next_date: 'x', custom_days: 'x' })).toBe('custom_days');
   expect(firstInvalid({})).toBeUndefined();
+});
+
+test('a trial end before the start shows under the trial choice', () => {
+  expect(draftServerErrors({ 'trial.endDate': 'Choose a trial end date on or after the start date.' })).toEqual({ custom_days: 'Choose a trial end date on or after the start date.' });
 });

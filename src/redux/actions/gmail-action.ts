@@ -114,7 +114,8 @@ export function saveGmailResults(job_id: string, chosen: GmailCandidate[], selec
           dispatch(setNotice('Selected subscriptions and updates saved.'));
           onSaved();
         },
-        onError: error => onFailed(error.message),
+        // A trial end before its start is a field error; its own message says what to change.
+        onError: error => onFailed(error.field_errors['trial.endDate'] ?? error.field_errors.startDate ?? error.message),
       }),
     );
   };
