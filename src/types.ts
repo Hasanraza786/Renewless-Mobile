@@ -164,7 +164,9 @@ export type Receipt = { id: string; subscription_id: string; amount: string; cur
 
 // A confirmed payment as Payments lists it: the receipt plus the retained subscription snapshot and evidence.
 // subscription_available is false once the subscription was removed; the payment record is kept.
+// amount is what it cost in the end; refunded is the money that came back (null: no refund).
 export type PaymentRecord = Receipt & {
+  refunded: string | null;
   name: string;
   platform_id: string;
   billing_date: string;
@@ -413,9 +415,13 @@ export type AuthRequest =
   | 'social'
   | 'logout';
 
+// A login to a disabled account: the server's message, then the deletion confirmation (themed dialogs, not OS alerts).
+export type DisabledAccount = { message: string; step: 'notice' | 'confirm'; deleting: boolean; error: string };
+
 export type AuthState = {
   loading: Record<AuthRequest, boolean>;
   error: Record<AuthRequest, string>;
+  disabled: DisabledAccount | null;
 };
 
 export type ProfileState = {

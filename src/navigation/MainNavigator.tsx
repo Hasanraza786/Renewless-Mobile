@@ -10,6 +10,7 @@ import Tabs from './Tabs';
 import { COLORS } from '../constants/theme';
 import { navigationRef } from './service';
 import UndoToast from '../components/UndoToast';
+import DisabledAccountDialog from '../components/DisabledAccountDialog';
 import LoaderModal from '../components/LoaderModal';
 import AppUpdate from '../components/AppUpdate';
 import { listenForWidgetUrls } from '../utils/widget';
@@ -76,6 +77,7 @@ export default function MainNavigator() {
         <AppStack.Screen name="SubscriptionPayments" component={PaymentsScreen} />
       </AppStack.Navigator>
       <UndoToast />
+      <DisabledAccountDialog />
       <LoaderModal />
       <AppUpdate />
     </NavigationContainer>

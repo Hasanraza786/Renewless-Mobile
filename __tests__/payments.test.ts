@@ -1,8 +1,8 @@
 import type { PaymentRecord } from '../src/types';
-import { alignedMonth, defaultYear, inPeriod, monthlySeries, paymentCurrencies, paymentTotals, paymentYears, periodLabel } from '../src/utils/payments';
+import { alignedMonth, defaultYear, inPeriod, monthlySeries, paymentCurrencies, paymentTotals, paymentYears, periodLabel, statusLabel } from '../src/utils/payments';
 
 const pay = (id: string, paid_on: string, amount: string, currency = 'USD'): PaymentRecord => ({
-  id, subscription_id: id, name: id, platform_id: id, amount, currency, paid_on, billing_date: paid_on, source: 'gmail', inbox_email: null, subscription_available: true,
+  id, subscription_id: id, name: id, platform_id: id, amount, currency, paid_on, billing_date: paid_on, refunded: null, source: 'gmail', inbox_email: null, subscription_available: true,
 });
 // Newest first, as the service returns them.
 const rows = [pay('netflix', '2026-10-24', '15.99'), pay('spotify', '2026-10-20', '11.99'), pay('notion', '2026-09-30', '10.00', 'EUR'), pay('icloud', '2025-12-30', '2.99')];
@@ -26,4 +26,10 @@ test('the graph has twelve explicit months per currency and inspects the newest 
   expect(alignedMonth(rows, '2026', '03')).toBe('03');
   expect(periodLabel('2026', '10')).toBe('October 2026');
   expect(periodLabel('2026', 'all')).toBe('2026');
+});
+
+test('a refund shows how much of the charge came back', () => {
+  expect(statusLabel(pay('netflix', '2026-10-24', '15.99'))).toBe('Confirmed');
+  expect(statusLabel({ ...pay('netflix', '2026-10-24', '5.99'), refunded: '10.00' })).toBe('Partly refunded');
+  expect(statusLabel({ ...pay('netflix', '2026-10-24', '0.00'), refunded: '15.99' })).toBe('Refunded');
 });

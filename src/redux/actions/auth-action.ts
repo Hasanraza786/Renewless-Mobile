@@ -14,7 +14,7 @@ import { outlookSignIn, providerSignIn, type OutlookGrant, type ProviderToken } 
 import { endSession } from '../endSession';
 import { INBOX_LIMIT_NOTICE, scannedBeforeNotice } from './gmail-action';
 import { requestHandler, type AppThunk } from '../request-handler';
-import { authError, authLoading } from '../slices/auth-slice';
+import { authError, authLoading, setDisabledAccount, updateDisabledAccount } from '../slices/auth-slice';
 import { setSession, setUser } from '../slices/constant-slice';
 import { setNotice, setProfileUser } from '../slices/profile-slice';
 
@@ -83,37 +83,51 @@ export function registerPush(): AppThunk {
 // fields clean for the retry.
 const formWide = (error: ApiError) => error.status === 0 || error.status >= 500;
 
-// A disabled account can still delete itself (App Store 5.1.1(v)): the login error offers Delete my account, then the
-// Settings deletion copy confirms it, and the proof just given at login goes with the request (no session exists).
-function offerDisabledDelete(message: string, proof: () => Promise<DeleteProof | null>): AppThunk {
+// A disabled account can still delete itself (App Store 5.1.1(v)): Login and onboarding's Connect Gmail/Outlook and
+// Login open DisabledAccountDialog with the server's message, then the Settings deletion copy, and the proof just given
+// at sign-in goes with the request (no session exists). The proof is a function (an Outlook code is spent, so it signs in
+// again), kept here because the store holds only serializable state.
+let disabled_proof: (() => Promise<DeleteProof | null>) | null = null;
+
+export function offerDisabledDelete(message: string, proof: () => Promise<DeleteProof | null>): AppThunk {
   return async dispatch => {
-    const remove = async () => {
-      const body = await proof().catch(() => null);
-      if (!body) return;
-      await dispatch(
-        requestHandler({
-          apiService: apiServices.deleteDisabledAccount,
-          param_data: body,
-          // Login's button shows the wait (email, Google, Apple and Outlook all start from there).
-          setLoading: authLoading('login'),
-          endOnUnauthorized: false,
-          onDone: () => {
-            trackEvent('account_deleted');
-            dispatch(setNotice('Account deleted.'));
-          },
-          onError: error => Alert.alert(error.message),
-        }),
-      );
-    };
-    const confirm = () =>
-      Alert.alert('Delete your Renewless account?', 'This permanently removes your account and saved tracking data, disconnects your connected inboxes and stops Renewless reminders.\n\nYour subscriptions with other services won’t be cancelled.', [
-        { text: 'Keep account', style: 'cancel' },
-        { text: 'Delete account', style: 'destructive', onPress: remove },
-      ]);
-    Alert.alert(message, undefined, [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Delete my account', style: 'destructive', onPress: confirm },
-    ]);
+    disabled_proof = proof;
+    dispatch(setDisabledAccount({ message, step: 'notice', deleting: false, error: '' }));
+  };
+}
+
+export function closeDisabledAccount(): AppThunk {
+  return async dispatch => {
+    disabled_proof = null;
+    dispatch(setDisabledAccount(null));
+  };
+}
+
+export function deleteDisabledAccount(): AppThunk {
+  return async dispatch => {
+    if (!disabled_proof) return;
+    dispatch(updateDisabledAccount({ deleting: true, error: '' }));
+    const body = await disabled_proof().catch(() => null);
+    // A closed provider sheet leaves the confirmation open to try again.
+    if (!body) {
+      dispatch(updateDisabledAccount({ deleting: false }));
+      return;
+    }
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.deleteDisabledAccount,
+        param_data: body,
+        setLoading: value => updateDisabledAccount({ deleting: value }),
+        endOnUnauthorized: false,
+        onDone: () => {
+          trackEvent('account_deleted');
+          disabled_proof = null;
+          dispatch(setDisabledAccount(null));
+          dispatch(setNotice('Account deleted.'));
+        },
+        onError: error => dispatch(updateDisabledAccount({ error: error.message })),
+      }),
+    );
   };
 }
 

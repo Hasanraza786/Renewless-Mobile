@@ -102,6 +102,7 @@ export type PaymentDto = {
   paidDate: string;
   billingDate: string;
   amount: MoneyDto;
+  refunded: MoneyDto | null;
   source: string;
   inboxEmail: string | null;
   subscriptionAvailable: boolean;

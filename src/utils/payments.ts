@@ -45,3 +45,6 @@ export function alignedMonth(rows: PaymentRecord[], year: string, month: Payment
 }
 
 export const periodLabel = (year: string, month: PaymentMonth) => (month === 'all' ? year : `${MONTH_NAMES[Number(month) - 1]} ${year}`);
+
+// Confirmed, or how much of the charge came back.
+export const statusLabel = (payment: PaymentRecord) => (payment.refunded === null ? 'Confirmed' : Number(payment.amount) === 0 ? 'Refunded' : 'Partly refunded');

@@ -9,6 +9,7 @@ import { common_styles } from '../../../utils/common_styles';
 import { dateLabel } from '../../../utils/scan';
 import type { PaymentRecord } from '../../../types';
 import { sourceLabel } from '../index.function';
+import { statusLabel } from '../../../utils/payments';
 import { styles as screen_styles } from '../styles';
 import { money } from '../../../utils/money';
 
@@ -34,16 +35,17 @@ export default function PaymentDialog({ payment, onClose, onViewSubscription }: 
       <RowView gap={SIZES.padding / 2} mt={SIZES.padding}>
         <View style={screen_styles.avatar}><PlatformLogo platform_id={payment.platform_id} name={payment.name} /></View>
         <CustomText text={payment.name} weight={FONTS.medium} size={SIZES.lg} style={common_styles.flex_1} />
-        <CustomText text="Confirmed" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+        <CustomText text={statusLabel(payment)} weight={FONTS.regular} color={payment.refunded === null ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
       </RowView>
       <CustomText mt={SIZES.padding * 0.9} text={money(payment.currency, payment.amount)} weight={FONTS.medium} size={SIZES.h3} />
       <View style={styles.fields}>
         <Field label="Payment date" value={dateLabel(payment.paid_on)} />
         <Field label="Billing date" value={dateLabel(payment.billing_date)} />
+        {payment.refunded !== null ? <Field label="Refunded" value={money(payment.currency, payment.refunded)} /> : null}
         <Field label="Evidence source" value={sourceLabel(payment.source)} />
         {payment.inbox_email ? <Field label="Receipt inbox" value={payment.inbox_email} /> : null}
       </View>
-      <CustomText mt={SIZES.padding * 0.8} text={`${NOTES[payment.source]} Confirmation doesn’t change your renewal schedule.`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <CustomText mt={SIZES.padding * 0.8} text={`${NOTES[payment.source]}${payment.refunded !== null ? ' The amount is what it cost after the refund.' : ''} Confirmation doesn’t change your renewal schedule.`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       <CustomButton variant="secondary" text="View subscription ›" onPress={onViewSubscription} style={styles.action} />
     </ConfirmDialog>
   );

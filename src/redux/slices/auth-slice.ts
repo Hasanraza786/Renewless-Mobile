@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { AuthRequest, AuthState } from '../../types';
+import type { AuthRequest, AuthState, DisabledAccount } from '../../types';
 
 const requests: AuthRequest[] = [
   'login',
@@ -17,6 +17,7 @@ function freshAuth(): AuthState {
   return {
     loading: Object.fromEntries(requests.map(key => [key, false])) as AuthState['loading'],
     error: Object.fromEntries(requests.map(key => [key, ''])) as AuthState['error'],
+    disabled: null,
   };
 }
 
@@ -32,13 +33,19 @@ const authSlice = createSlice({
     setAuthError(state, action: PayloadAction<{ key: AuthRequest; value: string }>) {
       state.error[action.payload.key] = action.payload.value;
     },
+    setDisabledAccount(state, action: PayloadAction<DisabledAccount | null>) {
+      state.disabled = action.payload;
+    },
+    updateDisabledAccount(state, action: PayloadAction<Partial<DisabledAccount>>) {
+      if (state.disabled) Object.assign(state.disabled, action.payload);
+    },
     resetAuth() {
       return freshAuth();
     },
   },
 });
 
-export const { setAuthLoading, setAuthError, resetAuth } = authSlice.actions;
+export const { setAuthLoading, setAuthError, setDisabledAccount, updateDisabledAccount, resetAuth } = authSlice.actions;
 
 export const authLoading = (key: AuthRequest) => (value: boolean) =>
   setAuthLoading({ key, value });

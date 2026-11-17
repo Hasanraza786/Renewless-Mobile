@@ -1,426 +1,481 @@
 # Graph Report - Renewless-mobile  (2026-11-17)
 
 ## Corpus Check
-- 377 files · ~142,561 words
+- 464 files · ~143,651 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 55 file(s) not represented in the graph (top: .ttf 15, .xml 14, (none) 5)
 
 ## Summary
-- 2126 nodes · 8205 edges · 86 communities (69 shown, 17 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 150 edges (avg confidence: 0.85)
+- 2249 nodes · 8169 edges · 102 communities (80 shown, 22 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 153 edges (avg confidence: 0.84)
 - Token cost: 0 input · 0 output
-
-## Graph Freshness
-- Built from commit: `5b06305a`
-- Run `git rev-parse HEAD` and compare to check if the graph is stale.
-- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - theme.ts
-- SubscriptionFields/index.tsx
-- API DTOs & Request Handler
-- ListDialogs.tsx
-- GmailViews.tsx
-- RenewlessWidgetProvider.kt
-- service.ts
-- adapters.ts
-- navigate
-- RowView
 - Container
-- goBack
-- detail-action.ts (2)
-- CustomText/index.tsx
-- requestHandler
-- iOS Widget Models
-- Dev Dependencies
-- Dropdown/index.tsx
-- Runtime Dependencies
-- money
-- YourSubscriptions/index.tsx
-- AddOptions/index.tsx
-- profile-action.ts
-- ScanRecovery/index.tsx
-- store.ts
-- CustomButton
-- AiChat/index.function.ts
-- Payments Utils
-- onboarding_icons.ts
-- Icons/index.tsx
-- react-native
-- MessageRow/index.tsx
-- store.ts (2)
-- icons/index.ts
-- Calendar/index.function.ts
-- Project Working Rules
-- QA Plan & Contracts
-- types.ts
-- adapters.ts (2)
-- CustomButton (2)
-- SubscriptionDetail/index.tsx
-- ContactUs/index.function.ts
-- Release Blockers & Gaps
-- Profile/index.tsx
+- API DTOs & Request Handler
+- adapters.ts
+- RenewlessWidgetProvider.kt
 - Home/index.tsx
-- Android MainActivity
+- requestHandler
+- CustomText/index.tsx
+- service.ts
+- CustomButton
+- Profile/index.tsx
+- requestHandler (2)
+- navigate
+- ListDialogs.tsx
+- iOS Widget Models
+- Container (2)
+- ScanRecovery/index.tsx
+- icons/index.ts
+- Dev Dependencies
+- detail-action.ts (2)
+- profile-action.ts
+- Community 21
+- detail-action.ts (2) (2)
+- Payments Utils
+- AiChat/index.function.ts
+- YourSubscriptions/index.tsx
+- SubscriptionFields/index.tsx
+- Runtime Dependencies
+- store.ts (2)
+- store.ts
+- Countries & Phone
+- types.ts
+- onboarding_icons.ts
+- money
+- GmailViews.tsx
+- ContactUs/index.function.ts
+- Project Working Rules
+- types.ts (2)
+- RowView
+- Release Blockers & Gaps
 - Splash.test.tsx
-- Onboarding/index.tsx
-- Runtime Dependencies (2)
+- types.ts (3)
+- ListDialogs.tsx (2)
+- types.ts (4)
+- YourSubscriptions/index.tsx (2)
+- Android MainActivity
+- store.ts (2)
+- service.ts (2)
+- QA Plan & Contracts
+- Profile/index.tsx (2)
+- Icons/index.tsx
 - iOS AppDelegate
 - iOS Widget Bridge
-- Final release audit 17 November 2026
-- Persisted Storage
-- Receipts/index.tsx
-- ai-consent.test.ts
-- platform_logos.ts
-- Welcome/index.tsx
-- Metro Config
-- react-native-device-info
+- Community 53
+- SubscriptionFields/index.tsx (2)
+- Payments Utils (2)
+- Runtime Dependencies (2)
+- Community 57
+- react-native
+- ListDialogs.tsx (3)
+- Icons/index.tsx (2)
+- Release Blockers & Gaps (2)
+- requestHandler (3)
 - Project Working Rules (2)
 - iOS SceneDelegate
-- payments-action.ts
-- Countries & Phone
+- Calendar/index.function.ts
 - iOS Native Imports
 - React Native Delegate
+- Community 68
+- types.ts (5)
+- Metro Config
+- Persisted Storage
+- QA Plan & Contracts (2)
+- Final release audit 17 November 2026
+- AddOptions/index.tsx
+- SubscriptionDetail/index.tsx
 - Auth.test.tsx
-- react-native-config
-- TS Config
-- payments-action.ts
-- Release Blockers & Gaps (2)
-- http-provider.ts
+- Runtime Dependencies (2)
+- Community 78
+- types.ts (6)
 - status_colors.ts
 - auth-action.ts
+- TS Config
+- store.ts (2) (2)
 - Canonical Doc Owners
 - Release Blockers & Gaps (3)
+- Runtime Dependencies (3)
+- Runtime Dependencies (4)
+- Runtime Dependencies (5)
+- Runtime Dependencies (6)
+- Runtime Dependencies (7)
 
 ## God Nodes (most connected - your core abstractions)
-1. `react-native` - 193 edges
-2. `RowView()` - 172 edges
-3. `COLORS` - 164 edges
-4. `SIZES` - 163 edges
+1. `react-native` - 192 edges
+2. `COLORS` - 165 edges
+3. `SIZES` - 164 edges
+4. `RowView()` - 152 edges
 5. `CustomText()` - 143 edges
-6. `react` - 87 edges
-7. `CustomButton()` - 85 edges
-8. `fonts` - 85 edges
-9. `requestHandler()` - 82 edges
-10. `useAppSelector` - 73 edges
+6. `Final release audit 17 Nov 2026` - 93 edges
+7. `react` - 87 edges
+8. `fonts` - 86 edges
+9. `CustomButton()` - 81 edges
+10. `useAppSelector` - 70 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `F78: Disabled-account delete shipped while design Pending` --references--> `DisabledAccountDialog()`  [EXTRACTED]
+  qa/runs/2026-11-17-final-release-audit.md → src/components/DisabledAccountDialog/index.tsx
 - `run()` --calls--> `requestHandler()`  [EXTRACTED]
   __tests__/request-handler.test.ts → src/redux/request-handler.ts
-- `M29 Connect inbox names Google Gemini` --references--> `Screen design freeze and scoped unlock`  [INFERRED]
-  qa/runs/2026-11-16-release-audit.md → AGENTS.md
-- `App()` --calls--> `MainNavigator()`  [EXTRACTED]
-  App.tsx → src/navigation/MainNavigator.tsx
-- `App()` --calls--> `loadSessionToken()`  [EXTRACTED]
-  App.tsx → src/utils/session-token.ts
-- `busy()` --calls--> `ApiError`  [EXTRACTED]
-  __tests__/google-connect-retry.test.ts → src/api_services/http-provider.ts
+- `typeInto()` --calls--> `InputField()`  [EXTRACTED]
+  __tests__/input-field.test.tsx → src/components/InputField/index.tsx
+- `connect()` --calls--> `connectOutlookInbox()`  [EXTRACTED]
+  __tests__/outlook-connect.test.ts → src/redux/actions/gmail-action.ts
+- `lockedInbox()` --calls--> `getSyncLockedInbox()`  [EXTRACTED]
+  __tests__/sync-locked-inbox.test.ts → src/redux/actions/gmail-action.ts
 
 ## Import Cycles
 - 4-file cycle: `src/redux/actions/support-action.ts -> src/redux/request-handler.ts -> src/redux/endSession.ts -> src/utils/push.ts -> src/redux/actions/support-action.ts`
 
 ## Hyperedges (group relationships)
-- **Gemini paid tier and no-training disclosure** — qa_qa_plan_gemini_paid_tier, qa_runs_2026_11_16_release_audit_m29_gemini_disclosure, qa_runs_2026_11_17_final_release_audit_f31_gemini_tier_claim [EXTRACTED 1.00]
-- **Baseline fixes found partial or regressed** — qa_runs_2026_11_17_final_release_audit_regressions_of_baseline, qa_runs_2026_11_17_final_release_audit_f6_cap_concurrency_regression, qa_runs_2026_11_17_final_release_audit_f9_monthly_offsets_partial, qa_runs_2026_11_17_final_release_audit_f10_refund_imported_services, qa_runs_2026_11_17_final_release_audit_f11_global_upload_cap [EXTRACTED 1.00]
-- **Store privacy disclosures must match binary and policy** — qa_runs_2026_11_17_final_release_audit_f2_privacy_policy_firebase, qa_runs_2026_11_17_final_release_audit_f28_app_privacy_sdk_data, qa_runs_2026_11_17_final_release_audit_f29_m30_row_outdated, qa_runs_2026_11_16_release_audit_m31_privacy_manifest_collected_types, qa_runs_2026_11_16_release_audit_m30_ad_id_permissions [INFERRED 0.85]
+- **Release gates in order** — qa_runs_2026_11_17_final_release_audit_gate1_push_backend, qa_runs_2026_11_17_final_release_audit_gate2_deploy_hosting, qa_runs_2026_11_17_final_release_audit_gate3_store_privacy_forms, qa_runs_2026_11_17_final_release_audit_gate4_app_config_null, qa_runs_2026_11_17_final_release_audit_gate5_bump_build_numbers, qa_runs_2026_11_17_final_release_audit_gate6_manual_checklist [EXTRACTED 1.00]
+- **Disabled-account self-deletion findings** — qa_runs_2026_11_17_final_release_audit_f1, qa_runs_2026_11_17_final_release_audit_f5, qa_runs_2026_11_17_final_release_audit_f33, qa_runs_2026_11_17_final_release_audit_f36, qa_runs_2026_11_17_final_release_audit_f37, qa_runs_2026_11_17_final_release_audit_f55, qa_runs_2026_11_17_final_release_audit_f73, qa_runs_2026_11_17_final_release_audit_f78 [INFERRED 0.85]
+- **Store privacy disclosure consistency** — qa_runs_2026_11_17_final_release_audit_f2, qa_runs_2026_11_17_final_release_audit_f28, qa_runs_2026_11_17_final_release_audit_f29, qa_runs_2026_11_17_final_release_audit_f30, qa_runs_2026_11_17_final_release_audit_f31, qa_runs_2026_11_17_final_release_audit_f47 [INFERRED 0.85]
 
-## Communities (86 total, 17 thin omitted)
+## Communities (102 total, 22 thin omitted)
 
 ### Community 0 - "theme.ts"
-Cohesion: 0.07
-Nodes (28): styles, styles, styles, styles, styles, styles, styles, Props (+20 more)
+Cohesion: 0.04
+Nodes (67): react-native, chevron_right_icon, styles, styles, styles, styles, styles, styles (+59 more)
 
-### Community 1 - "SubscriptionFields/index.tsx"
-Cohesion: 0.10
-Nodes (37): Props, styles, SubscriptionFormRoute, useSubscriptionForm(), PlatformSuggestion, SubscriptionRecord, HISTORY_FILTERS, historyCardProps() (+29 more)
+### Community 1 - "Container"
+Cohesion: 0.09
+Nodes (66): Container(), Props, CustomText(), Header(), Props, Icons(), InfoTooltip(), AnimatedPath (+58 more)
 
 ### Community 2 - "API DTOs & Request Handler"
+Cohesion: 0.05
+Nodes (77): AiUsageDto, AlertsDto, ChallengeDto, GoogleConnectDto, PaymentsDto, PaymentsSummaryDto, ScanImportDto, SessionDto (+69 more)
+
+### Community 3 - "adapters.ts"
 Cohesion: 0.06
-Nodes (67): del(), get(), newKey(), patch(), post(), postLong(), request(), applyReminderDefault() (+59 more)
+Nodes (64): categories, categoryName(), dayLabel(), FORM_TO_BACKEND, inboxSource(), isAuthExpired(), logo_urls, logoKey() (+56 more)
 
-### Community 3 - "ListDialogs.tsx"
-Cohesion: 0.06
-Nodes (62): react-native-permissions, getApplyCount(), getReminderSettings(), AlertsController, useAlerts(), useNotificationPermission(), ListRoute, useList() (+54 more)
-
-### Community 4 - "GmailViews.tsx"
-Cohesion: 0.20
-Nodes (19): OnboardingTitle(), Caption(), GmailRecoveryArt(), InboxLine(), Props, RecoveryFooter(), RecoveryView(), Results() (+11 more)
-
-### Community 5 - "RenewlessWidgetProvider.kt"
+### Community 4 - "RenewlessWidgetProvider.kt"
 Cohesion: 0.05
 Nodes (12): MainApplication, RenewlessWidgetModule, RenewlessWidgetPackage, RenewlessWidgetProvider, scripts, android, ios, lint (+4 more)
 
-### Community 6 - "service.ts"
+### Community 5 - "Home/index.tsx"
+Cohesion: 0.09
+Nodes (48): AddChoiceLinks(), Props, AddOptions(), AddSheet(), Props, InboxProviders(), PlatformLogo(), Props (+40 more)
+
+### Community 6 - "requestHandler"
 Cohesion: 0.07
-Nodes (52): @react-navigation/native, @react-navigation/native-stack, UndoToast(), navigate(), NavigateArgs, navigationRef, RootParamList, TAB_NAMES (+44 more)
+Nodes (41): fromGmailSelection(), toInbox(), ChooseInboxSheet(), Props, addAiDraft(), getDashboard(), connectGmailInbox(), connectInbox() (+33 more)
 
-### Community 7 - "adapters.ts"
-Cohesion: 0.06
-Nodes (57): categories, categoryId(), dayLabel(), FORM_TO_BACKEND, fromCycle(), fromReminder(), fromScanCandidate(), logo_urls (+49 more)
+### Community 7 - "CustomText/index.tsx"
+Cohesion: 0.09
+Nodes (34): react-native-safe-area-context, close_icon, Props, AppUpdate(), ConfirmDialog(), Props, MAX_FONT_SCALE, Props (+26 more)
 
-### Community 8 - "navigate"
+### Community 8 - "service.ts"
 Cohesion: 0.10
-Nodes (46): toProfile(), popTo(), beginSession(), changePassword(), forgotPassword(), formWide(), login(), logoutUser() (+38 more)
+Nodes (38): react, @react-navigation/native, UndoToast(), styles, AuthStack(), getCalendarMonth(), disconnectInbox(), getSubscriptions() (+30 more)
 
-### Community 9 - "RowView"
-Cohesion: 0.12
-Nodes (45): CustomText(), DialogCard(), AnimatedPath, Icons(), ImagePreview(), MenuGroup(), PhoneInputField(), RowView() (+37 more)
+### Community 9 - "CustomButton"
+Cohesion: 0.13
+Nodes (35): AuthDivider(), AuthFooterLink(), AuthLayout(), OUTLOOK_SOCIAL_ICON, Props, SocialButtons(), CustomButton(), Props (+27 more)
 
-### Community 10 - "Container"
-Cohesion: 0.11
-Nodes (45): Container(), Header(), busyMessage(), LoaderModal(), AnimatedPath, Face(), Mascot(), StateView() (+37 more)
-
-### Community 11 - "goBack"
-Cohesion: 0.08
-Nodes (18): Props, styles, Props, styles, IS_TABLET, goBack(), PLACEHOLDERS, styles (+10 more)
-
-### Community 12 - "detail-action.ts (2)"
-Cohesion: 0.09
-Nodes (31): hasCategories(), toRecord(), getDashboard(), getHomeData(), cancelSubscription(), createFromForm(), createSubscription(), current() (+23 more)
-
-### Community 13 - "CustomText/index.tsx"
-Cohesion: 0.09
-Nodes (35): Props, Props, Props, styles, Props, Frame, Props, MenuItem (+27 more)
-
-### Community 14 - "requestHandler"
+### Community 10 - "Profile/index.tsx"
 Cohesion: 0.06
-Nodes (55): fromGmailSelection(), isAuthExpired(), toGmailScan(), toInbox(), toScanStatus(), resetRoot(), connectGmailInbox(), connectInbox() (+47 more)
+Nodes (32): brand_mark_paths, LOOP_FACES, LOOP_OUTLINE, LOOP_OUTLINE_LENGTH, duolingo_logo, figma_logo, gmail_logo, icloud_logo (+24 more)
 
-### Community 15 - "iOS Widget Models"
+### Community 11 - "requestHandler (2)"
+Cohesion: 0.07
+Nodes (34): fromCycle(), fromScanCandidate(), toProfile(), OutlookConnectDto, OutlookLoginDto, openLegal(), PRIVACY_URL, TERMS_URL (+26 more)
+
+### Community 12 - "navigate"
+Cohesion: 0.10
+Nodes (39): @react-navigation/native-stack, popTo(), resetRoot(), forgotPassword(), formWide(), login(), offerDisabledDelete(), outlookLogin() (+31 more)
+
+### Community 13 - "ListDialogs.tsx"
+Cohesion: 0.09
+Nodes (32): react-native-permissions, fromReminderSettings(), toAlert(), toReminderSettings(), flag(), getAlerts(), getAllAlerts(), getApplyCount() (+24 more)
+
+### Community 14 - "iOS Widget Models"
 Cohesion: 0.09
 Nodes (20): Brand, .body, Color, dayString(), EventCopy, parseDay(), Provider, QuietView (+12 more)
 
-### Community 16 - "Dev Dependencies"
-Cohesion: 0.07
-Nodes (42): devDependencies, @babel/core@^7.25.2, @babel/preset-env@^7.25.3, @babel/runtime@^7.25.0, eslint@^8.19.0, jest@^29.6.3, patch-package@^8.0.1, prettier@2.8.8 (+34 more)
+### Community 15 - "Container (2)"
+Cohesion: 0.05
+Nodes (12): DisabledAccountDialog(), stack_options, AppStack, MainNavigator(), theme, closeDisabledAccount(), deleteDisabledAccount(), AppUpdate (+4 more)
 
-### Community 17 - "Dropdown/index.tsx"
-Cohesion: 0.15
-Nodes (13): chevron_down_icon, benefit_check_icon, MAX_FONT_SCALE, Frame, Multiple, Single, OPTION_DETAIL_HEIGHT, OPTION_HEIGHT (+5 more)
-
-### Community 18 - "Runtime Dependencies"
-Cohesion: 0.04
-Nodes (50): dependencies, axios@^1.21.1, @invertase/react-native-apple-authentication@^2.5.1, @notifee/react-native@^9.1.8, react@19.2.3, react-native@0.87.1, react-native-app-auth@9.0.0, react-native-calendars@^1.1314.0 (+42 more)
-
-### Community 19 - "money"
-Cohesion: 0.14
-Nodes (29): PlatformLogo(), SpendRow(), SpendRows(), TrialRows(), Cell(), DraftCard(), MonthGrid(), CandidateRow() (+21 more)
-
-### Community 20 - "YourSubscriptions/index.tsx"
-Cohesion: 0.12
-Nodes (42): AppSheet(), DateField(), toDate(), toIso(), Dropdown(), SubscriptionFields(), CandidateSheet(), ChangesSheet() (+34 more)
-
-### Community 21 - "AddOptions/index.tsx"
-Cohesion: 0.17
-Nodes (9): chevron_right_icon, OPTIONS, Props, styles, Props, PROVIDERS, styles, Props (+1 more)
-
-### Community 22 - "profile-action.ts"
-Cohesion: 0.04
-Nodes (43): ApiError, client, pending_keys, apiServices, deleteAccount(), endSession(), Options, SESSION_ENDED (+35 more)
-
-### Community 23 - "ScanRecovery/index.tsx"
-Cohesion: 0.21
-Nodes (14): accessCopy(), COPY, Kind, Props, RecoveryArt(), RecoveryBody(), RecoveryFooter(), ScanInterruptedArt() (+6 more)
-
-### Community 24 - "store.ts"
-Cohesion: 0.12
-Nodes (18): registerPush(), savePushToken(), HomeRoute, useHome(), analytics, AnalyticsEvent, ADMIN_SCREENS, listenToPush() (+10 more)
-
-### Community 25 - "CustomButton"
-Cohesion: 0.12
-Nodes (36): AppUpdate(), AuthDivider(), AuthFooterLink(), AuthLayout(), SocialButtons(), ConfirmDialog(), CustomButton(), InputField() (+28 more)
-
-### Community 26 - "AiChat/index.function.ts"
+### Community 16 - "ScanRecovery/index.tsx"
 Cohesion: 0.08
-Nodes (34): openLegal(), PRIVACY_URL, TERMS_URL, focusedTab(), addAiDraft(), changeAiConsent(), consentBody(), sendAiMessage() (+26 more)
+Nodes (33): hint_icon, inbox_badge_icon, offline_badge_icon, retry_icon, CONFETTI_COLORS, PIECES, Props, ReadyArt() (+25 more)
 
-### Community 27 - "Payments Utils"
-Cohesion: 0.14
-Nodes (25): ICONS, RAIL_ICONS, RailStack, styles, tab_icon(), Tabs(), TabsStack, EMPTY (+17 more)
+### Community 17 - "icons/index.ts"
+Cohesion: 0.07
+Nodes (30): bin_danger_icon, bin_icon, chevron_up_icon, clock_accent_icon, close_small_icon, device_bell_icon, gear_accent_icon, image_icon (+22 more)
 
-### Community 28 - "onboarding_icons.ts"
-Cohesion: 0.09
-Nodes (27): brand_mark_paths, LOOP_FACES, LOOP_OUTLINE, LOOP_OUTLINE_LENGTH, apple_icon, arrow_icon, calendar_icon, check_icon (+19 more)
+### Community 18 - "Dev Dependencies"
+Cohesion: 0.07
+Nodes (40): devDependencies, @babel/core@^7.25.2, @babel/preset-env@^7.25.3, @babel/runtime@^7.25.0, eslint@^8.19.0, jest@^29.6.3, patch-package@^8.0.1, prettier@2.8.8 (+32 more)
 
-### Community 29 - "Icons/index.tsx"
+### Community 19 - "detail-action.ts (2)"
 Cohesion: 0.10
-Nodes (20): react-native-svg, check_dark_icon, party_popper_icon, Props, styles, Props, Props, styles (+12 more)
+Nodes (34): categoryId(), fromReminder(), toSubscriptionBody(), cancelSubscription(), createFromForm(), current(), deleteSubscription(), findPlatforms() (+26 more)
 
-### Community 30 - "react-native"
-Cohesion: 0.12
-Nodes (14): react, react-native, react-native-safe-area-context, Props, styles, Props, styles, Props (+6 more)
-
-### Community 31 - "MessageRow/index.tsx"
-Cohesion: 0.31
-Nodes (5): Props, styles, Props, styles, SUPPORT_STATUS_LABELS
-
-### Community 32 - "store.ts (2)"
+### Community 20 - "profile-action.ts"
 Cohesion: 0.07
-Nodes (17): App(), displayName, name, react-redux@^9.3.0, redux-persist@^6.0.0, react-test-renderer@19.2.3, react-redux, react-test-renderer (+9 more)
+Nodes (31): ApiError, client, newKey(), pending_keys, postLong(), request(), upload(), sendChatMessage() (+23 more)
 
-### Community 33 - "icons/index.ts"
+### Community 21 - "Community 21"
+Cohesion: 0.05
+Nodes (39): Final release audit 17 Nov 2026, 16 Nov release audit (baseline), F17: Outlook sign-in silently reconnects disconnected inbox, F20: Scan reads sent and drafts mail, F32: app_config audit entry incomplete and racy, F34: Outlook pre-account takeover via email link, F36: Disabled self-deletion writes no audit row, F38: Signup accepts control/bidi chars in email (+31 more)
+
+### Community 22 - "detail-action.ts (2) (2)"
 Cohesion: 0.08
-Nodes (39): bin_danger_icon, bin_icon, chevron_up_icon, clock_accent_icon, clock_icon, close_small_icon, device_bell_icon, gear_accent_icon (+31 more)
+Nodes (15): hasCategories(), setCategories(), toAppConfig(), apiServices, getAppConfig(), getHomeData(), getAllSubscriptions(), getCategoryList() (+7 more)
 
-### Community 34 - "Calendar/index.function.ts"
+### Community 23 - "Payments Utils"
+Cohesion: 0.13
+Nodes (30): Field(), NOTES, PaymentDialog(), styles, Empty(), EMPTY_COPY, EmptyKind, EMPTY (+22 more)
+
+### Community 24 - "AiChat/index.function.ts"
+Cohesion: 0.10
+Nodes (28): getMe(), focusedTab(), changeAiConsent(), consentBody(), sendAiMessage(), sendTurn(), startAiChat(), syncAiConsent() (+20 more)
+
+### Community 25 - "YourSubscriptions/index.tsx"
 Cohesion: 0.16
-Nodes (12): getCalendarMonth(), CalendarController, CalendarRoute, EMPTY, PickerAnchor, useCalendar(), HomeEvent, dayMarker() (+4 more)
+Nodes (32): calendar_icon, clock_icon, AppSheet(), DateField(), Props, toDate(), toIso(), styles (+24 more)
 
-### Community 35 - "Project Working Rules"
+### Community 26 - "SubscriptionFields/index.tsx"
+Cohesion: 0.13
+Nodes (31): FieldError(), Props, SubscriptionFields(), styles, createSubscription(), updateSubscription(), SubscriptionFormRoute, useSubscriptionForm() (+23 more)
+
+### Community 27 - "Runtime Dependencies"
+Cohesion: 0.06
+Nodes (35): dependencies, axios@^1.21.1, react@19.2.3, react-native@0.87.1, react-native-blob-util@^1.1.1, @react-native-community/datetimepicker@^9.2.2, react-native-config@^1.7.2, @react-native-documents/picker@12.0.3 (+27 more)
+
+### Community 28 - "store.ts (2)"
+Cohesion: 0.08
+Nodes (15): App(), displayName, name, react-redux@^9.3.0, redux-persist@^6.0.0, react-redux, redux-persist, mmkv (+7 more)
+
+### Community 29 - "store.ts"
+Cohesion: 0.13
+Nodes (22): bundledLogoKey(), navigate(), logoutUser(), registerPush(), savePushToken(), MAX_INBOXES, changeProductUpdates(), deleteAccount() (+14 more)
+
+### Community 30 - "Countries & Phone"
+Cohesion: 0.11
+Nodes (18): COUNTRIES, Country, countryFlag(), PREFERRED_FOR_DIAL, changePassword(), selectUser(), Fields, passwordErrors() (+10 more)
+
+### Community 31 - "types.ts"
+Cohesion: 0.09
+Nodes (24): dashboardSlice, initial_state, initial_state, onboardingSlice, AuthResponse, Cycle, DashboardState, GmailScanStatus (+16 more)
+
+### Community 32 - "onboarding_icons.ts"
+Cohesion: 0.10
+Nodes (22): apple_icon, arrow_icon, chevron_down_icon, filter_icon, find_grey_icon, find_icon, gmail_icon, google_icon (+14 more)
+
+### Community 33 - "money"
+Cohesion: 0.16
+Nodes (20): check_dark_icon, CYCLES, Props, YourSubscriptionsBody(), RING, RING_WIDTH, styles, ScanCandidate (+12 more)
+
+### Community 34 - "GmailViews.tsx"
+Cohesion: 0.20
+Nodes (21): edit_icon, OnboardingTitle(), Caption(), GmailRecoveryArt(), InboxLine(), Props, RecoveryFooter(), RecoveryView() (+13 more)
+
+### Community 35 - "ContactUs/index.function.ts"
+Cohesion: 0.13
+Nodes (14): sendSupportMessage(), initial_state, supportSlice, TOPIC_OPTIONS, topicOf(), useContactUs(), SupportInput, SupportMessage (+6 more)
+
+### Community 36 - "Project Working Rules"
 Cohesion: 0.10
 Nodes (22): AGENTS.md working rules, API integration pattern (requestHandler, onDone), Attachment and document rules, Boxed icon rule, External reference project anonymity rule, Hook return rule, Letter spacing rule, Code naming conventions (+14 more)
 
-### Community 36 - "QA Plan & Contracts"
+### Community 37 - "types.ts (2)"
 Cohesion: 0.10
-Nodes (21): AI chat consent (App Store 5.1.2(i)), Apple store and compliance readiness, Cross-cutting checks (layout, a11y, network, security), Device matrix (iOS and Android), Real-data QA entry criteria, Gmail restricted scope testing limits, Golden dataset of seeded receipts, Google OAuth verification and CASA (+13 more)
+Nodes (17): @reduxjs/toolkit@^2.13.0, @reduxjs/toolkit, calendarSlice, initial_state, inboxSlice, initial_state, Key, initial_state (+9 more)
 
-### Community 37 - "types.ts"
-Cohesion: 0.03
-Nodes (68): @reduxjs/toolkit@^2.13.0, @reduxjs/toolkit, alertsSlice, initial_state, Key, authSlice, initial_state, requests (+60 more)
+### Community 38 - "RowView"
+Cohesion: 0.19
+Nodes (19): ImagePreview(), Cell(), clock(), DraftCard(), FileBubble(), LoopAuthor(), MessageItem(), Props (+11 more)
 
-### Community 38 - "adapters.ts (2)"
+### Community 39 - "Release Blockers & Gaps"
+Cohesion: 0.11
+Nodes (20): B1 Play App Signing SHA-1 not registered, B2 Android RECORD_AUDIO permission, B3 decimal-comma amounts rejected, B4 Sign in with Apple token revoke on delete, B7 Microsoft client env on VM, M11 refunds never reverse payments, M14 500-subscription cap bypass, M16 Outlook sender verification (+12 more)
+
+### Community 40 - "Splash.test.tsx"
+Cohesion: 0.15
+Nodes (10): NavigateArgs, navigationRef, replace(), RootParamList, TAB_NAMES, BRAND_MOTION, useSplash(), useSplashReveal() (+2 more)
+
+### Community 41 - "types.ts (3)"
+Cohesion: 0.11
+Nodes (10): constantSlice, initial_state, initial_state, profileSlice, ConstantState, Profile, ProfileOverview, ProfileState (+2 more)
+
+### Community 42 - "ListDialogs.tsx (2)"
+Cohesion: 0.23
+Nodes (15): ListRoute, useList(), byName(), byNextEvent(), filterRecords(), groupCounts(), LIST_GROUPS, LIST_SORTS (+7 more)
+
+### Community 43 - "types.ts (4)"
+Cohesion: 0.11
+Nodes (6): alertsSlice, initial_state, Key, AlertsState, ReminderSettings, clearWidgetSnapshot()
+
+### Community 44 - "YourSubscriptions/index.tsx (2)"
 Cohesion: 0.18
-Nodes (16): categoryName(), logoKey(), platformOf(), toAiReply(), toAlert(), toCalendarMonth(), toChatDraft(), toCycle() (+8 more)
+Nodes (13): PaymentChart(), Props, styles, CURRENCIES, CURRENCY_NAMES, money(), NO_DECIMALS, SIGN_PATTERN (+5 more)
 
-### Community 39 - "CustomButton (2)"
-Cohesion: 0.11
-Nodes (14): OUTLOOK_SOCIAL_ICON, Props, styles, Props, styles, Props, behavior, Props (+6 more)
+### Community 46 - "store.ts (2)"
+Cohesion: 0.18
+Nodes (13): @notifee/react-native@^9.1.8, @react-native-firebase/messaging@26.4.0, @notifee/react-native, @react-native-firebase/messaging, endSession(), ADMIN_SCREENS, forgetPushToken(), listenToPush() (+5 more)
 
-### Community 40 - "SubscriptionDetail/index.tsx"
-Cohesion: 0.33
-Nodes (8): Badge(), Body(), Field(), DetailView, LinkCard(), Props, styles, syncLabel()
+### Community 47 - "service.ts (2)"
+Cohesion: 0.25
+Nodes (12): getAllReceipts(), getReceipts(), openFile(), openReceiptFile(), ReceiptsController, ReceiptsRoute, useReceipts(), ReceiptFile (+4 more)
 
-### Community 41 - "ContactUs/index.function.ts"
-Cohesion: 0.10
-Nodes (18): fromReminderSettings(), toReminderSettings(), flag(), getAlerts(), getAllAlerts(), saveReminderSettings(), saveSettingsAndApply(), sendSupportMessage() (+10 more)
+### Community 48 - "QA Plan & Contracts"
+Cohesion: 0.15
+Nodes (14): Apple store and compliance readiness, Device matrix (iOS and Android), Real-data QA entry criteria, Gmail restricted scope testing limits, Google OAuth verification and CASA, Google Play readiness, mobile-mcp device automation, PDF viewer view-only patch (+6 more)
 
-### Community 42 - "Release Blockers & Gaps"
-Cohesion: 0.14
-Nodes (16): B1 Play App Signing SHA-1 not registered, B2 Android RECORD_AUDIO permission, B3 decimal-comma amounts rejected, B4 Sign in with Apple token revoke on delete, B7 Microsoft client env on VM, M16 Outlook sender verification, M19 any 401 ends session, M25 timezone sent only at login (+8 more)
+### Community 49 - "Profile/index.tsx (2)"
+Cohesion: 0.18
+Nodes (5): DangerButton(), PROVIDER_LABEL, ProfileScreen(), syncDate(), styles
 
-### Community 43 - "Profile/index.tsx"
-Cohesion: 0.11
-Nodes (18): delete_tile_icon, eye_icon, eye_off_icon, help_icon, history_icon, logout_icon, mail_icon, payments_icon (+10 more)
+### Community 50 - "Icons/index.tsx"
+Cohesion: 0.23
+Nodes (10): DialogCard(), AnimatedPath, Props, styles, Box(), ListDialogs(), SortDialog(), StatusDialog() (+2 more)
 
-### Community 44 - "Home/index.tsx"
-Cohesion: 0.11
-Nodes (30): AddChoiceLinks(), AddOptions(), AddSheet(), Props, ChooseInboxSheet(), Props, InboxProviders(), InfoTooltip() (+22 more)
-
-### Community 46 - "Splash.test.tsx"
-Cohesion: 0.20
-Nodes (6): replace(), BRAND_MOTION, useSplash(), useSplashReveal(), mock_dispatch, mock_replace
-
-### Community 47 - "Onboarding/index.tsx"
-Cohesion: 0.22
-Nodes (7): styles, Props, styles, Panel, PANELS, Props, styles
-
-### Community 48 - "Runtime Dependencies (2)"
-Cohesion: 0.27
-Nodes (8): toAppConfig(), useAppUpdate(), getAppConfig(), AppThunk, AppConfig, AppUpdate, appUpdateFor(), config
-
-### Community 50 - "iOS Widget Bridge"
+### Community 52 - "iOS Widget Bridge"
 Cohesion: 0.15
 Nodes (3): Foundation, WidgetBridge, WidgetKit
 
-### Community 51 - "Final release audit 17 November 2026"
-Cohesion: 0.12
-Nodes (24): M14 500-subscription cap bypass, M18 admin token and headers, M1 upload read into memory before checks, M2 long reminder offsets never sent, M30 AD_ID / Advertising ID declaration, M31 iOS privacy manifest collected types, M32 public debug key trusted in production, F11 no process-wide upload cap (+16 more)
-
-### Community 52 - "Persisted Storage"
-Cohesion: 0.29
-Nodes (5): react-native-keychain@^11.0.0, react-native-mmkv@^4.3.2, react-native-keychain, react-native-mmkv, storage
-
-### Community 53 - "Receipts/index.tsx"
+### Community 53 - "Community 53"
 Cohesion: 0.28
-Nodes (5): close_icon, Props, styles, TONE, styles
+Nodes (13): F1: Backend main not deployed (15 commits ahead), F2: Live privacy policy missing Firebase Analytics/Crashlytics, F28: App Privacy answers miss SDK-collected data, F30: Privacy policy omits support messages and Microsoft sign-in, F67: Build numbers stuck at 1, F73: Delete-account page omits disabled-account path, Gate 1: push backend main and verify delete-account route, Gate 2: deploy Hosting privacy policy (+5 more)
 
-### Community 54 - "ai-consent.test.ts"
+### Community 54 - "SubscriptionFields/index.tsx (2)"
+Cohesion: 0.23
+Nodes (10): SubscriptionRecord, amountLabel(), eventAmount(), HISTORY_FILTERS, historyCardProps(), historyRecords(), HistoryStatus, lifecycleDate() (+2 more)
+
+### Community 55 - "Payments Utils (2)"
 Cohesion: 0.18
-Nodes (8): put(), getMe(), saveAiConsent(), saveReminderSettings(), setSubscriptionReminder(), updateDevice(), mockGetMe, mockSaveAiConsent
+Nodes (10): @react-navigation/bottom-tabs@^7.20.0, @react-navigation/bottom-tabs, IS_TABLET, ICONS, RAIL_ICONS, RailStack, styles, tab_icon() (+2 more)
 
-### Community 55 - "platform_logos.ts"
+### Community 56 - "Runtime Dependencies (2)"
+Cohesion: 0.24
+Nodes (6): react-native-device-info@^15.0.2, react-native-device-info, useAppUpdate(), AppConfig, appUpdateFor(), config
+
+### Community 57 - "Community 57"
+Cohesion: 0.24
+Nodes (11): Architecture and scaling risks (single e2-small VM), F11: No process-wide upload cap (memory), F12: No backend error tracking, uptime, budget alerts or confirmed backups, F13: Deploy has no rollback on failed health, F14: Home opens duplicate renewal scans, F15: No global Gemini concurrency cap / heartbeat, F18: Outlook refresh token 90-day expiry, no keep-alive, F21: Outlook first scan capped at 5,000 messages (+3 more)
+
+### Community 58 - "react-native"
+Cohesion: 0.31
+Nodes (7): styles, ApplyDialog(), DEVICE, ReminderSettingsScreen(), SectionLabel(), Toggle(), useKeyboardScroll()
+
+### Community 59 - "ListDialogs.tsx (3)"
+Cohesion: 0.35
+Nodes (9): ReminderPreference, daysText(), defaultTooClose(), effectiveDays(), LAST_THREE_DAYS, nextReminderValues(), preferenceFromValues(), REMINDER_PRESETS (+1 more)
+
+### Community 60 - "Icons/index.tsx (2)"
+Cohesion: 0.24
+Nodes (8): react-native-svg@^15.16.0, react-native-svg, check_icon, DiscoveringFooter(), Props, STAGES, RADAR_SIZE, styles
+
+### Community 61 - "Release Blockers & Gaps (2)"
 Cohesion: 0.22
-Nodes (8): duolingo_logo, figma_logo, gmail_logo, icloud_logo, notion_logo, outlook_logo, spotify_logo, INBOX_BRAND
+Nodes (10): F10: Refunds not applied to services imported from scan (M11 partial), F16: Sender domain check spoofable via display name, F19: Gmail tokens expire in 7 days while consent screen in Testing, F22: Arabic-Indic/Persian digits rejected in inputs, F24: TextInputs lack maxFontSizeMultiplier, F25: Foldable rail/bar decided once at launch, F26: Payments ignore refunded field, F53: Offline Undo failure shows nothing (+2 more)
 
-### Community 56 - "Welcome/index.tsx"
-Cohesion: 0.32
-Nodes (5): netflix_logo, BENEFITS, Props, ORBIT_SIZE, styles
-
-### Community 57 - "Metro Config"
-Cohesion: 0.29
-Nodes (5): config, defaults, { getDefaultConfig, mergeConfig }, @react-native/metro-config@0.87.1, @react-native/metro-config
-
-### Community 58 - "react-native-device-info"
-Cohesion: 0.19
-Nodes (6): react-native-blob-util@^1.1.1, react-native-device-info@^15.0.2, @react-navigation/bottom-tabs@^7.20.0, react-native-blob-util, react-native-device-info, @react-navigation/bottom-tabs
-
-### Community 59 - "Project Working Rules (2)"
+### Community 62 - "requestHandler (3)"
 Cohesion: 0.22
-Nodes (9): Product screens lock register, Mandatory documentation synchronization, Pending reapproval status, Screen design freeze and scoped unlock, Design Studio screenDesignLocks badge map, M11 refunds never reverse payments, F10 M11 partly fixed (refunds for imported services), F26 refunded payments shown as Confirmed (+1 more)
+Nodes (8): actions, connect(), connector, dispatch(), grant, mockOutlookConnect, mockOutlookSignIn, mockTrack
 
-### Community 61 - "payments-action.ts"
-Cohesion: 0.18
-Nodes (12): inboxSource(), receiptDate(), toDetail(), toPayment(), toPriceChanges(), toReceipt(), PaymentDto, getAllPayments() (+4 more)
+### Community 63 - "Project Working Rules (2)"
+Cohesion: 0.22
+Nodes (9): Product screens lock register, Mandatory documentation synchronization, Pending reapproval status, Screen design freeze and scoped unlock, Design Studio screenDesignLocks badge map, Gemini paid tier requirement (gap #11), Known gaps and watch items, Play account-deletion web page gap (+1 more)
 
-### Community 62 - "Countries & Phone"
-Cohesion: 0.20
-Nodes (12): COUNTRIES, Country, countryFlag(), PREFERRED_FOR_DIAL, GENDER_OPTIONS, GENDER_VALUE, GenderOption, genderOption() (+4 more)
+### Community 65 - "Calendar/index.function.ts"
+Cohesion: 0.33
+Nodes (6): HomeEvent, dayMarker(), monthTitle(), nearestEvent(), shiftMonth(), WEEKDAYS
 
-### Community 63 - "iOS Native Imports"
+### Community 66 - "iOS Native Imports"
 Cohesion: 0.29
 Nodes (6): FirebaseCore, React, react_native_app_auth, React_RCTAppDelegate, ReactAppDependencyProvider, UIKit
 
-### Community 65 - "Auth.test.tsx"
+### Community 68 - "Community 68"
+Cohesion: 0.29
+Nodes (8): F23: Profile footer shows hardcoded Version 0.0.1, F31: Gemini paid-tier vs no-training claim unverified, F33: No tests for Apple/Microsoft disabled-account deletion, F37: Onboarding Connect path lacks disabled-account delete, F55: Disabled-account delete has no loader / retry issues, F64: ITSAppUsesNonExemptEncryption missing, F78: Disabled-account delete shipped while design Pending, Status after fixes (17 Nov 2026)
+
+### Community 69 - "types.ts (5)"
+Cohesion: 0.25
+Nodes (6): authSlice, initial_state, requests, AuthRequest, AuthState, DisabledAccount
+
+### Community 70 - "Metro Config"
+Cohesion: 0.29
+Nodes (5): config, defaults, { getDefaultConfig, mergeConfig }, @react-native/metro-config@0.87.1, @react-native/metro-config
+
+### Community 71 - "Persisted Storage"
+Cohesion: 0.29
+Nodes (5): react-native-keychain@^11.0.0, react-native-mmkv@^4.3.2, react-native-keychain, react-native-mmkv, storage
+
+### Community 72 - "QA Plan & Contracts (2)"
+Cohesion: 0.29
+Nodes (7): AI chat consent (App Store 5.1.2(i)), Cross-cutting checks (layout, a11y, network, security), Golden dataset of seeded receipts, AI chat suite, Auth and session suite, Widgets suite, Test suites (section 6)
+
+### Community 73 - "Final release audit 17 November 2026"
+Cohesion: 0.33
+Nodes (7): F27: Public RN debug key trusted by production OAuth (M32), F29: M30 row says Advertising ID Yes though AD_ID removed, F35: Forgot-code lockout renewable per IP (M5 partial), F42: Undo at 500 gives false SUBSCRIPTION_LIMIT, F6: 500 subscription cap race under concurrency (M14 regression), F9: Monthly reminders with 30-day offset lose ~40% (M2 partial), Regressions of baseline fixes
+
+### Community 74 - "AddOptions/index.tsx"
+Cohesion: 0.33
+Nodes (5): pencil_icon, sparkle_icon, OPTIONS, Props, styles
+
+### Community 75 - "SubscriptionDetail/index.tsx"
+Cohesion: 0.48
+Nodes (6): Badge(), Body(), Field(), LinkCard(), Props, SubscriptionDetailScreen()
+
+### Community 76 - "Auth.test.tsx"
 Cohesion: 0.33
 Nodes (5): dispatch(), earlier, later, lockedInbox(), mockGetConnectors
 
-### Community 66 - "react-native-config"
-Cohesion: 0.50
-Nodes (3): react-native-config@^1.7.2, react-native-config, API_BASE_URL
+### Community 77 - "Runtime Dependencies (2)"
+Cohesion: 0.20
+Nodes (6): @react-native-firebase/analytics@26.4.0, react-native-gesture-handler@^3.3.0, engines, node, @react-native-firebase/analytics, react-native-gesture-handler
 
-### Community 67 - "TS Config"
-Cohesion: 0.40
-Nodes (4): exclude, extends, include, @react-native/typescript-config
-
-### Community 70 - "payments-action.ts"
+### Community 78 - "Community 78"
 Cohesion: 0.33
-Nodes (3): actions, alert, mockApi
+Nodes (6): F3: Required-update lockout via app-config minBuild, F4: Store link accepts any https host (phishing), F40: latestVersion accepts control/bidi chars, F61: Android fallback store link uses market://, F69: AppUpdate has no tests, Gate 4: leave app-config null until build 100% live
 
-### Community 71 - "Release Blockers & Gaps (2)"
-Cohesion: 0.50
-Nodes (5): Gemini paid tier requirement (gap #11), Known gaps and watch items, Play account-deletion web page gap, M29 Connect inbox names Google Gemini, F31 Gemini paid tier claim
+### Community 79 - "types.ts (6)"
+Cohesion: 0.33
+Nodes (5): detailSlice, initial_state, Key, DetailState, SubscriptionDetail
 
-### Community 72 - "http-provider.ts"
-Cohesion: 0.40
-Nodes (3): upload(), uploadFile(), mockRequest
-
-### Community 77 - "auth-action.ts"
+### Community 81 - "auth-action.ts"
 Cohesion: 0.40
 Nodes (3): dto, mockSave, user
 
-### Community 79 - "Canonical Doc Owners"
+### Community 82 - "TS Config"
+Cohesion: 0.40
+Nodes (4): exclude, extends, include, @react-native/typescript-config
+
+### Community 84 - "store.ts (2) (2)"
+Cohesion: 0.50
+Nodes (3): react-test-renderer@19.2.3, react-test-renderer, typeInto()
+
+### Community 85 - "Canonical Doc Owners"
 Cohesion: 0.50
 Nodes (4): README - Renewless mobile index and setup, Firebase Hosting site renewless-11ddb, Final HTML prototype / Design Studio, React Native getting started (Metro, iOS pods, Android)
 
 ## Knowledge Gaps
-- **47 isolated node(s):** `React_RCTAppDelegate`, `ReactAppDependencyProvider`, `FirebaseCore`, `react_native_app_auth`, `Foundation` (+42 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 513 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **17 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **95 isolated node(s):** `.stateKey`, `SwiftUI`, `Foundation`, `FirebaseCore`, `react_native_app_auth` (+90 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 606 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **22 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react-native` connect `react-native` to `theme.ts`, `SubscriptionFields/index.tsx`, `ListDialogs.tsx`, `GmailViews.tsx`, `navigate`, `Container`, `goBack`, `CustomText/index.tsx`, `requestHandler`, `Dev Dependencies`, `Dropdown/index.tsx`, `Runtime Dependencies`, `YourSubscriptions/index.tsx`, `AddOptions/index.tsx`, `profile-action.ts`, `ScanRecovery/index.tsx`, `store.ts`, `CustomButton`, `AiChat/index.function.ts`, `Payments Utils`, `Icons/index.tsx`, `MessageRow/index.tsx`, `store.ts (2)`, `icons/index.ts`, `CustomButton (2)`, `SubscriptionDetail/index.tsx`, `ContactUs/index.function.ts`, `Profile/index.tsx`, `Home/index.tsx`, `Splash.test.tsx`, `Onboarding/index.tsx`, `Runtime Dependencies (2)`, `Receipts/index.tsx`, `Welcome/index.tsx`, `react-native-device-info`, `payments-action.ts`?**
-  _High betweenness centrality (0.146) - this node is a cross-community bridge._
-- **What connects `React_RCTAppDelegate`, `ReactAppDependencyProvider`, `FirebaseCore` to the rest of the system?**
-  _47 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `theme.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.07155399473222125 - nodes in this community are weakly interconnected._
 - **Why does `scripts` connect `RenewlessWidgetProvider.kt` to `Dev Dependencies`?**
-  _High betweenness centrality (0.118) - this node is a cross-community bridge._
-- **Should `SubscriptionFields/index.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.09696969696969697 - nodes in this community are weakly interconnected._
+  _High betweenness centrality (0.179) - this node is a cross-community bridge._
+- **What connects `.stateKey`, `SwiftUI`, `Foundation` to the rest of the system?**
+  _95 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `theme.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.03937007874015748 - nodes in this community are weakly interconnected._
+- **Why does `react-native` connect `theme.ts` to `Container`, `Home/index.tsx`, `requestHandler`, `CustomText/index.tsx`, `service.ts`, `CustomButton`, `requestHandler (2)`, `navigate`, `ListDialogs.tsx`, `ScanRecovery/index.tsx`, `icons/index.ts`, `Dev Dependencies`, `detail-action.ts (2)`, `profile-action.ts`, `detail-action.ts (2) (2)`, `Payments Utils`, `AiChat/index.function.ts`, `YourSubscriptions/index.tsx`, `SubscriptionFields/index.tsx`, `Runtime Dependencies`, `store.ts (2)`, `store.ts`, `onboarding_icons.ts`, `money`, `GmailViews.tsx`, `ContactUs/index.function.ts`, `RowView`, `Splash.test.tsx`, `types.ts (3)`, `YourSubscriptions/index.tsx (2)`, `store.ts (2)`, `Profile/index.tsx (2)`, `Icons/index.tsx`, `Payments Utils (2)`, `Runtime Dependencies (2)`, `react-native`, `Icons/index.tsx (2)`, `AddOptions/index.tsx`, `SubscriptionDetail/index.tsx`, `store.ts (2) (2)`?**
+  _High betweenness centrality (0.165) - this node is a cross-community bridge._
+- **Should `Container` be split into smaller, more focused modules?**
+  _Cohesion score 0.09221213569039656 - nodes in this community are weakly interconnected._
 - **Should `API DTOs & Request Handler` be split into smaller, more focused modules?**
-  _Cohesion score 0.06057945566286216 - nodes in this community are weakly interconnected._
-- **Should `ListDialogs.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.061052631578947365 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.04928404928404929 - nodes in this community are weakly interconnected._
+- **Should `adapters.ts` be split into smaller, more focused modules?**
+  _Cohesion score 0.06321334503950835 - nodes in this community are weakly interconnected._

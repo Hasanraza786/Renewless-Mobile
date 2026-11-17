@@ -301,6 +301,7 @@ export function toPayment(payment: PaymentDto): PaymentRecord {
     subscription_id: payment.subscriptionId,
     amount: payment.amount.amount,
     currency: payment.amount.currency,
+    refunded: payment.refunded?.amount ?? null,
     paid_on: payment.paidDate,
     name: payment.name,
     platform_id: platformOf(payment.subscriptionId, payment.name, payment.logoUrl),

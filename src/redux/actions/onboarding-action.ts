@@ -19,7 +19,7 @@ import {
 } from '../slices/onboarding-slice';
 import { setNotice, setProfileUser } from '../slices/profile-slice';
 import { scannedBeforeNotice } from './gmail-action';
-import { beginSession } from './auth-action';
+import { beginSession, offerDisabledDelete } from './auth-action';
 
 const SIGN_IN_FAILED = 'We couldn’t sign you in. Try again or add subscriptions manually.';
 const SIGN_IN_CANCELLED = 'Sign-in was cancelled. You can try again or add subscriptions manually.';
@@ -55,7 +55,8 @@ export function startOnboardingScan(connector_id: string, onSyncLimit: () => voi
 // onDiscovering opens the scan panel; staying on Connect shows the message instead. An inbox scanned before
 // (by a deleted account, or synced this week) connects without a scan: onScannedBefore ends onboarding with a notice.
 export function connectOnboardingGoogle(onDiscovering: () => void, onScannedBefore: () => void): AppThunk {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const signed_in = !!getState().constant.token;
     trackEvent('gmail_connect_tapped', { from: 'onboarding' });
     dispatch(setConnectMessage(''));
     let grant: GmailGrant | null;
@@ -103,7 +104,14 @@ export function connectOnboardingGoogle(onDiscovering: () => void, onScannedBefo
           );
           if (!ended) onDiscovering();
         },
-        onError: error => dispatch(setConnectMessage(error.field_errors.serverAuthCode ? GMAIL_DENIED : error.code === 'GMAIL_INBOX_LIMIT' ? error.message : SIGN_IN_FAILED)),
+        onError: error => {
+          // Signed out, a disabled account can delete itself here as on Login; the Google sign-in just given is the proof.
+          if (error.code === 'ACCOUNT_DISABLED' && !signed_in) {
+            dispatch(offerDisabledDelete(error.message, async () => ({ provider: 'google', idToken: grant.idToken })));
+            return;
+          }
+          dispatch(setConnectMessage(error.field_errors.serverAuthCode ? GMAIL_DENIED : error.code === 'GMAIL_INBOX_LIMIT' ? error.message : SIGN_IN_FAILED));
+        },
       }),
     );
   };
@@ -158,7 +166,19 @@ export function connectOnboardingOutlook(onDiscovering: () => void, onScannedBef
           );
           if (!ended) onDiscovering();
         },
-        onError: error => dispatch(setConnectMessage(error.code === 'OUTLOOK_ACCESS_DENIED' ? OUTLOOK_DENIED : ['GMAIL_INBOX_LIMIT', 'EMAIL_TAKEN', 'OUTLOOK_NO_MAILBOX'].includes(error.code) ? error.message : CONNECT_FAILED)),
+        onError: error => {
+          // Signed out, as on Login; the Microsoft code is spent, so deleting a disabled account runs a fresh sign-in.
+          if (error.code === 'ACCOUNT_DISABLED' && !signed_in) {
+            dispatch(
+              offerDisabledDelete(error.message, async () => {
+                const fresh = await outlookSignIn();
+                return fresh ? { provider: 'microsoft', ...fresh } : null;
+              }),
+            );
+            return;
+          }
+          dispatch(setConnectMessage(error.code === 'OUTLOOK_ACCESS_DENIED' ? OUTLOOK_DENIED : ['GMAIL_INBOX_LIMIT', 'EMAIL_TAKEN', 'OUTLOOK_NO_MAILBOX'].includes(error.code) ? error.message : CONNECT_FAILED));
+        },
       }),
     );
   };

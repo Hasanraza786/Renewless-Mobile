@@ -1,4 +1,5 @@
 import { Pressable, ScrollView, View } from 'react-native';
+import DeviceInfo from 'react-native-device-info';
 import { chevron_right_icon, edit_box_icon, help_icon, history_icon, logout_icon, mail_icon, payments_icon, settings_icon } from '../../assets/icons';
 import ChooseInboxSheet from '../../components/ChooseInboxSheet';
 import Container from '../../components/Container';
@@ -14,7 +15,8 @@ import ProfileDialogs from './components/ProfileDialogs';
 import useProfile, { PROVIDER_LABEL, initials } from './index.function';
 import { styles } from './styles';
 
-const APP_VERSION = '0.0.1';
+// The installed binary's version and build, as support messages report them.
+const APP_VERSION = `${DeviceInfo.getVersion()} (${DeviceInfo.getBuildNumber()})`;
 
 function DangerButton({ label, icon, onPress }: { label: string; icon: string; onPress: () => void }) {
   return (

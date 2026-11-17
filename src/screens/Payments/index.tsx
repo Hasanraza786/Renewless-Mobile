@@ -13,7 +13,7 @@ import StateView from '../../components/StateView';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { goBack } from '../../navigation/service';
 import { common_styles } from '../../utils/common_styles';
-import { MONTH_NAMES } from '../../utils/payments';
+import { MONTH_NAMES, statusLabel } from '../../utils/payments';
 import { dateLabel } from '../../utils/scan';
 import PaymentChart from './components/PaymentChart';
 import PaymentDialog from './components/PaymentDialog';
@@ -124,12 +124,13 @@ export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
                   <View style={styles.rows}>
                     {payments.matched.map((payment, index) => {
                       const amount = money(payment.currency, payment.amount);
+                      const status = statusLabel(payment);
                       return (
                         <RowView
                           key={payment.id}
                           gap={SIZES.padding / 2}
                           accessibilityRole="button"
-                          accessibilityLabel={`View ${payment.name} payment on ${dateLabel(payment.paid_on)}, ${spokenMoney(amount)}, confirmed`}
+                          accessibilityLabel={`View ${payment.name} payment on ${dateLabel(payment.paid_on)}, ${spokenMoney(amount)}, ${status.toLowerCase()}`}
                           onPress={() => payments.setSelected(payment)}
                           style={[styles.row, index < payments.matched.length - 1 && styles.divider]}>
                           <View style={styles.avatar}><PlatformLogo platform_id={payment.platform_id} name={payment.name} /></View>
@@ -140,7 +141,7 @@ export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
                           </View>
                           <View style={styles.amount}>
                             <CustomText text={amount} weight={FONTS.regular} size={SIZES.sm} />
-                            <CustomText mt={SIZES.padding / 4} text="Confirmed" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+                            <CustomText mt={SIZES.padding / 4} text={status} weight={FONTS.regular} color={payment.refunded === null ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
                           </View>
                           <Icons name={chevron_right_icon} />
                         </RowView>
