@@ -40,6 +40,8 @@ export default function useEditProfile() {
     setErrors(current => ({ ...current, [key]: undefined }));
   };
 
+  const clearDateOfBirth = () => update('date_of_birth', null);
+
   const onSubmit = () => {
     const name = form_data.name.trim();
     const next = {
@@ -51,5 +53,5 @@ export default function useEditProfile() {
     dispatch(updateProfile({ name, phone: joinPhone(form_data.phone_country, form_data.phone), dateOfBirth: form_data.date_of_birth, gender: GENDER_VALUE[form_data.gender] }, goBack));
   };
 
-  return { user, form_data, update, errors, today, saving, request_error, onSubmit };
+  return { user, form_data, update, clearDateOfBirth, errors, today, saving, request_error, onSubmit };
 }

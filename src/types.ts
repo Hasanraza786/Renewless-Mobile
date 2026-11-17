@@ -422,6 +422,8 @@ export type AuthState = {
   loading: Record<AuthRequest, boolean>;
   error: Record<AuthRequest, string>;
   disabled: DisabledAccount | null;
+  // The server ended the session mid-use: the themed notice over Login.
+  session_ended: 'expired' | 'disabled' | null;
 };
 
 export type ProfileState = {

@@ -56,6 +56,7 @@ export default function EditProfileScreen() {
             value={form.form_data.date_of_birth}
             maximum={form.today}
             onChange={value => form.update('date_of_birth', value)}
+            onClear={form.clearDateOfBirth}
             error={form.errors.date_of_birth}
           />
           <SizedBox height={SIZES.padding * 0.7} />

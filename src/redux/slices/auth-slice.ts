@@ -18,6 +18,7 @@ function freshAuth(): AuthState {
     loading: Object.fromEntries(requests.map(key => [key, false])) as AuthState['loading'],
     error: Object.fromEntries(requests.map(key => [key, ''])) as AuthState['error'],
     disabled: null,
+    session_ended: null,
   };
 }
 
@@ -39,13 +40,16 @@ const authSlice = createSlice({
     updateDisabledAccount(state, action: PayloadAction<Partial<DisabledAccount>>) {
       if (state.disabled) Object.assign(state.disabled, action.payload);
     },
+    setSessionEnded(state, action: PayloadAction<AuthState['session_ended']>) {
+      state.session_ended = action.payload;
+    },
     resetAuth() {
       return freshAuth();
     },
   },
 });
 
-export const { setAuthLoading, setAuthError, setDisabledAccount, updateDisabledAccount, resetAuth } = authSlice.actions;
+export const { setAuthLoading, setAuthError, setDisabledAccount, updateDisabledAccount, setSessionEnded, resetAuth } = authSlice.actions;
 
 export const authLoading = (key: AuthRequest) => (value: boolean) =>
   setAuthLoading({ key, value });

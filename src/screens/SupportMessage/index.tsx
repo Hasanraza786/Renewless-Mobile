@@ -36,8 +36,9 @@ export default function SupportMessageScreen({ route }: { route: RouteProp<AppSt
               </RowView>
               <CustomText mt={SIZES.padding * 0.35} text={message.message} weight={FONTS.regular} size={SIZES.sm} line_height={SIZES.padding} />
             </View>
-            {message.replies.map(reply => (
-              <View key={reply.sent_label + reply.body.length} style={[styles.bubble, styles.bubble_team]}>
+            {/* Replies only append and have no ID, so the position is a stable key. */}
+            {message.replies.map((reply, index) => (
+              <View key={index} style={[styles.bubble, styles.bubble_team]}>
                 <RowView gap={SIZES.padding * 0.35}>
                   <View style={styles.team_mark}>
                     <CustomText text="R" color={COLORS.primary} size={SIZES.xs} />

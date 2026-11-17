@@ -29,3 +29,10 @@ test('an update keeps the login, with or without the install marker', async () =
   storage.remove('persist:constant');
   expect(await launch()).toBe('old-token');
 });
+
+test('a failed Keychain write still signs this run in; only the next launch asks again', async () => {
+  const { saveSessionToken, sessionToken } = require('../src/utils/session-token');
+  jest.mocked(Keychain.setGenericPassword).mockRejectedValueOnce(new Error('keystore unavailable'));
+  await expect(saveSessionToken('new-token')).resolves.toBeUndefined();
+  expect(sessionToken()).toBe('new-token');
+});

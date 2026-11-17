@@ -1,3 +1,4 @@
+import { getCrashlytics, recordError } from '@react-native-firebase/crashlytics';
 import * as Keychain from 'react-native-keychain';
 import { createMMKV } from 'react-native-mmkv';
 
@@ -32,7 +33,12 @@ export async function loadSessionToken() {
 
 export async function saveSessionToken(value: string) {
   token = value;
-  await Keychain.setGenericPassword('session', value, { service: SERVICE, accessible: Keychain.ACCESSIBLE.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY });
+  try {
+    await Keychain.setGenericPassword('session', value, { service: SERVICE, accessible: Keychain.ACCESSIBLE.AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY });
+  } catch (error) {
+    // The sign-in still works from memory; only the next launch asks to log in again.
+    recordError(getCrashlytics(), error instanceof Error ? error : new Error(String(error)));
+  }
 }
 
 export async function clearSessionToken() {

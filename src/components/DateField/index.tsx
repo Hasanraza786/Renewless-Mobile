@@ -26,6 +26,8 @@ type Props = {
   // 'time' picks a local HH:MM (form variant only); the value and onChange use HH:MM.
   mode?: 'date' | 'time';
   disabled?: boolean;
+  // Optional fields: Clear in the picker empties a set value.
+  onClear?: () => void;
 };
 
 const toDate = (iso: string) => {
@@ -36,11 +38,12 @@ const toIso = (date: Date) =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
 // Date input: sheets expand the native inline calendar below the field; the form variant opens a wheel sheet.
-export default function DateField({ label, label_end, value, minimum, maximum, onChange, variant, error, mode = 'date', disabled }: Props) {
+export default function DateField({ label, label_end, value, minimum, maximum, onChange, variant, error, mode = 'date', disabled, onClear }: Props) {
   const [open, setOpen] = useState(false);
   // The form variant picks in a sheet and commits on Done; closing the sheet discards the draft.
   const [draft, setDraft] = useState<Date | null>(null);
   const time = mode === 'time';
+  const clearable = !!onClear && !!value;
   const toPicker = (iso: string) => (time ? new Date(`2000-01-01T${iso}:00`) : toDate(iso));
   const fromPicker = (date: Date) => (time ? `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}` : toIso(date));
   // Android has no inline or sheet picker: the field opens the system date/time dialog directly.
@@ -54,6 +57,8 @@ export default function DateField({ label, label_end, value, minimum, maximum, o
       positiveButton: { textColor: COLORS.primary },
       negativeButton: { textColor: COLORS.primary },
       onValueChange: (_, date) => onChange(fromPicker(date)),
+      neutralButton: clearable ? { label: 'Clear', textColor: COLORS.primary } : undefined,
+      onNeutralButtonPress: clearable ? onClear : undefined,
     });
   const onPress = () => {
     if (Platform.OS === 'android') openAndroid();
@@ -95,7 +100,10 @@ export default function DateField({ label, label_end, value, minimum, maximum, o
               />
             </View>
           ) : null}
-          <CustomButton variant="primary" text="Done" onPress={() => { if (draft) onChange(fromPicker(draft)); setDraft(null); }} />
+          <RowView gap={SIZES.padding * 0.45}>
+            {clearable ? <CustomButton variant="secondary" text="Clear" onPress={() => { onClear?.(); setDraft(null); }} style={common_styles.flex_1} /> : null}
+            <CustomButton variant="primary" text="Done" onPress={() => { if (draft) onChange(fromPicker(draft)); setDraft(null); }} style={common_styles.flex_1} />
+          </RowView>
         </AppSheet>
       ) : open ? (
         <DateTimePicker

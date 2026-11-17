@@ -62,3 +62,17 @@ test('a JS error from the service shows the generic message, not its own text', 
   await run({ apiService: async () => { throw new TypeError('Cannot read property id of undefined'); }, onError });
   expect(onError.mock.calls[0][0].message).toBe('Something went wrong. Please try again.');
 });
+
+test('a session ended mid-use says why on Login, once for all its failing requests', async () => {
+  // endSession clears the token, as the real one does, so the other requests of that session are stale.
+  jest.mocked(endSession).mockImplementation(() => {
+    clearSessionToken();
+    return { type: 'test/endSession' } as never;
+  });
+  const notices = () => dispatch.mock.calls.filter(([action]) => action?.type === 'auth/setSessionEnded').map(([action]) => action.payload);
+  await Promise.all([run({ apiService: fails('UNAUTHORIZED') }), run({ apiService: fails('UNAUTHORIZED') })]);
+  expect(notices()).toEqual(['expired']);
+  await saveSessionToken('token-a');
+  await run({ apiService: fails('ACCOUNT_DISABLED') });
+  expect(notices()).toEqual(['expired', 'disabled']);
+});

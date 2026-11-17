@@ -4,6 +4,7 @@ import { ApiError } from '../api_services/http-provider';
 import type { RootState } from '../types';
 import { sessionToken } from '../utils/session-token';
 import { endSession } from './endSession';
+import { setSessionEnded } from './slices/auth-slice';
 
 const SESSION_ENDED = new Set(['UNAUTHORIZED', 'ACCOUNT_DISABLED']);
 
@@ -39,7 +40,12 @@ export function requestHandler<Param, Data>({ apiService, param_data, setLoading
         // Only server messages are user copy; a JS error's own text never reaches the screen.
         const error = caught instanceof ApiError ? caught : new ApiError(0, 'INTERNAL', 'Something went wrong. Please try again.');
         // Only a dead session signs out; Gmail/Outlook expiry and provider token checks are 401s too.
-        if (endOnUnauthorized && SESSION_ENDED.has(error.code)) dispatch(endSession());
+        if (endOnUnauthorized && SESSION_ENDED.has(error.code)) {
+          dispatch(endSession());
+          // Other requests of this session now return as stale above, so the notice shows once.
+          dispatch(setSessionEnded(error.code === 'ACCOUNT_DISABLED' ? 'disabled' : 'expired'));
+          return;
+        }
         if (setError) dispatch(setError(error.message));
         onError?.(error);
         return;

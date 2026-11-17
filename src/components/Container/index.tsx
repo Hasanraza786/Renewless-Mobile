@@ -7,7 +7,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
-import { COLORS, IS_TABLET, SIZES } from '../../constants/theme';
+import { COLORS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import { useIsTablet } from '../../utils/tablet';
 import { styles } from './styles';
@@ -46,7 +46,7 @@ export default function Container({
   return (
     <SafeAreaView edges={resolved_edges} style={[styles.safe_area, { backgroundColor: background_color }]}>
       <StatusBar barStyle={bar_style || 'light-content'} />
-      <View style={[common_styles.flex_1, readable && is_tablet && styles.readable, style, ANDROID && tab_bar && !IS_TABLET && { paddingBottom: SIZES.padding * 4 }]}>{children}</View>
+      <View style={[common_styles.flex_1, readable && is_tablet && styles.readable, style, ANDROID && tab_bar && !is_tablet && { paddingBottom: SIZES.padding * 4 }]}>{children}</View>
     </SafeAreaView>
   );
 }

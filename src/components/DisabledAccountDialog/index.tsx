@@ -1,5 +1,6 @@
 import { closeDisabledAccount, deleteDisabledAccount } from '../../redux/actions/auth-action';
-import { updateDisabledAccount } from '../../redux/slices/auth-slice';
+import { setSessionEnded, updateDisabledAccount } from '../../redux/slices/auth-slice';
+import { StyleSheet } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
@@ -8,11 +9,25 @@ import CustomButton from '../CustomButton';
 import CustomText from '../CustomText';
 import RowView from '../RowView';
 
+const styles = StyleSheet.create({ ok: { marginTop: SIZES.padding * 0.7 } });
+
 // A sign-in to a disabled account (Login, or onboarding's Connect and Login): the server's message with Delete my account,
 // then the Settings deletion copy. App-level, like the toast, so every sign-in path shares it.
 export default function DisabledAccountDialog() {
   const dispatch = useAppDispatch();
   const disabled = useAppSelector(state => state.auth.disabled);
+  const session_ended = useAppSelector(state => state.auth.session_ended);
+  // The server ended the session mid-use (endSession already returned to Login): say why, once.
+  if (session_ended) {
+    const closeNotice = () => dispatch(setSessionEnded(null));
+    const expired = session_ended === 'expired';
+    return (
+      <ConfirmDialog title={expired ? 'Session ended' : 'Account disabled'} close_label="Close" onClose={closeNotice}>
+        <CustomText mt={SIZES.padding * 0.7} text={expired ? 'Your session has ended. Please sign in again.' : 'This account has been disabled.'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        <CustomButton variant="primary" text="OK" onPress={closeNotice} style={styles.ok} />
+      </ConfirmDialog>
+    );
+  }
   if (!disabled) return null;
   const close = () => dispatch(closeDisabledAccount());
   if (disabled.step === 'notice') {

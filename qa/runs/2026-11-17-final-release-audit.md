@@ -21,6 +21,13 @@ Live negative tests ran only against a local backend (in-memory Mongo, random po
 | F23 | Fixed; scoped unlock, approval and relock by the user on 17 Nov 2026: Profile footer reads Version <version> (<build>) from the binary, in the app and the Studio | tsc, eslint, jest |
 | F26 | Fixed; scoped unlock, approval and relock by the user on 17 Nov 2026: Payments rows and details show Refunded / Partly refunded and the refunded amount from the backend's `refunded`; Studio fixture shows both | `payments.test.ts`, prototype tests |
 | F37 | Fixed; approved and relocked by the user on 17 Nov 2026: onboarding Connect Gmail/Outlook and Login offers the disabled-account deletion like Login (Google proof: the sign-in just given; Outlook: a fresh sign-in) | `disabled-delete.test.ts` |
+| F25 | Fixed: Android rail or bottom bar and Container's tab-bar padding follow `useIsTablet` (window), not the launch screen; switching mounts the other navigator (open tab resets to Home). Fonts stay fixed. Device fold/unfold still unproven | tsc, eslint, jest |
+| F52 | Fixed: a Keychain/Keystore write failure is reported to Crashlytics and the sign-in continues from memory; the next launch asks to log in | `session-token.test.ts` |
+| F56 | Fixed; scoped unlock, approval and relock by the user on 17 Nov 2026: a session ended by the server shows the app's dialog once on Login (Session ended / Account disabled, OK). The unsaved form is still lost | `request-handler.test.ts` |
+| F59 | Fixed: support reply keys use their position (replies only append, no ID) | tsc, eslint |
+| F60 | Fixed; scoped unlock, approval and relock by the user on 17 Nov 2026: Edit profile's date of birth has Clear (iOS sheet button, Android dialog neutral button); backend already accepts `null` | tsc, eslint, jest |
+| F69 | Fixed: `app-update-hook.test.tsx` covers required cannot be dismissed, optional Not now, foreground re-check and the https store fallbacks | 3 tests |
+| F70 | Partly: `money-actions.test.ts` covers List paging, resume currency/amount/revision, edit keeping the trial, Gmail review save/import and its trial error, AI duplicate and separate plan. Line coverage still not the goal | 5 tests |
 | F78 | Studio route Login · disabled account added. At the user's request the OS alerts became the app's `ConfirmDialog` (`DisabledAccountDialog`, app-level); the whole flow, with the onboarding path, approved and locked by the user on 17 Nov 2026. Device check: after a password login the dialog must appear as the signing-in overlay fades (two iOS modals) | Prototype tests 162/162; `disabled-delete.test.ts` 3 tests |
 
 ## 1. Verdict
