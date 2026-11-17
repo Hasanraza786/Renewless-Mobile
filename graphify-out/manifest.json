@@ -2766,10 +2766,10 @@
     "semantic_hash": "3a8199cdc50f47ffe296b65def3a072f"
   },
   "qa/runs/2026-11-17-final-release-audit.md": {
-    "mtime": 1794914482.775615,
-    "seen": 1794914830.713537,
-    "ast_hash": "5b7ff6022a80982850b0c3b41b10db0f",
-    "semantic_hash": "5b7ff6022a80982850b0c3b41b10db0f"
+    "mtime": 1794918579.0416858,
+    "seen": 1794919478.708069,
+    "ast_hash": "4b9c4edb6a548c84bce07caf14a7c92d",
+    "semantic_hash": "4b9c4edb6a548c84bce07caf14a7c92d"
   },
   "src/utils/digits.ts": {
     "mtime": 1794913016.8590336,
