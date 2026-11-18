@@ -13,7 +13,7 @@ const APP_STORE_URL = 'https://apps.apple.com/app/id6827023344';
 // Checked at launch and every return to the foreground, so a required update keeps asking until it is installed.
 export default function useAppUpdate() {
   const dispatch = useAppDispatch();
-  const dismissed_build = useAppSelector(state => state.constant.update_dismissed_build);
+  const dismissed_version = useAppSelector(state => state.constant.update_dismissed_version);
   const [config, setConfig] = useState<AppConfig | null>(null);
 
   useEffect(() => {
@@ -23,11 +23,11 @@ export default function useAppUpdate() {
     return () => app_state.remove();
   }, [dispatch]);
 
-  const update = appUpdateFor(config, Number(DeviceInfo.getBuildNumber()), dismissed_build);
   const installed_version = DeviceInfo.getVersion();
+  const update = appUpdateFor(config, installed_version, dismissed_version);
 
   const dismiss = () => {
-    if (update && !update.required) dispatch(setUpdateDismissed(update.latest_build));
+    if (update && !update.required) dispatch(setUpdateDismissed(update.latest_version));
   };
   // The admin's store link; without one, this app's own store page.
   const openStore = () => {

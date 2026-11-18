@@ -400,8 +400,8 @@ export type ConstantState = {
   ai_consent: boolean;
   // Turning AI off failed to reach the server; the next app open sends it again. Cleared on sign-out.
   ai_withdrawal_unsent: boolean;
-  // Not now on the optional update prompt: the latest build it was closed for, so only a newer build asks again.
-  update_dismissed_build: number;
+  // Not now on the optional update prompt: the latest version it was closed for, so only a newer version asks again.
+  update_dismissed_version: string;
 };
 
 export type AuthRequest =
@@ -605,6 +605,6 @@ export type ReceiptItem = {
   files: ReceiptFile[];
 };
 
-export type AppConfig = { latest_version: string; latest_build: number; min_build: number; notes: string[]; store_url: string };
-// The launch prompt: required (below the minimum build) cannot be closed.
-export type AppUpdate = { required: boolean; latest_version: string; latest_build: number; notes: string[]; store_url: string };
+export type AppConfig = { latest_version: string; min_version: string; notes: string[]; store_url: string };
+// The launch prompt: required (below the minimum version) cannot be closed.
+export type AppUpdate = { required: boolean; latest_version: string; notes: string[]; store_url: string };

@@ -308,7 +308,7 @@ iOS Small and Android 2×2:
   - contrast ≥ 4.5:1;
   - touch targets ≥ 44 pt (iOS) and 48 dp (Android).
 - **Network:** offline at launch, airplane mode mid-request, slow network, timeouts and Retry, no duplicate writes on retry.
-- **Lifecycle:** background and foreground, Android process death ("Don't keep activities"), cold start from a widget or notification, rotating the device (should stay portrait), an app update from the previous build with persisted state (Redux persist).
+- **Lifecycle:** background and foreground, Android process death ("Don't keep activities"), cold start from a widget or notification, rotating the device (phones stay portrait on iOS and Android; iPad, Android tablets and open foldables rotate and keep the tablet layout), an app update from the previous build with persisted state (Redux persist).
 - **Dates and money:**
   - change the time zone mid-cycle;
   - DST boundaries; month-end and the 31st; 29 Feb;

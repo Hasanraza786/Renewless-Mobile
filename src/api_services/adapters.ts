@@ -531,8 +531,7 @@ export function isAuthExpired(code?: string) {
 // Admin release notes: one bullet per non-empty line.
 export const toAppConfig = (dto: AppConfigDto): AppConfig => ({
   latest_version: dto.latestVersion,
-  latest_build: dto.latestBuild,
-  min_build: dto.minBuild,
+  min_version: dto.minVersion,
   notes: dto.releaseNotes.map(note => note.trim()).filter(Boolean),
   store_url: dto.storeUrl,
 });
