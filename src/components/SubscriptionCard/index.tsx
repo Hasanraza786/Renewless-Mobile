@@ -4,6 +4,7 @@ import { chevron_right_icon } from '../../assets/icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import CustomText from '../CustomText';
+import LinkText from '../LinkText';
 import Icons from '../Icons';
 import { styles } from './styles';
 import RowView from '../RowView';
@@ -12,8 +13,8 @@ type Props = {
   name: string;
   platform_id: string;
   status: { label: string; color: string };
-  // Timing, then optional plan/context lines; a line may carry its own colour (e.g. Add renewal date ›).
-  lines: (string | { text: string; color: string })[];
+  // Timing, then optional plan/context lines; a line may carry its own colour and a chevron (e.g. Add renewal date).
+  lines: (string | { text: string; color: string; chevron?: boolean })[];
   amount: string;
   caption: string;
   // Opt-in decorative chevron for cards that open Detail (Home, Upcoming).
@@ -33,8 +34,8 @@ export default function SubscriptionCard({ name, platform_id, status, lines, amo
         <CustomText text={name} size={SIZES.md} />
         <CustomText mt={SIZES.padding / 4} text={status.label} weight={FONTS.regular} color={status.color} size={SIZES.sm} />
         {lines.map(line => {
-          const { text, color } = typeof line === 'string' ? { text: line, color: COLORS.text_secondary } : line;
-          return <CustomText key={text} mt={SIZES.padding * 0.15} text={text} weight={FONTS.regular} color={color} size={SIZES.sm} />;
+          const { text, color, chevron: link } = typeof line === 'string' ? { text: line, color: COLORS.text_secondary, chevron: false } : line;
+          return link ? <LinkText key={text} mt={SIZES.padding * 0.15} text={text} color={color} /> : <CustomText key={text} mt={SIZES.padding * 0.15} text={text} weight={FONTS.regular} color={color} size={SIZES.sm} />;
         })}
       </View>
       <View style={styles.amount}>

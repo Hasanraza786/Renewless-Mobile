@@ -1,7 +1,7 @@
 import PlatformLogo from '../../../components/PlatformLogo';
 import { useEffect, useRef } from 'react';
 import { Animated, Easing, Platform, View } from 'react-native';
-import { benefit_check_icon, demo_app_icons, logo_mark, play_circle_icon } from '../../../assets/icons';
+import { benefit_check_icon, demo_app_icons, logo_mark, play_circle_icon, plus_glyph_icon } from '../../../assets/icons';
 import ConfirmDialog from '../../../components/ConfirmDialog';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
@@ -83,7 +83,7 @@ function HowToClip({ home }: { home: HomeController }) {
             ))}
           </RowView>
           <Animated.View style={[styles.clip_plus, { opacity: plus }]}>
-            <CustomText text="+" color={COLORS.graphite} size={SIZES.lg} line_height={null} />
+            <Icons name={plus_glyph_icon} stroke={COLORS.graphite} />
           </Animated.View>
           <Animated.View style={[styles.clip_touch, { opacity: touch, transform: [{ scale: at([0, 0.04, 0.08, 1], [0.6, 0.6, 1, 1]) }] }]} />
           {event ? (

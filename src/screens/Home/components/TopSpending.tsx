@@ -1,5 +1,6 @@
 import { Pressable, View } from 'react-native';
 import CustomText from '../../../components/CustomText';
+import LinkText from '../../../components/LinkText';
 import RowView from '../../../components/RowView';
 import { SpendRows, TrialRows } from '../../../components/SpendRows';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
@@ -13,7 +14,7 @@ export default function TopSpending({ home }: { home: HomeController }) {
       <RowView justify_content="space-between">
         <CustomText text="Top spending" size={SIZES.lg} />
         <Pressable accessibilityRole="button" accessibilityLabel="View all spending" hitSlop={SIZES.padding3} onPress={home.openSpending} style={styles.view_all}>
-          <CustomText text="View all ›" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+          <LinkText text="View all" color={COLORS.primary} />
         </Pressable>
       </RowView>
       <CustomText mt={SIZES.padding2} text="Estimated monthly spend" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

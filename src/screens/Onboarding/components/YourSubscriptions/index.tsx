@@ -3,7 +3,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { common_styles } from '../../../../utils/common_styles';
 import { Pressable, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { check_dark_icon, edit_icon } from '../../../../assets/icons';
+import { arrow_right_icon, check_dark_icon, edit_icon } from '../../../../assets/icons';
 import AppSheet from '../../../../components/AppSheet';
 import AddChoiceLinks from '../../../../components/AddChoiceLinks';
 import CustomButton from '../../../../components/CustomButton';
@@ -225,7 +225,8 @@ export function YourSubscriptionsFooter({ onboarding }: Props) {
 
       <CustomButton
         variant="primary"
-        text={onboarding.save_loading ? 'Saving…' : count ? `Save ${count} ${count === 1 ? 'subscription' : 'subscriptions'} →` : 'Select subscriptions to save'}
+        text={onboarding.save_loading ? 'Saving…' : count ? `Save ${count} ${count === 1 ? 'subscription' : 'subscriptions'}` : 'Select subscriptions to save'}
+        trailing_icon={!onboarding.save_loading && count ? arrow_right_icon : undefined}
         disabled={!count || onboarding.save_loading}
         busy={onboarding.save_loading}
         onPress={onboarding.save}

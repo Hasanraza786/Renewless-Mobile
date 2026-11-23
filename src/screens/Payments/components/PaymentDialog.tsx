@@ -1,3 +1,4 @@
+import { chevron_right_icon } from '../../../assets/icons';
 import PlatformLogo from '../../../components/PlatformLogo';
 import { StyleSheet, View } from 'react-native';
 import ConfirmDialog from '../../../components/ConfirmDialog';
@@ -46,7 +47,7 @@ export default function PaymentDialog({ payment, onClose, onViewSubscription }: 
         {payment.inbox_email ? <Field label="Receipt inbox" value={payment.inbox_email} /> : null}
       </View>
       <CustomText mt={SIZES.padding * 0.8} text={`${NOTES[payment.source]}${payment.refunded !== null ? ' The amount is what it cost after the refund.' : ''} Confirmation doesn’t change your renewal schedule.`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-      <CustomButton variant="secondary" text="View subscription ›" onPress={onViewSubscription} style={styles.action} />
+      <CustomButton variant="secondary" text="View subscription" trailing_icon={chevron_right_icon} onPress={onViewSubscription} style={styles.action} />
     </ConfirmDialog>
   );
 }

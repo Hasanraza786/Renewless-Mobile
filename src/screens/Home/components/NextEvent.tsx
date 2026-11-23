@@ -1,6 +1,7 @@
 import PlatformLogo from '../../../components/PlatformLogo';
 import { Pressable, View } from 'react-native';
 import CustomText from '../../../components/CustomText';
+import LinkText from '../../../components/LinkText';
 import RowView from '../../../components/RowView';
 import SubscriptionCard from '../../../components/SubscriptionCard';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
@@ -38,7 +39,7 @@ function Toolbar({ events, selected, home }: { events: HomeEvent[]; selected: Ho
       </RowView>
       {events.length > 2 ? (
         <Pressable accessibilityRole="button" accessibilityLabel={`View all ${home.data!.upcoming_count} upcoming subscriptions`} onPress={home.openUpcoming} style={styles.see_all}>
-          <CustomText text={`See all (${home.data!.upcoming_count}) ›`} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+          <LinkText text={`See all (${home.data!.upcoming_count})`} color={COLORS.primary} />
         </Pressable>
       ) : null}
     </RowView>

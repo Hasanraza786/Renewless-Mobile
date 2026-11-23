@@ -2,6 +2,7 @@ import { ScrollView, View } from 'react-native';
 import { check_dark_icon, filter_icon } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
+import LinkText from '../../components/LinkText';
 import DialogCard from '../../components/DialogCard';
 import Header from '../../components/Header';
 import Icons from '../../components/Icons';
@@ -26,7 +27,7 @@ function Empty({ history, filtered }: { history: HistoryController; filtered: bo
       <CustomText mt={SIZES.padding} text={filtered ? 'No matches found' : 'Nothing here yet'} size={SIZES.lg} align="center" accessibility_role="header" />
       <CustomText mt={SIZES.padding / 2} text={filtered ? 'Try another name or clear your filters.' : 'Your cancelled and expired subscriptions will appear here.'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" style={styles.empty_copy} />
       <RowView accessibilityRole="button" onPress={filtered ? history.clearAll : history.openList} style={styles.empty_action}>
-        <CustomText text={`${filtered ? 'Clear search & filters' : 'View subscriptions'} ›`} weight={FONTS.regular} size={SIZES.sm} />
+        <LinkText text={filtered ? 'Clear search & filters' : 'View subscriptions'} />
       </RowView>
     </View>
   );

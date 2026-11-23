@@ -28,8 +28,9 @@ export function beginSession(session: SessionDto): AppThunk {
     const user = toProfile(session.user);
     dispatch(setSession({ token: session.token, user }));
     dispatch(setProfileUser(user));
-    // Reminders are sent in the account timezone; keep it in step with the phone.
-    if (session.user.timezone !== timezone()) dispatch(requestHandler({ apiService: apiServices.updateDevice, param_data: { timezone: timezone() } }));
+    // Reminders and the first Gmail scan use the account timezone; a social sign-up starts as UTC, so wait for the
+    // phone's zone to land before onboarding can start a scan.
+    if (session.user.timezone !== timezone()) await dispatch(requestHandler({ apiService: apiServices.updateDevice, param_data: { timezone: timezone() } }));
     synced_timezone = timezone();
   };
 }

@@ -66,6 +66,12 @@ import type {
 export const toCycle = (cycle: CycleDto) => (cycle.charAt(0).toUpperCase() + cycle.slice(1)) as ScanCycle;
 export const fromCycle = (cycle: ScanCycle) => cycle.toLowerCase() as CycleDto;
 
+// Values a newer backend may add are left out instead of shown wrong (a review row, an event, an alert).
+const CYCLES = new Set<string>(['weekly', 'monthly', 'quarterly', 'yearly']);
+const EVENT_TYPES = new Set<string>(['renewal', 'trial_end']);
+const REVIEW_KINDS: Record<string, GmailCandidate['kind']> = { new: 'new', update: 'update', tracked: 'duplicate' };
+export const knownEventType = (type: string) => EVENT_TYPES.has(type);
+
 // Bundled logos are keyed by name; backend platforms have ObjectIds, so link the two by name.
 // The backend's hosted logo (logoUrl) covers platforms without a bundled one.
 // Subscription ID → platform ID, so events (which carry no platform) still find their logo.
@@ -250,21 +256,24 @@ const toTrial = (trial: TrialDto): HomeTrial => ({
   cycle: toCycle(trial.cycle),
 });
 
+const toEvents = (events: EventDto[]) => events.filter(event => knownEventType(event.type)).map(toEvent);
+
 export function toCalendarMonth(calendar: CalendarDto): CalendarMonth {
-  return { month: calendar.month, today: localToday(), events: calendar.events.map(toEvent), expected: calendar.expected };
+  return { month: calendar.month, today: localToday(), events: toEvents(calendar.events), expected: calendar.expected };
 }
 
 // Home combines /home, /upcoming, this month's /calendar and /spending into the one snapshot the screens read.
 export function toHome(home: HomeDto, upcoming: UpcomingDto, calendar: CalendarDto, spending: SpendingDto): HomeSnapshot {
-  const events = calendar.events.map(toEvent);
+  const events = toEvents(calendar.events);
+  const upcoming_events = toEvents(upcoming.events);
   const currencies = [...new Set(home.forecast.flatMap(month => month.totals.map(total => total.currency)))];
   return {
     as_of: home.asOf,
     today: home.today,
     has_subscriptions: home.hasSubscriptions,
-    nearest_events: home.nearest?.events.map(toEvent) ?? [],
-    upcoming_count: upcoming.events.length,
-    upcoming: upcoming.events.map(toEvent),
+    nearest_events: toEvents(home.nearest?.events ?? []),
+    upcoming_count: upcoming_events.length,
+    upcoming: upcoming_events,
     upcoming_until: upcoming.through,
     month: {
       month: home.month.label,
@@ -366,7 +375,7 @@ export function toInbox(connector: ConnectorDto): ProfileInbox {
 // shortcut: finds the backend marks needsDetails are left out, until the review panel has a state for them.
 export function toScanCandidate(dto: CandidateDto): ScanCandidate | null {
   // The price/cycle checks only narrow the types; needsDetails already covers them.
-  if (dto.classification !== 'new' || dto.needsDetails || !dto.price || !dto.cycle) return null;
+  if (dto.classification !== 'new' || dto.needsDetails || !dto.price || !dto.cycle || !CYCLES.has(dto.cycle)) return null;
   return {
     id: dto.id,
     platform_id: logoKey(dto.name, dto.platformId ?? dto.id, dto.logoUrl),
@@ -434,11 +443,12 @@ export function toAiReply(turn: ChatTurnDto): AiReply {
 // Signed-in Gmail review. Rows the review has no state for (missing price or cycle, or no safe match) are left out.
 // A trial keeps the start and length the backend found; without them its edit starts from an empty start date.
 export function toGmailCandidate(dto: CandidateDto): GmailCandidate | null {
-  if (dto.classification === 'unresolved' || dto.needsDetails || !dto.price || !dto.cycle) return null;
+  const kind = REVIEW_KINDS[dto.classification];
+  if (!kind || dto.needsDetails || !dto.price || !dto.cycle || !CYCLES.has(dto.cycle)) return null;
   const old = dto.changes?.price.from;
   return {
     id: dto.id,
-    kind: dto.classification === 'tracked' ? 'duplicate' : dto.classification,
+    kind,
     name: dto.name,
     platform_id: logoKey(dto.name, dto.platformId ?? dto.id, dto.logoUrl),
     plan: dto.plan,

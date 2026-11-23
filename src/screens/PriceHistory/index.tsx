@@ -4,6 +4,7 @@ import { ScrollView, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
+import PriceChange from '../../components/PriceChange';
 import Header from '../../components/Header';
 import Mascot from '../../components/Mascot';
 import RowView from '../../components/RowView';
@@ -59,16 +60,11 @@ export default function PriceHistoryScreen({ route }: Props) {
                       <CustomText text={change.source === 'gmail' ? 'Found in your inbox' : 'Updated by you'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
                     </View>
                   </RowView>
-                  <CustomText
+                  <PriceChange
                     mt={SIZES.padding2}
-                    weight={FONTS.regular}
-                    size={SIZES.sm}
-                    text={
-                      <>
-                        <CustomText text={`${money(change.currency, change.from_amount)} · ${change.from_cycle} → `} weight={FONTS.regular} size={SIZES.sm} line_height={null} />
-                        <CustomText text={`${money(change.currency, change.to_amount)} · ${change.to_cycle}`} size={SIZES.sm} />
-                      </>
-                    }
+                    from={`${money(change.currency, change.from_amount)} · ${change.from_cycle}`}
+                    to={`${money(change.currency, change.to_amount)} · ${change.to_cycle}`}
+                    to_weight={FONTS.medium}
                   />
                   <RowView justify_content="space-between" style={styles.field}>
                     <CustomText text="Effective from" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

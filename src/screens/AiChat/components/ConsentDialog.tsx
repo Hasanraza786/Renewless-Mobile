@@ -2,6 +2,7 @@ import { Pressable, View } from 'react-native';
 import ConfirmDialog from '../../../components/ConfirmDialog';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
+import LinkText from '../../../components/LinkText';
 import Mascot from '../../../components/Mascot';
 import RowView from '../../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
@@ -31,7 +32,7 @@ export default function ConsentDialog({ chat }: { chat: AiChatController }) {
       </View>
       <CustomText mt={SIZES.padding2} text="You review every detail before anything is saved." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
       <Pressable accessibilityRole="link" onPress={chat.openPrivacy} style={styles.consent_link}>
-        <CustomText text="How we use your data ›" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} align="center" />
+        <LinkText text="How we use your data" color={COLORS.primary} justify_content="center" />
       </Pressable>
       <RowView gap={SIZES.padding * 0.45}>
         <CustomButton variant="secondary" text="Not now" onPress={chat.declineConsent} style={common_styles.flex_1} />

@@ -2,6 +2,7 @@ import { Platform, Pressable, type StyleProp, type ViewStyle } from 'react-nativ
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import CustomText from '../CustomText';
 import Icons from '../Icons';
+import LinkText from '../LinkText';
 import { styles } from './styles';
 
 type Props = {
@@ -15,10 +16,14 @@ type Props = {
   // SVG markup for the leading provider icon of a social button.
   icon?: string;
   busy?: boolean;
+  // An SVG after the label (View subscription ›, Save n subscriptions →).
+  trailing_icon?: string;
 };
 
-export default function CustomButton({ text, onPress, disabled, variant, style, icon, busy }: Props) {
+export default function CustomButton({ text, onPress, disabled, variant, style, icon, busy, trailing_icon }: Props) {
   if (variant) {
+    const color = variant === 'primary' ? COLORS.background : variant === 'danger' ? COLORS.on_danger : variant === 'link' ? COLORS.text_secondary : COLORS.text_primary;
+    const weight = variant === 'primary' || variant === 'social' ? FONTS.medium : FONTS.regular;
     return (
       <Pressable
         accessibilityRole="button"
@@ -35,13 +40,7 @@ export default function CustomButton({ text, onPress, disabled, variant, style, 
           disabled && styles.disabled_variant,
         ]}>
         {icon ? <Icons name={icon} style={styles.social_icon} /> : null}
-        <CustomText
-          text={text}
-          weight={variant === 'primary' || variant === 'social' ? FONTS.medium : FONTS.regular}
-          color={variant === 'primary' ? COLORS.background : variant === 'danger' ? COLORS.on_danger : variant === 'link' ? COLORS.text_secondary : COLORS.text_primary}
-          size={SIZES.sm}
-          align="center"
-        />
+        {trailing_icon ? <LinkText text={text} weight={weight} color={color} icon={trailing_icon} justify_content="center" /> : <CustomText text={text} weight={weight} color={color} size={SIZES.sm} align="center" />}
       </Pressable>
     );
   }

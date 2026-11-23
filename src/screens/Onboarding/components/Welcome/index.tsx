@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 import { common_styles } from '../../../../utils/common_styles';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { check_icon, find_grey_icon, find_icon, loop_mascot, netflix_logo, remember_icon, track_icon } from '../../../../assets/icons';
+import { arrow_right_icon, check_icon, find_grey_icon, find_icon, loop_mascot, netflix_logo, remember_icon, track_icon } from '../../../../assets/icons';
 import CustomButton from '../../../../components/CustomButton';
 import CustomText from '../../../../components/CustomText';
 import Icons from '../../../../components/Icons';
@@ -103,7 +103,7 @@ export function WelcomeFooter({ onboarding }: Props) {
     <Fragment>
       <SizedBox height={SIZES.padding2} />
 
-      <CustomButton variant="primary" text="Find my subscriptions →" onPress={() => onboarding.goTo('connectInbox')} />
+      <CustomButton variant="primary" text="Find my subscriptions" trailing_icon={arrow_right_icon} onPress={() => onboarding.goTo('connectInbox')} />
 
       <SizedBox height={SIZES.padding2} />
 

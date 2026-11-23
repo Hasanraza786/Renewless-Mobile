@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react';
 import { KeyboardAvoidingView, Modal, Pressable, ScrollView, View } from 'react-native';
-import { FONTS, SIZES } from '../../constants/theme';
+import { SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import { useIsTablet } from '../../utils/tablet';
+import { close_icon } from '../../assets/icons';
+import Icons from '../Icons';
 import CustomText from '../CustomText';
 import RowView from '../RowView';
 import { styles } from './styles';
@@ -43,7 +45,7 @@ export default function ConfirmDialog({ title, close_label, onClose, locked, art
                   <CustomText text={title} size={SIZES.lg} accessibility_role="header" />
                 </View>
                 <Pressable accessibilityRole="button" accessibilityLabel={close_label} disabled={locked} onPress={close} style={styles.close}>
-                  <CustomText text="×" weight={FONTS.regular} size={SIZES.lg} line_height={null} />
+                  <Icons name={close_icon} />
                 </Pressable>
               </RowView>
             )}

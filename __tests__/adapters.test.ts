@@ -1,4 +1,4 @@
-import { fromReminder, setCategories, toAiReply, toDetail, toGmailCandidate, toHome, toReceipt, toRecord, toSubscriptionBody, toSupportMessage } from '../src/api_services/adapters';
+import { fromReminder, setCategories, toAiReply, toCalendarMonth, toDetail, toGmailCandidate, toHome, toReceipt, toRecord, toSubscriptionBody, toSupportMessage } from '../src/api_services/adapters';
 import type { DetailDto, EventDto, HomeDto } from '../src/api_services/dto';
 import { platform_logos } from '../src/assets/icons';
 
@@ -102,6 +102,14 @@ test('the Gmail review leaves out rows it cannot show and maps an update with it
   expect(toGmailCandidate({ ...base, classification: 'tracked' })).toMatchObject({ kind: 'duplicate' });
   const update = toGmailCandidate({ ...base, classification: 'update', targetSubscriptionId: 's1', changes: { price: { from: { currency: 'USD', amountMinor: 9000 }, to: { currency: 'USD', amountMinor: 10000 } } } });
   expect(update).toMatchObject({ kind: 'update', target_id: 's1', old: { price: '90.00' }, next_date: '2026-11-30', revision: 1, selected: true });
+  // A classification or cycle a newer backend adds is left out, not shown as something else.
+  expect(toGmailCandidate({ ...base, classification: 'failing' as never })).toBeNull();
+  expect(toGmailCandidate({ ...base, cycle: 'biweekly' as never })).toBeNull();
+});
+
+test('Home and Calendar leave out an event type a newer backend adds', () => {
+  const calendar = { month: '2026-11', events: [event(), event({ type: 'payment_failing' as never })], expected: [] };
+  expect(toCalendarMonth(calendar as never).events).toHaveLength(1);
 });
 
 test('a receipt shows its billing date, kind and kept files', () => {

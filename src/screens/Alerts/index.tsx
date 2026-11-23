@@ -1,8 +1,9 @@
 import PlatformLogo from '../../components/PlatformLogo';
 import { ScrollView, View } from 'react-native';
-import { chevron_right_icon, gear_accent_icon, notice_bell_icon } from '../../assets/icons';
+import { chevron_right_icon, external_icon, gear_accent_icon, notice_bell_icon } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
+import LinkText from '../../components/LinkText';
 import Header from '../../components/Header';
 import Icons from '../../components/Icons';
 import Mascot from '../../components/Mascot';
@@ -24,7 +25,7 @@ function Banner({ alerts }: { alerts: AlertsController }) {
         <CustomText text={blocked ? 'Notifications are off' : 'Push reminders are paused'} weight={FONTS.medium} size={SIZES.sm} />
         <CustomText mt={SIZES.padding * 0.15} text={blocked ? 'Allow notifications so reminders can reach you.' : 'Your saved reminders and history are still here.'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         <RowView accessibilityRole="button" onPress={blocked ? alerts.openDeviceSettings : alerts.openSettings} style={styles.banner_action}>
-          <CustomText text={blocked ? 'Open settings ↗\uFE0E' : 'Manage reminders ›'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+          <LinkText text={blocked ? 'Open settings' : 'Manage reminders'} icon={blocked ? external_icon : undefined} color={COLORS.primary} />
         </RowView>
       </View>
     </RowView>

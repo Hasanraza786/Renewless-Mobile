@@ -83,8 +83,9 @@ export function detailView({ record, today, receipts, receipt_emails, annual_est
     since: record.start_date ? dateLabel(record.start_date) : 'Not set',
     annual_label: cancelled ? 'Last price · annual equivalent' : in_trial ? 'After trial · annual equivalent' : 'Current price · annual equivalent',
     annual_value: `${money(record.currency, annual_estimate)} estimated`,
+    // Detail draws the arrow between the two prices as an icon.
     price_history: latest
-      ? `${money(latest.currency, latest.from_amount)} · ${latest.from_cycle} → ${money(latest.currency, latest.to_amount)} · ${latest.to_cycle}`
+      ? { from: `${money(latest.currency, latest.from_amount)} · ${latest.from_cycle}`, to: `${money(latest.currency, latest.to_amount)} · ${latest.to_cycle}` }
       : 'No price changes recorded',
     // Receipts row: how many billing emails are kept and the newest one's date.
     receipt_emails: receipt_emails.count && receipt_emails.latest ? { title: `Receipts · ${receipt_emails.count}`, caption: `Latest ${dateLabel(receipt_emails.latest)} · from your inbox` } : { title: 'Receipts', caption: 'No receipts yet' },

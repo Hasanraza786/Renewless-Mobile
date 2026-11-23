@@ -1,5 +1,5 @@
 import { SectionList, View } from 'react-native';
-import { filter_icon, sort_icon } from '../../assets/icons';
+import { filter_icon, plus_glyph_icon, sort_icon } from '../../assets/icons';
 import AddSheet from '../../components/AddSheet';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
@@ -36,7 +36,7 @@ function Empty({ list, account }: { list: ListController; account: boolean }) {
         style={styles.empty_copy}
       />
       <RowView accessibilityRole="button" accessibilityLabel="Add subscription manually" gap={SIZES.padding3} onPress={list.openAddManual} style={styles.add_manual}>
-        <CustomText text="+" weight={FONTS.regular} color={COLORS.primary} size={SIZES.h3} line_height={null} />
+        <Icons name={plus_glyph_icon} />
         <CustomText text="Add manually" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
       </RowView>
     </View>

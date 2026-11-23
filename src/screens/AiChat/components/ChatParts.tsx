@@ -1,9 +1,10 @@
 import PlatformLogo from '../../../components/PlatformLogo';
 import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, Image, Pressable, View } from 'react-native';
-import { pause_icon, pdf_icon, play_icon } from '../../../assets/icons';
+import { external_icon, pause_icon, pdf_icon, play_icon } from '../../../assets/icons';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
+import LinkText from '../../../components/LinkText';
 import Icons from '../../../components/Icons';
 import Mascot from '../../../components/Mascot';
 import RowView from '../../../components/RowView';
@@ -93,7 +94,9 @@ function FileBubble({ chat, message }: Props & { message: ChatMessage }) {
       {file_kind === 'image' ? (
         <Pressable accessibilityRole="button" accessibilityLabel="Preview sent image" onPress={() => chat.openPreview(uri)} style={styles.media}>
           <Image source={{ uri }} style={styles.media_image} accessibilityIgnoresInvertColors />
-          <CustomText text={'View image ↗\uFE0E'} weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.xs} style={styles.media_strip} />
+          <View style={styles.media_strip}>
+            <LinkText text="View image" icon={external_icon} color={COLORS.chat_user_text} size={SIZES.xs} />
+          </View>
         </Pressable>
       ) : (
         <RowView gap={SIZES.padding / 2} accessibilityRole="button" accessibilityLabel={`Preview sent PDF ${name}`} onPress={() => chat.openDocument(uri, name)}>
@@ -102,7 +105,7 @@ function FileBubble({ chat, message }: Props & { message: ChatMessage }) {
           </View>
           <View style={common_styles.flex_1}>
             <CustomText text={name} weight={FONTS.medium} color={COLORS.chat_user_text} size={SIZES.sm} />
-            <CustomText mt={SIZES.padding / 4} text={'PDF · View document ↗\uFE0E'} weight={FONTS.regular} color={COLORS.chat_user_text} size={SIZES.xs} />
+            <LinkText mt={SIZES.padding / 4} text="PDF · View document" icon={external_icon} color={COLORS.chat_user_text} size={SIZES.xs} />
           </View>
         </RowView>
       )}

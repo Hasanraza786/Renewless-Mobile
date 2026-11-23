@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo, Animated, Easing, View } from 'react-native';
 import { bin_danger_icon, bin_icon, chevron_up_icon, lock_icon, record_mic_icon, record_pause_icon, send_icon } from '../../../assets/icons';
 import CustomText from '../../../components/CustomText';
+import LinkText from '../../../components/LinkText';
 import Icons from '../../../components/Icons';
 import RowView from '../../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
@@ -55,7 +56,7 @@ export function HoldBar({ chat, drag_x }: Props & { drag_x: Animated.Value }) {
       <BlinkingMic paused={false} />
       <CustomText text={clock(recording.elapsed_ms)} weight={FONTS.medium} size={SIZES.md} />
       <Animated.View style={[common_styles.flex_1, { opacity: hint_fade, transform: [{ translateX: hint_shift }] }]}>
-        <CustomText text="‹  Slide to cancel" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
+        <LinkText leading text="Slide to cancel" color={COLORS.text_secondary} justify_content="center" />
       </Animated.View>
     </RowView>
   );

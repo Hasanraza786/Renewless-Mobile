@@ -1,6 +1,7 @@
 import { ScrollView, View } from 'react-native';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
+import LinkText from '../../components/LinkText';
 import Header from '../../components/Header';
 import ImagePreview from '../../components/ImagePreview';
 import Mascot from '../../components/Mascot';
@@ -47,7 +48,7 @@ function ReceiptCard({ item, receipts }: { item: ReceiptItem; receipts: Receipts
             onPress={() => receipts.openFile(item, file)}
             style={styles.file}>
             <CustomText text={`${file.kind === 'pdf' ? 'PDF' : 'Image'} · ${file.name}`} weight={FONTS.regular} size={SIZES.sm} number_of_lines={1} style={common_styles.flex_1} />
-            <CustomText text={opening ? 'Opening…' : file.kind === 'pdf' ? 'View PDF ›' : 'View image ›'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+            {opening ? <CustomText text="Opening…" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} /> : <LinkText text={file.kind === 'pdf' ? 'View PDF' : 'View image'} color={COLORS.primary} />}
           </RowView>
         );
       })}

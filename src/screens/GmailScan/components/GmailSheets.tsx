@@ -8,6 +8,7 @@ import { INBOX_BRAND } from '../../../utils/inbox';
 import AppSheet from '../../../components/AppSheet';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
+import PriceChange from '../../../components/PriceChange';
 import DateField from '../../../components/DateField';
 import Dropdown from '../../../components/Dropdown';
 import Icons from '../../../components/Icons';
@@ -90,11 +91,11 @@ function CandidateSheet({ gmail, item }: Props & { item: GmailCandidate }) {
   );
 }
 
-function Field({ label, value }: { label: string; value: string }) {
+function Field({ label, value }: { label: string; value: string | { from: string; to: string } }) {
   return (
     <RowView justify_content="space-between" gap={SIZES.padding2} style={styles.field}>
       <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-      <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} />
+      {typeof value === 'string' ? <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} /> : <PriceChange from={value.from} to={value.to} />}
     </RowView>
   );
 }
@@ -104,7 +105,7 @@ function ChangesSheet({ gmail, item }: Props & { item: GmailCandidate }) {
   const [replace, setReplace] = useState(gmail.replace_date);
   return (
     <AppSheet visible title={`Review ${item.name} changes`} onClose={gmail.closeSheet}>
-      <Field label="Monthly price" value={`${money(item.currency, item.old?.price ?? '')} → ${item.price}`} />
+      <Field label="Monthly price" value={{ from: money(item.currency, item.old?.price ?? ''), to: item.price }} />
       <Field label="Saved renewal" value={item.old?.next_date ? dateLabel(item.old.next_date) : 'Not set'} />
       <Field label="Found in receipt" value={item.next_date ? dateLabel(item.next_date) : 'Not found'} />
       <RowView align_items="flex-start" gap={SIZES.padding2} accessibilityRole="checkbox" accessibilityState={{ checked: replace }} onPress={() => setReplace(current => !current)} style={styles.check_row}>

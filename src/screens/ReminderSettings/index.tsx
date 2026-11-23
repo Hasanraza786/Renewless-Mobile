@@ -1,10 +1,11 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
-import { check_dark_icon, device_bell_icon, switch_off_icon, switch_on_icon } from '../../assets/icons';
+import { check_dark_icon, device_bell_icon, external_icon, switch_off_icon, switch_on_icon } from '../../assets/icons';
 import ConfirmDialog from '../../components/ConfirmDialog';
 import Container from '../../components/Container';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
+import LinkText from '../../components/LinkText';
 import DateField from '../../components/DateField';
 import Dropdown from '../../components/Dropdown';
 import Header from '../../components/Header';
@@ -22,10 +23,10 @@ import { useKeyboardScroll } from '../../utils/keyboard-scroll';
 import { styles } from './styles';
 
 const DEVICE = {
-  allowed: { text: 'Allowed on this device', action: 'Manage ↗\uFE0E', action_label: 'Open device notification settings' },
-  blocked: { text: 'Off · permission needed', action: 'Enable ↗\uFE0E', action_label: 'Open device notification settings' },
+  allowed: { text: 'Allowed on this device', action: 'Manage', action_label: 'Open device notification settings' },
+  blocked: { text: 'Off · permission needed', action: 'Enable', action_label: 'Open device notification settings' },
   // Not asked yet: Enable shows the system permission prompt, not Settings.
-  not_asked: { text: 'Not allowed yet', action: 'Enable ↗\uFE0E', action_label: 'Allow notifications' },
+  not_asked: { text: 'Not allowed yet', action: 'Enable', action_label: 'Allow notifications' },
   unavailable: { text: 'Not available on this device', action: '', action_label: '' },
 };
 
@@ -128,7 +129,7 @@ export default function ReminderSettingsScreen() {
                 </View>
                 {device.action ? (
                   <RowView accessibilityRole="button" accessibilityLabel={device.action_label} onPress={settings.openDevice} style={styles.device_action}>
-                    <CustomText text={device.action} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+                    <LinkText text={device.action} icon={external_icon} color={COLORS.primary} />
                   </RowView>
                 ) : null}
               </RowView>

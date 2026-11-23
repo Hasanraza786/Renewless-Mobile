@@ -3,7 +3,7 @@ import { Fragment, useEffect, useRef } from 'react';
 import { common_styles } from '../../../../utils/common_styles';
 import { Animated, Easing, View } from 'react-native';
 import Svg, { Circle, Defs, RadialGradient, Stop } from 'react-native-svg';
-import { check_dark_icon, party_popper_icon } from '../../../../assets/icons';
+import { arrow_right_icon, check_dark_icon, party_popper_icon } from '../../../../assets/icons';
 import CustomButton from '../../../../components/CustomButton';
 import RowView from '../../../../components/RowView';
 import CustomText from '../../../../components/CustomText';
@@ -121,7 +121,7 @@ export function ReadyToGoFooter({ onboarding }: Props) {
   return (
     <Fragment>
       <SizedBox height={SIZES.padding * 1.1} />
-      <CustomButton variant="primary" text="Go to my dashboard →" onPress={onboarding.openDashboard} />
+      <CustomButton variant="primary" text="Go to my dashboard" trailing_icon={arrow_right_icon} onPress={onboarding.openDashboard} />
     </Fragment>
   );
 }

@@ -93,7 +93,7 @@ export function recordCardProps(record: SubscriptionRecord, today: string) {
     platform_id: record.platform_id,
     status: recordStatus(record, today),
     lines: [
-      timing ?? { text: 'Add renewal date ›', color: COLORS.trial },
+      timing ?? { text: 'Add renewal date', color: COLORS.trial, chevron: true },
       ...(record.plan ? [`${record.plan} plan`] : []),
       ...(record.estimated && record.status === 'active' && record.next_date && !in_trial ? ['Estimated renewal date'] : []),
     ],

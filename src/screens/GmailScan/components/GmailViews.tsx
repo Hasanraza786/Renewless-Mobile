@@ -4,6 +4,7 @@ import { check_dark_icon, edit_icon, inbox_badge_icon, offline_badge_icon } from
 import AddChoiceLinks from '../../../components/AddChoiceLinks';
 import CustomButton from '../../../components/CustomButton';
 import CustomText from '../../../components/CustomText';
+import PriceChange from '../../../components/PriceChange';
 import Icons from '../../../components/Icons';
 import OnboardingTitle from '../../../components/OnboardingTitle';
 import PlatformLogo from '../../../components/PlatformLogo';
@@ -73,7 +74,8 @@ function CandidateRow({ gmail, item, last }: { gmail: GmailScanController; item:
   const update = item.kind === 'update';
   const checked = gmail.selected.includes(item.id) && !item.saved;
   const locked = item.saved || gmail.saving;
-  const first = update && item.old ? `Price ${money(item.currency, item.old.price)} → ${money(item.currency, item.price)}` : `${value.trial ? 'Trial ends' : 'Renews'} ${value.trial ? dateLabel(value.trial.end_date) : value.next_date ? dateLabel(value.next_date) : 'Date not set'}`;
+  const change = update && item.old ? { from: `Price ${money(item.currency, item.old.price)}`, to: money(item.currency, item.price) } : null;
+  const first = change ? `${change.from} to ${change.to}` : `${value.trial ? 'Trial ends' : 'Renews'} ${value.trial ? dateLabel(value.trial.end_date) : value.next_date ? dateLabel(value.next_date) : 'Date not set'}`;
   const second = update ? (gmail.replace_date && item.next_date ? `Renews ${dateLabel(item.next_date)}` : 'Your saved renewal date is kept') : `${value.trial ? 'Then ' : ''}${money(value.currency, value.price)} · ${value.cycle}`;
   return (
     <RowView gap={0} style={!last && result_styles.row_divider}>
@@ -91,7 +93,7 @@ function CandidateRow({ gmail, item, last }: { gmail: GmailScanController; item:
         </View>
         <View style={common_styles.flex_1}>
           <CustomText text={item.name} size={SIZES.sm} />
-          <CustomText mt={SIZES.padding / 4} text={first} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          {change ? <PriceChange mt={SIZES.padding / 4} from={change.from} to={change.to} color={COLORS.text_secondary} /> : <CustomText mt={SIZES.padding / 4} text={first} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />}
           <CustomText mt={SIZES.padding / 4} text={second} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           {item.saved ? <CustomText mt={SIZES.padding / 4} text="Saved" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} /> : null}
         </View>

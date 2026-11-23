@@ -3,6 +3,8 @@ import { Modal, Pressable, ScrollView, View } from 'react-native';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { common_styles } from '../../utils/common_styles';
 import { useIsTablet } from '../../utils/tablet';
+import { close_icon } from '../../assets/icons';
+import Icons from '../Icons';
 import CustomText from '../CustomText';
 import RowView from '../RowView';
 import { styles } from './styles';
@@ -30,7 +32,7 @@ export default function DialogCard({ title, subtitle, onClose, close_label, chil
               <CustomText mt={SIZES.padding / 5} text={subtitle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
             </View>
             <Pressable accessibilityRole="button" accessibilityLabel={close_label} hitSlop={SIZES.padding3 / 2} onPress={onClose} style={styles.close}>
-              <CustomText text="×" weight={FONTS.regular} size={SIZES.lg} line_height={null} />
+              <Icons name={close_icon} />
             </Pressable>
           </RowView>
           <ScrollView bounces={false} contentContainerStyle={styles.body}>

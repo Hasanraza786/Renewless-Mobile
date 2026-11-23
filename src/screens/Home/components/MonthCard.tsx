@@ -1,5 +1,7 @@
 import { Pressable, View } from 'react-native';
+import { chevron_right_icon } from '../../../assets/icons';
 import CustomText from '../../../components/CustomText';
+import Icons from '../../../components/Icons';
 import RowView from '../../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import type { MoneyTotal } from '../../../types';
@@ -20,18 +22,10 @@ function Column({ label, value, meta, onPress, accessibility_label, divided }: {
     <Pressable accessibilityRole="button" accessibilityLabel={accessibility_label} onPress={onPress} style={[styles.month_column, divided && styles.month_column_divided]}>
       <CustomText mt={SIZES.padding / 5} text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       <CustomText mt={SIZES.padding3} text={value} size={SIZES.h3} />
-      <CustomText
-        mt={SIZES.padding3}
-        weight={FONTS.regular}
-        color={COLORS.text_secondary}
-        size={SIZES.sm}
-        text={
-          <>
-            {`${meta} `}
-            <CustomText text="›" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
-          </>
-        }
-      />
+      <RowView gap={SIZES.padding / 5} mt={SIZES.padding3}>
+        <CustomText text={meta} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        <Icons name={chevron_right_icon} icon_height={SIZES.sm} icon_width={SIZES.sm} stroke={COLORS.primary} />
+      </RowView>
     </Pressable>
   );
 }

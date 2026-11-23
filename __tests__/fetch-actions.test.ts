@@ -6,6 +6,7 @@ jest.mock('../src/config/api', () => ({ API_BASE_URL: '' }));
 // Adapters pass the wire rows through, so the tests see what the actions keep.
 jest.mock('../src/api_services/adapters', () => ({
   toAlert: (row: unknown) => row,
+  knownEventType: () => true,
   toPayment: (row: unknown) => row,
   toDetail: (detail: unknown) => detail,
   toRecord: (row: unknown) => row,

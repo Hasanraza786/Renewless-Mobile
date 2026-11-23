@@ -3,6 +3,7 @@ import { ScrollView, View } from 'react-native';
 import { chevron_right_icon } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
+import LinkText from '../../components/LinkText';
 import Dropdown from '../../components/Dropdown';
 import Header from '../../components/Header';
 import Icons from '../../components/Icons';
@@ -48,7 +49,7 @@ function Empty({ kind, payments }: { kind: EmptyKind; payments: PaymentsControll
       <CustomText mt={SIZES.padding} text={EMPTY_COPY[kind].title} size={SIZES.lg} align="center" accessibility_role="header" />
       <CustomText mt={SIZES.padding / 2} text={copy} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" style={styles.empty_copy} />
       <RowView accessibilityRole="button" onPress={action} style={styles.empty_action}>
-        <CustomText text={`${EMPTY_COPY[kind].action} ›`} weight={FONTS.regular} size={SIZES.sm} />
+        <LinkText text={EMPTY_COPY[kind].action} />
       </RowView>
     </View>
   );

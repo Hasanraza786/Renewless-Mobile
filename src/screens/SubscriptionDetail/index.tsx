@@ -1,10 +1,12 @@
 import PlatformLogo from '../../components/PlatformLogo';
 import { Pressable, ScrollView, View } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { find_grey_icon } from '../../assets/icons';
+import { chevron_right_icon, external_icon, find_grey_icon } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
+import LinkText from '../../components/LinkText';
+import PriceChange from '../../components/PriceChange';
 import Header from '../../components/Header';
 import Icons from '../../components/Icons';
 import RowView from '../../components/RowView';
@@ -28,7 +30,7 @@ function Field({ label, value, onPress }: { label: string; value: string; onPres
       <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} style={common_styles.flex_1} />
       {onPress ? (
         <Pressable accessibilityRole="button" accessibilityLabel={`${label}, ${value}`} hitSlop={SIZES.padding2} onPress={onPress}>
-          <CustomText text={`${value} ›`} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+          <LinkText text={value} color={COLORS.primary} />
         </Pressable>
       ) : (
         <CustomText text={value} weight={FONTS.regular} size={SIZES.sm} align="right" style={styles.field_value} />
@@ -45,14 +47,22 @@ function Badge({ text, color, fill }: { text: string; color: string; fill: strin
   );
 }
 
-function LinkCard({ title, caption, trailing, onPress }: { title: string; caption: string; trailing: string; onPress: () => void }) {
+function LinkCard({ title, caption, count, onPress }: { title: string; caption: string | { from: string; to: string }; count?: string; onPress: () => void }) {
+  const spoken = typeof caption === 'string' ? caption : `${caption.from} to ${caption.to}`;
   return (
-    <RowView gap={SIZES.padding2} accessibilityRole="button" accessibilityLabel={`${title}, ${caption}`} onPress={onPress} style={styles.link_card}>
+    <RowView gap={SIZES.padding2} accessibilityRole="button" accessibilityLabel={`${title}, ${spoken}`} onPress={onPress} style={styles.link_card}>
       <View style={common_styles.flex_1}>
         <CustomText text={title} weight={FONTS.regular} size={SIZES.sm} />
-        <CustomText mt={SIZES.padding * 0.3} text={caption} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        {typeof caption === 'string' ? (
+          <CustomText mt={SIZES.padding * 0.3} text={caption} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        ) : (
+          <PriceChange mt={SIZES.padding * 0.3} from={caption.from} to={caption.to} color={COLORS.text_secondary} />
+        )}
       </View>
-      <CustomText text={trailing} weight={FONTS.regular} color={trailing === '›' ? COLORS.text_primary : COLORS.primary} size={SIZES.sm} />
+      <RowView gap={SIZES.padding / 5}>
+        {count ? <CustomText text={count} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} /> : null}
+        <Icons name={chevron_right_icon} stroke={count ? COLORS.primary : COLORS.text_primary} />
+      </RowView>
     </RowView>
   );
 }
@@ -105,7 +115,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
         <RowView justify_content="space-between">
           <CustomText text="Your spending" size={SIZES.lg} />
           <Pressable accessibilityRole="button" onPress={detail.openPayments} style={styles.inline_link}>
-            <CustomText text="View payments ›" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+            <LinkText text="View payments" color={COLORS.primary} />
           </Pressable>
         </RowView>
         <CustomText mt={SIZES.padding * 0.9} text="Total recorded payments" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
@@ -117,8 +127,8 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
         <CustomText mt={SIZES.padding2} text="Recorded history may be incomplete. Estimates aren’t payments." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </View>
 
-      <LinkCard title="Price history" caption={view.price_history} trailing="›" onPress={detail.openPriceHistory} />
-      <LinkCard title={view.receipt_emails.title} caption={view.receipt_emails.caption} trailing="›" onPress={detail.openReceipts} />
+      <LinkCard title="Price history" caption={view.price_history} onPress={detail.openPriceHistory} />
+      <LinkCard title={view.receipt_emails.title} caption={view.receipt_emails.caption} onPress={detail.openReceipts} />
 
       <View style={styles.panel}>
         <RowView justify_content="space-between">
@@ -150,12 +160,11 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
             <CustomText text={`Manage on ${record.name}`} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
             <CustomText mt={SIZES.padding / 5} text="Opens the service’s website" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           </View>
-          {/* \uFE0E keeps the arrow a text glyph instead of iOS's emoji. */}
-          <CustomText text={'↗\uFE0E'} weight={FONTS.regular} color={COLORS.primary} size={SIZES.h3} line_height={null} />
+          <Icons name={external_icon} />
         </RowView>
       ) : null}
 
-      {view.related ? <LinkCard title={`More on ${record.name}`} caption={view.related} trailing={`${view.related_count} ›`} onPress={detail.openRelated} /> : null}
+      {view.related ? <LinkCard title={`More on ${record.name}`} caption={view.related} count={String(view.related_count)} onPress={detail.openRelated} /> : null}
 
       <View style={styles.panel}>
         <RowView justify_content="space-between">

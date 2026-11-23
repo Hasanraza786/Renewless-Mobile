@@ -1,4 +1,4 @@
-import { fromReminderSettings, toAlert, toReminderSettings } from '../../api_services/adapters';
+import { fromReminderSettings, knownEventType, toAlert, toReminderSettings } from '../../api_services/adapters';
 import type { AlertDto } from '../../api_services/dto';
 import apiServices from '../../api_services/request-handler';
 import type { ReminderApply, ReminderSettings } from '../../types';
@@ -23,7 +23,7 @@ async function getAllAlerts() {
     cursor = page.nextCursor ?? undefined;
   } while (cursor);
   // The server pages by offset: a reminder sent between two pages pushes a row onto the next page too.
-  return [...new Map(items.map(item => [item.id, item])).values()].map(toAlert);
+  return [...new Map(items.map(item => [item.id, item])).values()].filter(item => knownEventType(item.eventType)).map(toAlert);
 }
 
 export function getAlerts(): AppThunk {

@@ -1,11 +1,14 @@
 import PlatformLogo from '../../components/PlatformLogo';
 import { Fragment } from 'react';
 import { View } from 'react-native';
+import { chevron_right_icon, more_icon } from '../../assets/icons';
+import Icons from '../Icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import type { HomeSpending, HomeTrial } from '../../types';
 import { common_styles } from '../../utils/common_styles';
 import { dateLabel } from '../../utils/scan';
 import CustomText from '../CustomText';
+import LinkText from '../LinkText';
 import { styles } from './styles';
 import RowView from '../RowView';
 import { money } from '../../utils/money';
@@ -16,7 +19,7 @@ function SpendRow({ row, currency }: { row: Row; currency: string }) {
   return (
     <RowView gap={SIZES.padding / 2} accessibilityRole="button" accessibilityLabel={`${row.name}, ${currency} ${row.amount} a month, ${row.percent}%`} onPress={row.onPress} style={styles.spend_row}>
       <View style={[styles.spend_avatar, !row.platform_id && styles.others_avatar]}>
-        {row.platform_id ? <PlatformLogo platform_id={row.platform_id} name={row.name} /> : <CustomText text="•••" weight={FONTS.regular} size={SIZES.sm} />}
+        {row.platform_id ? <PlatformLogo platform_id={row.platform_id} name={row.name} /> : <Icons name={more_icon} />}
       </View>
       <View style={common_styles.flex_1}>
         <CustomText text={row.name} size={SIZES.lg} />
@@ -27,7 +30,7 @@ function SpendRow({ row, currency }: { row: Row; currency: string }) {
       </View>
       <View style={styles.spend_value}>
         <CustomText text={money(currency, row.amount)} weight={FONTS.regular} size={SIZES.sm} align="right" />
-        <CustomText mt={SIZES.padding / 5} text={`${row.percent}% ›`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="right" />
+        <LinkText mt={SIZES.padding / 5} text={`${row.percent}%`} color={COLORS.text_secondary} justify_content="flex-end" />
       </View>
     </RowView>
   );
@@ -86,7 +89,7 @@ export function TrialRows({ trials, onPress }: { trials: HomeTrial[]; onPress: (
             <CustomText mt={SIZES.padding / 4} text={`Trial ends ${dateLabel(item.end_date)}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
             <CustomText mt={SIZES.padding / 4} text={`Then ${money(item.currency, item.then_amount)} · ${item.cycle}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           </View>
-          <CustomText text="›" weight={FONTS.regular} size={SIZES.md} />
+          <Icons name={chevron_right_icon} stroke={COLORS.text_primary} />
         </RowView>
       ))}
     </View>

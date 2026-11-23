@@ -1,5 +1,5 @@
 import { ScrollView, View } from 'react-native';
-import { delete_tile_icon, privacy_icon, refresh_icon, security_icon, switch_off_icon, switch_on_icon, terms_icon, widget_icon } from '../../assets/icons';
+import { chevron_right_icon, delete_tile_icon, privacy_icon, refresh_icon, security_icon, switch_off_icon, switch_on_icon, terms_icon, widget_icon } from '../../assets/icons';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Header from '../../components/Header';
@@ -66,7 +66,20 @@ export default function SettingsScreen() {
           text={
             <>
               {`${settings.ai_note} `}
-              <CustomText text="How we use your data ›" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} accessibility_role="link" onPress={profile.openPrivacy} />
+              <CustomText
+                text={
+                  <>
+                    {'How we use your data '}
+                    {/* shortcut: an SVG inline in a sentence aligns per platform; check the baseline on both before release. */}
+                    <Icons name={chevron_right_icon} icon_height={SIZES.sm} icon_width={SIZES.sm} stroke={COLORS.primary} />
+                  </>
+                }
+                weight={FONTS.regular}
+                color={COLORS.primary}
+                size={SIZES.sm}
+                accessibility_role="link"
+                onPress={profile.openPrivacy}
+              />
             </>
           }
         />

@@ -1,9 +1,10 @@
 import { Pressable, ScrollView, View } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import { chevron_right_icon, edit_box_icon, help_icon, history_icon, logout_icon, mail_icon, payments_icon, settings_icon } from '../../assets/icons';
+import { chevron_right_icon, edit_box_icon, help_icon, history_icon, logout_icon, mail_icon, payments_icon, plus_glyph_icon, settings_icon } from '../../assets/icons';
 import ChooseInboxSheet from '../../components/ChooseInboxSheet';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
+import LinkText from '../../components/LinkText';
 import Header from '../../components/Header';
 import Icons from '../../components/Icons';
 import MenuGroup from '../../components/MenuGroup';
@@ -62,7 +63,7 @@ export default function ProfileScreen() {
             </RowView>
             {inbox ? (
               <Pressable accessibilityRole="button" accessibilityLabel="Connect another inbox" hitSlop={SIZES.padding3} onPress={profile.openConnect}>
-                <CustomText text="+ Connect" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+                <LinkText leading text="Connect" icon={plus_glyph_icon} color={COLORS.primary} />
               </Pressable>
             ) : null}
           </RowView>

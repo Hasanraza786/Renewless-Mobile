@@ -1,5 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
+import { nav_next_icon, nav_prev_icon } from '../../../assets/icons';
 import CustomText from '../../../components/CustomText';
+import Icons from '../../../components/Icons';
 import RowView from '../../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import { common_styles } from '../../../utils/common_styles';
@@ -24,7 +26,7 @@ export default function PaymentChart({ currency, year, months, inspect, page_sta
   const max = Math.max(...months, 1);
   const inspected = Number(inspect) - 1;
   const page = Array.from({ length: 6 }, (_, index) => page_start + index);
-  const arrow = (label: string, glyph: string, start: number, disabled: boolean) => (
+  const arrow = (label: string, icon: string, start: number, disabled: boolean) => (
     <RowView
       justify_content="center"
       accessibilityRole="button"
@@ -34,7 +36,7 @@ export default function PaymentChart({ currency, year, months, inspect, page_sta
       disabled={disabled}
       onPress={() => onPage(start)}
       style={[styles.arrow, !disabled && styles.arrow_enabled]}>
-      <CustomText text={glyph} weight={FONTS.regular} color={disabled ? COLORS.text_faint : COLORS.text_primary} size={SIZES.h3} line_height={null} />
+      <Icons name={icon} stroke={disabled ? COLORS.text_faint : COLORS.text_primary} />
     </RowView>
   );
 
@@ -43,8 +45,8 @@ export default function PaymentChart({ currency, year, months, inspect, page_sta
       <RowView justify_content="space-between">
         <CustomText text={`${MONTH_NAMES[page[0]].slice(0, 3)}–${MONTH_NAMES[page[5]].slice(0, 3)} ${year}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         <RowView gap={SIZES.padding * 0.15}>
-          {arrow('Previous six months', '‹', 0, page_start === 0)}
-          {arrow('Next six months', '›', 6, page_start === 6)}
+          {arrow('Previous six months', nav_prev_icon, 0, page_start === 0)}
+          {arrow('Next six months', nav_next_icon, 6, page_start === 6)}
         </RowView>
       </RowView>
       <View accessibilityLiveRegion="polite" style={styles.reading}>
