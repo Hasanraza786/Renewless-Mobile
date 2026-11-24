@@ -104,7 +104,7 @@ function RecoveryFooter({ kind, onboarding }: { kind: Kind } & Props) {
 
       <SizedBox height={SIZES.padding / 2} />
 
-      <CustomButton variant="secondary" text="Add with AI" onPress={onboarding.openAi} />
+      <CustomButton variant="outline" text="Add with AI" onPress={onboarding.openAi} />
       <SizedBox height={SIZES.padding * 0.65} />
       <CustomButton variant="link" text="Add manually" onPress={onboarding.openManual} />
     </Fragment>

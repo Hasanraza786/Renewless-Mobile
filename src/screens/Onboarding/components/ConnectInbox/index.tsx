@@ -117,7 +117,7 @@ export function ConnectInboxFooter({ onboarding }: Props) {
 
       <SizedBox height={SIZES.padding * 0.65} />
 
-      <CustomButton variant="link" text="Add subscriptions manually" onPress={onboarding.openManual} />
+      <CustomButton variant="outline" text="Add subscriptions manually" onPress={onboarding.openManual} />
 
       <RowView align_items="stretch" justify_content="center" gap={SIZES.padding2} style={styles.legal}>
         {([['Terms', onboarding.openTerms], ['Privacy', onboarding.openPrivacy]] as const).map(([label, open], index) => (

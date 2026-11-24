@@ -540,10 +540,10 @@
     "semantic_hash": "f630b4fe1f31367e52ddabf2245e112c"
   },
   "src/components/AddChoiceLinks/index.tsx": {
-    "mtime": 1794590943.1824524,
-    "seen": 1794832885.9765382,
-    "ast_hash": "320dbffcb578317c03bb7e03375c82fd",
-    "semantic_hash": "320dbffcb578317c03bb7e03375c82fd"
+    "mtime": 1795537599.8689463,
+    "seen": 1795540458.573966,
+    "ast_hash": "6e22b059ce4ab6f8570994a2cdafbb17",
+    "semantic_hash": ""
   },
   "src/components/AddOptions/index.tsx": {
     "mtime": 1794775928.1580546,
@@ -618,16 +618,16 @@
     "semantic_hash": "afe01942e0446b529f2c0763fb999a32"
   },
   "src/components/CustomButton/index.tsx": {
-    "mtime": 1795438157.0425556,
-    "seen": 1795440094.4178848,
-    "ast_hash": "f520de754d31940e456320f0a93d9f13",
+    "mtime": 1795537589.9619277,
+    "seen": 1795540458.573979,
+    "ast_hash": "e086bf356da9f075467bda6841ebab02",
     "semantic_hash": ""
   },
   "src/components/CustomButton/styles.ts": {
-    "mtime": 1794686419.407401,
-    "seen": 1794832885.976544,
-    "ast_hash": "ba615ca7891ba9bcef428b283c0c0e63",
-    "semantic_hash": "ba615ca7891ba9bcef428b283c0c0e63"
+    "mtime": 1795537589.962317,
+    "seen": 1795540458.5739799,
+    "ast_hash": "31a4cbbca32149d79b87b2c693daf589",
+    "semantic_hash": ""
   },
   "src/components/CustomText/index.tsx": {
     "mtime": 1794913016.5356789,
@@ -1326,9 +1326,9 @@
     "semantic_hash": ""
   },
   "src/screens/GmailScan/components/GmailViews.tsx": {
-    "mtime": 1795536153.331715,
-    "seen": 1795536620.0439749,
-    "ast_hash": "c992d12077d1f66216fe12e9b1da7448",
+    "mtime": 1795537599.870055,
+    "seen": 1795540458.574053,
+    "ast_hash": "0ca114408ea7811038d8ce7a7dc62e42",
     "semantic_hash": ""
   },
   "src/screens/GmailScan/index.function.ts": {
@@ -1542,10 +1542,10 @@
     "semantic_hash": "3d254b283d00895968eb2b082c05ad13"
   },
   "src/screens/Onboarding/components/ConnectInbox/index.tsx": {
-    "mtime": 1794849946.9299695,
-    "seen": 1794903585.2859561,
-    "ast_hash": "adde480dbd99c4e38cc828a7a721c7cc",
-    "semantic_hash": "adde480dbd99c4e38cc828a7a721c7cc"
+    "mtime": 1795537605.0799887,
+    "seen": 1795540458.574075,
+    "ast_hash": "ed63e3083e1c1fc2fe43ed06fc04acb3",
+    "semantic_hash": ""
   },
   "src/screens/Onboarding/components/ConnectInbox/styles.ts": {
     "mtime": 1794775928.1630163,
@@ -1578,10 +1578,10 @@
     "semantic_hash": ""
   },
   "src/screens/Onboarding/components/ScanRecovery/index.tsx": {
-    "mtime": 1794775928.1631856,
-    "seen": 1794832885.976624,
-    "ast_hash": "f26003023ac6691f38072d9f8ed592fc",
-    "semantic_hash": "f26003023ac6691f38072d9f8ed592fc"
+    "mtime": 1795537599.8722222,
+    "seen": 1795540458.574079,
+    "ast_hash": "b0aa93f5924304744c3f802edbff542e",
+    "semantic_hash": ""
   },
   "src/screens/Onboarding/components/ScanRecovery/styles.ts": {
     "mtime": 1794518112.3887148,
@@ -1596,9 +1596,9 @@
     "semantic_hash": "5419386ea6d16bb73a861fcb01df9b40"
   },
   "src/screens/Onboarding/components/Welcome/index.tsx": {
-    "mtime": 1795438162.6167572,
-    "seen": 1795440094.417981,
-    "ast_hash": "202d828d5357bcc52fe90975ca9d8674",
+    "mtime": 1795537605.0766804,
+    "seen": 1795540458.57408,
+    "ast_hash": "45499cae6261b082cfb7e5f4f35853fe",
     "semantic_hash": ""
   },
   "src/screens/Onboarding/components/Welcome/styles.ts": {
@@ -1608,9 +1608,9 @@
     "semantic_hash": "0b10d0c5930070286b58789aeaa26c9e"
   },
   "src/screens/Onboarding/components/YourSubscriptions/index.tsx": {
-    "mtime": 1795536135.1513202,
-    "seen": 1795536620.0440052,
-    "ast_hash": "b1c3d4ff6b580c4ab2f00256ab223e5e",
+    "mtime": 1795537599.8713646,
+    "seen": 1795540458.5740821,
+    "ast_hash": "3970ba0689fa4a2731b9e07bc4119b0c",
     "semantic_hash": ""
   },
   "src/screens/Onboarding/components/YourSubscriptions/styles.ts": {
@@ -2817,6 +2817,12 @@
     "mtime": 1795536181.7589202,
     "seen": 1795536620.043828,
     "ast_hash": "2729957f639ed37eac0ab01a3368b718",
+    "semantic_hash": ""
+  },
+  "src/components/AddChoiceLinks/styles.ts": {
+    "mtime": 1795537599.8691723,
+    "seen": 1795540458.5739672,
+    "ast_hash": "9c55ca911db3c5ea889047daba15f6ea",
     "semantic_hash": ""
   },
   "yarn.lock": {

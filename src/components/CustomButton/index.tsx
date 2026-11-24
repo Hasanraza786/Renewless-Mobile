@@ -10,7 +10,8 @@ type Props = {
   onPress: () => void;
   disabled?: boolean;
   // Omitted = the legacy filled button; the others are the approved prototype buttons.
-  variant?: 'primary' | 'secondary' | 'link' | 'social' | 'danger';
+  // outline: the second action beside a filled primary, mint border and mint text (24 Nov 2026).
+  variant?: 'primary' | 'secondary' | 'outline' | 'link' | 'social' | 'danger';
   // Size/shape override where a screen's approved button differs from the variant (height, radius).
   style?: StyleProp<ViewStyle>;
   // SVG markup for the leading provider icon of a social button.
@@ -22,8 +23,8 @@ type Props = {
 
 export default function CustomButton({ text, onPress, disabled, variant, style, icon, busy, trailing_icon }: Props) {
   if (variant) {
-    const color = variant === 'primary' ? COLORS.background : variant === 'danger' ? COLORS.on_danger : variant === 'link' ? COLORS.text_secondary : COLORS.text_primary;
-    const weight = variant === 'primary' || variant === 'social' ? FONTS.medium : FONTS.regular;
+    const color = variant === 'primary' ? COLORS.background : variant === 'danger' ? COLORS.on_danger : variant === 'link' ? COLORS.text_secondary : variant === 'outline' ? COLORS.primary : COLORS.text_primary;
+    const weight = variant === 'primary' || variant === 'social' || variant === 'outline' ? FONTS.medium : FONTS.regular;
     return (
       <Pressable
         accessibilityRole="button"

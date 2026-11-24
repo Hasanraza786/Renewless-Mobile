@@ -188,8 +188,8 @@ export function ReviewFooter({ gmail }: Props) {
       ) : null}
       <SizedBox height={SIZES.padding * 1.1} />
       <CustomButton variant="primary" text={gmail.save_label} disabled={!gmail.selected_count || gmail.saving} busy={gmail.saving} onPress={gmail.save} />
-      <SizedBox height={SIZES.padding * 0.65} />
-      <AddChoiceLinks onAi={gmail.addWithAi} onManual={gmail.addManually} />
+      <SizedBox height={SIZES.padding / 2} />
+      <AddChoiceLinks outlined onAi={gmail.addWithAi} onManual={gmail.addManually} />
     </Fragment>
   );
 }
@@ -229,7 +229,7 @@ export function RecoveryFooter({ gmail }: Props) {
       <SizedBox height={SIZES.padding2} />
       <CustomButton variant="primary" text={interrupted ? 'Try again' : 'Try another inbox'} onPress={interrupted ? gmail.retry : gmail.openInboxes} />
       <SizedBox height={SIZES.padding / 2} />
-      <CustomButton variant="secondary" text="Add with AI" onPress={gmail.addWithAi} />
+      <CustomButton variant="outline" text="Add with AI" onPress={gmail.addWithAi} />
       <SizedBox height={SIZES.padding * 0.65} />
       <CustomButton variant="link" text="Add manually" onPress={gmail.addManually} />
     </Fragment>

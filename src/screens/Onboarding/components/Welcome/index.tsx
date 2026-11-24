@@ -107,7 +107,7 @@ export function WelcomeFooter({ onboarding }: Props) {
 
       <SizedBox height={SIZES.padding2} />
 
-      <CustomButton variant="link" text="Already have an account? Log in" onPress={onboarding.openLogin} />
+      <CustomButton variant="outline" text="Already have an account? Log in" onPress={onboarding.openLogin} />
     </Fragment>
   );
 }

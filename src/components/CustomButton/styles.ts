@@ -24,6 +24,15 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
   },
+  outline: {
+    alignItems: 'center',
+    borderColor: COLORS.primary,
+    borderRadius: SIZES.padding * 0.7,
+    borderWidth: 1,
+    height: SIZES.padding * 2.2,
+    justifyContent: 'center',
+    width: '100%',
+  },
   secondary: {
     alignItems: 'center',
     backgroundColor: COLORS.card,

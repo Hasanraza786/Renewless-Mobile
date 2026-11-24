@@ -251,10 +251,10 @@ export function YourSubscriptionsFooter({ onboarding }: Props) {
         onPress={onboarding.save}
       />
 
-      <SizedBox height={SIZES.padding * 0.65} />
+      <SizedBox height={count ? SIZES.padding / 2 : SIZES.padding * 0.65} />
 
       {count ? (
-        <AddChoiceLinks onAi={onboarding.openAi} onManual={onboarding.openManual} />
+        <AddChoiceLinks outlined onAi={onboarding.openAi} onManual={onboarding.openManual} />
       ) : (
         <CustomButton variant="link" text="Continue without saving" onPress={onboarding.skipSave} />
       )}
