@@ -44,6 +44,8 @@ export const COLORS = {
   line_quiet: '#ffffff0b',
   line_soft: '#ffffff0c',
   overlay_soft: '#ffffff08',
+  // Small code chips (Ready to go's currencies).
+  overlay_tag: '#ffffff0f',
   social_border: '#3C4246',
   secondary_border: '#454A4F',
   receipt: '#282D30',

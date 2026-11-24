@@ -1,3 +1,5 @@
+import { orderByCount } from '../../../../utils/currency-switch';
+import { CURRENCY_NAMES } from '../../../../utils/money';
 import PlatformLogo from '../../../../components/PlatformLogo';
 import { Fragment, useEffect, useRef } from 'react';
 import { common_styles } from '../../../../utils/common_styles';
@@ -72,6 +74,8 @@ export function ReadyArt({ onboarding }: Props) {
 export function ReadyToGoBody({ onboarding }: Props) {
   const saved = onboarding.saved;
   const next = nextEvent(saved, localToday());
+  // Several currencies (24 Nov 2026): a celebration has no switcher; it says how many currencies, never a mixed total.
+  const currencies = orderByCount(saved.map(item => item.currency));
 
   return (
     <Fragment>
@@ -92,11 +96,28 @@ export function ReadyToGoBody({ onboarding }: Props) {
           <CustomText text={String(saved.length)} size={SIZES.h3} />
           <CustomText mt={SIZES.padding3} text={saved.length === 1 ? 'subscription saved' : 'subscriptions saved'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
-        <View style={[common_styles.flex_1, styles.summary_wide]}>
-          <CustomText text={formatTotals(paidMonthlyTotals(saved))} size={SIZES.h3} />
-          <CustomText mt={SIZES.padding3} text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-        </View>
+        {currencies.length > 1 ? (
+          <View style={[common_styles.flex_1, styles.summary_wide]}>
+            <CustomText text={String(currencies.length)} size={SIZES.h3} />
+            <CustomText mt={SIZES.padding3} text="currencies tracked" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+            <RowView gap={SIZES.padding / 5} mt={SIZES.padding / 10} style={styles.codes} accessibilityLabel={currencies.map(code => CURRENCY_NAMES[code] ?? code).join(', ')}>
+              {currencies.map(code => (
+                <View key={code} style={styles.code}>
+                  <CustomText text={code} weight={FONTS.medium} size={SIZES.xs} />
+                </View>
+              ))}
+            </RowView>
+          </View>
+        ) : (
+          <View style={[common_styles.flex_1, styles.summary_wide]}>
+            <CustomText text={formatTotals(paidMonthlyTotals(saved))} size={SIZES.h3} />
+            <CustomText mt={SIZES.padding3} text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          </View>
+        )}
       </RowView>
+      {currencies.length > 1 ? (
+        <CustomText mt={SIZES.padding / 2} text="See each currency’s monthly cost on your dashboard. We never add currencies together." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
+      ) : null}
       {next ? (
         <RowView gap={SIZES.padding2} style={styles.next}>
           <View style={styles.logo_tile}>

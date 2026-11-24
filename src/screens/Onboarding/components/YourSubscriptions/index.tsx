@@ -6,6 +6,7 @@ import Svg, { Circle } from 'react-native-svg';
 import { arrow_right_icon, check_dark_icon, edit_icon } from '../../../../assets/icons';
 import AppSheet from '../../../../components/AppSheet';
 import AddChoiceLinks from '../../../../components/AddChoiceLinks';
+import CurrencyTabs from '../../../../components/CurrencyTabs';
 import CustomButton from '../../../../components/CustomButton';
 import RowView from '../../../../components/RowView';
 import CustomText from '../../../../components/CustomText';
@@ -22,7 +23,8 @@ import { localToday } from '../../../../utils/dates';
 import { dateLabel, formatTotals, moneyLabel, paidMonthlyTotals, upcomingWeek } from '../../../../utils/scan';
 import type { OnboardingController } from '../../index.function';
 import { RING, RING_WIDTH, styles } from './styles';
-import { CURRENCIES, CURRENCY_NAMES, CURRENCY_SEARCH, formatAmount, amountKeyboard, amountPlaceholder } from '../../../../utils/money';
+import { CURRENCIES, CURRENCY_NAMES, CURRENCY_SEARCH, formatAmount, amountKeyboard, amountPlaceholder, money } from '../../../../utils/money';
+import { orderByCount } from '../../../../utils/currency-switch';
 import { amountError, isValidAmount } from '../../../../utils/subscription-form';
 
 type Props = { onboarding: OnboardingController };
@@ -118,7 +120,15 @@ function EditSheet({ onboarding }: Props) {
 export function YourSubscriptionsBody({ onboarding }: Props) {
   const { candidates, selected_ids, save_loading } = onboarding;
   const selected = candidates.filter(item => selected_ids.includes(item.id));
-  const week = upcomingWeek(selected, localToday());
+  // Several currencies (24 Nov 2026): the card and the week line show one currency at a time; never added together.
+  const currencies = orderByCount(candidates.map(item => item.currency));
+  const [currency_choice, setCurrencyChoice] = useState('');
+  const currency = currencies.includes(currency_choice) ? currency_choice : currencies[0];
+  const several = currencies.length > 1;
+  const monthly = paidMonthlyTotals(selected);
+  const week = upcomingWeek(several ? selected.filter(item => item.currency === currency) : selected, localToday());
+  const monthly_text = several ? money(currency, (monthly[currency] ?? 0) / 100) : formatTotals(monthly);
+  const week_text = several ? money(currency, (week.totals[currency] ?? 0) / 100) : formatTotals(week.totals);
 
   return (
     <Fragment>
@@ -137,7 +147,16 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
       <RowView gap={SIZES.padding2} style={styles.total}>
         <View style={common_styles.flex_1}>
           <CustomText text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-          <CustomText mt={SIZES.padding * 0.35} text={formatTotals(paidMonthlyTotals(selected))} weight={FONTS.regular} size={SIZES.h3} />
+          {several ? (
+            <>
+              <SizedBox height={SIZES.padding3} />
+              <CurrencyTabs currencies={currencies} selected={currency} onSelect={setCurrencyChoice}>
+                <CustomText mt={SIZES.padding * 0.35} text={monthly_text} weight={FONTS.regular} size={SIZES.h3} />
+              </CurrencyTabs>
+            </>
+          ) : (
+            <CustomText mt={SIZES.padding * 0.35} text={monthly_text} weight={FONTS.regular} size={SIZES.h3} />
+          )}
           <CustomText mt={SIZES.padding * 0.35} text="Free trials aren’t included in this total." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
         <SelectionRing selected={selected.length} total={candidates.length} />
@@ -151,11 +170,11 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
           text={
             <>
               <CustomText text={`${week.count} upcoming ${week.count === 1 ? 'renewal' : 'renewals'}`} size={SIZES.sm} />
-              {' in 7 days'}
+              {several ? ` in 7 days in ${currency}` : ' in 7 days'}
             </>
           }
         />
-        <CustomText text={formatTotals(week.totals)} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
+        <CustomText text={week_text} weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} />
       </RowView>
 
       <RowView align_items="stretch" justify_content="space-between" gap={0} style={styles.caption}>

@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { AccessibilityInfo, View } from 'react-native';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { CURRENCY_NAMES } from '../../utils/money';
@@ -10,11 +11,13 @@ type Props = {
   currencies: string[];
   selected: string;
   onSelect: (currency: string) => void;
+  // Shown between the tabs and the note, e.g. the onboarding cost card's amount.
+  children?: ReactNode;
 };
 
 // Several currencies (approved 24 Nov 2026): one currency's totals at a time, never added together.
 // The parent spaces it (12pt above the totals it controls).
-export default function CurrencyTabs({ currencies, selected, onSelect }: Props) {
+export default function CurrencyTabs({ currencies, selected, onSelect, children }: Props) {
   if (currencies.length < 2) return null;
   const choose = (currency: string) => {
     onSelect(currency);
@@ -39,6 +42,7 @@ export default function CurrencyTabs({ currencies, selected, onSelect }: Props) 
           );
         })}
       </RowView>
+      {children}
       <CustomText
         mt={SIZES.padding / 5}
         text={`${currencies.indexOf(selected) + 1} of ${currencies.length} currencies · we don’t add currencies together`}

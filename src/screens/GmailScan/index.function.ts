@@ -10,6 +10,7 @@ import type { AppStackParamList, GmailCandidate, GmailSelection, InboxProvider, 
 import { afterModalClose } from '../../utils/modal';
 import { money as moneyLabel } from '../../utils/money';
 import { useIsTablet } from '../../utils/tablet';
+import { orderByCount } from '../../utils/currency-switch';
 
 export type GmailScanRoute = NativeStackScreenProps<AppStackParamList, 'GmailScan'>['route'];
 export type GmailPhase = 'loading' | 'scanning' | 'review' | 'nothing' | 'interrupted';
@@ -35,6 +36,8 @@ export default function useGmailScan(route: GmailScanRoute) {
   const [candidates, setCandidates] = useState<GmailCandidate[]>([]);
   const [selected, setSelected] = useState<string[]>([]);
   const [edits, setEdits] = useState<Record<string, CandidateEdit>>({});
+  // Several currencies: the cost card shows one currency at a time (24 Nov 2026).
+  const [currency_choice, setCurrencyChoice] = useState('');
   const [replace_date, setReplaceDate] = useState(false);
   const [sheet, setSheet] = useState<GmailSheet>(null);
   const [choose_open, setChooseOpen] = useState(false);
@@ -155,11 +158,15 @@ export default function useGmailScan(route: GmailScanRoute) {
   const add_count = chosen.filter(item => item.kind === 'new').length;
   const update_count = chosen.filter(item => item.kind === 'update').length;
   const view = (item: GmailCandidate): GmailCandidate => ({ ...item, ...edits[item.id] });
+  const currencies = orderByCount(new_items.map(item => view(item).currency));
+  const currency = currencies.includes(currency_choice) ? currency_choice : currencies[0] ?? '';
+  const several_currencies = currencies.length > 1;
   const money = (() => {
     const totals = new Map<string, number>();
     // Paid plans only: free trials aren't in the total, as in onboarding.
     for (const item of chosen.filter(entry => entry.kind === 'new').map(view).filter(entry => !entry.trial)) totals.set(item.currency, (totals.get(item.currency) ?? 0) + Number(item.price) * (MONTHLY[item.cycle] ?? 1));
-    return [...totals].map(([currency, total]) => moneyLabel(currency, total)).join(' · ') || '—';
+    if (several_currencies) return moneyLabel(currency, totals.get(currency) ?? 0);
+    return [...totals].map(([code, total]) => moneyLabel(code, total)).join(' · ') || '—';
   })();
   const save_label = saving
     ? 'Saving…'
@@ -254,6 +261,10 @@ export default function useGmailScan(route: GmailScanRoute) {
     selected,
     replace_date,
     money,
+    currencies,
+    currency,
+    several_currencies,
+    setCurrencyChoice,
     selected_count,
     save_label,
     saving,

@@ -48,6 +48,15 @@ export const styles = StyleSheet.create({
     borderWidth: 1,
     padding: SIZES.padding3 * 2,
   },
+  codes: {
+    flexWrap: 'wrap',
+  },
+  code: {
+    backgroundColor: COLORS.overlay_tag,
+    borderRadius: SIZES.padding * 0.3,
+    paddingHorizontal: SIZES.padding * 0.3,
+    paddingVertical: SIZES.padding / 10,
+  },
   summary_wide: {
     borderLeftColor: COLORS.line_faint,
     borderLeftWidth: 1,

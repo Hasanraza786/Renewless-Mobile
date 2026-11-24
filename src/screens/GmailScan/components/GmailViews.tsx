@@ -1,3 +1,4 @@
+import CurrencyTabs from '../../../components/CurrencyTabs';
 import { Fragment } from 'react';
 import { Pressable, View } from 'react-native';
 import { check_dark_icon, edit_icon, inbox_badge_icon, offline_badge_icon } from '../../../assets/icons';
@@ -128,7 +129,16 @@ export function ReviewView({ gmail }: Props) {
       <RowView gap={SIZES.padding2} style={result_styles.total}>
         <View style={common_styles.flex_1}>
           <CustomText text="Estimated monthly cost" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-          <CustomText mt={SIZES.padding * 0.35} text={gmail.money} weight={FONTS.regular} size={SIZES.h3} />
+          {gmail.several_currencies ? (
+            <>
+              <SizedBox height={SIZES.padding3} />
+              <CurrencyTabs currencies={gmail.currencies} selected={gmail.currency} onSelect={gmail.setCurrencyChoice}>
+                <CustomText mt={SIZES.padding * 0.35} text={gmail.money} weight={FONTS.regular} size={SIZES.h3} />
+              </CurrencyTabs>
+            </>
+          ) : (
+            <CustomText mt={SIZES.padding * 0.35} text={gmail.money} weight={FONTS.regular} size={SIZES.h3} />
+          )}
           <CustomText mt={SIZES.padding * 0.35} text="Free trials aren’t included in this total." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
         <SelectionRing selected={gmail.selected_count} total={gmail.open_count} />

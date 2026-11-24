@@ -24,3 +24,11 @@ export function useCurrencySwitch(present: string[]) {
   const only = <T extends { currency: string }>(items: T[]) => (several ? items.filter(item => item.currency === selected) : items);
   return { currencies, selected, several, selectCurrency, only };
 }
+
+// Onboarding and Gmail review: most found rows first, then first found. Counted over every found row, not the ticked
+// ones, so a tab never moves while the user ticks rows.
+export function orderByCount(codes: string[]) {
+  const counts = new Map<string, number>();
+  for (const code of codes) counts.set(code, (counts.get(code) ?? 0) + 1);
+  return [...counts.keys()].sort((a, b) => counts.get(b)! - counts.get(a)!);
+}
