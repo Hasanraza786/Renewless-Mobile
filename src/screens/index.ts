@@ -6,7 +6,6 @@ export { default as HomeScreen } from './Home';
 export { default as ListScreen } from './List';
 export { default as PaymentsScreen } from './Payments';
 export { default as CalendarScreen } from './Calendar';
-export { default as CalendarDayScreen } from './CalendarDay';
 export { default as AlertsScreen } from './Alerts';
 export { default as HistoryScreen } from './History';
 export { default as ConnectedInboxScreen } from './ConnectedInbox';

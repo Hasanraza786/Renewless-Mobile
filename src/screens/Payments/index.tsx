@@ -1,3 +1,5 @@
+import SizedBox from '../../components/SizedBox';
+import CurrencyTabs from '../../components/CurrencyTabs';
 import PlatformLogo from '../../components/PlatformLogo';
 import { ScrollView, View } from 'react-native';
 import { chevron_right_icon } from '../../assets/icons';
@@ -85,6 +87,12 @@ export default function PaymentsScreen({ route }: { route: PaymentsRoute }) {
                   />
                 </View>
               </RowView>
+              {payments.currency_switch.several ? (
+                <>
+                  <SizedBox height={SIZES.padding2} />
+                  <CurrencyTabs currencies={payments.currency_switch.currencies} selected={payments.currency_switch.selected} onSelect={payments.currency_switch.selectCurrency} />
+                </>
+              ) : null}
               <View style={styles.summary}>
                 <RowView justify_content="space-between" gap={SIZES.padding2}>
                   <CustomText text="Confirmed payments" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

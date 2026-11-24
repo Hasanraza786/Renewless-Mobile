@@ -66,8 +66,12 @@ export default function ListScreen({ route }: { route: ListRoute }) {
           contentContainerStyle={styles.content}
           renderSectionHeader={({ section }) => (section.title ? <CustomText mt={SIZES.padding2} mb={SIZES.padding3} text={section.title} size={SIZES.lg} accessibility_role="header" /> : null)}
           // Each section reads as one card: its first and last rows carry the rounded corners.
+          // Android keeps a row's old corner clip when a re-sort or filter changes its rounded corners, so the row draws blank;
+          // keying the row by its corner shape gives it a fresh view instead.
           renderItem={({ item, index, section }) => (
-            <View style={[styles.row, index === 0 && styles.row_first, index === section.data.length - 1 ? styles.row_last : styles.divider]}>
+            <View
+              key={`${index === 0}-${index === section.data.length - 1}`}
+              style={[styles.row, index === 0 && styles.row_first, index === section.data.length - 1 ? styles.row_last : styles.divider]}>
               <SubscriptionCard {...recordCardProps(item, list.today)} onPress={() => list.open(item)} />
             </View>
           )}

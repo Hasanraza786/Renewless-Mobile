@@ -8,6 +8,7 @@ import type { AppStackParamList, PaymentRecord, TabParamList } from '../../types
 import { alignedMonth, defaultYear, inPeriod, matchesQuery, monthlySeries, paymentCurrencies, paymentTotals, paymentYears, periodLabel, type PaymentMonth } from '../../utils/payments';
 import { trackEvent } from '../../utils/analytics';
 import { useIsTablet } from '../../utils/tablet';
+import { useCurrencySwitch } from '../../utils/currency-switch';
 
 export type PaymentsRoute = RouteProp<TabParamList, 'Payments'> | RouteProp<AppStackParamList, 'SubscriptionPayments'>;
 
@@ -53,16 +54,18 @@ export default function usePayments(route: PaymentsRoute) {
   const matched = useMemo(() => period.filter(row => matchesQuery(row, query)), [period, query]);
   const inspect = inspect_choice ?? alignedMonth(rows, year, month);
   const totals = paymentTotals(period);
-  const charts = paymentCurrencies(rows).map(currency => ({
-    currency,
-    amount: totals.find(item => item.currency === currency)?.amount ?? '0.00',
-    months: monthlySeries(rows, year, currency),
+  // Several currencies: the summary total, count and chart follow the selected currency; the list stays complete.
+  const currency_switch = useCurrencySwitch(paymentCurrencies(rows));
+  const charts = paymentCurrencies(rows).filter(code => !currency_switch.several || code === currency_switch.selected).map(currency_code => ({
+    currency: currency_code,
+    amount: totals.find(item => item.currency === currency_code)?.amount ?? '0.00',
+    months: monthlySeries(rows, year, currency_code),
   }));
 
   const status = scopes[scope] ? 'ready' : error && !loading ? 'failed' : 'loading';
   const has_payments = rows.length > 0;
   const period_label = periodLabel(year, month);
-  const period_count = period.length;
+  const period_count = currency_switch.only(period).length;
   // The six-month page holding the inspected month: 0 = Jan–Jun, 6 = Jul–Dec.
   const page_start = Number(inspect) <= 6 ? 0 : 6;
 
@@ -99,6 +102,7 @@ export default function usePayments(route: PaymentsRoute) {
 
   return {
     is_tablet,
+    currency_switch,
     scoped,
     status,
     error,

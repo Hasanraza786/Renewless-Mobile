@@ -1,3 +1,4 @@
+import CurrencyTabs from '../../components/CurrencyTabs';
 import { Fragment } from 'react';
 import { ScrollView, View } from 'react-native';
 import { clock_accent_icon } from '../../assets/icons';
@@ -91,6 +92,7 @@ export default function HomeScreen({ route }: { route: HomeRoute }) {
           contentInsetAdjustmentBehavior="scrollableAxes"
           contentContainerStyle={styles.content}>
           <NextEvent home={home} />
+          <CurrencyTabs currencies={home.currency.currencies} selected={home.currency.selected} onSelect={home.currency.selectCurrency} />
           <MonthCard home={home} />
           <TopSpending home={home} />
           <Forecast home={home} />

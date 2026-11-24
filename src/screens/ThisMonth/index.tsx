@@ -1,6 +1,8 @@
 import { Fragment } from 'react';
 import { ScrollView, View } from 'react-native';
 import Container from '../../components/Container';
+import CurrencyTabs from '../../components/CurrencyTabs';
+import SizedBox from '../../components/SizedBox';
 import CustomText from '../../components/CustomText';
 import Header from '../../components/Header';
 import StateView from '../../components/StateView';
@@ -10,6 +12,7 @@ import { goBack, navigate } from '../../navigation/service';
 import type { HomeEvent, MoneyTotal } from '../../types';
 import { eventCardProps } from '../../utils/events';
 import useHomeSnapshot from '../../utils/use-home-snapshot';
+import { useCurrencySwitch } from '../../utils/currency-switch';
 import { styles } from './styles';
 import { money } from '../../utils/money';
 
@@ -47,6 +50,8 @@ function Group({ title, items, today, empty }: { title: string; items: HomeEvent
 // This month's expected and still-upcoming charges by currency; upcoming first, then earlier this month.
 export default function ThisMonthScreen() {
   const { data, status, error, retry } = useHomeSnapshot();
+  // Several currencies: the two totals show the selected currency; the lists stay complete.
+  const currency = useCurrencySwitch(data ? [...data.month.expected, ...data.month.upcoming].map(item => item.currency) : []);
 
   return (
     <Container style={styles.main_view}>
@@ -61,11 +66,17 @@ export default function ThisMonthScreen() {
             color={COLORS.text_secondary}
             size={SIZES.sm}
           />
+          {currency.several ? (
+            <>
+              <SizedBox height={SIZES.padding2} />
+              <CurrencyTabs currencies={currency.currencies} selected={currency.selected} onSelect={currency.selectCurrency} />
+            </>
+          ) : null}
           <View style={styles.totals}>
             <CustomText text="Expected total" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-            <CustomText mt={SIZES.padding2} text={totalsText(data.month.expected)} size={SIZES.lg} />
+            <CustomText mt={SIZES.padding / 5} text={totalsText(currency.only(data.month.expected))} size={SIZES.lg} />
             <CustomText mt={SIZES.padding * 0.7} text="Still upcoming" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-            <CustomText mt={SIZES.padding2} text={totalsText(data.month.upcoming)} size={SIZES.lg} />
+            <CustomText mt={SIZES.padding / 5} text={totalsText(currency.only(data.month.upcoming))} size={SIZES.lg} />
           </View>
           <Group title="Upcoming" items={data.month.events.filter(item => item.date >= data.today)} today={data.today} empty="No upcoming renewals in this month." />
           <Group title="Earlier this month" items={data.month.events.filter(item => item.date < data.today)} today={data.today} empty="No earlier charges scheduled." />

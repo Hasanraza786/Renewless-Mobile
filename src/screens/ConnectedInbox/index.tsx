@@ -1,3 +1,4 @@
+import { useRef, type ComponentRef } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
 import { chevron_right_icon } from '../../assets/icons';
 import ConfirmDialog from '../../components/ConfirmDialog';
@@ -41,6 +42,8 @@ function DisconnectDialog({ inbox }: { inbox: ConnectedInboxController }) {
 // Connected inbox: identity and live state, facts, Sync now (or Reconnect Gmail/Outlook) and disconnect.
 export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxRoute }) {
   const inbox = useConnectedInbox(route);
+  // Mailbox access: its info covers this row from the top (Studio).
+  const access_ref = useRef<ComponentRef<typeof View>>(null);
   const view = inbox.view;
   const pill = PILL[inbox.state];
   const busy = inbox.syncing || inbox.reconnecting;
@@ -72,9 +75,12 @@ export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxR
                 <Icons name={chevron_right_icon} />
               </RowView>
             </RowView>
+            <View ref={access_ref} collapsable={false}>
             <RowView justify_content="space-between" style={styles.fact}>
               <View style={common_styles.flex_1}>
                 <InfoTooltip
+                  anchor_ref={access_ref}
+                  placement="over"
                   label="Mailbox access"
                   paragraphs={[
                     `${inbox.brand.name} authorizes read-only access to this inbox. Renewless cannot send, edit or delete your emails.`,
@@ -85,6 +91,7 @@ export default function ConnectedInboxScreen({ route }: { route: ConnectedInboxR
               </View>
               <CustomText text="Read-only" weight={FONTS.regular} size={SIZES.sm} />
             </RowView>
+            </View>
           </View>
           {(inbox.sync_error && !inbox.reconnect_needed) || inbox.reconnect_error ? (
             <View accessibilityRole="alert" style={styles.error_box}>

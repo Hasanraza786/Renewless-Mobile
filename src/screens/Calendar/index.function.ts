@@ -9,6 +9,7 @@ import { localToday } from '../../utils/dates';
 import { trackEvent } from '../../utils/analytics';
 import { money } from '../../utils/money';
 import { useIsTablet } from '../../utils/tablet';
+import { useCurrencySwitch } from '../../utils/currency-switch';
 
 const EMPTY: HomeEvent[] = [];
 
@@ -24,6 +25,8 @@ export default function useCalendar(route: CalendarRoute) {
   const [month, setMonth] = useState(() => localToday().slice(0, 7));
   const [picker_anchor, setPickerAnchor] = useState<PickerAnchor | null>(null);
   const [add_open, setAddOpen] = useState(false);
+  // The date whose day sheet is open (a date with several events).
+  const [day_date, setDayDate] = useState<string | null>(null);
   // AI chat consent Not now: reopen the Add sheet that opened AI chat.
   const add_sheet = route.params?.add_sheet;
   useEffect(() => {
@@ -44,8 +47,11 @@ export default function useCalendar(route: CalendarRoute) {
   const today = data?.today ?? localToday();
   const events = data?.events ?? EMPTY;
   const status = data ? 'ready' : error && !loading ? 'failed' : 'loading';
-  const expected_text = data?.expected.length ? data.expected.map(item => money(item.currency, item.amount)).join(' · ') : '0.00';
-  const event_count = events.length;
+  // Several currencies: the month card shows the selected currency's total and events; the grid stays complete.
+  const currency = useCurrencySwitch([...(data?.expected ?? []), ...events].map(item => item.currency));
+  const expected = currency.only(data?.expected ?? []);
+  const expected_text = expected.length ? expected.map(item => money(item.currency, item.amount)).join(' · ') : '0.00';
+  const event_count = currency.only(events).length;
   const nearest = nearestEvent(events, today);
   // A past month has nothing upcoming to promise.
   const empty_copy = month < today.slice(0, 7) ? 'No renewals in this month.' : 'No upcoming renewals in this month.';
@@ -78,16 +84,27 @@ export default function useCalendar(route: CalendarRoute) {
   const closeAdd = () => setAddOpen(false);
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });
 
-  // Zero events → Add sheet, one → its Detail, several → the day list.
+  // Zero events → Add sheet, one → its Detail, several → the day sheet over Calendar.
   const pressDate = (date: string) => {
     const on_date = events.filter(event => event.date === date);
     if (!on_date.length) openAdd();
     else if (on_date.length === 1) openDetail(on_date[0].subscription_id);
-    else navigate('CalendarDay', { date });
+    else setDayDate(date);
+  };
+  const day_events = day_date ? events.filter(event => event.date === day_date) : EMPTY;
+  const day_totals = new Map<string, number>();
+  for (const event of day_events.filter(item => item.expected_charge)) day_totals.set(event.currency, (day_totals.get(event.currency) ?? 0) + Math.round(Number(event.amount) * 100));
+  // "2 scheduled · USD 27.98 · PKR 1,100.00": totals stay per currency.
+  const day_note = [`${day_events.length} scheduled`, ...[...day_totals].map(([code, cents]) => money(code, cents / 100))].join(' · ');
+  const closeDay = () => setDayDate(null);
+  const openDayDetail = (id: string) => {
+    setDayDate(null);
+    openDetail(id);
   };
 
   return {
     is_tablet,
+    currency,
     month,
     today,
     events,
@@ -111,6 +128,11 @@ export default function useCalendar(route: CalendarRoute) {
     closeAdd,
     openDetail,
     pressDate,
+    day_date,
+    day_events,
+    day_note,
+    closeDay,
+    openDayDetail,
   };
 }
 

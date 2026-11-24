@@ -17,6 +17,23 @@ export const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     backgroundColor: COLORS.background_scrim,
   },
+  scrim_part: {
+    backgroundColor: COLORS.background_scrim,
+    position: 'absolute',
+  },
+  scrim_top: {
+    left: 0,
+    right: 0,
+    top: 0,
+  },
+  scrim_bottom: {
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  scrim_left: {
+    left: 0,
+  },
   popover: {
     backgroundColor: COLORS.tooltip,
     borderColor: COLORS.accent_ring,

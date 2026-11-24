@@ -78,4 +78,15 @@ export const styles = StyleSheet.create({
   all_clear: {
     paddingBottom: SIZES.padding * 0.65,
   },
+  // A shade under the sheet, like the Studio's row card on its lighter sheet.
+  day_rows: {
+    backgroundColor: COLORS.surface_sunken,
+    borderRadius: SIZES.padding * 0.8,
+    marginTop: SIZES.padding2,
+    overflow: 'hidden',
+  },
+  day_divider: {
+    borderBottomColor: COLORS.line_quiet,
+    borderBottomWidth: 1,
+  },
 });

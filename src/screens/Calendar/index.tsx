@@ -3,6 +3,9 @@ import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native'
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { chevron_down_icon, nav_next_icon, nav_prev_icon } from '../../assets/icons';
 import AddSheet from '../../components/AddSheet';
+import AppSheet from '../../components/AppSheet';
+import CurrencyTabs from '../../components/CurrencyTabs';
+import SizedBox from '../../components/SizedBox';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
 import Header from '../../components/Header';
@@ -49,6 +52,8 @@ function SummaryWash() {
 export default function CalendarScreen({ route }: { route: CalendarRoute }) {
   const calendar = useCalendar(route);
   const heading_ref = useRef<ComponentRef<typeof View>>(null);
+  // The Expected this month card: its info opens below it, at its width (Studio Calendar).
+  const summary_ref = useRef<ComponentRef<typeof View>>(null);
   const nearest = calendar.nearest;
 
   const openPicker = () => heading_ref.current?.measureInWindow((x, y, _width, height) => calendar.openPicker({ x, y, height }));
@@ -79,10 +84,18 @@ export default function CalendarScreen({ route }: { route: CalendarRoute }) {
           <StateView status={calendar.status === 'failed' ? 'failed' : 'loading'} message={calendar.status === 'failed' ? calendar.error : 'Loop is checking your calendar…'} onRetry={calendar.retry} />
         ) : (
           <>
+            {calendar.currency.several ? (
+              <>
+                <CurrencyTabs currencies={calendar.currency.currencies} selected={calendar.currency.selected} onSelect={calendar.currency.selectCurrency} />
+                <SizedBox height={SIZES.padding2} />
+              </>
+            ) : null}
+            <View ref={summary_ref} collapsable={false}>
             <RowView gap={SIZES.padding3} style={styles.summary}>
               <SummaryWash />
               <View>
                 <InfoTooltip
+                  anchor_ref={summary_ref}
                   label="Expected this month"
                   paragraphs={[
                     'Expected charges scheduled for the selected month, including projected renewals. This is not a total of payments already made.',
@@ -105,6 +118,7 @@ export default function CalendarScreen({ route }: { route: CalendarRoute }) {
                 <CustomText text={calendar.event_count === 1 ? 'event' : 'events'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
               </RowView>
             </RowView>
+            </View>
 
             <View style={styles.next}>
               <RowView justify_content="space-between">
@@ -141,6 +155,16 @@ export default function CalendarScreen({ route }: { route: CalendarRoute }) {
         )}
       </ScrollView>
       <AddSheet visible={calendar.add_open} onClose={calendar.closeAdd} />
+      <AppSheet visible={!!calendar.day_date} title={calendar.day_date ? dateLabel(calendar.day_date) : ''} close_label="Close day" onClose={calendar.closeDay}>
+        <CustomText text={calendar.day_note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+        <View style={styles.day_rows}>
+          {calendar.day_events.map((event, index) => (
+            <View key={event.id} style={index < calendar.day_events.length - 1 && styles.day_divider}>
+              <SubscriptionCard {...eventCardProps(event, calendar.today)} onPress={() => calendar.openDayDetail(event.subscription_id)} />
+            </View>
+          ))}
+        </View>
+      </AppSheet>
       {calendar.picker_anchor ? <MonthPicker month={calendar.month} anchor={calendar.picker_anchor} onClose={calendar.closePicker} onShow={calendar.showMonth} /> : null}
     </Container>
   );

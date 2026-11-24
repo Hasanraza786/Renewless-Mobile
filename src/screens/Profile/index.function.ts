@@ -42,7 +42,8 @@ export default function useProfile() {
   const inbox_status = !inbox ? '' : inbox.status === 'reconnect' ? 'Reconnect needed' : inbox.status === 'paused' ? 'Updates paused' : inbox.lastSync ? 'Synced' : 'Not synced yet';
   // Hidden until the overview loads, so the No inbox state never flashes for a connected account.
   const inboxes_ready = !!overview;
-  const payment_text = totals.length ? `${totals.map(item => money(item.currency, item.amount)).join(' · ')} confirmed` : 'Confirmed payment history';
+  // Several currencies are never added together, so the row only says how many there are.
+  const payment_text = totals.length > 1 ? `Payments in ${totals.length} currencies` : totals.length ? `${money(totals[0].currency, totals[0].amount)} confirmed` : 'Confirmed payment history';
   const deleting = !!delete_step;
   const delete_label = delete_step === 'verifying' ? 'Verifying…' : delete_step === 'deleting' ? 'Deleting…' : 'Delete account';
   const needs_password = user?.provider === 'email';

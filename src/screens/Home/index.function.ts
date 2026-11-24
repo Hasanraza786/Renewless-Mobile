@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AccessibilityInfo, AppState } from 'react-native';
 import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { syncAiConsent } from '../../redux/actions/ai-action';
@@ -13,12 +13,13 @@ import type { InboxProvider, ProfileInbox, TabParamList } from '../../types';
 import { pinWidget, widgetEvent, widgetInstalled } from '../../utils/widget';
 import { trackEvent } from '../../utils/analytics';
 import { listenToPush } from '../../utils/push';
+import { useCurrencySwitch } from '../../utils/currency-switch';
 
 export type HomeRoute = RouteProp<TabParamList, 'Home'>;
 
 export default function useHome(route: HomeRoute) {
   const dispatch = useAppDispatch();
-  const { data, loading, error } = useAppSelector(state => state.dashboard);
+  const { data: snapshot, loading, error } = useAppSelector(state => state.dashboard);
   const [selected_event, setSelectedEvent] = useState('');
   const [reduce_motion, setReduceMotion] = useState(false);
   const [add_open, setAddOpen] = useState(false);
@@ -62,6 +63,26 @@ export default function useHome(route: HomeRoute) {
     const subscription = AccessibilityInfo.addEventListener('reduceMotionChanged', setReduceMotion);
     return () => subscription.remove();
   }, []);
+
+  // Several currencies: totals, rankings and the forecast follow the one selected currency; event lists stay complete.
+  const currency = useCurrencySwitch(snapshot ? [...snapshot.month.paid, ...snapshot.month.upcoming, ...snapshot.spending, ...snapshot.trials, ...snapshot.forecast].map(item => item.currency) : []);
+  const { several, selected: selected_currency } = currency;
+  const data = useMemo(() => {
+    if (!snapshot || !several) return snapshot;
+    const pick = <T extends { currency: string }>(items: T[]) => items.filter(item => item.currency === selected_currency);
+    return {
+      ...snapshot,
+      month: {
+        ...snapshot.month,
+        paid: pick(snapshot.month.paid),
+        upcoming: pick(snapshot.month.upcoming),
+        charge_count: snapshot.month.events.filter(event => event.expected_charge && event.date >= snapshot.today && event.currency === selected_currency).length,
+      },
+      spending: pick(snapshot.spending),
+      trials: pick(snapshot.trials),
+      forecast: pick(snapshot.forecast),
+    };
+  }, [snapshot, several, selected_currency]);
 
   const has_subscriptions = !!data?.has_subscriptions;
 
@@ -156,6 +177,7 @@ export default function useHome(route: HomeRoute) {
 
   return {
     data,
+    currency,
     status,
     error,
     reduce_motion,

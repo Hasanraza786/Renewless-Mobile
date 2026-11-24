@@ -14,6 +14,8 @@ type Props = {
   visible: boolean;
   title: string;
   subtitle?: string;
+  // Screen-reader name of the close button, e.g. "Close day".
+  close_label?: string;
   onClose: () => void;
   // Runs once the modal is fully gone (iOS), e.g. to present a native picker.
   onDismiss?: () => void;
@@ -26,7 +28,7 @@ type Props = {
 
 // Graphite bottom sheet: dimmed backdrop (no blur), handle, title row with close; outside tap closes.
 // Tablets present it as a centred 540pt form sheet: all corners rounded, no handle.
-export default function AppSheet({ visible, title, subtitle, onClose, onDismiss, full, header, children }: Props) {
+export default function AppSheet({ visible, title, subtitle, close_label = 'Close', onClose, onDismiss, full, header, children }: Props) {
   const insets = useSafeAreaInsets();
   const { height } = useWindowDimensions();
   const is_tablet = useIsTablet();
@@ -59,7 +61,7 @@ export default function AppSheet({ visible, title, subtitle, onClose, onDismiss,
                 <CustomText mt={SIZES.padding * 0.35} text={subtitle} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
               ) : null}
             </View>
-            <Pressable accessibilityRole="button" accessibilityLabel="Close" onPress={onClose} style={styles.close}>
+            <Pressable accessibilityRole="button" accessibilityLabel={close_label} onPress={onClose} style={styles.close}>
               <Icons name={close_icon} />
             </Pressable>
           </RowView>

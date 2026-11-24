@@ -10,6 +10,7 @@ const initial_state: ConstantState = {
   ai_consent: false,
   ai_withdrawal_unsent: false,
   update_dismissed_version: '',
+  selected_currency: '',
 };
 
 const constantSlice = createSlice({
@@ -53,9 +54,12 @@ const constantSlice = createSlice({
     setUpdateDismissed(state, action: PayloadAction<string>) {
       state.update_dismissed_version = action.payload;
     },
+    setSelectedCurrency(state, action: PayloadAction<string>) {
+      state.selected_currency = action.payload;
+    },
   },
 });
 
-export const { setSession, restoreToken, setUser, clearSession, setSplashSeen, setWidgetPromptSeen, setAiConsent, setAiWithdrawalUnsent, setUpdateDismissed } = constantSlice.actions;
+export const { setSession, restoreToken, setUser, clearSession, setSplashSeen, setWidgetPromptSeen, setAiConsent, setAiWithdrawalUnsent, setUpdateDismissed, setSelectedCurrency } = constantSlice.actions;
 
 export default constantSlice.reducer;

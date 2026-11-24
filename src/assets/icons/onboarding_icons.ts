@@ -2,7 +2,7 @@ import { COLORS } from '../../constants/theme';
 
 export const info_icon = `<svg stroke="${COLORS.text_secondary}" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke-width="1.7"/><path d="M12 11v6M12 7v.5" stroke-width="1.7" stroke-linecap="round"/></svg>`;
 
-export const close_icon = `<svg stroke="${COLORS.text_primary}" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 7l10 10M17 7 7 17" stroke-width="1.7" stroke-linecap="round"/></svg>`;
+export const close_icon = `<svg stroke="${COLORS.text_primary}" width="19" height="19" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 7l10 10M17 7 7 17" stroke-width="1.7" stroke-linecap="round"/></svg>`;
 
 export const find_icon = `<svg stroke="${COLORS.primary}" width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="3"  stroke-width="1.8"/><path d="m4 7 8 6 8-6"  stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 

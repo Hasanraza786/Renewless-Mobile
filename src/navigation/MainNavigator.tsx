@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { DarkTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useAppSelector } from '../redux/store';
-import { AiChatScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, GmailScanScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, SettingsScreen, CalendarDayScreen, ChangePasswordScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, ReceiptsScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, SubscriptionDetailScreen, HelpSupportScreen, ContactUsScreen, SupportMessagesScreen, SupportMessageScreen } from '../screens';
+import { AiChatScreen, AddSubscriptionScreen, AlertsScreen, ConnectedInboxScreen, GmailScanScreen, HistoryScreen, InboxSubscriptionsScreen, ReminderSettingsScreen, SettingsScreen, ChangePasswordScreen, PaymentsScreen, PlatformSubscriptionsScreen, PriceHistoryScreen, ReceiptsScreen, SpendingBreakdownScreen, ThisMonthScreen, UpcomingScreen, EditProfileScreen, SubscriptionDetailScreen, HelpSupportScreen, ContactUsScreen, SupportMessagesScreen, SupportMessageScreen } from '../screens';
 import type { AppStackParamList } from '../types';
 import AuthStack from './AuthStack';
 import { stack_options } from '../config';
@@ -73,7 +73,6 @@ export default function MainNavigator() {
         <AppStack.Screen name="AiChat" component={AiChatScreen} />
         <AppStack.Screen name="ReminderSettings" component={ReminderSettingsScreen} />
         <AppStack.Screen name="Settings" component={SettingsScreen} />
-        <AppStack.Screen name="CalendarDay" component={CalendarDayScreen} />
         <AppStack.Screen name="SubscriptionPayments" component={PaymentsScreen} />
       </AppStack.Navigator>
       <UndoToast />

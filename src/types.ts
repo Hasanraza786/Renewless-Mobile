@@ -402,6 +402,8 @@ export type ConstantState = {
   ai_withdrawal_unsent: boolean;
   // Not now on the optional update prompt: the latest version it was closed for, so only a newer version asks again.
   update_dismissed_version: string;
+  // Several currencies: the one currency whose totals every screen shows ('' until the user picks one).
+  selected_currency: string;
 };
 
 export type AuthRequest =
@@ -578,7 +580,6 @@ export type AppStackParamList = {
   AiChat: undefined;
   InboxSubscriptions: { id: string };
   // Calendar date with several events; date is YYYY-MM-DD.
-  CalendarDay: { date: string };
   // Detail's View payments: the Payments screen scoped to one owned subscription.
   SubscriptionPayments: { id: string; name: string };
   HelpSupport: undefined;
