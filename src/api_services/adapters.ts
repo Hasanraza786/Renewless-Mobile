@@ -569,7 +569,8 @@ function toAttention(dto: ScanJobDto): ScanAttention {
       selected: c.selected,
       saved: c.imported,
     })),
-    needs_match: (dto.needsMatch ?? []).map(m => ({
+    // Open payments first, then the ones already matched (their pick can still be changed).
+    needs_match: [...(dto.needsMatch ?? []).map(m => ({ ...m, resolved: null })), ...(dto.matched ?? [])].map(m => ({
       receipt_id: m.receiptId,
       revision: m.revision,
       platform_id: logoKey(m.service.name, m.service.platformId ?? m.receiptId, m.service.logoUrl),
@@ -581,6 +582,7 @@ function toAttention(dto: ScanJobDto): ScanAttention {
       options: m.options
         .filter(o => CYCLES.has(o.cycle))
         .map(o => ({ subscription_id: o.subscriptionId, name: o.name, plan: o.plan, price: o.price?.amount ?? '', currency: o.price?.currency ?? '', cycle: toCycle(o.cycle), next_date: o.nextRenewal })),
+      resolved: m.resolved ?? null,
     })),
   };
 }

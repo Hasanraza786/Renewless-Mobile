@@ -36,9 +36,9 @@
     "semantic_hash": "3558da132e3915da104c6ac3ccec99d6"
   },
   "__tests__/adapters.test.ts": {
-    "mtime": 1795612355.7897096,
-    "seen": 1795614500.978246,
-    "ast_hash": "687907b3230eb2a4e181995541562360",
+    "mtime": 1795614753.851483,
+    "seen": 1795614956.451958,
+    "ast_hash": "0483876f4def87f75ebbda98bbb28b92",
     "semantic_hash": ""
   },
   "__tests__/ai-consent.test.ts": {
@@ -402,15 +402,15 @@
     "semantic_hash": "6705fc7359a33211606c594655ce95ce"
   },
   "src/api_services/adapters.ts": {
-    "mtime": 1795612314.141557,
-    "seen": 1795614500.9782982,
-    "ast_hash": "7c7b170321b54ebec830cfb8682aafe3",
+    "mtime": 1795614717.910564,
+    "seen": 1795614956.4520068,
+    "ast_hash": "36daf443a35cc5425cc297204c5b28d3",
     "semantic_hash": ""
   },
   "src/api_services/dto.ts": {
-    "mtime": 1795593466.1944926,
-    "seen": 1795605164.937408,
-    "ast_hash": "4233634431c679d2884bc51bd1ae977f",
+    "mtime": 1795614717.9095933,
+    "seen": 1795614956.452008,
+    "ast_hash": "b2aef7877cb63d5dccec62c7d9d1fff4",
     "semantic_hash": ""
   },
   "src/api_services/http-provider.ts": {
@@ -420,9 +420,9 @@
     "semantic_hash": "246ac66f85689237f2b8e45d3e15cc2a"
   },
   "src/api_services/request-handler.ts": {
-    "mtime": 1795594013.92538,
-    "seen": 1795605164.937409,
-    "ast_hash": "847f7e6b94e6122af47c36dab5e17857",
+    "mtime": 1795614717.9099889,
+    "seen": 1795614956.452009,
+    "ast_hash": "0eef84cfac941e6867fb9d329aec5b35",
     "semantic_hash": ""
   },
   "src/assets/animations/ready-celebration.json": {
@@ -966,9 +966,9 @@
     "semantic_hash": "fcd17fd40f7b07e72f6b286b3ea2d4d9"
   },
   "src/redux/actions/gmail-action.ts": {
-    "mtime": 1795600680.2826314,
-    "seen": 1795605164.9374669,
-    "ast_hash": "4dee471b2f97b5530e3c7a0ed2e70a24",
+    "mtime": 1795614717.911214,
+    "seen": 1795614956.4520671,
+    "ast_hash": "39ec829f11e084803fec9cb5e8dac1c6",
     "semantic_hash": ""
   },
   "src/redux/actions/inbox-action.ts": {
@@ -1332,9 +1332,9 @@
     "semantic_hash": ""
   },
   "src/screens/GmailScan/index.function.ts": {
-    "mtime": 1795594335.8326018,
-    "seen": 1795605164.937501,
-    "ast_hash": "f8538a9cf5e297320f2e17dbb1e04075",
+    "mtime": 1795614753.8417542,
+    "seen": 1795614956.4521012,
+    "ast_hash": "1420b055697982b111ed9d07f4027b16",
     "semantic_hash": ""
   },
   "src/screens/GmailScan/index.tsx": {
@@ -1950,9 +1950,9 @@
     "semantic_hash": ""
   },
   "src/types.ts": {
-    "mtime": 1795612314.1408267,
-    "seen": 1795614500.978712,
-    "ast_hash": "1e230988fd32738a8c26e19dc3d5b18b",
+    "mtime": 1795614717.9102592,
+    "seen": 1795614956.452171,
+    "ast_hash": "4547dda1c3075d4c8e731cc03c85d813",
     "semantic_hash": ""
   },
   "src/utils/ai-draft.ts": {

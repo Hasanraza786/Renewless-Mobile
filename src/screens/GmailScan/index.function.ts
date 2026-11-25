@@ -6,6 +6,7 @@ import { connectInbox, getGmailInboxes, getGmailScan, INBOX_LIMIT_NOTICE, matchG
 import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch } from '../../redux/store';
 import type { ApiError } from '../../api_services/http-provider';
+import type { MatchResultDto } from '../../api_services/dto';
 import type { AppStackParamList, GmailCandidate, GmailSelection, InboxProvider, ProfileInbox, ScanAttention, ScanMeter } from '../../types';
 import { scanProgress } from '../../utils/scan-progress';
 import { afterModalClose } from '../../utils/modal';
@@ -48,8 +49,10 @@ export default function useGmailScan(route: GmailScanRoute) {
   // Live progress of the running scan, and the review rows with their own states (usage bills, payments to match).
   const [meter, setMeter] = useState<ScanMeter | null>(null);
   const [attention, setAttention] = useState<ScanAttention>({ usage: [], needs_match: [] });
-  // CHOOSE A SUBSCRIPTION: the saved pick per receipt (a subscription ID or "separate").
+  // CHOOSE A SUBSCRIPTION: the saved pick per receipt (a subscription ID or "separate"), and each entry's newest revision
+  // (every recorded pick bumps it, and a change must send the current one).
   const [matches, setMatches] = useState<Record<string, string>>({});
+  const [match_revisions, setMatchRevisions] = useState<Record<string, number>>({});
   const [match_busy, setMatchBusy] = useState(false);
   const [match_error, setMatchError] = useState('');
   // Each scan gets a token; progress from an older scan or after leaving is ignored.
@@ -85,6 +88,9 @@ export default function useGmailScan(route: GmailScanRoute) {
             }
             setCandidates(status.candidates);
             setAttention(status.attention);
+            // Picks made earlier (this review reopened from Home) show as Added to … with Change.
+            setMatches(Object.fromEntries(status.attention.needs_match.filter(item => item.resolved).map(item => [item.receipt_id, item.resolved as string])));
+            setMatchRevisions(Object.fromEntries(status.attention.needs_match.map(item => [item.receipt_id, item.revision])));
             // Server-preselected new plans start selected; updates, usage bills and saved ones do not.
             setSelected(status.candidates.filter(item => item.kind === 'new' && !item.saved && item.selected).map(item => item.id));
             const found =
@@ -110,6 +116,7 @@ export default function useGmailScan(route: GmailScanRoute) {
       setCandidates([]);
       setAttention({ usage: [], needs_match: [] });
       setMatches({});
+      setMatchRevisions({});
       setSaveError('');
       const onStarted = (job: string) => {
         if (token !== scan_token.current) return;
@@ -228,9 +235,10 @@ export default function useGmailScan(route: GmailScanRoute) {
     setMatchError('');
     setSheet({ kind: 'match', id: receipt_id });
   };
-  const onMatched = (receipt_id: string, pick: string) => {
+  const onMatched = (receipt_id: string, pick: string, result: MatchResultDto) => {
     setMatchBusy(false);
     setMatches(current => ({ ...current, [receipt_id]: pick }));
+    if (result.revision !== undefined) setMatchRevisions(current => ({ ...current, [receipt_id]: result.revision as number }));
     setSheet(null);
   };
   const onMatchFailed = (message: string) => {
@@ -244,7 +252,7 @@ export default function useGmailScan(route: GmailScanRoute) {
     if (matches[receipt_id] === pick) return setSheet(null);
     setMatchBusy(true);
     setMatchError('');
-    dispatch(matchGmailReceipt(job_id, receipt_id, pick, entry.revision, () => onMatched(receipt_id, pick), onMatchFailed));
+    dispatch(matchGmailReceipt(job_id, receipt_id, pick, match_revisions[receipt_id] ?? entry.revision, result => onMatched(receipt_id, pick, result), onMatchFailed));
   };
   const openCandidate = (item: GmailCandidate) => setSheet({ kind: item.kind === 'update' ? 'changes' : 'candidate', id: item.id });
   const openInboxes = () => setSheet({ kind: 'inboxes' });

@@ -197,3 +197,16 @@ test('a scan carries progress, live counts, its deep read and the rows needing a
   // An older job without the new fields still maps.
   expect(toScanStatus({ ...job, phase: undefined, progress: undefined, live: undefined, deep: undefined })).toMatchObject({ phase: null, progress: { total: 0, done: 0 }, deep: null });
 });
+
+test('a payment matched earlier shows its pick and newest revision, after the open ones', () => {
+  const entry = { receiptId: 'r1', revision: 0, service: { name: 'Claude', platformId: null, logoUrl: null }, amount: { currency: 'USD', amount: '20.00' }, paidDate: '2026-11-18', options: [
+    { subscriptionId: 's1', name: 'Claude', plan: 'Pro', price: { currency: 'USD', amount: '20.00' }, cycle: 'monthly' as const, nextRenewal: '2026-11-30' },
+    { subscriptionId: 's2', name: 'Claude', plan: 'Pro', price: { currency: 'USD', amount: '20.00' }, cycle: 'monthly' as const, nextRenewal: '2026-10-27' },
+  ] };
+  const job: ScanJobDto = {
+    id: 'j1', connectorId: 'b1', kind: 'deep', status: 'succeeded', stages: [], error: null, counts: { messages: 1, candidates: 0 }, candidates: [],
+    needsMatch: [{ ...entry, receiptId: 'r2' }],
+    matched: [{ ...entry, revision: 1, resolved: 's2' }],
+  };
+  expect(toGmailScan(job).attention.needs_match.map(item => [item.receipt_id, item.resolved, item.revision])).toEqual([['r2', null, 0], ['r1', 's2', 1]]);
+});

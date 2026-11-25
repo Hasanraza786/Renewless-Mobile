@@ -231,6 +231,8 @@ export type ScanJobDto = {
   live?: { found: number; read: number; checked: number; candidates: number };
   candidates: CandidateDto[];
   needsMatch?: NeedsMatchDto[];
+  // Picks already made (same shape plus resolved: the plan id or "separate"); one can be changed with its revision.
+  matched?: (NeedsMatchDto & { resolved: string | null })[];
 };
 
 // AI chat. Draft `fields` use the POST /subscriptions body shape; a value the AI has not found yet is absent or null.
@@ -296,3 +298,6 @@ export type AppConfigDto = {
   releaseNotes: string[];
   storeUrl: string;
 };
+
+// POST /scans/:jobId/matches/:receiptId. revision is absent when the same pick was sent again.
+export type MatchResultDto = { receiptId: string; resolved: string; revision?: number; recorded?: boolean; candidateId?: string };

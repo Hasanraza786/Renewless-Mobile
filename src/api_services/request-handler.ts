@@ -11,6 +11,7 @@ import type {
   CandidateDto,
   ConnectorDto,
   ConnectorsDto,
+  MatchResultDto,
   OutlookConnectDto,
   OutlookLoginDto,
   GoogleConnectDto,
@@ -175,7 +176,7 @@ const notifyScan = ({ id, notify }: Id<{ notify: boolean }>) => post<void>(`${SE
 const dismissScan = ({ id }: Id) => post<void>(`${SERVICE_URLS.scans}/${id}/dismiss`, {});
 // The plan a payment that fits two tracked plans belongs to, or "separate" for a new plan.
 const matchReceipt = ({ job_id, receipt_id, subscription_id, revision }: { job_id: string; receipt_id: string; subscription_id: string; revision: number }) =>
-  post<{ recorded?: boolean; candidateId?: string }>(`${SERVICE_URLS.scans}/${job_id}/matches/${receipt_id}`, { subscriptionId: subscription_id, revision });
+  post<MatchResultDto>(`${SERVICE_URLS.scans}/${job_id}/matches/${receipt_id}`, { subscriptionId: subscription_id, revision });
 const updateCandidate = ({ job_id, id, ...data }: Id<{ job_id: string; revision: number; price?: { currency: string; amount: string }; cycle?: string; anchorDate?: string; trial?: { endDate: string; autoRenew?: boolean } | null; replaceAnchorDate?: boolean; selected?: boolean }>) =>
   patch<CandidateDto>(`${SERVICE_URLS.scans}/${job_id}/candidates/${id}`, data);
 const importScan = ({ job_id, candidate_ids }: { job_id: string; candidate_ids: string[] }) => post<ScanImportDto>(`${SERVICE_URLS.scans}/${job_id}/import`, { candidateIds: candidate_ids }, true);

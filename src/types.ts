@@ -353,6 +353,8 @@ export type ScanAttention = {
     currency: string;
     paid_date: string;
     options: { subscription_id: string; name: string; plan: string | null; price: string; currency: string; cycle: ScanCycle; next_date: string | null }[];
+    // The pick already recorded (a plan id or "separate"), or null while it waits.
+    resolved: string | null;
   }[];
 };
 

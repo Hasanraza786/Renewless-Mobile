@@ -2,6 +2,7 @@ import { deepView, type DeepView } from '../../utils/scan-progress';
 import { failedGmailScan, fromGmailSelection, toGmailScan, toInbox, toRecord } from '../../api_services/adapters';
 import type { ApiError } from '../../api_services/http-provider';
 import apiServices from '../../api_services/request-handler';
+import type { MatchResultDto } from '../../api_services/dto';
 import type { GmailCandidate, GmailScanStatus, GmailSelection, InboxProvider, ProfileInbox } from '../../types';
 import { successHaptic } from '../../utils/haptics';
 import { trackEvent } from '../../utils/analytics';
@@ -202,17 +203,18 @@ export function connectInbox(provider: InboxProvider, onConnected: (inbox: Profi
   return provider === 'outlook' ? connectOutlookInbox(onConnected, onLimit, onNotConnected) : connectGmailInbox(onConnected, onLimit, onNotConnected);
 }
 
-// CHOOSE A SUBSCRIPTION: the tracked plan a payment belongs to, or "separate" for its own subscription. The payment
-// is recorded right away; the server answers 409 for a stale revision or a second, different pick.
-export function matchGmailReceipt(job_id: string, receipt_id: string, subscription_id: string, revision: number, onDone: () => void, onFailed: (message: string) => void): AppThunk {
+// CHOOSE A SUBSCRIPTION: the tracked plan a payment belongs to, or "separate" for its own subscription. The payment is
+// recorded right away and can be changed later with the entry's new revision (409 CANNOT_CHANGE once refunded or saved).
+export function matchGmailReceipt(job_id: string, receipt_id: string, subscription_id: string, revision: number, onDone: (result: MatchResultDto) => void, onFailed: (message: string) => void): AppThunk {
   return async dispatch => {
     await dispatch(
       requestHandler({
         apiService: apiServices.matchReceipt,
         param_data: { job_id, receipt_id, subscription_id, revision },
-        onDone: () => {
-          if (subscription_id !== 'separate') dispatch(getDashboard());
-          onDone();
+        onDone: result => {
+          // A plan pick (or a change away from one) moves a payment, so Home's totals change.
+          dispatch(getDashboard());
+          onDone(result);
         },
         onError: error => onFailed(error.message),
       }),
