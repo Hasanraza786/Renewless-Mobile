@@ -984,9 +984,9 @@
     "semantic_hash": "66b574d5d09906feae9e184df2b4f876"
   },
   "src/redux/actions/onboarding-action.ts": {
-    "mtime": 1795596155.8142192,
-    "seen": 1795605164.937469,
-    "ast_hash": "044a6c864b0f367e4ebf14bac6b05ee2",
+    "mtime": 1795609000.5831647,
+    "seen": 1795610240.9536939,
+    "ast_hash": "e9b302acd69e646e0cea705b01898d6d",
     "semantic_hash": ""
   },
   "src/redux/actions/payments-action.ts": {
@@ -1620,9 +1620,9 @@
     "semantic_hash": ""
   },
   "src/screens/Onboarding/index.function.ts": {
-    "mtime": 1795600726.3666902,
-    "seen": 1795605164.93753,
-    "ast_hash": "885bc2bbe20505ad1e5004ab2509cf8c",
+    "mtime": 1795610217.398933,
+    "seen": 1795610240.953761,
+    "ast_hash": "e34616a89b1006eeff16ef2eca3a509c",
     "semantic_hash": ""
   },
   "src/screens/Onboarding/index.tsx": {
@@ -2862,9 +2862,9 @@
     "semantic_hash": ""
   },
   "qa/runs/2026-11-25-long-scans-usage.md": {
-    "mtime": 1795608168.0600057,
-    "seen": 1795608176.000454,
-    "ast_hash": "bb200a053a9862bdfcf6754f12acfff3",
+    "mtime": 1795610236.4158065,
+    "seen": 1795610240.953821,
+    "ast_hash": "9094682dbe7474322e741d9e1bc67824",
     "semantic_hash": ""
   },
   "yarn.lock": {

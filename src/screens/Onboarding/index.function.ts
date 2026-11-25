@@ -4,6 +4,7 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   answerScanNotify,
+  openBackgroundResults,
   connectOnboardingGoogle,
   connectOnboardingOutlook,
   editOnboardingCandidate,
@@ -19,7 +20,7 @@ import { navigate, resetRoot } from '../../navigation/service';
 import { PRIVACY_URL, TERMS_URL, openLegal } from '../../config/legal';
 import { useIsTablet } from '../../utils/tablet';
 import { scanProgress, type DeepView } from '../../utils/scan-progress';
-import { getDeepStatus } from '../../redux/actions/gmail-action';
+import { dismissBackgroundScan, getDeepStatus } from '../../redux/actions/gmail-action';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>['route'];
 
@@ -141,6 +142,19 @@ export default function useOnboarding(route: Route) {
   }, [deep_job, dispatch]);
   const older_running = deep_view ? deep_view.status === 'running' : deep_running;
 
+  // Rest of your year done (approved 25 Nov 2026): after a short hold on 100%, load the background read's list
+  // (it holds the quick check's unsaved plans too) and open Your subscriptions with everything found. Not while the
+  // notify sheet is open: the user is choosing to leave.
+  const deep_done_job = step === 'firstResults' && deep_view?.status === 'completed' && deep && !notify_open && !notify_busy ? deep.job_id : '';
+  useEffect(() => {
+    if (!deep_done_job) return;
+    const timer = setTimeout(() => dispatch(openBackgroundResults(deep_done_job)), SCAN_COMPLETE_HOLD_MS);
+    return () => clearTimeout(timer);
+  }, [deep_done_job, dispatch]);
+  useEffect(() => {
+    if (step === 'firstResults' && scan_meter?.phase === 'deep' && scan_status === 'completed' && !notify_open && !notify_busy) goTo('yourSubscriptions');
+  }, [goTo, notify_busy, notify_open, scan_meter?.phase, scan_status, step]);
+
   useEffect(() => {
     if (!waiting_for_deep) return;
     const timer = setTimeout(() => setDeepWaitOver(true), DEEP_WAIT_MS);
@@ -210,6 +224,12 @@ export default function useOnboarding(route: Route) {
   };
 
   const openDashboard = () => dispatch(finishOnboarding(() => resetRoot([{ name: 'Tabs' }])));
+  // Continue without saving after the whole year was shown: the user has seen every find, so Home must not offer
+  // them again as MORE FOUND (saving dismisses it on the server already).
+  const skipSave = () => {
+    if (scan_meter?.phase === 'deep') dispatch(dismissBackgroundScan(scan_job_id));
+    openDashboard();
+  };
   const connectGoogle = () => {
     setConnectProvider('gmail');
     dispatch(connectOnboardingGoogle(openScan, openDashboard));
@@ -282,7 +302,7 @@ export default function useOnboarding(route: Route) {
     openPrivacy,
     openDashboard,
     // Zero selection: continue to the actual (possibly empty) dashboard without a fake success.
-    skipSave: openDashboard,
+    skipSave,
     panel_style,
     footer_style,
     setPanelWidth,

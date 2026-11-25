@@ -297,3 +297,20 @@ export function answerScanNotify(job_id: string, notify: boolean, onDone: () => 
     await dispatch(requestHandler({ apiService: apiServices.notifyScan, param_data: { id: job_id, notify }, onDone, onError: onDone }));
   };
 }
+
+// First results → Your subscriptions: the finished background read's list replaces the quick check's in one step, so
+// the screen never shows an empty list while it loads. A failed read leaves first results as they are.
+export function openBackgroundResults(job_id: string): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.getScan,
+        param_data: { id: job_id },
+        onDone: job => {
+          dispatch(setScanJob(job_id));
+          dispatch(setScanStatus(toScanStatus(job)));
+        },
+      }),
+    );
+  };
+}

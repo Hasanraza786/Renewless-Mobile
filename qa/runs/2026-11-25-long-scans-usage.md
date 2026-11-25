@@ -56,3 +56,15 @@ Same phone. The account was deleted and its scanned-inbox row removed again, so 
 6. **Major.** A plan saved from the quick check is offered again. ElevenLabs was saved through Keep looking → Notify me, then showed again as a new, ticked row in the more-found review, and was counted in "Loop found 8 more". The deep job copied the quick job's unimported plans before the save. Expected per product-screens.md#long-scans: a later find that matches something already saved is folded into it, not offered again.
 7. **Minor.** One service in two usage rows: WhatsApp Business appeared twice in USAGE BILLS (€0.97 and €1.06).
 8. **Minor.** A usage candidate without lastCharges (Sentry) can only show "Usage-based", with no last bill.
+
+## Third pass (auto-advance and dismiss)
+
+| Case | Result | Notes |
+|---|---|---|
+| Scan interrupted by a server restart | PASS | A backend deploy at 12:24:57 UTC restarted the server, and the scan failed with a retryable INTERNAL error. The app showed "Your scan was interrupted", and Try again started a new scan. |
+| Discovering stage bar with Loop | PASS | Loop rode the "Reading your inbox" bar, which stops at 220 pt. |
+| Loop at 100% | PASS | At 100% Loop sat fully inside the bar's end. |
+| First results opens Your subscriptions at 100% | PASS | 80% → 100% ("Checked 53 of 53 emails") → Your subscriptions opened by itself about 4 s later, with the quick and rest-of-year finds together (3). |
+| Continue without saving after the whole year | PASS | The background scan was stored as dismissed, and Home showed no MORE FOUND card (the empty Home, because nothing was saved). |
+
+9. **Design gap.** Your subscriptions in onboarding has no USAGE BILLS section, so the usage bills a first scan finds are never shown there. After the full-year review the background card is dismissed, so they stay hidden until the next sync. Needs a decision: add the section to onboarding, or keep the card when usage bills exist.
