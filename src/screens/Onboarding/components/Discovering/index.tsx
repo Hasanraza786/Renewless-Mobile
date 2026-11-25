@@ -16,8 +16,6 @@ import { RADAR_SIZE, styles } from './styles';
 type Props = { onboarding: OnboardingController };
 
 const STAGES = ['Finding receipts', 'Grouping subscriptions', 'Checking renewal details'];
-// The stage bars glide over one status read (Discovering reads every second), like the Studio's width transition.
-const STAGE_GLIDE_MS = 1000;
 
 // The scan radar: a turning mint arc around the neutral Loop (still once complete or with Reduce Motion).
 // Shared by onboarding's Discovering and the signed-in Gmail scan; compact on first results while older mail is read.
@@ -124,6 +122,7 @@ export function StageBar({ fraction, label, glide_ms = 0, reduce_motion = false 
 // useTrickle's value and Loop bobs while work goes on. Reduce Motion: Loop stands still.
 export function RiderBar({ value, percent, label, running, reduce_motion }: { value: Animated.Value; percent: number; label: string; running: boolean; reduce_motion: boolean }) {
   const bob = useRef(new Animated.Value(0)).current;
+  const [track, setTrack] = useState(0);
 
   useEffect(() => {
     if (!running || reduce_motion) return bob.setValue(0);
@@ -138,12 +137,15 @@ export function RiderBar({ value, percent, label, running, reduce_motion }: { va
   }, [bob, reduce_motion, running]);
 
   const at = value.interpolate({ inputRange: [0, 100], outputRange: ['0%', '100%'], extrapolate: 'clamp' });
+  // Loop's centre follows the tip, but its body never leaves the bar: at 0% and 100% it sits flush with the ends.
+  const half = (RIDER_SIZE / 2 / Math.max(track, RIDER_SIZE)) * 100;
+  const left = track > RIDER_SIZE ? value.interpolate({ inputRange: [0, half, 100 - half, 100], outputRange: [0, 0, track - RIDER_SIZE, track - RIDER_SIZE], extrapolate: 'clamp' }) : 0;
   return (
-    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: percent }} style={styles.rider_bar}>
+    <View accessibilityRole="progressbar" accessibilityLabel={label} accessibilityValue={{ min: 0, max: 100, now: percent }} onLayout={event => setTrack(event.nativeEvent.layout.width)} style={styles.rider_bar}>
       <View style={styles.bar}>
         <Animated.View style={[styles.bar_fill, { width: at }]} />
       </View>
-      <Animated.View importantForAccessibility="no-hide-descendants" accessibilityElementsHidden style={[styles.rider, { left: at }]}>
+      <Animated.View importantForAccessibility="no-hide-descendants" accessibilityElementsHidden style={[styles.rider, { left }]}>
         <Animated.View style={{ transform: [{ translateY: bob.interpolate({ inputRange: [0, 1], outputRange: [0, -SIZES.padding / 10] }) }] }}>
           <Mascot expression="neutral" size={RIDER_SIZE} label="" draw={false} />
         </Animated.View>
@@ -156,7 +158,17 @@ const RIDER_BOB_MS = 300;
 
 // Numbered scan stages: done ones show a check, the running one is outlined in mint. With progress, each stage has a
 // muted line (and the running one a bar); those change several times a second, so screen readers skip them.
-export function ScanStages({ labels, done_count, running, progress }: { labels: readonly string[]; done_count: number; running: boolean; progress?: StageProgress }) {
+// The running stage's bar with Loop riding its tip (scoped unlock 25 Nov 2026), trickling between status reads.
+function StageRider({ fraction, label, reduce_motion }: { fraction: number; label: string; reduce_motion: boolean }) {
+  const trickle = useTrickle(fraction * 100, reduce_motion);
+  return (
+    <View style={styles.stage_rider}>
+      <RiderBar value={trickle.value} percent={trickle.percent} label={label} running reduce_motion={reduce_motion} />
+    </View>
+  );
+}
+
+export function ScanStages({ labels, done_count, running, progress, reduce_motion }: { labels: readonly string[]; done_count: number; running: boolean; progress?: StageProgress; reduce_motion?: boolean }) {
   return (
     <View style={styles.stages}>
       {labels.map((label, index) => {
@@ -177,7 +189,7 @@ export function ScanStages({ labels, done_count, running, progress }: { labels: 
               {line ? (
                 <View accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
                   <CustomText mt={SIZES.padding / 5} text={line} weight={FONTS.regular} color={COLORS.text_dim} size={SIZES.sm} />
-                  {progress?.bar?.index === index ? <StageBar fraction={progress.bar.fraction} glide_ms={STAGE_GLIDE_MS} /> : null}
+                  {progress?.bar?.index === index ? <StageRider fraction={progress.bar.fraction} label={label} reduce_motion={!!reduce_motion} /> : null}
                 </View>
               ) : null}
             </View>
@@ -216,7 +228,7 @@ export function DiscoveringBody({ onboarding }: Props) {
         copy="Turning your receipts into a clearer picture of your subscriptions."
       />
 
-      <ScanStages labels={STAGES} done_count={onboarding.scan_stages} running={onboarding.scan_status === 'running'} progress={onboarding.scan_progress} />
+      <ScanStages labels={STAGES} done_count={onboarding.scan_stages} running={onboarding.scan_status === 'running'} progress={onboarding.scan_progress} reduce_motion={onboarding.reduce_motion} />
     </Fragment>
   );
 }

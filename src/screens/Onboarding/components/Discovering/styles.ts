@@ -62,12 +62,15 @@ export const styles = StyleSheet.create({
     height: '100%',
   },
   // The bar with Loop riding its tip: room above the bar for Loop.
+  // Discovering's stage bars stop at 220pt, as in the Studio.
+  stage_rider: {
+    maxWidth: SIZES.padding * 11,
+  },
   rider_bar: {
     marginTop: SIZES.padding * 0.9,
   },
   rider: {
     bottom: SIZES.padding / 10,
-    marginLeft: -SIZES.padding * 0.45,
     position: 'absolute',
   },
   radar_compact: {

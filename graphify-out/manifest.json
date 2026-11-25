@@ -1326,9 +1326,9 @@
     "semantic_hash": ""
   },
   "src/screens/GmailScan/components/GmailViews.tsx": {
-    "mtime": 1795594375.9202435,
-    "seen": 1795605164.9375,
-    "ast_hash": "7f14a2b3326494cb3a99eaf222042ef9",
+    "mtime": 1795607722.6803076,
+    "seen": 1795608176.0003572,
+    "ast_hash": "d8d5bb704ad99ec89cb469f2a0aca7f9",
     "semantic_hash": ""
   },
   "src/screens/GmailScan/index.function.ts": {
@@ -1554,15 +1554,15 @@
     "semantic_hash": "852804143a6cf51d9db312f4f6b8109c"
   },
   "src/screens/Onboarding/components/Discovering/index.tsx": {
-    "mtime": 1795601860.8135207,
-    "seen": 1795605164.937522,
-    "ast_hash": "d117a6c7601fb40d87a881e72d65ad7a",
+    "mtime": 1795607744.3771608,
+    "seen": 1795608176.000383,
+    "ast_hash": "af8bf361ace188b699a00947492ebc6c",
     "semantic_hash": ""
   },
   "src/screens/Onboarding/components/Discovering/styles.ts": {
-    "mtime": 1795601938.295705,
-    "seen": 1795605164.937523,
-    "ast_hash": "774bad28741bd1e042eaad4c407849e6",
+    "mtime": 1795607744.3773737,
+    "seen": 1795608176.000384,
+    "ast_hash": "f736be15ca924a3eaa9c3a14774e0486",
     "semantic_hash": ""
   },
   "src/screens/Onboarding/components/ReadyToGo/index.tsx": {
@@ -2862,9 +2862,9 @@
     "semantic_hash": ""
   },
   "qa/runs/2026-11-25-long-scans-usage.md": {
-    "mtime": 1795595982.2331386,
-    "seen": 1795605164.9375849,
-    "ast_hash": "297532caa12d5695164a87bc2f39c672",
+    "mtime": 1795608168.0600057,
+    "seen": 1795608176.000454,
+    "ast_hash": "bb200a053a9862bdfcf6754f12acfff3",
     "semantic_hash": ""
   },
   "yarn.lock": {

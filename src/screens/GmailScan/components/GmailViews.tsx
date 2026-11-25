@@ -51,7 +51,7 @@ export function ScanningView({ gmail }: Props) {
       <ScanRadar complete={gmail.scan_done} reduce_motion={gmail.reduce_motion} />
       <OnboardingTitle eyebrow="YOUR INBOX, ORGANIZED" title="Finding what’s new." copy="Checking receipts for new subscriptions and changes to the ones you track." />
       <InboxLine gmail={gmail} prefix="Checking" />
-      <ScanStages labels={STAGES} done_count={gmail.stage} running={!gmail.scan_done} progress={gmail.scan_progress} />
+      <ScanStages labels={STAGES} done_count={gmail.stage} running={!gmail.scan_done} progress={gmail.scan_progress} reduce_motion={gmail.reduce_motion} />
     </Fragment>
   );
 }

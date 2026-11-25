@@ -34,3 +34,25 @@
 3. **Backend gap.** A recorded match cannot be changed (409 `ALREADY_MATCHED`), but the design has Change.
 4. **Backend gap.** A usage subscription in the list has `price: null`, so its currency is unknown outside Detail.
 5. **Watch item, not from this change.** A fresh install asks for Nearby devices permission on Android at launch.
+
+## Second pass (same day, after the design revisions)
+
+Same phone. The account was deleted and its scanned-inbox row removed again, so onboarding ran a full first scan.
+
+| Case | Result | Notes |
+|---|---|---|
+| Discovering progress | PASS | Turning ring and "Reading your inbox · 86%" with the bar. |
+| Discovering · first results (revised) | PASS | FOUND SO FAR / Loop is still looking., Rest of your year 0% → 100%, "Checked 53 of 53 emails · 2 more found". |
+| Loop riding the bar at 100% | FAIL → fixed | Loop was cut off at the right end. It is now held inside the bar at both ends. Measured in the Studio; the phone still ran the old bundle at that point. |
+| Discovering stage bar with Loop | Not seen on device | Added after the user asked during this pass. Approved 25 Nov 2026. Needs a new scan to be seen. |
+| Notify sheet (revised) | PASS | Mint-outline Not now, 8 pt under Notify me. Notify me showed the Android notification prompt. |
+| Keep looking saves found plans | PASS | ElevenLabs was saved, and Home showed the dashboard instead of the empty state. |
+| Home · more found (revised) | PASS | Review → mint link. Next renewal padding 8 pt. No usage card on Home. |
+| Review from more found | PASS (design) / FAIL (data) | See backend bugs 6 and 7. |
+| Profile and List | PASS | "You can connect 1 more inbox."; the Status filters open. |
+
+## Backend bugs from the second pass
+
+6. **Major.** A plan saved from the quick check is offered again. ElevenLabs was saved through Keep looking → Notify me, then showed again as a new, ticked row in the more-found review, and was counted in "Loop found 8 more". The deep job copied the quick job's unimported plans before the save. Expected per product-screens.md#long-scans: a later find that matches something already saved is folded into it, not offered again.
+7. **Minor.** One service in two usage rows: WhatsApp Business appeared twice in USAGE BILLS (€0.97 and €1.06).
+8. **Minor.** A usage candidate without lastCharges (Sentry) can only show "Usage-based", with no last bill.
