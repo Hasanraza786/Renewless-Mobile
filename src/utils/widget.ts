@@ -9,9 +9,11 @@ import { money, spokenMoney } from './money';
 const bridge: { setSnapshot(json: string): void; clear(): void; isInstalled(): Promise<boolean>; requestPin?(): Promise<boolean> } | undefined = NativeModules.RenewlessWidget;
 
 // The widget shows the earliest upcoming renewal or trial end, the same order as Home, and how many more share its date.
+// A usage bill has no amount to show, so the widget leaves it out.
 export function widgetEvent(home: HomeSnapshot): { event: HomeEvent | null; more: number } {
-  const event = home.nearest_events[0] ?? home.upcoming[0] ?? null;
-  const same_day = home.nearest_events.length ? home.nearest_events : home.upcoming.filter(item => item.date === event?.date);
+  const upcoming = home.upcoming.filter(item => item.kind !== 'usage_bill');
+  const event = home.nearest_events[0] ?? upcoming[0] ?? null;
+  const same_day = home.nearest_events.length ? home.nearest_events : upcoming.filter(item => item.date === event?.date);
   return { event, more: event ? Math.max(0, same_day.length - 1) : 0 };
 }
 

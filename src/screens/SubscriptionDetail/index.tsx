@@ -20,7 +20,6 @@ import DetailSheets from './components/DetailSheets';
 import useSubscriptionDetail, { type DetailView } from './index.function';
 import { styles } from './styles';
 import { syncLabel } from '../../utils/dates';
-import { money } from '../../utils/money';
 
 type Props = Pick<NativeStackScreenProps<AppStackParamList, 'SubscriptionDetail'>, 'route'>;
 
@@ -87,13 +86,20 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
           <Badge text={view.status.label} color={view.status.color} fill={view.status.fill} />
         </RowView>
         <RowView align_items="baseline" gap={SIZES.padding * 0.45} style={styles.cost}>
-          <CustomText
-            size={SIZES.h3}
-            letter_spacing={-0.6}
-            text={money(view.cost.currency, view.cost.amount)}
-          />
-          <CustomText text={view.cost.caption} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          <CustomText size={view.usage ? SIZES.h4 : SIZES.h3} letter_spacing={-0.6} text={view.cost.text} />
+          <CustomText text={view.cost.caption} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} style={view.usage ? common_styles.flex_1 : undefined} />
         </RowView>
+        {view.usage?.bills.length ? (
+          <RowView gap={SIZES.padding * 0.4} style={styles.usage_bills} accessibilityLabel="Last three bills">
+            <CustomText text="Last 3 bills" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} />
+            {view.usage.bills.map(bill => (
+              <View key={bill.key} style={styles.usage_bill}>
+                <CustomText text={bill.amount} weight={FONTS.regular} size={SIZES.sm} />
+                <CustomText text={bill.month} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} />
+              </View>
+            ))}
+          </RowView>
+        ) : null}
         <RowView justify_content="space-between" gap={SIZES.padding2} style={styles.next_event}>
           <CustomText text={view.event.label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           <CustomText text={view.event.value} size={SIZES.sm} align="right" style={common_styles.flex_1} />
@@ -108,6 +114,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
         <Field label="Reminder" value={view.reminder.text} onPress={view.reminder.actionable ? () => detail.setSheet('reminder') : undefined} />
         {view.reminder.note ? <CustomText mt={SIZES.padding3} text={view.reminder.note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
         {view.estimated_note ? <CustomText mt={SIZES.padding3} text="Estimated date. You can update it in Edit." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
+        {view.usage ? <CustomText mt={SIZES.padding3} text="The amount changes with your usage, so reminders tell you when, not how much." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
         <CustomText mt={SIZES.padding3} text="Tracking doesn’t confirm a charge or change your service settings." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </View>
 
@@ -127,7 +134,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
         <CustomText mt={SIZES.padding2} text="Recorded history may be incomplete. Estimates aren’t payments." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </View>
 
-      <LinkCard title="Price history" caption={view.price_history} onPress={detail.openPriceHistory} />
+      {view.usage ? null : <LinkCard title="Price history" caption={view.price_history} onPress={detail.openPriceHistory} />}
       <LinkCard title={view.receipt_emails.title} caption={view.receipt_emails.caption} onPress={detail.openReceipts} />
 
       <View style={styles.panel}>

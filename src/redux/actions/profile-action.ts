@@ -1,4 +1,4 @@
-import { toInbox, toProfile } from '../../api_services/adapters';
+import { toInbox, toInboxSlots, toProfile } from '../../api_services/adapters';
 import apiServices from '../../api_services/request-handler';
 import type { ProfileInput } from '../../types';
 import { successHaptic } from '../../utils/haptics';
@@ -12,8 +12,8 @@ import type { Profile } from '../../types';
 
 // Connected inboxes and all-time confirmed payment totals per currency.
 async function getProfileData() {
-  const [{ connectors }, summary] = await Promise.all([apiServices.getConnectors(), apiServices.getPaymentsSummary()]);
-  return { inboxes: connectors.map(toInbox), payment_totals: summary.totals };
+  const [list, summary] = await Promise.all([apiServices.getConnectors(), apiServices.getPaymentsSummary()]);
+  return { inboxes: list.connectors.map(toInbox), inbox_slots: toInboxSlots(list), payment_totals: summary.totals };
 }
 
 export function getProfileOverview(): AppThunk {

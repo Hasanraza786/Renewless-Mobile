@@ -50,4 +50,38 @@ export const styles = StyleSheet.create({
   stages: {
     marginTop: SIZES.padding,
   },
+  bar: {
+    backgroundColor: COLORS.line_soft,
+    borderRadius: SIZES.padding / 10,
+    height: SIZES.padding / 5,
+    marginTop: SIZES.padding / 4,
+    overflow: 'hidden',
+  },
+  bar_fill: {
+    backgroundColor: COLORS.primary,
+    height: '100%',
+  },
+  // The bar with Loop riding its tip: room above the bar for Loop.
+  rider_bar: {
+    marginTop: SIZES.padding * 0.9,
+  },
+  rider: {
+    bottom: SIZES.padding / 10,
+    marginLeft: -SIZES.padding * 0.45,
+    position: 'absolute',
+  },
+  radar_compact: {
+    borderRadius: SIZES.padding * 2.1,
+    height: SIZES.padding * 4.2,
+    marginBottom: SIZES.padding * 0.3,
+    marginTop: 0,
+    width: SIZES.padding * 4.2,
+  },
+  ring_compact: {
+    borderRadius: SIZES.padding * 1.75,
+    bottom: SIZES.padding * 0.35,
+    left: SIZES.padding * 0.35,
+    right: SIZES.padding * 0.35,
+    top: SIZES.padding * 0.35,
+  },
 });

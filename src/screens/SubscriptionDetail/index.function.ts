@@ -7,7 +7,7 @@ import { goBack, navigate } from '../../navigation/service';
 import { cancelSubscription, getSubscriptionDetail, deleteSubscription, resumeSubscription, updateNotes, updateReminder } from '../../redux/actions/detail-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, ReminderPreference, SubscriptionDetail } from '../../types';
-import { amountLabel, daysBetween, recordStatus } from '../../utils/events';
+import { USAGE_AMOUNT, amountLabel, daysBetween, recordStatus, shortDate } from '../../utils/events';
 import { defaultTooClose, reminderText } from '../../utils/reminders';
 import { dateLabel } from '../../utils/scan';
 import { formatAmount, money } from '../../utils/money';
@@ -30,13 +30,25 @@ const STATUS_FILL: Record<string, string> = {
 const relative = (days: number) => (days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : days < 0 ? 'Past date' : `In ${days} days`);
 
 // Everything Detail shows, derived once from the server record.
-export function detailView({ record, today, receipts, receipt_emails, annual_estimate, related_count, account_reminder_days }: SubscriptionDetail) {
+export function detailView({ record, today, receipts, receipt_emails, annual_estimate, last_charges, related_count, account_reminder_days }: SubscriptionDetail) {
   const status = recordStatus(record, today);
   const in_trial = !!record.trial && record.trial.end_date >= today;
   const trial_ended = !!record.trial && !in_trial && !record.trial.auto_renew;
   const cancelled = record.status !== 'active';
   const event_date = in_trial ? record.trial!.end_date : record.next_date;
   const remaining = event_date ? Math.max(0, daysBetween(today, event_date)) : 0;
+  // Usage bill (Detail · usage, locked 23 Nov 2026): when a bill is expected and the last bills, never a fixed price.
+  const usage = record.billing === 'usage';
+  const last_bill = last_charges.at(-1);
+  const bill_currency = last_bill?.currency ?? record.currency;
+  const typical = last_charges.filter(item => item.currency === bill_currency);
+  const usage_view = usage
+    ? {
+        last_bill: last_bill ? `Last bill ${money(last_bill.currency, last_bill.amount)} · ${shortDate(last_bill.date)}` : '',
+        bills: last_charges.map(item => ({ key: item.date, amount: money(item.currency, item.amount), month: new Date(`${item.date}T00:00:00`).toLocaleDateString('en-GB', { month: 'short' }) })),
+        typical: typical.length ? `${money(bill_currency, typical.reduce((sum, item) => sum + Number(item.amount), 0) / typical.length)} average` : 'Not enough bills yet',
+      }
+    : null;
 
   const event = cancelled
     ? { label: 'Access until', value: record.access_until ? dateLabel(record.access_until) : 'Not set' }
@@ -44,6 +56,8 @@ export function detailView({ record, today, receipts, receipt_emails, annual_est
       ? { label: 'Trial ended', value: `Auto-renew tracking off · ${dateLabel(record.trial!.end_date)}` }
       : in_trial
         ? { label: 'Trial ends', value: `${relative(daysBetween(today, record.trial!.end_date))} · ${dateLabel(record.trial!.end_date)}` }
+        : usage
+          ? { label: 'Next bill', value: record.next_date ? `Expected around ${shortDate(record.next_date)} · check your usage` : 'Add a renewal date' }
         : record.next_date
           ? { label: 'Next renewal', value: `${relative(daysBetween(today, record.next_date))} · ${dateLabel(record.next_date)}` }
           : { label: 'Next renewal', value: 'Add a renewal date' };
@@ -64,7 +78,10 @@ export function detailView({ record, today, receipts, receipt_emails, annual_est
   return {
     record,
     status: { ...status, fill: STATUS_FILL[status.color] ?? COLORS.status_muted_bg },
-    cost: { currency: record.currency, amount: formatAmount(record.currency, record.price), caption: `${in_trial ? 'After trial · ' : ''}${record.cycle}` },
+    cost: usage_view
+      ? { text: USAGE_AMOUNT, caption: usage_view.last_bill }
+      : { text: money(record.currency, formatAmount(record.currency, record.price)), caption: `${in_trial ? 'After trial · ' : ''}${record.cycle}` },
+    usage: usage_view,
     event,
     // Only an active trial uses the trial title; an ended trial is back to renewal billing.
     billing_title: in_trial ? 'Trial & billing' : 'Renewal & billing',
@@ -74,15 +91,15 @@ export function detailView({ record, today, receipts, receipt_emails, annual_est
     reminder,
     remaining,
     event_date,
-    estimated_note: record.estimated && !cancelled && !!record.next_date,
+    estimated_note: record.estimated && !cancelled && !!record.next_date && !usage,
     cancelled,
     receipts: {
       total: receipts.totals.length ? receipts.totals.map(item => money(item.currency, item.amount)).join('\n') : 'No receipts yet',
       caption: `${receipts.count ? `${receipts.count} payment${receipts.count === 1 ? '' : 's'}` : 'No payments'} found · Available inbox receipts only`,
     },
     since: record.start_date ? dateLabel(record.start_date) : 'Not set',
-    annual_label: cancelled ? 'Last price · annual equivalent' : in_trial ? 'After trial · annual equivalent' : 'Current price · annual equivalent',
-    annual_value: `${money(record.currency, annual_estimate)} estimated`,
+    annual_label: usage_view ? 'Typical bill · last 3' : cancelled ? 'Last price · annual equivalent' : in_trial ? 'After trial · annual equivalent' : 'Current price · annual equivalent',
+    annual_value: usage_view ? usage_view.typical : annual_estimate === null ? 'Not available' : `${money(record.currency, annual_estimate)} estimated`,
     // Detail draws the arrow between the two prices as an icon.
     price_history: latest
       ? { from: `${money(latest.currency, latest.from_amount)} · ${latest.from_cycle}`, to: `${money(latest.currency, latest.to_amount)} · ${latest.to_cycle}` }

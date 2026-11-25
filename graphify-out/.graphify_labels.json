@@ -1,6 +1,5 @@
 {
   "1": "RenewlessWidgetProvider.kt",
-  "2": "requestHandler",
   "3": "Home/index.tsx",
   "10": "API DTOs & Request Handler",
   "13": "iOS Widget Models",
@@ -8,9 +7,6 @@
   "15": "Profile/index.tsx",
   "17": "navigate",
   "18": "Dev Dependencies",
-  "22": "iOS Native Imports",
-  "23": "store.ts",
-  "30": "service.ts (2)",
   "36": "Release Blockers & Gaps",
   "40": "types.ts (4)",
   "43": "Community 68",

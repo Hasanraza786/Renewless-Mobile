@@ -1,4 +1,5 @@
-import { fromGmailSelection, toGmailScan, toInbox, toRecord } from '../../api_services/adapters';
+import { deepView, type DeepView } from '../../utils/scan-progress';
+import { failedGmailScan, fromGmailSelection, toGmailScan, toInbox, toRecord } from '../../api_services/adapters';
 import type { ApiError } from '../../api_services/http-provider';
 import apiServices from '../../api_services/request-handler';
 import type { GmailCandidate, GmailScanStatus, GmailSelection, InboxProvider, ProfileInbox } from '../../types';
@@ -84,27 +85,28 @@ export function getGmailScan(job_id: string, onStatus: (status: GmailScanStatus)
         apiService: apiServices.getScan,
         param_data: { id: job_id },
         onDone: job => onStatus(toGmailScan(job)),
-        onError: error => onStatus({ status: 'failed', stage: 0, candidates: [], error: error.message }),
+        onError: error => onStatus(failedGmailScan(job_id, error.message)),
       }),
     );
   };
 }
 
-// Reviewed edits are saved on the scan first, then the selected rows are imported in one request.
-async function saveReview({ job_id, chosen, selections }: { job_id: string; chosen: GmailCandidate[]; selections: GmailSelection[] }) {
+// Reviewed edits are saved on the scan first, then the selected rows are imported in one request. Ticked usage bills
+// (extra_ids) have nothing to edit: their last bill and cycle come from the mail.
+async function saveReview({ job_id, chosen, selections, extra_ids }: { job_id: string; chosen: GmailCandidate[]; selections: GmailSelection[]; extra_ids: string[] }) {
   for (const item of chosen) {
     const selection = selections.find(entry => entry.id === item.id);
     if (selection) await apiServices.updateCandidate({ job_id, id: item.id, ...fromGmailSelection(item, selection) });
   }
-  return apiServices.importScan({ job_id, candidate_ids: chosen.map(item => item.id) });
+  return apiServices.importScan({ job_id, candidate_ids: [...chosen.map(item => item.id), ...extra_ids] });
 }
 
-export function saveGmailResults(job_id: string, chosen: GmailCandidate[], selections: GmailSelection[], onSaved: () => void, onFailed: (message: string) => void): AppThunk {
+export function saveGmailResults(job_id: string, chosen: GmailCandidate[], selections: GmailSelection[], onSaved: () => void, onFailed: (message: string) => void, extra_ids: string[] = []): AppThunk {
   return async dispatch => {
     await dispatch(
       requestHandler({
         apiService: saveReview,
-        param_data: { job_id, chosen, selections },
+        param_data: { job_id, chosen, selections, extra_ids },
         onDone: ({ subscriptions }) => {
           // The imported records go straight into List; a backend that does not send them yet means one full read.
           dispatch(subscriptions ? upsertListRecords(subscriptions.map(toRecord)) : getSubscriptions());
@@ -198,4 +200,42 @@ export function connectOutlookInbox(onConnected: (inbox: ProfileInbox) => void, 
 
 export function connectInbox(provider: InboxProvider, onConnected: (inbox: ProfileInbox) => void, onLimit: () => void, onNotConnected?: () => void): AppThunk {
   return provider === 'outlook' ? connectOutlookInbox(onConnected, onLimit, onNotConnected) : connectGmailInbox(onConnected, onLimit, onNotConnected);
+}
+
+// CHOOSE A SUBSCRIPTION: the tracked plan a payment belongs to, or "separate" for its own subscription. The payment
+// is recorded right away; the server answers 409 for a stale revision or a second, different pick.
+export function matchGmailReceipt(job_id: string, receipt_id: string, subscription_id: string, revision: number, onDone: () => void, onFailed: (message: string) => void): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.matchReceipt,
+        param_data: { job_id, receipt_id, subscription_id, revision },
+        onDone: () => {
+          if (subscription_id !== 'separate') dispatch(getDashboard());
+          onDone();
+        },
+        onError: error => onFailed(error.message),
+      }),
+    );
+  };
+}
+
+// Home · more found: the × dismisses that background scan's card for good.
+export function dismissBackgroundScan(job_id: string): AppThunk {
+  return async dispatch => {
+    await dispatch(requestHandler({ apiService: apiServices.dismissScan, param_data: { id: job_id }, onDone: () => dispatch(getDashboard()) }));
+  };
+}
+
+// Home · still checking and first results: the background (deep) read's status, percent and live counts.
+export function getDeepStatus(job_id: string, onDone: (view: DeepView) => void): AppThunk {
+  return async dispatch => {
+    await dispatch(
+      requestHandler({
+        apiService: apiServices.getScan,
+        param_data: { id: job_id },
+        onDone: job => onDone(deepView(job.status === 'succeeded' ? 'completed' : job.status === 'failed' ? 'failed' : 'running', job.progress ?? { total: 0, done: 0 }, job.live)),
+      }),
+    );
+  };
 }

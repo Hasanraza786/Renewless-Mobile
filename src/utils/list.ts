@@ -2,7 +2,8 @@ import { COLORS } from '../constants/theme';
 import type { SubscriptionRecord } from '../types';
 import { daysBetween } from './events';
 
-export type ListGroup = 'active' | 'on_trial' | 'trial_ended' | 'renewing_soon' | 'due_today' | 'needs_date' | 'cancelled' | 'expired';
+// usage is not a status: it selects usage-based bills (amount changes with use) whatever their status.
+export type ListGroup = 'active' | 'on_trial' | 'trial_ended' | 'renewing_soon' | 'due_today' | 'needs_date' | 'usage' | 'cancelled' | 'expired';
 export type ListSort = 'next' | 'price_asc' | 'price_desc' | 'name' | 'most';
 
 // Status filter groups in display order, with their semantic colours.
@@ -13,6 +14,7 @@ export const LIST_GROUPS: { key: ListGroup; label: string; color: string }[] = [
   { key: 'renewing_soon', label: 'Renewing soon', color: COLORS.renewing_soon },
   { key: 'due_today', label: 'Due today', color: COLORS.due_today },
   { key: 'needs_date', label: 'Needs date', color: COLORS.trial },
+  { key: 'usage', label: 'Usage-based', color: COLORS.text_secondary },
   { key: 'cancelled', label: 'Cancelled', color: COLORS.text_secondary },
   { key: 'expired', label: 'Expired', color: COLORS.expired },
 ];
@@ -60,12 +62,16 @@ function byNextEvent(today: string) {
 // Search (name, case and surrounding spaces ignored) AND any selected group (OR); none selected = all.
 export function filterRecords(records: SubscriptionRecord[], query: string, groups: ListGroup[], today: string) {
   const term = query.trim().toLowerCase();
-  return records.filter(record => (!term || record.name.toLowerCase().includes(term)) && (!groups.length || groups.includes(listGroup(record, today))));
+  const inGroups = (record: SubscriptionRecord) => groups.includes(listGroup(record, today)) || (groups.includes('usage') && record.billing === 'usage');
+  return records.filter(record => (!term || record.name.toLowerCase().includes(term)) && (!groups.length || inGroups(record)));
 }
 
 export function groupCounts(records: SubscriptionRecord[], today: string) {
   const counts = Object.fromEntries(LIST_GROUPS.map(item => [item.key, 0])) as Record<ListGroup, number>;
-  for (const record of records) counts[listGroup(record, today)] += 1;
+  for (const record of records) {
+    counts[listGroup(record, today)] += 1;
+    if (record.billing === 'usage') counts.usage += 1;
+  }
   return counts;
 }
 

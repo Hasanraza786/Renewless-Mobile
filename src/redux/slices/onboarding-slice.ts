@@ -9,6 +9,7 @@ const initial_state: OnboardingState = {
   connector_id: '',
   scan_job_id: '',
   scan_stages: 0,
+  scan_meter: null,
   scan_status: 'idle',
   scan_failure: '',
   candidates: [],
@@ -37,6 +38,7 @@ const onboardingSlice = createSlice({
     setScanJob(state, action: PayloadAction<string>) {
       state.scan_job_id = action.payload;
       state.scan_stages = 0;
+      state.scan_meter = null;
       state.scan_status = 'running';
       state.scan_failure = '';
       state.candidates = [];
@@ -45,6 +47,8 @@ const onboardingSlice = createSlice({
     },
     setScanStatus(state, action: PayloadAction<ScanStatus>) {
       if (action.payload.job_id !== state.scan_job_id) return;
+      const { job_id, phase, progress, live, messages, deep } = action.payload;
+      state.scan_meter = { job_id, phase, progress, live, messages, deep };
       state.scan_stages = action.payload.completed_stages;
       state.scan_status = action.payload.status;
       state.scan_failure = action.payload.failure ?? '';

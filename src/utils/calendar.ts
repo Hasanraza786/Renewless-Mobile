@@ -26,6 +26,6 @@ export function nearestEvent(events: HomeEvent[], today: string) {
   const event = events.find(item => item.date >= today);
   if (!event) return null;
   const is_today = event.date === today;
-  const heading = event.kind === 'trial_end' ? (is_today ? 'Trial ends today' : 'Trial ending') : is_today ? 'Due today' : 'Next renewal';
+  const heading = event.kind === 'trial_end' ? (is_today ? 'Trial ends today' : 'Trial ending') : is_today ? 'Due today' : event.kind === 'usage_bill' ? 'Usage bill' : 'Next renewal';
   return { event, heading };
 }

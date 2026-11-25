@@ -6,6 +6,14 @@ export const styles = StyleSheet.create({
   button: {
     backgroundColor: COLORS.card,
   },
+  inline_button: {
+    backgroundColor: COLORS.overlay_soft,
+    borderColor: COLORS.line_faint,
+    borderRadius: SIZES.padding * 0.6,
+    borderWidth: 1,
+    flex: 1,
+    minHeight: SIZES.padding * 2.2,
+  },
   rows: {
     gap: SIZES.padding * 0.45,
   },

@@ -2,11 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { AccessibilityInfo } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { goBack, navigate } from '../../navigation/service';
-import { connectInbox, getGmailInboxes, getGmailScan, INBOX_LIMIT_NOTICE, saveGmailResults, startGmailScan } from '../../redux/actions/gmail-action';
+import { connectInbox, getGmailInboxes, getGmailScan, INBOX_LIMIT_NOTICE, matchGmailReceipt, saveGmailResults, startGmailScan } from '../../redux/actions/gmail-action';
 import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch } from '../../redux/store';
 import type { ApiError } from '../../api_services/http-provider';
-import type { AppStackParamList, GmailCandidate, GmailSelection, InboxProvider, ProfileInbox } from '../../types';
+import type { AppStackParamList, GmailCandidate, GmailSelection, InboxProvider, ProfileInbox, ScanAttention, ScanMeter } from '../../types';
+import { scanProgress } from '../../utils/scan-progress';
 import { afterModalClose } from '../../utils/modal';
 import { money as moneyLabel } from '../../utils/money';
 import { useIsTablet } from '../../utils/tablet';
@@ -14,7 +15,7 @@ import { orderByCount } from '../../utils/currency-switch';
 
 export type GmailScanRoute = NativeStackScreenProps<AppStackParamList, 'GmailScan'>['route'];
 export type GmailPhase = 'loading' | 'scanning' | 'review' | 'nothing' | 'interrupted';
-export type GmailSheet = { kind: 'candidate' | 'changes'; id: string } | { kind: 'inboxes' } | null;
+export type GmailSheet = { kind: 'candidate' | 'changes' | 'match'; id: string } | { kind: 'inboxes' } | null;
 // Reviewed values for a new plan (price, renewal or trial details).
 export type CandidateEdit = Pick<GmailSelection, 'price' | 'next_date' | 'start_date' | 'trial'>;
 
@@ -44,6 +45,13 @@ export default function useGmailScan(route: GmailScanRoute) {
   const [saving, setSaving] = useState(false);
   const [save_error, setSaveError] = useState('');
   const [reduce_motion, setReduceMotion] = useState(false);
+  // Live progress of the running scan, and the review rows with their own states (usage bills, payments to match).
+  const [meter, setMeter] = useState<ScanMeter | null>(null);
+  const [attention, setAttention] = useState<ScanAttention>({ usage: [], needs_match: [] });
+  // CHOOSE A SUBSCRIPTION: the saved pick per receipt (a subscription ID or "separate").
+  const [matches, setMatches] = useState<Record<string, string>>({});
+  const [match_busy, setMatchBusy] = useState(false);
+  const [match_error, setMatchError] = useState('');
   // Each scan gets a token; progress from an older scan or after leaving is ignored.
   const scan_token = useRef(0);
 
@@ -69,15 +77,20 @@ export default function useGmailScan(route: GmailScanRoute) {
             }
             failures = 0;
             setStage(status.stage);
+            setMeter(status);
             if (status.status === 'failed') return setPhase('interrupted');
             if (status.status !== 'completed') {
               setTimeout(() => token === scan_token.current && poll(), POLL_MS);
               return;
             }
             setCandidates(status.candidates);
-            // Server-preselected new plans start selected; updates and saved ones do not.
+            setAttention(status.attention);
+            // Server-preselected new plans start selected; updates, usage bills and saved ones do not.
             setSelected(status.candidates.filter(item => item.kind === 'new' && !item.saved && item.selected).map(item => item.id));
-            const found = status.candidates.some(item => item.kind !== 'duplicate' && !item.saved);
+            const found =
+              status.candidates.some(item => item.kind !== 'duplicate' && !item.saved) ||
+              status.attention.usage.some(item => !item.saved) ||
+              status.attention.needs_match.length > 0;
             setTimeout(() => token === scan_token.current && setPhase(found ? 'review' : 'nothing'), ADVANCE_MS);
           }),
         );
@@ -93,7 +106,10 @@ export default function useGmailScan(route: GmailScanRoute) {
       setInbox(target);
       setPhase('scanning');
       setStage(0);
+      setMeter(null);
       setCandidates([]);
+      setAttention({ usage: [], needs_match: [] });
+      setMatches({});
       setSaveError('');
       const onStarted = (job: string) => {
         if (token !== scan_token.current) return;
@@ -136,6 +152,13 @@ export default function useGmailScan(route: GmailScanRoute) {
       getGmailInboxes(list => {
         if (visit !== scan_token.current) return;
         setInboxes(list);
+        // Home · more found opens that finished background scan's review; nothing is scanned again.
+        const review_job = route.params?.job_id;
+        if (review_job) {
+          setInbox(list.find(item => item.id === route.params?.inbox_id) ?? list[0] ?? null);
+          setJobId(review_job);
+          return follow(review_job, visit);
+        }
         // An Add sheet tile scans that provider's inbox, or connects one first; closing its sign-in sheet leaves the screen.
         const provider = route.params?.connect;
         const first = list.find(item => item.id === route.params?.inbox_id) ?? (provider ? list.find(item => item.provider === provider) : list[0]);
@@ -146,16 +169,23 @@ export default function useGmailScan(route: GmailScanRoute) {
     return () => {
       scan_token.current += 1;
     };
-  }, [dispatch, onFirstInbox, onFirstLimit, route.params?.inbox_id, route.params?.connect, scan]);
+  }, [dispatch, follow, onFirstInbox, onFirstLimit, route.params?.inbox_id, route.params?.connect, route.params?.job_id, scan]);
 
   const scan_done = phase === 'scanning' && stage >= 3;
+  const scan_progress = scanProgress(meter, stage, scan_done);
   const actionable = candidates.filter(item => item.kind !== 'duplicate' && !item.saved);
-  const new_items = candidates.filter(item => item.kind === 'new');
+  const new_items = candidates.filter(item => item.kind === 'new' && !item.failing);
+  // PAYMENTS FAILING: plans with only failed payments, unticked; a ticked one counts like a new plan.
+  const failing = candidates.filter(item => item.failing);
   const updates = candidates.filter(item => item.kind === 'update');
   const duplicates = candidates.filter(item => item.kind === 'duplicate');
+  // USAGE BILLS count in the ring and the Add button, never in Estimated monthly cost.
+  const usage = attention.usage;
+  const needs_match = attention.needs_match;
+  const usage_chosen = usage.filter(item => selected.includes(item.id) && !item.saved);
   const chosen = candidates.filter(item => selected.includes(item.id) && item.kind !== 'duplicate' && !item.saved);
-  const selected_count = chosen.length;
-  const add_count = chosen.filter(item => item.kind === 'new').length;
+  const selected_count = chosen.length + usage_chosen.length;
+  const add_count = chosen.filter(item => item.kind === 'new').length + usage_chosen.length;
   const update_count = chosen.filter(item => item.kind === 'update').length;
   const view = (item: GmailCandidate): GmailCandidate => ({ ...item, ...edits[item.id] });
   const currencies = orderByCount(new_items.map(item => view(item).currency));
@@ -177,14 +207,45 @@ export default function useGmailScan(route: GmailScanRoute) {
         : update_count
           ? `Save ${update_count} update${update_count === 1 ? '' : 's'}`
           : 'Select subscriptions';
-  // Review heading: the first scan of an inbox is its first look; later ones show what's new.
-  const eyebrow = inbox?.lastSync ? 'WHAT’S NEW' : 'YOUR FIRST LOOK';
+  // Review heading: the first scan of an inbox is its first look; later ones (and Home · more found) show what's new.
+  const eyebrow = inbox?.lastSync || route.params?.job_id ? 'WHAT’S NEW' : 'YOUR FIRST LOOK';
   const plural = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
-  const intro = `We found ${plural(new_items.length, 'new subscription', 'new subscriptions')}${updates.length ? ` and ${plural(updates.length, 'change', 'changes')}` : ''}. Choose what to keep.`;
-  const open_count = actionable.length;
+  const attention_count = failing.length + needs_match.length;
+  const found_parts = [
+    plural(new_items.length, 'new subscription', 'new subscriptions'),
+    ...(updates.length ? [plural(updates.length, 'change', 'changes')] : []),
+    ...(attention_count ? [`${attention_count} that need a look`] : []),
+    ...(usage.length ? [plural(usage.length, 'usage bill', 'usage bills')] : []),
+  ];
+  const found_text = found_parts.length > 1 ? `${found_parts.slice(0, -1).join(', ')} and ${found_parts[found_parts.length - 1]}` : found_parts[0];
+  const intro = `We found ${found_text}. Choose what to keep.`;
+  const open_count = actionable.length + usage.filter(item => !item.saved).length;
+  const sheet_match = sheet?.kind === 'match' ? needs_match.find(item => item.receipt_id === sheet.id) ?? null : null;
   const sheet_candidate = sheet && sheet.kind !== 'inboxes' ? candidates.find(item => item.id === sheet.id) ?? null : null;
 
   const toggle = (id: string) => setSelected(current => (current.includes(id) ? current.filter(item => item !== id) : [...current, id]));
+  const openMatch = (receipt_id: string) => {
+    setMatchError('');
+    setSheet({ kind: 'match', id: receipt_id });
+  };
+  const onMatched = (receipt_id: string, pick: string) => {
+    setMatchBusy(false);
+    setMatches(current => ({ ...current, [receipt_id]: pick }));
+    setSheet(null);
+  };
+  const onMatchFailed = (message: string) => {
+    setMatchBusy(false);
+    setMatchError(message);
+  };
+  // The pick is recorded right away (it never counts in the ring, total or Add button).
+  const saveMatch = (receipt_id: string, pick: string) => {
+    const entry = needs_match.find(item => item.receipt_id === receipt_id);
+    if (!entry || match_busy) return;
+    if (matches[receipt_id] === pick) return setSheet(null);
+    setMatchBusy(true);
+    setMatchError('');
+    dispatch(matchGmailReceipt(job_id, receipt_id, pick, entry.revision, () => onMatched(receipt_id, pick), onMatchFailed));
+  };
   const openCandidate = (item: GmailCandidate) => setSheet({ kind: item.kind === 'update' ? 'changes' : 'candidate', id: item.id });
   const openInboxes = () => setSheet({ kind: 'inboxes' });
   const closeSheet = () => setSheet(null);
@@ -234,14 +295,14 @@ export default function useGmailScan(route: GmailScanRoute) {
     setSaveError(message);
   };
   const save = () => {
-    if (!chosen.length || saving) return;
+    if (!selected_count || saving) return;
     setSaving(true);
     setSaveError('');
     const selections: GmailSelection[] = chosen.map(item => {
       const value = view(item);
       return { id: item.id, price: value.price, next_date: value.next_date, start_date: value.start_date, trial: value.trial, replace_date: item.kind === 'update' && replace_date };
     });
-    dispatch(saveGmailResults(job_id, chosen, selections, onSaved, onSaveFailed));
+    dispatch(saveGmailResults(job_id, chosen, selections, onSaved, onSaveFailed, usage_chosen.map(item => item.id)));
   };
 
   return {
@@ -251,6 +312,7 @@ export default function useGmailScan(route: GmailScanRoute) {
     phase,
     stage,
     scan_done,
+    scan_progress,
     reduce_motion,
     eyebrow,
     intro,
@@ -258,6 +320,15 @@ export default function useGmailScan(route: GmailScanRoute) {
     new_items,
     updates,
     duplicates,
+    failing,
+    usage,
+    needs_match,
+    matches,
+    match_busy,
+    match_error,
+    sheet_match,
+    openMatch,
+    saveMatch,
     selected,
     replace_date,
     money,

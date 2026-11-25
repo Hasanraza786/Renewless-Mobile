@@ -121,6 +121,53 @@ function ChangesSheet({ gmail, item }: Props & { item: GmailCandidate }) {
   );
 }
 
+const shortDay = (iso: string) => {
+  const [year, month, day] = iso.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+};
+
+// Which plan is this for? One radio row per tracked plan, then It's a separate plan; Save records the pick.
+function MatchSheet({ gmail, entry }: Props & { entry: GmailScanController['needs_match'][number] }) {
+  const [pick, setPick] = useState(gmail.matches[entry.receipt_id] ?? '');
+  const options = [
+    ...entry.options.map(option => ({
+      id: option.subscription_id,
+      label: option.plan ?? option.name,
+      detail: `${option.price ? `${money(option.currency, option.price)} ${option.cycle.toLowerCase()}` : option.cycle}${option.next_date ? ` · renews ${shortDay(option.next_date)}` : ''}`,
+    })),
+    { id: 'separate', label: 'It’s a separate plan', detail: 'Add it as its own subscription' },
+  ];
+  return (
+    <AppSheet visible title="Which plan is this for?" onClose={gmail.closeSheet}>
+      <CustomText text={`${entry.name} · ${money(entry.currency, entry.amount)} paid ${shortDay(entry.paid_date)}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <SizedBox height={SIZES.padding * 0.6} />
+      <View accessibilityRole="radiogroup" accessibilityLabel="Choose the plan for this payment">
+        {options.map((option, index) => {
+          const on = pick === option.id;
+          return (
+            <RowView
+              key={option.id}
+              gap={SIZES.padding * 0.6}
+              accessibilityRole="radio"
+              accessibilityState={{ checked: on }}
+              accessibilityLabel={`${option.label}, ${option.detail}`}
+              onPress={() => setPick(option.id)}
+              style={[styles.option, index > 0 && styles.option_gap]}>
+              <View style={[styles.radio, on && styles.radio_on]}>{on ? <View style={styles.radio_dot} /> : null}</View>
+              <View style={common_styles.flex_1}>
+                <CustomText text={option.label} size={SIZES.sm} />
+                <CustomText mt={SIZES.padding / 8} text={option.detail} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} />
+              </View>
+            </RowView>
+          );
+        })}
+      </View>
+      {gmail.match_error ? <CustomText mt={SIZES.padding / 2} text={gmail.match_error} weight={FONTS.regular} color={COLORS.danger} size={SIZES.sm} /> : null}
+      <CustomButton variant="primary" text="Save" disabled={!pick || gmail.match_busy} busy={gmail.match_busy} onPress={() => gmail.saveMatch(entry.receipt_id, pick)} style={styles.sheet_button} />
+    </AppSheet>
+  );
+}
+
 // Owned inboxes only; Connect another inbox opens Choose inbox for a Gmail or Outlook inbox.
 function InboxSheet({ gmail }: Props) {
   return (
@@ -144,6 +191,7 @@ function InboxSheet({ gmail }: Props) {
 export default function GmailSheets({ gmail }: Props) {
   if (!gmail.sheet) return null;
   if (gmail.sheet.kind === 'inboxes') return <InboxSheet gmail={gmail} />;
+  if (gmail.sheet.kind === 'match') return gmail.sheet_match ? <MatchSheet key={gmail.sheet_match.receipt_id} gmail={gmail} entry={gmail.sheet_match} /> : null;
   const item = gmail.sheet_candidate;
   if (!item) return null;
   return gmail.sheet.kind === 'changes' ? <ChangesSheet gmail={gmail} item={item} /> : <CandidateSheet key={item.id} gmail={gmail} item={item} />;

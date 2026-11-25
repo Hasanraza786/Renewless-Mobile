@@ -2,12 +2,15 @@ import { useAppDispatch, useAppSelector } from '../redux/store';
 import { setSelectedCurrency } from '../redux/slices/constant-slice';
 import type { HomeSnapshot } from '../types';
 
-// Most subscriptions first (paid platforms plus trials from the Home snapshot), then any other currency by code.
-// shortcut: counts come from Home's spending and trials, so a currency with only "others" rows may rank low; switch to the backend's per-currency count when it ships.
+// Most subscriptions first (the server's per-currency record count; an older backend: paid platforms plus trials from
+// the Home snapshot), then any other currency by code.
 export function currencyOrder(home: HomeSnapshot | null, present: string[]) {
   const counts = new Map<string, number>();
-  for (const item of home?.spending ?? []) counts.set(item.currency, (counts.get(item.currency) ?? 0) + item.all_platforms.reduce((sum, platform) => sum + platform.subscription_count, 0));
-  for (const trial of home?.trials ?? []) counts.set(trial.currency, (counts.get(trial.currency) ?? 0) + 1);
+  if (home?.by_currency?.length) for (const row of home.by_currency) counts.set(row.currency, row.subscription_count);
+  else {
+    for (const item of home?.spending ?? []) counts.set(item.currency, (counts.get(item.currency) ?? 0) + item.all_platforms.reduce((sum, platform) => sum + platform.subscription_count, 0));
+    for (const trial of home?.trials ?? []) counts.set(trial.currency, (counts.get(trial.currency) ?? 0) + 1);
+  }
   return [...new Set(present)].sort((a, b) => (counts.get(b) ?? 0) - (counts.get(a) ?? 0) || a.localeCompare(b));
 }
 

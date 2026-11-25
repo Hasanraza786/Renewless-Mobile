@@ -3,7 +3,7 @@ import { filterRecords, groupCounts, listGroup, sortRecords } from '../src/utils
 
 const today = '2026-10-27';
 const base: SubscriptionRecord = {
-  id: '', platform_id: '', name: '', plan: null, category: 'Entertainment', price: '1.00', currency: 'USD', cycle: 'Monthly', next_date: null, estimated: false,
+  id: '', platform_id: '', name: '', plan: null, category: 'Entertainment', billing: 'fixed', price: '1.00', currency: 'USD', cycle: 'Monthly', next_date: null, estimated: false,
   auto_renew: true, trial: null, status: 'active', cancelled_on: null, access_until: null, start_date: null, source: { kind: 'manual', email: '', provider: 'gmail' }, inbox: null,
   reminder: { mode: 'default' }, notes: null, manage_url: null, price_history: [],
   revision: 0,
@@ -24,7 +24,8 @@ const records = [
 test('every record gets exactly one group and the counts add up', () => {
   expect(records.map(item => listGroup(item, today))).toEqual(['due_today', 'renewing_soon', 'needs_date', 'on_trial', 'trial_ended', 'cancelled', 'active', 'active']);
   const counts = groupCounts(records, today);
-  expect(Object.values(counts).reduce((a, b) => a + b, 0)).toBe(records.length);
+  // Usage-based is counted beside a record's status group, so it is left out of the sum.
+  expect(Object.values(counts).reduce((a, b) => a + b, 0) - counts.usage).toBe(records.length);
   expect(counts.expired).toBe(0);
 });
 
@@ -40,4 +41,12 @@ test('sorting: next event with undated last, price per currency, most subscripti
   expect(price.map(item => item.title)).toEqual(['EUR', 'USD']);
   expect(price[1].records[0].id).toBe('netflix-family');
   expect(sortRecords(records, 'most', today)[0].records.slice(0, 2).map(item => item.id)).toEqual(['netflix', 'netflix-family']);
+});
+
+test('Usage-based selects usage bills whatever their status, and is counted beside their status group', () => {
+  const usage = { ...records[6], id: 'atlas', name: 'MongoDB Atlas', billing: 'usage' as const, price: '' };
+  const all = [...records, usage];
+  expect(filterRecords(all, '', ['usage'], today).map(item => item.id)).toEqual(['atlas']);
+  expect(filterRecords(all, '', ['usage', 'due_today'], today).map(item => item.id)).toEqual(['netflix', 'atlas']);
+  expect(groupCounts(all, today).usage).toBe(1);
 });

@@ -19,7 +19,7 @@ import {
 } from '../slices/onboarding-slice';
 import { setNotice, setProfileUser } from '../slices/profile-slice';
 import { scannedBeforeNotice } from './gmail-action';
-import { beginSession, offerDisabledDelete } from './auth-action';
+import { beginSession, offerDisabledDelete, registerPush } from './auth-action';
 
 const SIGN_IN_FAILED = 'We couldn’t sign you in. Try again or add subscriptions manually.';
 const SIGN_IN_CANCELLED = 'Sign-in was cancelled. You can try again or add subscriptions manually.';
@@ -249,7 +249,7 @@ export function editOnboardingCandidate(job_id: string, item: ScanCandidate, onS
 }
 
 // Imports only the selected, reviewed candidates; Ready opens only after the import succeeds.
-export function saveOnboardingFinds(job_id: string, candidate_ids: string[], onSaved: () => void): AppThunk {
+export function saveOnboardingFinds(job_id: string, candidate_ids: string[], onSaved: () => void, onFailed?: () => void): AppThunk {
   return async dispatch => {
     // A new attempt starts clean, so a later Back to the review never shows an old failure.
     dispatch(setSaveError(''));
@@ -263,7 +263,10 @@ export function saveOnboardingFinds(job_id: string, candidate_ids: string[], onS
           onSaved();
         },
         // The 500-subscription cap (409 SUBSCRIPTION_LIMIT) says so; other failures keep the general message.
-        onError: error => dispatch(setSaveError(error.code === 'SUBSCRIPTION_LIMIT' ? error.message : SAVE_FAILED)),
+        onError: error => {
+          dispatch(setSaveError(error.code === 'SUBSCRIPTION_LIMIT' ? error.message : SAVE_FAILED));
+          onFailed?.();
+        },
       }),
     );
   };
@@ -283,5 +286,14 @@ export function finishOnboarding(onDone: () => void): AppThunk {
         onError: onDone,
       }),
     );
+  };
+}
+
+// Discovering · notify me: Notify me asks for push (the system prompt) and lets the server send the one "more found"
+// push; Not now stores false, so no push comes. Either way the app goes on (a failed answer only loses the push).
+export function answerScanNotify(job_id: string, notify: boolean, onDone: () => void): AppThunk {
+  return async dispatch => {
+    if (notify) await dispatch(registerPush());
+    await dispatch(requestHandler({ apiService: apiServices.notifyScan, param_data: { id: job_id, notify }, onDone, onError: onDone }));
   };
 }

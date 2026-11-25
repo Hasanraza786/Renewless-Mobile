@@ -41,6 +41,17 @@ export const styles = StyleSheet.create({
   cost: {
     marginTop: SIZES.padding * 0.9,
   },
+  usage_bills: {
+    flexWrap: 'wrap',
+    marginTop: SIZES.padding / 2,
+  },
+  usage_bill: {
+    alignItems: 'center',
+    backgroundColor: COLORS.overlay_soft,
+    borderRadius: SIZES.padding / 2,
+    paddingHorizontal: SIZES.padding / 2,
+    paddingVertical: SIZES.padding * 0.3,
+  },
   next_event: {
     borderTopColor: COLORS.line_quiet,
     borderTopWidth: 1,

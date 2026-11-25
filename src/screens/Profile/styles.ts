@@ -20,16 +20,40 @@ export const styles = StyleSheet.create({
   inboxes: {
     marginTop: SIZES.padding * 0.85,
   },
-  inbox_heading: {
-    minHeight: SIZES.padding * 1.6,
-  },
-  inbox_row: {
+  inbox_group: {
     backgroundColor: COLORS.card,
     borderColor: COLORS.line_hint,
     borderRadius: SIZES.padding * 0.7,
     borderWidth: 1,
     marginTop: SIZES.padding * 0.35,
+    overflow: 'hidden',
+  },
+  inbox_row: {
     padding: SIZES.padding2,
+  },
+  inbox_divider: {
+    borderColor: COLORS.line_soft,
+    borderTopWidth: 1,
+  },
+  add_block: {
+    borderColor: COLORS.line_soft,
+    borderTopWidth: 1,
+    paddingBottom: SIZES.padding2,
+  },
+  add_row: {
+    padding: SIZES.padding2,
+  },
+  add_icon: {
+    alignItems: 'center',
+    backgroundColor: COLORS.accent_soft,
+    borderRadius: SIZES.padding * 0.75,
+    height: SIZES.padding * 1.5,
+    justifyContent: 'center',
+    width: SIZES.padding * 1.5,
+  },
+  add_buttons: {
+    paddingLeft: SIZES.padding * 2.6,
+    paddingRight: SIZES.padding2,
   },
   inbox_logo: {
     alignItems: 'center',

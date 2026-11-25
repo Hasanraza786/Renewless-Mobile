@@ -4,6 +4,7 @@ import { bundledLogoKey } from '../assets/icons/platform_logos';
 import type {
   AppConfig,
   CalendarMonth,
+  DatedAmount,
   HomeEvent,
   HomePlatformSpend,
   HomeSnapshot,
@@ -12,6 +13,7 @@ import type {
   PriceChange,
   Profile,
   ProfileInbox,
+  ProfileOverview,
   ReminderPreference,
   ReminderSettings,
   AiReply,
@@ -21,8 +23,10 @@ import type {
   GmailCandidate,
   GmailScanStatus,
   GmailSelection,
+  ScanAttention,
   ScanCandidate,
   ScanCycle,
+  ScanMeter,
   ScanStatus,
   SentAlert,
   SupportMessage,
@@ -44,7 +48,9 @@ import type {
   ReceiptDto,
   ReceiptsDto,
   ConnectorDto,
+  ConnectorsDto,
   CycleDto,
+  DatedMoneyDto,
   DetailDto,
   EventDto,
   HomeDto,
@@ -68,7 +74,7 @@ export const fromCycle = (cycle: ScanCycle) => cycle.toLowerCase() as CycleDto;
 
 // Values a newer backend may add are left out instead of shown wrong (a review row, an event, an alert).
 const CYCLES = new Set<string>(['weekly', 'monthly', 'quarterly', 'yearly']);
-const EVENT_TYPES = new Set<string>(['renewal', 'trial_end']);
+const EVENT_TYPES = new Set<string>(['renewal', 'trial_end', 'usage_bill']);
 const REVIEW_KINDS: Record<string, GmailCandidate['kind']> = { new: 'new', update: 'update', tracked: 'duplicate' };
 export const knownEventType = (type: string) => EVENT_TYPES.has(type);
 
@@ -142,6 +148,8 @@ export function fromReminder(reminder: ReminderPreference) {
 // 'gmail' until the backend's one-off migration runs).
 const inboxSource = (source: string | undefined) => source === 'gmail' || source === 'outlook';
 
+const toDated = (item: DatedMoneyDto): DatedAmount => ({ date: item.date, amount: item.amount.amount, currency: item.amount.currency });
+
 export function toRecord(item: SummaryDto | DetailDto): SubscriptionRecord {
   const detail = 'revision' in item ? item : null;
   const platform_id = logoKey(item.name, item.platformId ?? item.id, item.logoUrl);
@@ -154,10 +162,12 @@ export function toRecord(item: SummaryDto | DetailDto): SubscriptionRecord {
     name: item.name,
     plan: item.plan,
     category: categoryName(item.categoryId),
-    price: item.price.amount,
-    currency: item.price.currency,
+    billing: item.billing === 'usage' ? 'usage' : 'fixed',
+    // A usage record has no price; Detail knows its currency from the last bills.
+    price: item.price?.amount ?? '',
+    currency: item.price?.currency ?? detail?.lastCharges?.at(-1)?.amount.currency ?? '',
     cycle: toCycle(item.cycle),
-    next_date: item.nextEvent?.type === 'renewal' ? item.nextEvent.date : null,
+    next_date: item.nextEvent && item.nextEvent.type !== 'trial_end' ? item.nextEvent.date : null,
     estimated: item.estimated,
     auto_renew: item.trial ? item.trial.autoRenew : null,
     trial: item.trial ? { start_date: start ?? item.trial.endDate, end_date: item.trial.endDate, auto_renew: item.trial.autoRenew } : null,
@@ -196,7 +206,8 @@ export function toDetail(detail: DetailDto, history: PriceHistoryDto | null, set
     today: localToday(),
     receipts: { totals: detail.spending.totals, count: detail.spending.count },
     receipt_emails: { count: receipt_emails?.total ?? 0, latest: receipt_emails?.items[0] ? receiptDate(receipt_emails.items[0]) : null },
-    annual_estimate: detail.spending.annualEquivalent.amount,
+    annual_estimate: detail.spending.annualEquivalent?.amount ?? null,
+    last_charges: (detail.lastCharges ?? []).map(toDated),
     related_count: detail.samePlatformCount,
     account_reminder_days: settings?.defaultOffsets ?? [3],
   };
@@ -271,7 +282,8 @@ export function toHome(home: HomeDto, upcoming: UpcomingDto, calendar: CalendarD
     as_of: home.asOf,
     today: home.today,
     has_subscriptions: home.hasSubscriptions,
-    nearest_events: toEvents(home.nearest?.events ?? []),
+    // Next renewal shows fixed renewals and trials; a usage bill has its own USAGE BILL block below it.
+    nearest_events: toEvents(home.nearest?.events ?? []).filter(event => event.kind !== 'usage_bill'),
     upcoming_count: upcoming_events.length,
     upcoming: upcoming_events,
     upcoming_until: upcoming.through,
@@ -301,6 +313,10 @@ export function toHome(home: HomeDto, upcoming: UpcomingDto, calendar: CalendarD
       currency,
       months: home.forecast.map(month => ({ month: month.month, amount: month.totals.find(total => total.currency === currency)?.amount ?? '0.00' })),
     })),
+    background_scan: home.backgroundScan
+      ? { status: home.backgroundScan.status, new_count: home.backgroundScan.newCount, connector_id: home.backgroundScan.connectorId, job_id: home.backgroundScan.jobId }
+      : null,
+    by_currency: (home.byCurrency ?? []).map(row => ({ currency: row.currency, subscription_count: row.subscriptionCount, paid_count: row.paidCount })),
   };
 }
 
@@ -371,15 +387,23 @@ export function toInbox(connector: ConnectorDto): ProfileInbox {
   };
 }
 
+// Profile's Connected inboxes card. An older backend sends no slot fields: count the listed inboxes against 2.
+export function toInboxSlots(dto: ConnectorsDto): ProfileOverview['inbox_slots'] {
+  const limit = dto.limit ?? 2;
+  return { limit, remaining: dto.remaining ?? Math.max(0, limit - dto.connectors.length), used_before: dto.usedBefore ?? [] };
+}
+
 // Onboarding shows only complete new finds; an update or already-tracked row belongs to the signed-in Gmail review.
 // shortcut: finds the backend marks needsDetails are left out, until the review panel has a state for them.
 export function toScanCandidate(dto: CandidateDto): ScanCandidate | null {
+  if (dto.paymentFailing) return failingRow(dto);
   // The price/cycle checks only narrow the types; needsDetails already covers them.
   if (dto.classification !== 'new' || dto.needsDetails || !dto.price || !dto.cycle || !CYCLES.has(dto.cycle)) return null;
   return {
     id: dto.id,
     platform_id: logoKey(dto.name, dto.platformId ?? dto.id, dto.logoUrl),
     name: dto.name,
+    plan: dto.plan,
     price: dto.price.amount,
     currency: dto.price.currency,
     cycle: toCycle(dto.cycle),
@@ -391,11 +415,46 @@ export function toScanCandidate(dto: CandidateDto): ScanCandidate | null {
   };
 }
 
-// The access-expired failure sends the person back to Connect; anything else can be retried.
-export function toScanStatus(dto: ScanJobDto): ScanStatus {
-  const status = dto.status === 'succeeded' ? 'completed' : dto.status === 'failed' ? 'failed' : 'running';
+const jobStatus = (status: ScanJobDto['status']) => (status === 'succeeded' ? 'completed' : status === 'failed' ? 'failed' : 'running');
+
+// Progress, live counts and the background (deep) read of a Gmail first scan.
+function toScanMeter(dto: ScanJobDto): ScanMeter {
   return {
     job_id: dto.id,
+    phase: dto.phase ?? null,
+    progress: dto.progress ?? { total: 0, done: 0 },
+    live: dto.live ?? { found: 0, read: 0, checked: 0, candidates: 0 },
+    messages: dto.counts.messages,
+    deep: dto.deep ? { job_id: dto.deep.jobId, status: jobStatus(dto.deep.status), progress: dto.deep.progress } : null,
+  };
+}
+
+// PAYMENTS FAILING: a new plan with only failed payments, never preselected. Without a price or cycle from the server
+// it is shown but can't be added (shortcut: the backend sends no price for these yet; ask for the failed amount).
+function failingRow(dto: CandidateDto): ScanCandidate | null {
+  if (dto.classification !== 'new' || dto.imported) return null;
+  const cycle = dto.cycle && CYCLES.has(dto.cycle) ? dto.cycle : null;
+  return {
+    id: dto.id,
+    platform_id: logoKey(dto.name, dto.platformId ?? dto.id, dto.logoUrl),
+    name: dto.name,
+    plan: dto.plan,
+    failing: { since: dto.failedSince ?? null, count: dto.failedCount ?? 0, incomplete: !dto.price || !cycle },
+    price: dto.price?.amount ?? '',
+    currency: dto.price?.currency ?? '',
+    cycle: cycle ? toCycle(cycle) : 'Monthly',
+    next_date: dto.anchorDate,
+    estimated: dto.estimated,
+    revision: dto.revision,
+    selected: false,
+  };
+}
+
+// The access-expired failure sends the person back to Connect; anything else can be retried.
+export function toScanStatus(dto: ScanJobDto): ScanStatus {
+  const status = jobStatus(dto.status);
+  return {
+    ...toScanMeter(dto),
     completed_stages: dto.stages.filter(stage => stage.status === 'done').length,
     status,
     failure: status === 'failed' ? (isAuthExpired(dto.error?.code) ? 'access' : 'network') : undefined,
@@ -443,6 +502,12 @@ export function toAiReply(turn: ChatTurnDto): AiReply {
 // Signed-in Gmail review. Rows the review has no state for (missing price or cycle, or no safe match) are left out.
 // A trial keeps the start and length the backend found; without them its edit starts from an empty start date.
 export function toGmailCandidate(dto: CandidateDto): GmailCandidate | null {
+  if (dto.paymentFailing) {
+    const row = failingRow(dto);
+    return row
+      ? { ...row, kind: 'new', plan: dto.plan, category: 'Other', start_date: null, next_date: dto.anchorDate, trial: null, target_id: null, old: null, saved: dto.imported }
+      : null;
+  }
   const kind = REVIEW_KINDS[dto.classification];
   if (!kind || dto.needsDetails || !dto.price || !dto.cycle || !CYCLES.has(dto.cycle)) return null;
   const old = dto.changes?.price.from;
@@ -467,15 +532,63 @@ export function toGmailCandidate(dto: CandidateDto): GmailCandidate | null {
   };
 }
 
-export function toGmailScan(dto: ScanJobDto): GmailScanStatus {
-  const status = toScanStatus(dto).status;
+// Rows the plain review leaves out: usage bills (no price) and payments that fit two plans.
+function toAttention(dto: ScanJobDto): ScanAttention {
+  const usage = dto.candidates.filter(c => c.billing === 'usage' && !c.paymentFailing && c.classification === 'new');
   return {
-    status,
+    usage: usage.map(c => ({
+      id: c.id,
+      platform_id: logoKey(c.name, c.platformId ?? c.id, c.logoUrl),
+      name: c.name,
+      plan: c.plan,
+      cycle: c.cycle && CYCLES.has(c.cycle) ? toCycle(c.cycle) : null,
+      next_date: c.anchorDate,
+      last_charges: (c.lastCharges ?? []).map(toDated),
+      revision: c.revision,
+      selected: c.selected,
+      saved: c.imported,
+    })),
+    needs_match: (dto.needsMatch ?? []).map(m => ({
+      receipt_id: m.receiptId,
+      revision: m.revision,
+      platform_id: logoKey(m.service.name, m.service.platformId ?? m.receiptId, m.service.logoUrl),
+      name: m.service.name,
+      amount: m.amount.amount,
+      currency: m.amount.currency,
+      paid_date: m.paidDate,
+      // Options are tracked records; a usage one has no price.
+      options: m.options
+        .filter(o => CYCLES.has(o.cycle))
+        .map(o => ({ subscription_id: o.subscriptionId, name: o.name, plan: o.plan, price: o.price?.amount ?? '', currency: o.price?.currency ?? '', cycle: toCycle(o.cycle), next_date: o.nextRenewal })),
+    })),
+  };
+}
+
+export function toGmailScan(dto: ScanJobDto): GmailScanStatus {
+  return {
+    ...toScanMeter(dto),
+    status: jobStatus(dto.status),
     stage: dto.stages.filter(stage => stage.status === 'done').length,
     candidates: dto.candidates.map(toGmailCandidate).filter((item): item is GmailCandidate => !!item),
+    attention: toAttention(dto),
     error: '',
   };
 }
+
+// A status read that failed: nothing found, no progress.
+export const failedGmailScan = (job_id: string, error: string): GmailScanStatus => ({
+  job_id,
+  phase: null,
+  progress: { total: 0, done: 0 },
+  live: { found: 0, read: 0, checked: 0, candidates: 0 },
+  messages: 0,
+  deep: null,
+  status: 'failed',
+  stage: 0,
+  candidates: [],
+  attention: { usage: [], needs_match: [] },
+  error,
+});
 
 // A reviewed row before import: edited price and dates for a new plan, the date choice for an update.
 export function fromGmailSelection(item: GmailCandidate, selection: GmailSelection) {

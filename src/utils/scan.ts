@@ -17,6 +17,14 @@ export function dateLabel(iso: string) {
 
 export const moneyLabel = (item: ScanCandidate) => money(item.currency, item.price);
 
+// PAYMENTS FAILING (Needs-attention states, locked 23 Nov 2026): "Last n payments failed · since 22 Jan".
+export const FAILING_NOTE = 'We only found failed payments. Add one only if you still use it.';
+export function failingLine({ count, since }: { count: number; since: string | null }) {
+  const [year, month, day] = (since ?? '').split('-').map(Number);
+  const day_month = since ? new Date(year, month - 1, day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
+  return `Last ${count} ${count === 1 ? 'payment' : 'payments'} failed${day_month ? ` · since ${day_month}` : ''}`;
+}
+
 const cents = (item: ScanCandidate) => Math.round(Number(item.price) * 100);
 const MONTHLY_FACTOR: Record<ScanCycle, number> = { Weekly: 52 / 12, Monthly: 1, Quarterly: 1 / 3, Yearly: 1 / 12 };
 

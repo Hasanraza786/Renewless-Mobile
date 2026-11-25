@@ -3,6 +3,12 @@ import type { HomeEvent, SubscriptionRecord } from '../types';
 import { dateLabel } from './scan';
 import { money } from './money';
 
+// "10 Nov": usage bills give an approximate day, so no year.
+export function shortDate(iso: string) {
+  const [year, month, day] = iso.split('-').map(Number);
+  return new Date(year, month - 1, day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+}
+
 // Whole calendar days from `today` to `date`, both local YYYY-MM-DD.
 export function daysBetween(today: string, date: string) {
   const [a, b] = [today, date].map(iso => {
@@ -40,8 +46,28 @@ export function eventCaption(event: HomeEvent) {
   return `${event.kind === 'trial_end' ? 'After trial · ' : ''}${event.cycle}`;
 }
 
+const relative = (today: string, date: string) => {
+  const days = daysBetween(today, date);
+  return days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : days < 0 ? 'Past date' : `In ${days} days`;
+};
+
+// Usage bills (amount changes with use) say when, never how much.
+export const USAGE_AMOUNT = 'Usage-based';
+
 // Shared card content for an event row. Home names the plan alone ("Family"); lists add "plan".
 export function eventCardProps(event: HomeEvent, today: string, plan_suffix = false) {
+  if (event.kind === 'usage_bill') {
+    return {
+      name: event.name,
+      platform_id: event.platform_id,
+      status: { label: 'Usage charge expected', color: COLORS.renewing_soon },
+      lines: [`${relative(today, event.date)} · check your usage`, ...(event.plan ? [plan_suffix ? `${event.plan} plan` : event.plan] : [])],
+      amount: USAGE_AMOUNT,
+      amount_muted: true,
+      caption: event.cycle,
+      accessibility_label: `View ${event.name}${event.plan ? ` ${event.plan}` : ''} subscription`,
+    };
+  }
   return {
     name: event.name,
     platform_id: event.platform_id,
@@ -55,6 +81,7 @@ export function eventCardProps(event: HomeEvent, today: string, plan_suffix = fa
 
 // Lifecycle status of a tracked record, as List and Platform subscriptions show it.
 export function recordStatus(record: SubscriptionRecord, today: string) {
+  if (record.status === 'active' && record.billing === 'usage') return { label: 'Active', color: COLORS.primary };
   if (record.status === 'cancelled') return { label: 'Cancelled', color: COLORS.text_secondary };
   if (record.status === 'expired') return { label: 'Expired', color: COLORS.expired };
   if (record.trial && record.trial.end_date < today) {
@@ -69,12 +96,19 @@ export function recordStatus(record: SubscriptionRecord, today: string) {
   return { label: 'Active', color: COLORS.primary };
 }
 
-const relative = (today: string, date: string) => {
-  const days = daysBetween(today, date);
-  return days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : days < 0 ? 'Past date' : `In ${days} days`;
-};
-
 export function recordCardProps(record: SubscriptionRecord, today: string) {
+  if (record.status === 'active' && record.billing === 'usage') {
+    return {
+      name: record.name,
+      platform_id: record.platform_id,
+      status: recordStatus(record, today),
+      lines: [record.next_date ? `Bill around ${shortDate(record.next_date)}` : { text: 'Add renewal date', color: COLORS.trial, chevron: true }, ...(record.plan ? [`${record.plan} plan`] : [])],
+      amount: USAGE_AMOUNT,
+      amount_muted: true,
+      caption: record.cycle,
+      accessibility_label: `View ${record.name}${record.plan ? ` ${record.plan}` : ''} subscription`,
+    };
+  }
   const in_trial = record.trial && record.trial.end_date >= today;
   const timing =
     record.status === 'cancelled'

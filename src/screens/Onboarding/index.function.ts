@@ -3,6 +3,7 @@ import { AccessibilityInfo, Animated, BackHandler, Easing } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import {
+  answerScanNotify,
   connectOnboardingGoogle,
   connectOnboardingOutlook,
   editOnboardingCandidate,
@@ -11,12 +12,14 @@ import {
   retryOnboardingScan,
   saveOnboardingFinds,
 } from '../../redux/actions/onboarding-action';
-import { setConnectMessage, toggleCandidate } from '../../redux/slices/onboarding-slice';
+import { setConnectMessage, setScanJob, toggleCandidate } from '../../redux/slices/onboarding-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthStackParamList, InboxProvider, OnboardingStep, ScanCandidate } from '../../types';
 import { navigate, resetRoot } from '../../navigation/service';
 import { PRIVACY_URL, TERMS_URL, openLegal } from '../../config/legal';
 import { useIsTablet } from '../../utils/tablet';
+import { scanProgress, type DeepView } from '../../utils/scan-progress';
+import { getDeepStatus } from '../../redux/actions/gmail-action';
 
 type Route = NativeStackScreenProps<AuthStackParamList, 'Onboarding'>['route'];
 
@@ -25,6 +28,7 @@ export const ONBOARDING_STEPS: Record<OnboardingStep, { stage: number; back?: On
   welcome: { stage: 1 },
   connectInbox: { stage: 2, back: 'welcome' },
   discovering: { stage: 3, back: 'connectInbox' },
+  firstResults: { stage: 3, back: 'connectInbox' },
   yourSubscriptions: { stage: 4, back: 'connectInbox' },
   readyToGo: { stage: 5, back: 'yourSubscriptions' },
   scanNoResults: { stage: 3, back: 'connectInbox' },
@@ -36,6 +40,11 @@ export const PANEL_MOTION = { out_duration: 180, in_duration: 240 } as const;
 export const SCAN_POLL_MS = 1000;
 // Brief pause on the completed stages before results open on their own.
 export const SCAN_COMPLETE_HOLD_MS = 650;
+// First results: the older-mail percent is read less often (it moves over minutes).
+export const DEEP_POLL_MS = 3000;
+// A Gmail first scan starts its background read right after the quick check; if none appears by then, the scan
+// is treated as one phase (the old Your subscriptions flow).
+export const DEEP_WAIT_MS = 8000;
 
 export default function useOnboarding(route: Route) {
   const is_tablet = useIsTablet();
@@ -53,11 +62,22 @@ export default function useOnboarding(route: Route) {
   const [animating, setAnimating] = useState(false);
   const [panel_width, setPanelWidth] = useState(0);
   const [reduce_motion, setReduceMotion] = useState(false);
+  // Discovering · notify me sheet, and the answer being sent.
+  const [notify_open, setNotifyOpen] = useState(false);
+  const [notify_busy, setNotifyBusy] = useState(false);
+  const [deep_wait_over, setDeepWaitOver] = useState(false);
   const panel_x = useRef(new Animated.Value(0)).current;
   const panel_opacity = useRef(new Animated.Value(1)).current;
   // Built once per width, not on every render, so a running slide keeps its node.
   const panel_shift = useMemo(() => Animated.multiply(panel_x, panel_width / 4), [panel_width, panel_x]);
-  const { scan_status, scan_failure, candidates, scan_job_id, connector_id, selected_ids } = onboarding_state;
+  const { scan_status, scan_failure, candidates, scan_job_id, connector_id, selected_ids, scan_meter } = onboarding_state;
+  const scan_progress = useMemo(() => scanProgress(scan_meter, onboarding_state.scan_stages, scan_status === 'completed'), [onboarding_state.scan_stages, scan_meter, scan_status]);
+  // A Gmail first scan: the quick check ended while its background (deep) read goes on.
+  const quick_done = scan_status === 'completed' && scan_meter?.phase === 'quick';
+  const deep = scan_meter?.deep ?? null;
+  const deep_running = deep?.status === 'running';
+  // The quick check ended but its background read has not shown up yet.
+  const waiting_for_deep = quick_done && !deep && !deep_wait_over;
 
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setReduceMotion, () => {});
@@ -97,23 +117,52 @@ export default function useOnboarding(route: Route) {
     ]).start(() => setAnimating(false));
   }, [panel_opacity, panel_x, step]);
 
-  // Poll only while Discovering is visible and the job is still running.
+  // Poll while Discovering waits for the job (or for its background read), and slower on first results while older
+  // mail is read, so its percent moves.
+  const poll_ms =
+    step === 'discovering' && (scan_status === 'running' || waiting_for_deep || (quick_done && deep_running && candidates.length === 0))
+      ? SCAN_POLL_MS
+      : 0;
   useEffect(() => {
-    if (step !== 'discovering' || scan_status !== 'running') return;
-    const timer = setInterval(() => dispatch(getOnboardingScan(scan_job_id)), SCAN_POLL_MS);
+    if (!poll_ms) return;
+    const timer = setInterval(() => dispatch(getOnboardingScan(scan_job_id)), poll_ms);
     return () => clearInterval(timer);
-  }, [dispatch, scan_job_id, scan_status, step]);
+  }, [dispatch, poll_ms, scan_job_id]);
 
-  // Discovering leaves on its own: results after a short hold on the completed stages, otherwise recovery.
+  // First results: the background read's own status, percent and live counts, read every few seconds while it runs.
+  const [deep_view, setDeepView] = useState<DeepView | null>(null);
+  const deep_job = step === 'firstResults' && deep && deep_view?.status !== 'completed' && deep_view?.status !== 'failed' ? deep.job_id : '';
+  useEffect(() => {
+    if (!deep_job) return;
+    const read = () => dispatch(getDeepStatus(deep_job, setDeepView));
+    read();
+    const timer = setInterval(read, DEEP_POLL_MS);
+    return () => clearInterval(timer);
+  }, [deep_job, dispatch]);
+  const older_running = deep_view ? deep_view.status === 'running' : deep_running;
+
+  useEffect(() => {
+    if (!waiting_for_deep) return;
+    const timer = setTimeout(() => setDeepWaitOver(true), DEEP_WAIT_MS);
+    return () => clearTimeout(timer);
+  }, [waiting_for_deep]);
+
+  // Discovering leaves on its own: results after a short hold on the completed stages, otherwise recovery. A first scan
+  // whose quick check found something shows first results while older mail is read; one that found nothing keeps
+  // looking (no "no results" yet) and follows the background read itself once it ends.
   useEffect(() => {
     if (step !== 'discovering') return;
-    if (scan_status === 'failed') goTo('scanInterrupted');
-    else if (scan_status === 'completed' && candidates.length === 0) goTo('scanNoResults');
-    else if (scan_status === 'completed') {
-      const timer = setTimeout(() => goTo('yourSubscriptions'), SCAN_COMPLETE_HOLD_MS);
-      return () => clearTimeout(timer);
+    if (scan_status === 'failed') return goTo('scanInterrupted');
+    if (scan_status !== 'completed' || waiting_for_deep) return;
+    if (candidates.length === 0 && deep && deep_running) return;
+    if (candidates.length === 0 && deep) {
+      dispatch(setScanJob(deep.job_id));
+      return;
     }
-  }, [candidates.length, goTo, scan_status, step]);
+    if (candidates.length === 0) return goTo('scanNoResults');
+    const timer = setTimeout(() => goTo(quick_done && deep_running ? 'firstResults' : 'yourSubscriptions'), SCAN_COMPLETE_HOLD_MS);
+    return () => clearTimeout(timer);
+  }, [candidates.length, deep, deep_running, dispatch, goTo, quick_done, scan_status, step, waiting_for_deep]);
 
   // A Connect message (cancelled, denied) belongs to that attempt: leaving the panel clears it.
   useEffect(() => {
@@ -147,6 +196,18 @@ export default function useOnboarding(route: Route) {
   };
 
   const save = () => dispatch(saveOnboardingFinds(scan_job_id, selected_ids, () => goTo('readyToGo')));
+  const reviewFound = () => goTo('yourSubscriptions');
+  const openNotify = () => setNotifyOpen(true);
+  const closeNotify = () => !notify_busy && setNotifyOpen(false);
+  // Notify me or Not now: the plans found so far that are ticked are saved first (so Home shows them, not the empty
+  // state), the answer is stored on the quick job, then Home shows STILL CHECKING. A failed save stays on the sheet.
+  const answerNotify = (notify: boolean) => {
+    if (notify_busy) return;
+    setNotifyBusy(true);
+    const finish = () => dispatch(answerScanNotify(scan_job_id, notify, () => dispatch(finishOnboarding(() => resetRoot([{ name: 'Tabs' }])))));
+    if (!selected_ids.length) return finish();
+    dispatch(saveOnboardingFinds(scan_job_id, selected_ids, finish, () => setNotifyBusy(false)));
+  };
 
   const openDashboard = () => dispatch(finishOnboarding(() => resetRoot([{ name: 'Tabs' }])));
   const connectGoogle = () => {
@@ -198,6 +259,15 @@ export default function useOnboarding(route: Route) {
     connectProvider,
     connect_busy,
     retryScan,
+    scan_progress,
+    deep_view,
+    older_running,
+    reviewFound,
+    notify_open,
+    notify_busy,
+    openNotify,
+    closeNotify,
+    answerNotify,
     toggleCandidate: toggle,
     editing,
     edit_error,

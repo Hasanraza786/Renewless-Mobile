@@ -21,6 +21,7 @@ import Forecast from './components/Forecast';
 import HomeSkeleton from './components/HomeSkeleton';
 import MonthCard from './components/MonthCard';
 import NextEvent from './components/NextEvent';
+import ScanCard from './components/ScanCard';
 import TopSpending from './components/TopSpending';
 import { ConnectArt, TrustRows } from '../Onboarding/components/ConnectInbox';
 import useHome, { type HomeRoute } from './index.function';
@@ -47,6 +48,8 @@ export default function HomeScreen({ route }: { route: HomeRoute }) {
         // Inbox hero (Outlook inboxes, locked 16 Nov 2026): Continue with Gmail / Outlook lead in the onboarding style, then
         // Add with AI · Add manually. When the connected inbox can't sync yet: the sync date and the add options.
         <ScrollView showsVerticalScrollIndicator={false} contentInsetAdjustmentBehavior="scrollableAxes" contentContainerStyle={styles.empty}>
+          {/* A first scan's background read also reports here when nothing was saved from the quick check yet. */}
+          <ScanCard home={home} />
           <ConnectArt />
           {home.locked_inbox ? (
             <Fragment>
@@ -91,6 +94,7 @@ export default function HomeScreen({ route }: { route: HomeRoute }) {
         <ScrollView showsVerticalScrollIndicator={false}
           contentInsetAdjustmentBehavior="scrollableAxes"
           contentContainerStyle={styles.content}>
+          <ScanCard home={home} />
           <NextEvent home={home} />
           <CurrencyTabs currencies={home.currency.currencies} selected={home.currency.selected} onSelect={home.currency.selectCurrency} />
           <MonthCard home={home} />

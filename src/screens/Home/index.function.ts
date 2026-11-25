@@ -4,7 +4,8 @@ import { useFocusEffect, type RouteProp } from '@react-navigation/native';
 import { syncAiConsent } from '../../redux/actions/ai-action';
 import { registerPush, savePushToken, syncAccount } from '../../redux/actions/auth-action';
 import { getDashboard } from '../../redux/actions/dashboard-action';
-import { INBOX_LIMIT_NOTICE, MAX_INBOXES, connectInbox, getSyncLockedInbox } from '../../redux/actions/gmail-action';
+import { INBOX_LIMIT_NOTICE, MAX_INBOXES, connectInbox, dismissBackgroundScan, getDeepStatus, getSyncLockedInbox } from '../../redux/actions/gmail-action';
+import { getProfileOverview } from '../../redux/actions/profile-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import { navigate } from '../../navigation/service';
 import { setWidgetPromptSeen } from '../../redux/slices/constant-slice';
@@ -14,8 +15,13 @@ import { pinWidget, widgetEvent, widgetInstalled } from '../../utils/widget';
 import { trackEvent } from '../../utils/analytics';
 import { listenToPush } from '../../utils/push';
 import { useCurrencySwitch } from '../../utils/currency-switch';
+import type { DeepView } from '../../utils/scan-progress';
 
 export type HomeRoute = RouteProp<TabParamList, 'Home'>;
+
+// How often Home looks for the end of a background scan while STILL CHECKING shows, and reads its percent.
+const BACKGROUND_POLL_MS = 30000;
+export const BACKGROUND_PROGRESS_MS = 4000;
 
 export default function useHome(route: HomeRoute) {
   const dispatch = useAppDispatch();
@@ -29,6 +35,11 @@ export default function useHome(route: HomeRoute) {
   const widget_checked = useRef(false);
   const [locked_inbox, setLockedInbox] = useState<ProfileInbox | null>(null);
   const [inbox_count, setInboxCount] = useState(0);
+  // A dismissed "more found" card hides at once; the server stores the dismissal.
+  const [dismissed_job, setDismissedJob] = useState('');
+  // The background read's percent and live counts for STILL CHECKING.
+  const [background_deep, setBackgroundDeep] = useState<DeepView | null>(null);
+  const inboxes = useAppSelector(state => state.profile.overview?.inboxes);
 
   // Refresh on every visit, on returning to the app and at local midnight (dates are relative to today);
   // a usable snapshot stays on screen while it reloads.
@@ -77,6 +88,8 @@ export default function useHome(route: HomeRoute) {
         paid: pick(snapshot.month.paid),
         upcoming: pick(snapshot.month.upcoming),
         charge_count: snapshot.month.events.filter(event => event.expected_charge && event.date >= snapshot.today && event.currency === selected_currency).length,
+        // "n inbox receipts" in the selected currency (an older backend sends only the all-currency count).
+        receipt_count: snapshot.by_currency.find(row => row.currency === selected_currency)?.paid_count ?? (snapshot.by_currency.length ? 0 : snapshot.month.receipt_count),
       },
       spending: pick(snapshot.spending),
       trials: pick(snapshot.trials),
@@ -115,6 +128,30 @@ export default function useHome(route: HomeRoute) {
     if (add_sheet) setAddOpen(true);
   }, [add_sheet]);
 
+  const background = data?.background_scan ?? null;
+  const background_scan = background && background.job_id !== dismissed_job ? background : null;
+  const checking_background = background_scan?.status === 'running';
+  const scan_inbox = inboxes?.find(item => item.id === background_scan?.connector_id)?.email ?? 'your inbox';
+  // The card names the inbox; Profile's overview has it.
+  useEffect(() => {
+    if (background_scan && !inboxes) dispatch(getProfileOverview());
+  }, [background_scan, dispatch, inboxes]);
+  // STILL CHECKING: Home looks again now and then, so MORE FOUND appears without leaving the screen.
+  useEffect(() => {
+    if (!checking_background) return;
+    const timer = setInterval(() => dispatch(getDashboard()), BACKGROUND_POLL_MS);
+    return () => clearInterval(timer);
+  }, [checking_background, dispatch]);
+  // The card's "Checking · n%" and live line: the background read's own progress.
+  const background_job = checking_background ? background_scan?.job_id ?? '' : '';
+  useEffect(() => {
+    if (!background_job) return;
+    const read = () => dispatch(getDeepStatus(background_job, setBackgroundDeep));
+    read();
+    const timer = setInterval(read, BACKGROUND_PROGRESS_MS);
+    return () => clearInterval(timer);
+  }, [background_job, dispatch]);
+
   const events = data?.nearest_events ?? [];
   const selected = events.find(item => item.id === selected_event) ?? events[0];
 
@@ -147,6 +184,13 @@ export default function useHome(route: HomeRoute) {
     navigate('GmailScan', { connect: provider });
   };
   const openDetail = (id: string) => navigate('SubscriptionDetail', { id });
+  // Review opens that background scan's needs-attention review as WHAT'S NEW.
+  const reviewMoreFound = () => background_scan && navigate('GmailScan', { job_id: background_scan.job_id, inbox_id: background_scan.connector_id });
+  const dismissMoreFound = () => {
+    if (!background_scan) return;
+    setDismissedJob(background_scan.job_id);
+    dispatch(dismissBackgroundScan(background_scan.job_id));
+  };
   const openUpcoming = () => navigate('Upcoming');
   // Paid this month opens account Payments on the snapshot's current month.
   const openPayments = () => navigate('Payments', data ? { month: data.today.slice(0, 7) } : undefined);
@@ -198,6 +242,11 @@ export default function useHome(route: HomeRoute) {
     closeChoose,
     pickProvider,
     openDetail,
+    background_scan,
+    background_deep,
+    scan_inbox,
+    reviewMoreFound,
+    dismissMoreFound,
     openUpcoming,
     openPayments,
     openThisMonth,

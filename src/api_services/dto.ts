@@ -2,6 +2,9 @@
 export type MoneyDto = { currency: string; amount: string };
 export type CycleDto = 'weekly' | 'monthly' | 'quarterly' | 'yearly';
 export type InboxProvider = 'gmail' | 'outlook';
+// usage: the amount changes every bill (ads, cloud); such a record has no price and stays out of totals.
+export type BillingDto = 'fixed' | 'usage';
+export type DatedMoneyDto = { date: string; amount: MoneyDto };
 
 export type UserDto = {
   id: string;
@@ -30,7 +33,8 @@ export type EventDto = {
   name: string;
   plan: string | null;
   logoUrl: string | null;
-  type: 'renewal' | 'trial_end';
+  // usage_bill: a usage record's next bill, expectedCharge false and amount null.
+  type: 'renewal' | 'trial_end' | 'usage_bill';
   date: string;
   expectedCharge: boolean;
   amount: MoneyDto | null;
@@ -45,7 +49,9 @@ export type SummaryDto = {
   platformId: string | null;
   categoryId: string | null;
   logoUrl: string | null;
-  price: MoneyDto;
+  billing?: BillingDto;
+  // null on a usage record.
+  price: MoneyDto | null;
   cycle: CycleDto;
   statusGroup: string;
   nextEvent: EventDto | null;
@@ -67,7 +73,9 @@ export type DetailDto = SummaryDto & {
     email: string;
     connector: { id: string; email: string; provider?: InboxProvider; status: string; lastSuccessfulSyncAt: string | null } | null;
   };
-  spending: { totals: MoneyDto[]; count: number; annualEquivalent: MoneyDto };
+  // annualEquivalent is null on a usage record; lastCharges (oldest first, up to 3) only on a usage record.
+  spending: { totals: MoneyDto[]; count: number; annualEquivalent: MoneyDto | null };
+  lastCharges?: DatedMoneyDto[];
   samePlatformCount: number;
   priceChangeCount: number;
   revision: number;
@@ -88,6 +96,10 @@ export type HomeDto = {
   topSpending: { currency: string; total: MoneyDto; items: PlatformSpendDto[]; others: { count: number; monthly: MoneyDto } | null }[];
   trials: TrialDto[];
   forecast: { month: string; totals: MoneyDto[] }[];
+  // The rest of a first scan's year, read after onboarding (Home · still checking / more found); null when nothing to show.
+  backgroundScan?: { status: 'running' | 'done'; newCount: number; connectorId: string; jobId: string } | null;
+  // Live records and this month's inbox receipts per currency, most records first (currency switcher).
+  byCurrency?: { currency: string; subscriptionCount: number; paidCount: number }[];
 };
 
 export type UpcomingDto = { through: string; events: EventDto[] };
@@ -140,7 +152,18 @@ export type AlertDto = {
 export type AlertsDto = { items: AlertDto[]; total: number; nextCursor: string | null };
 
 // provider is missing on an older backend: treat it as gmail.
-export type ConnectorDto = { id: string; email: string; provider?: InboxProvider; status: 'connected' | 'reconnect_needed' | 'disconnected'; lastSuccessfulSyncAt: string | null; nextSyncAt: string | null; importedCount?: number };
+export type ConnectorDto = {
+  id: string;
+  email: string;
+  provider?: InboxProvider;
+  status: 'connected' | 'reconnect_needed' | 'disconnected';
+  lastSuccessfulSyncAt: string | null;
+  nextSyncAt: string | null;
+  importedCount?: number;
+  backgroundScan?: { status: 'running' | 'done' | 'failed'; newCount: number; jobId: string; dismissed: boolean } | null;
+};
+// GET /connectors. remaining counts disconnected inboxes too; usedBefore lists those that still hold a slot.
+export type ConnectorsDto = { connectors: ConnectorDto[]; limit?: number; remaining?: number; usedBefore?: { email: string; provider: InboxProvider }[] };
 
 export type OutlookConnectDto = { connector: ConnectorDto; scannedBefore: boolean };
 // Continue with Outlook: logs in or opens the account and connects that inbox; connector is null when inboxLimit.
@@ -169,18 +192,45 @@ export type CandidateDto = {
   imported: boolean;
   // Backend: true when price or cycle is missing.
   needsDetails: boolean;
+  billing?: BillingDto;
+  // Only failed payments found: never selected, no price. failedSince is a local date.
+  paymentFailing?: boolean;
+  failedSince?: string | null;
+  failedCount?: number;
+  // Usage bills: the last paid bills, oldest first (up to 3).
+  lastCharges?: DatedMoneyDto[];
   revision: number;
+};
+
+export type ScanProgressDto = { total: number; done: number };
+
+// A paid receipt that fits two or more tracked plans; resolved with POST /scans/:jobId/matches/:receiptId.
+export type NeedsMatchDto = {
+  receiptId: string;
+  revision: number;
+  service: { name: string; platformId: string | null; logoUrl: string | null };
+  amount: MoneyDto;
+  paidDate: string;
+  options: { subscriptionId: string; name: string; plan: string | null; price: MoneyDto | null; cycle: CycleDto; nextRenewal: string | null }[];
 };
 
 export type ScanJobDto = {
   id: string;
   connectorId: string;
-  kind: 'initial' | 'incremental' | 'renewal';
+  kind: 'initial' | 'incremental' | 'renewal' | 'deep';
+  // A Gmail first scan: quick (the job the app starts) then deep (the rest of the year, in the background).
+  phase?: 'quick' | 'deep' | null;
+  // Quick job only: its deep job once it exists.
+  deep?: { jobId: string; status: 'queued' | 'running' | 'succeeded' | 'failed'; progress: ScanProgressDto } | null;
   status: 'queued' | 'running' | 'succeeded' | 'failed';
   stages: { key: 'finding' | 'grouping' | 'checking'; status: 'pending' | 'running' | 'done' | 'failed' }[];
   error: { code: string; retryable: boolean } | null;
   counts: { messages: number; candidates: number };
+  // Two steps per mail (read, checked); total 0 = still listing the inbox.
+  progress?: ScanProgressDto;
+  live?: { found: number; read: number; checked: number; candidates: number };
   candidates: CandidateDto[];
+  needsMatch?: NeedsMatchDto[];
 };
 
 // AI chat. Draft `fields` use the POST /subscriptions body shape; a value the AI has not found yet is absent or null.

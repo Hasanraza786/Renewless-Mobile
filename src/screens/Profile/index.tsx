@@ -4,9 +4,9 @@ import { chevron_right_icon, edit_box_icon, help_icon, history_icon, logout_icon
 import ChooseInboxSheet from '../../components/ChooseInboxSheet';
 import Container from '../../components/Container';
 import CustomText from '../../components/CustomText';
-import LinkText from '../../components/LinkText';
 import Header from '../../components/Header';
 import Icons from '../../components/Icons';
+import InboxProviders from '../../components/InboxProviders';
 import MenuGroup from '../../components/MenuGroup';
 import RowView from '../../components/RowView';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
@@ -56,37 +56,75 @@ export default function ProfileScreen() {
         ) : null}
 
         <View style={styles.inboxes}>
-          <RowView justify_content="space-between" style={inbox && styles.inbox_heading}>
-            <RowView gap={SIZES.padding * 0.3}>
-              <CustomText text="Connected inboxes" color={COLORS.text_secondary} size={SIZES.lg} accessibility_role="header" />
-              {profile.inboxes_ready ? <CustomText text={profile.inbox_count_label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} /> : null}
-            </RowView>
-            {inbox ? (
-              <Pressable accessibilityRole="button" accessibilityLabel="Connect another inbox" hitSlop={SIZES.padding3} onPress={profile.openConnect}>
-                <LinkText leading text="Connect" icon={plus_glyph_icon} color={COLORS.primary} />
-              </Pressable>
-            ) : null}
-          </RowView>
+          <CustomText text="Connected inboxes" color={COLORS.text_secondary} size={SIZES.lg} accessibility_role="header" />
           {!profile.inboxes_ready ? null : inbox ? (
-            <RowView accessibilityRole="button" accessibilityLabel={`${inbox.email}, ${profile.inbox_status}`} gap={SIZES.padding / 2} onPress={profile.openInbox} style={styles.inbox_row}>
-              <View style={styles.inbox_logo}>
-                <Icons name={INBOX_BRAND[inbox.provider].logo} icon_height={SIZES.padding * 1.15} icon_width={SIZES.padding * 1.15} />
-              </View>
-              <View style={common_styles.flex_1}>
-                <CustomText text={inbox.email} size={SIZES.sm} number_of_lines={1} />
-                <RowView gap={SIZES.padding / 5} mt={SIZES.padding * 0.35}>
-                  <View style={[styles.dot, profile.inbox_status !== 'Synced' && styles.dot_paused]} />
-                  <CustomText
-                    text={profile.inbox_status}
-                    weight={FONTS.regular}
-                    color={profile.inbox_status === 'Synced' ? COLORS.primary : COLORS.renewing_soon}
-                    size={SIZES.sm}
-                  />
-                  {inbox.lastSync ? <CustomText text={`· Last sync ${syncDate(inbox.lastSync)}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
+            <View style={styles.inbox_group}>
+            {profile.inboxes.map((row, index) => {
+              const status = profile.inboxStatus(row);
+              return (
+                <RowView
+                  key={row.id}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${row.email}, ${status}`}
+                  gap={SIZES.padding / 2}
+                  onPress={() => profile.openInbox(row.id)}
+                  style={[styles.inbox_row, index > 0 && styles.inbox_divider]}>
+                  <View style={styles.inbox_logo}>
+                    <Icons name={INBOX_BRAND[row.provider].logo} icon_height={SIZES.padding * 1.15} icon_width={SIZES.padding * 1.15} />
+                  </View>
+                  <View style={common_styles.flex_1}>
+                    <CustomText text={row.email} size={SIZES.sm} number_of_lines={1} />
+                    <RowView gap={SIZES.padding / 5} mt={SIZES.padding * 0.35}>
+                      <View style={[styles.dot, status !== 'Synced' && styles.dot_paused]} />
+                      <CustomText text={status} weight={FONTS.regular} color={status === 'Synced' ? COLORS.primary : COLORS.renewing_soon} size={SIZES.sm} />
+                      {row.lastSync ? <CustomText text={`· Last sync ${syncDate(row.lastSync)}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
+                    </RowView>
+                  </View>
+                  <Icons name={chevron_right_icon} />
                 </RowView>
+              );
+            })}
+            {profile.can_connect ? (
+              <View style={styles.add_block}>
+                <RowView gap={SIZES.padding / 2} style={styles.add_row}>
+                  <View style={styles.add_icon}>
+                    <Icons name={plus_glyph_icon} icon_height={SIZES.padding * 0.8} icon_width={SIZES.padding * 0.8} />
+                  </View>
+                  <View style={common_styles.flex_1}>
+                    <CustomText text="Connect another inbox" color={COLORS.primary} size={SIZES.sm} accessibility_role="header" />
+                    <CustomText mt={SIZES.padding / 5} text="Read-only. Find subscriptions in a work or second email." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+                  </View>
+                </RowView>
+                <View style={styles.add_buttons}>
+                  <InboxProviders variant="inline" onPick={profile.pickProvider} />
+                </View>
               </View>
-              <Icons name={chevron_right_icon} />
-            </RowView>
+            ) : null}
+            {profile.used_before ? (
+              <View style={styles.add_block} accessibilityRole="summary" accessibilityLabel={`${profile.used_before.email}, disconnected, still uses your second slot`}>
+                <RowView gap={SIZES.padding / 2} style={styles.add_row}>
+                  <View style={styles.inbox_logo}>
+                    <Icons name={INBOX_BRAND[profile.used_before.provider].logo} icon_height={SIZES.padding * 1.15} icon_width={SIZES.padding * 1.15} />
+                  </View>
+                  <View style={common_styles.flex_1}>
+                    <CustomText text={profile.used_before.email} size={SIZES.sm} number_of_lines={1} />
+                    <RowView gap={SIZES.padding / 5} mt={SIZES.padding * 0.35}>
+                      <View style={[styles.dot, styles.dot_paused]} />
+                      <CustomText text="Disconnected · still uses your second slot" weight={FONTS.regular} color={COLORS.renewing_soon} size={SIZES.sm} />
+                    </RowView>
+                  </View>
+                </RowView>
+                <View style={styles.add_buttons}>
+                  <InboxProviders
+                    variant="inline"
+                    providers={[profile.used_before.provider]}
+                    labels={{ gmail: 'Reconnect Gmail', outlook: 'Reconnect Outlook' }}
+                    onPick={profile.pickProvider}
+                  />
+                </View>
+              </View>
+            ) : null}
+            </View>
           ) : (
             <RowView gap={SIZES.padding / 2} style={styles.no_inbox}>
               <Icons name={mail_icon} />
@@ -99,6 +137,7 @@ export default function ProfileScreen() {
               </Pressable>
             </RowView>
           )}
+          {inbox && profile.inboxes_ready ? <CustomText mt={SIZES.padding / 3} text={profile.inbox_note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} /> : null}
         </View>
 
         <MenuGroup

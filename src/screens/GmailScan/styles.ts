@@ -70,4 +70,42 @@ export const styles = StyleSheet.create({
     maxWidth: SIZES.padding * 34,
     width: '100%',
   },
+  section_note: {
+    marginHorizontal: SIZES.padding * 0.4,
+  },
+  match_row: {
+    paddingLeft: SIZES.padding3,
+    paddingVertical: SIZES.padding * 0.8,
+  },
+  choose: {
+    justifyContent: 'center',
+    minHeight: SIZES.padding * 2.2,
+    paddingHorizontal: SIZES.padding * 0.3,
+  },
+  option: {
+    backgroundColor: COLORS.card,
+    borderRadius: SIZES.padding * 0.65,
+    padding: SIZES.padding * 0.6,
+  },
+  option_gap: {
+    marginTop: SIZES.padding * 0.4,
+  },
+  radio: {
+    alignItems: 'center',
+    borderColor: COLORS.checkbox_border,
+    borderRadius: SIZES.padding / 2,
+    borderWidth: 1,
+    height: SIZES.padding * 0.9,
+    justifyContent: 'center',
+    width: SIZES.padding * 0.9,
+  },
+  radio_on: {
+    borderColor: COLORS.primary,
+  },
+  radio_dot: {
+    backgroundColor: COLORS.primary,
+    borderRadius: SIZES.padding / 4,
+    height: SIZES.padding / 2,
+    width: SIZES.padding / 2,
+  },
 });

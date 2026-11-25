@@ -13,13 +13,15 @@ import SizedBox from '../SizedBox';
 import { styles } from './styles';
 
 type Props = {
-  // buttons: onboarding and the empty Home; tiles: the Add sheet; rows: the Choose inbox sheet.
-  variant: 'buttons' | 'tiles' | 'rows';
+  // buttons: onboarding and the empty Home; tiles: the Add sheet; rows: the Choose inbox sheet; inline: Profile's Connect another inbox block.
+  variant: 'buttons' | 'tiles' | 'rows' | 'inline';
   onPick: (provider: InboxProvider) => void;
   // Button labels when they differ from Continue with Gmail / Outlook (onboarding signs in too).
   labels?: Record<InboxProvider, string>;
   // The provider whose connect is running: its button says Connecting… and both are disabled.
   busy?: InboxProvider | null;
+  // inline only: offer just these (Profile's Reconnect names one provider).
+  providers?: InboxProvider[];
 };
 
 const PROVIDERS: { provider: InboxProvider; tile: string; row: string }[] = [
@@ -28,7 +30,7 @@ const PROVIDERS: { provider: InboxProvider; tile: string; row: string }[] = [
 ];
 
 // Gmail and Outlook side by side at equal size and weight (Google's branding rule: never less prominent than another provider).
-export default function InboxProviders({ variant, onPick, labels, busy = null }: Props) {
+export default function InboxProviders({ variant, onPick, labels, busy = null, providers }: Props) {
   if (variant === 'buttons') {
     return (
       <View>
@@ -47,6 +49,25 @@ export default function InboxProviders({ variant, onPick, labels, busy = null }:
           </Fragment>
         ))}
       </View>
+    );
+  }
+  if (variant === 'inline') {
+    return (
+      <RowView gap={SIZES.padding / 2}>
+        {PROVIDERS.filter(({ provider }) => !providers || providers.includes(provider)).map(({ provider }) => (
+          <RowView
+            key={provider}
+            justify_content="center"
+            gap={SIZES.padding * 0.35}
+            accessibilityRole="button"
+            accessibilityLabel={labels?.[provider] ?? `Connect ${INBOX_BRAND[provider].name}`}
+            onPress={() => onPick(provider)}
+            style={styles.inline_button}>
+            <Icons name={INBOX_BRAND[provider].logo} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} />
+            <CustomText text={labels?.[provider] ?? INBOX_BRAND[provider].name} weight={FONTS.regular} size={SIZES.sm} />
+          </RowView>
+        ))}
+      </RowView>
     );
   }
   if (variant === 'tiles') {

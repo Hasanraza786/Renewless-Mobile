@@ -30,6 +30,9 @@ export function openReminder(message: { data?: Record<string, unknown> } | null)
   if (data?.type === 'admin_push') {
     const screen = typeof data.screen === 'string' && Object.hasOwn(ADMIN_SCREENS, data.screen) ? ADMIN_SCREENS[data.screen as keyof typeof ADMIN_SCREENS] : 'Home';
     navigate(screen);
+  } else if (data?.type === 'scan_more_found') {
+    // "Loop found n more subscriptions in …" opens Home · more found (Home reloads on focus).
+    navigate('Home');
   } else if (data?.type === 'support_reply') {
     store.dispatch(getSupportMessages());
     navigate('HelpSupport');

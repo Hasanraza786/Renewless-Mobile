@@ -31,7 +31,9 @@ function Column({ label, value, meta, onPress, accessibility_label, divided }: {
 }
 
 export default function MonthCard({ home }: { home: HomeController }) {
-  const { month } = home.data!;
+  const { month, upcoming } = home.data!;
+  // Usage bills are left out of the totals; say so once the account has one.
+  const usage_note = [...upcoming, ...month.events].some(event => event.kind === 'usage_bill') ? ' Usage bills aren’t included.' : '';
   return (
     <View style={styles.month_card}>
       <RowView justify_content="space-between">
@@ -55,7 +57,7 @@ export default function MonthCard({ home }: { home: HomeController }) {
           accessibility_label="View upcoming charges this month"
         />
       </RowView>
-      <CustomText mt={SIZES.padding} text="Upcoming charges are estimates. Paid amounts come from your inbox receipts." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+      <CustomText mt={SIZES.padding} text={`Upcoming charges are estimates. Paid amounts come from your inbox receipts.${usage_note}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
     </View>
   );
 }

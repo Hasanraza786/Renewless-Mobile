@@ -9,6 +9,7 @@ import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import type { AuthStackParamList, OnboardingStep } from '../../types';
 import { ConnectArt, ConnectInboxBody, ConnectInboxFooter } from './components/ConnectInbox';
 import { DiscoveringBody, DiscoveringFooter } from './components/Discovering';
+import { FirstResultsBody, FirstResultsFooter } from './components/FirstResults';
 import { ReadyArt, ReadyConfetti, ReadyToGoBody, ReadyToGoFooter } from './components/ReadyToGo';
 import { ScanInterruptedArt, ScanInterruptedBody, ScanInterruptedFooter, ScanNoResultsArt, ScanNoResultsBody, ScanNoResultsFooter } from './components/ScanRecovery';
 import TabletSplit from './components/TabletSplit';
@@ -34,6 +35,7 @@ const PANELS: Record<OnboardingStep, Panel> = {
   welcome: { Body: WelcomeBody, Footer: WelcomeFooter, Art: WelcomeArt },
   connectInbox: { Body: ConnectInboxBody, Footer: ConnectInboxFooter, Art: ConnectArt },
   discovering: { Body: DiscoveringBody, Footer: DiscoveringFooter },
+  firstResults: { Body: FirstResultsBody, Footer: FirstResultsFooter },
   yourSubscriptions: { Body: YourSubscriptionsBody, Footer: YourSubscriptionsFooter },
   readyToGo: { Body: ReadyToGoBody, Footer: ReadyToGoFooter, fitted: true, Art: ReadyArt },
   scanNoResults: { Body: ScanNoResultsBody, Footer: ScanNoResultsFooter, fitted: true, Art: ScanNoResultsArt },

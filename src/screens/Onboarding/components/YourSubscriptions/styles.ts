@@ -87,4 +87,7 @@ export const styles = StyleSheet.create({
   caption: {
     marginTop: SIZES.padding * 0.85,
   },
+  note: {
+    marginHorizontal: SIZES.padding * 0.4,
+  },
 });

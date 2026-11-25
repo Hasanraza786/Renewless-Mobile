@@ -26,7 +26,9 @@ export function groupAlerts(alerts: SentAlert[], today: string) {
 // Event wording uses the event date, so an old alert never claims "today" once that day has passed.
 export function alertMessage(alert: SentAlert, today: string) {
   const when = alert.event_date === today ? 'today' : shortDate(alert.event_date);
-  return alert.kind === 'trial_end' ? `Trial ends ${when}` : `Renews ${when} · ${money(alert.currency, alert.amount)}`;
+  if (alert.kind === 'trial_end') return `Trial ends ${when}`;
+  // A usage bill's reminder has no amount (the push read "Bill expected … · check your usage").
+  return alert.currency ? `Renews ${when} · ${money(alert.currency, alert.amount)}` : `Bill expected ${when} · check your usage`;
 }
 
 // "9:00 AM" for today, otherwise "26 Oct · 9:00 AM".

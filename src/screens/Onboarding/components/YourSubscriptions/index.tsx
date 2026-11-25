@@ -20,7 +20,7 @@ import SizedBox from '../../../../components/SizedBox';
 import { COLORS, FONTS, SIZES } from '../../../../constants/theme';
 import type { ScanCandidate, ScanCycle } from '../../../../types';
 import { localToday } from '../../../../utils/dates';
-import { dateLabel, formatTotals, moneyLabel, paidMonthlyTotals, upcomingWeek } from '../../../../utils/scan';
+import { FAILING_NOTE, dateLabel, failingLine, formatTotals, moneyLabel, paidMonthlyTotals, upcomingWeek } from '../../../../utils/scan';
 import type { OnboardingController } from '../../index.function';
 import { RING, RING_WIDTH, styles } from './styles';
 import { CURRENCIES, CURRENCY_NAMES, CURRENCY_SEARCH, formatAmount, amountKeyboard, amountPlaceholder, money } from '../../../../utils/money';
@@ -117,9 +117,49 @@ function EditSheet({ onboarding }: Props) {
   );
 }
 
+// One result row: checkbox, logo tile, name and two lines; the edit pencil opens the review sheet. A PAYMENTS FAILING
+// row starts unticked with a coral line; without a price from the server it can't be ticked or edited.
+function ResultRow({ onboarding, item, last }: Props & { item: ScanCandidate; last: boolean }) {
+  const checked = onboarding.selected_ids.includes(item.id);
+  const blocked = onboarding.save_loading || !!item.failing?.incomplete;
+  const date = item.failing
+    ? failingLine(item.failing)
+    : `${item.trial ? 'Trial ends' : 'Renews'} ${item.next_date ? dateLabel(item.next_date) : 'Date not set'}${item.estimated ? ' · estimated' : ''}`;
+  const price = item.failing?.incomplete ? '' : `${item.trial ? 'Then ' : ''}${moneyLabel(item)} · ${item.cycle}`;
+  return (
+    <RowView gap={0} style={!last && styles.row_divider}>
+      <RowView
+        gap={SIZES.padding * 0.45}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked, disabled: blocked }}
+        accessibilityLabel={`Select ${item.name}, ${date}${price ? `, ${price}` : ''}`}
+        disabled={blocked}
+        onPress={() => onboarding.toggleCandidate(item.id)}
+        style={styles.row_select}>
+        <View style={[styles.checkbox, checked && styles.checkbox_checked]}>{checked ? <Icons name={check_dark_icon} /> : null}</View>
+        <View style={styles.logo_tile}>
+          <PlatformLogo platform_id={item.platform_id} name={item.name} />
+        </View>
+        <View style={common_styles.flex_1}>
+          <CustomText text={item.name} size={SIZES.sm} />
+          <CustomText mt={SIZES.padding / 4} text={date} weight={FONTS.regular} color={item.failing ? COLORS.danger : COLORS.text_secondary} size={SIZES.sm} />
+          {price ? <CustomText mt={SIZES.padding / 4} text={price} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
+        </View>
+      </RowView>
+      {item.failing ? null : (
+        <Pressable accessibilityRole="button" accessibilityLabel={`Edit ${item.name}`} disabled={onboarding.save_loading} onPress={() => onboarding.openEdit(item.id)} style={styles.edit}>
+          <Icons name={edit_icon} />
+        </Pressable>
+      )}
+    </RowView>
+  );
+}
+
 export function YourSubscriptionsBody({ onboarding }: Props) {
-  const { candidates, selected_ids, save_loading } = onboarding;
-  const selected = candidates.filter(item => selected_ids.includes(item.id));
+  const { candidates: all, selected_ids } = onboarding;
+  const candidates = all.filter(item => !item.failing);
+  const failing = all.filter(item => item.failing);
+  const selected = all.filter(item => selected_ids.includes(item.id));
   // Several currencies (24 Nov 2026): the card and the week line show one currency at a time; never added together.
   const currencies = orderByCount(candidates.map(item => item.currency));
   const [currency_choice, setCurrencyChoice] = useState('');
@@ -159,7 +199,7 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
           )}
           <CustomText mt={SIZES.padding * 0.35} text="Free trials aren’t included in this total." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
-        <SelectionRing selected={selected.length} total={candidates.length} />
+        <SelectionRing selected={selected.length} total={all.length} />
       </RowView>
 
       <RowView align_items="stretch" justify_content="space-between" gap={0} style={styles.week} accessibilityLabel="Upcoming renewals and trial endings">
@@ -183,38 +223,25 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
       </RowView>
 
       <View style={styles.results}>
-        {candidates.map((item, index) => {
-          const checked = selected_ids.includes(item.id);
-          const date = `${item.trial ? 'Trial ends' : 'Renews'} ${item.next_date ? dateLabel(item.next_date) : 'Date not set'}${item.estimated ? ' · estimated' : ''}`;
-          const price = `${item.trial ? 'Then ' : ''}${moneyLabel(item)} · ${item.cycle}`;
-          return (
-            <RowView gap={0} key={item.id} style={index < candidates.length - 1 && styles.row_divider}>
-              <RowView gap={SIZES.padding * 0.45}
-                accessibilityRole="checkbox"
-                accessibilityState={{ checked, disabled: save_loading }}
-                accessibilityLabel={`Select ${item.name}, ${date}, ${price}`}
-                disabled={save_loading}
-                onPress={() => onboarding.toggleCandidate(item.id)}
-                style={styles.row_select}>
-                <View style={[styles.checkbox, checked && styles.checkbox_checked]}>
-                  {checked ? <Icons name={check_dark_icon} /> : null}
-                </View>
-                <View style={styles.logo_tile}>
-                  <PlatformLogo platform_id={item.platform_id} name={item.name} />
-                </View>
-                <View style={common_styles.flex_1}>
-                  <CustomText text={item.name} size={SIZES.sm} />
-                  <CustomText mt={SIZES.padding / 4} text={date} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-                  <CustomText mt={SIZES.padding / 4} text={price} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
-                </View>
-              </RowView>
-              <Pressable accessibilityRole="button" accessibilityLabel={`Edit ${item.name}`} disabled={save_loading} onPress={() => onboarding.openEdit(item.id)} style={styles.edit}>
-                <Icons name={edit_icon} />
-              </Pressable>
-            </RowView>
-          );
-        })}
+        {candidates.map((item, index) => (
+          <ResultRow key={item.id} onboarding={onboarding} item={item} last={index === candidates.length - 1} />
+        ))}
       </View>
+
+      {failing.length ? (
+        <>
+          <RowView align_items="stretch" justify_content="space-between" gap={0} style={styles.caption}>
+            <CustomText text="PAYMENTS FAILING" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} letter_spacing={0.5} />
+            <CustomText text={String(failing.length)} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          </RowView>
+          <View style={styles.results}>
+            {failing.map((item, index) => (
+              <ResultRow key={item.id} onboarding={onboarding} item={item} last={index === failing.length - 1} />
+            ))}
+          </View>
+          <CustomText mt={SIZES.padding * 0.4} text={FAILING_NOTE} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} style={styles.note} />
+        </>
+      ) : null}
 
       <SizedBox height={SIZES.padding2} />
 

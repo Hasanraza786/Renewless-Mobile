@@ -6,7 +6,8 @@ type Props = {
   eyebrow: string;
   title: string;
   emphasis?: string;
-  copy: string;
+  // Left out where the design has no lead (Discovering · first results).
+  copy?: string;
   align?: 'left' | 'center';
   // Results/Save headings use a slightly looser -0.5 tracking in the prototype.
   title_spacing?: number;
@@ -39,14 +40,7 @@ export default function OnboardingTitle({ eyebrow, title, emphasis, copy, align 
           letter_spacing={title_spacing ?? -1}
         />
       ) : null}
-      <CustomText
-        mt={SIZES.padding2}
-        text={copy}
-        weight={FONTS.regular}
-        color={COLORS.text_secondary}
-        size={SIZES.sm}
-        align={align}
-      />
+      {copy ? <CustomText mt={SIZES.padding2} text={copy} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align={align} /> : null}
     </View>
   );
 }

@@ -38,12 +38,13 @@ export const styles = StyleSheet.create({
     minHeight: SIZES.padding * 2.2,
     padding: SIZES.padding3,
   },
+  // 8pt top and bottom (scoped unlock 25 Nov 2026, Pending reapproval): the card inside adds its own 12pt.
   event_card: {
     backgroundColor: COLORS.card,
     borderColor: COLORS.line_quiet,
     borderRadius: SIZES.padding * 0.8,
     borderWidth: 1,
-    paddingVertical: SIZES.padding2,
+    paddingVertical: SIZES.padding * 0.4,
   },
   top_row: {
     paddingHorizontal: SIZES.padding * 0.7
@@ -310,5 +311,31 @@ export const styles = StyleSheet.create({
     height: '100%',
     transformOrigin: 'left',
     width: '100%',
+  },
+  scan_card: {
+    backgroundColor: COLORS.card,
+    borderColor: COLORS.accent_frame,
+    borderRadius: SIZES.padding * 0.8,
+    borderWidth: 1,
+    marginBottom: SIZES.padding * 0.6,
+    paddingHorizontal: SIZES.padding * 0.7,
+    paddingVertical: SIZES.padding * 0.6,
+  },
+  scan_copy: {
+    paddingRight: SIZES.padding,
+  },
+  // A mint text link under the copy, like Home's View all (44pt touch through hitSlop).
+  scan_review: {
+    alignSelf: 'flex-start',
+    marginTop: SIZES.padding * 0.4,
+  },
+  scan_dismiss: {
+    alignItems: 'center',
+    height: SIZES.padding * 2.2,
+    justifyContent: 'center',
+    position: 'absolute',
+    right: SIZES.padding * 0.3,
+    top: SIZES.padding * 0.3,
+    width: SIZES.padding * 2.2,
   },
 });

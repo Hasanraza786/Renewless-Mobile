@@ -16,6 +16,8 @@ type Props = {
   // Timing, then optional plan/context lines; a line may carry its own colour and a chevron (e.g. Add renewal date).
   lines: (string | { text: string; color: string; chevron?: boolean })[];
   amount: string;
+  // A usage bill's "Usage-based" reads smaller and muted in place of an amount.
+  amount_muted?: boolean;
   caption: string;
   // Opt-in decorative chevron for cards that open Detail (Home, Upcoming).
   chevron?: boolean;
@@ -24,7 +26,7 @@ type Props = {
 };
 
 // The one shared tracked-subscription card: logo, name, status, timing/context lines and the amount.
-export default function SubscriptionCard({ name, platform_id, status, lines, amount, caption, chevron, onPress, accessibility_label }: Props) {
+export default function SubscriptionCard({ name, platform_id, status, lines, amount, amount_muted, caption, chevron, onPress, accessibility_label }: Props) {
   return (
     <RowView gap={SIZES.padding * 0.55} accessibilityRole="button" accessibilityLabel={accessibility_label ?? name} onPress={onPress} style={styles.main_view}>
       <View style={styles.avatar}>
@@ -39,7 +41,7 @@ export default function SubscriptionCard({ name, platform_id, status, lines, amo
         })}
       </View>
       <View style={styles.amount}>
-        <CustomText text={amount} weight={FONTS.regular} size={SIZES.lg} align="center" />
+        <CustomText text={amount} weight={FONTS.regular} color={amount_muted ? COLORS.text_secondary : COLORS.text_primary} size={amount_muted ? SIZES.md : SIZES.lg} align="center" />
         <CustomText mt={SIZES.padding / 5} text={caption} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
       </View>
       {chevron ? <Icons name={chevron_right_icon} /> : null}

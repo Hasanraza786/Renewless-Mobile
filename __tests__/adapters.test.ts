@@ -1,5 +1,5 @@
-import { fromReminder, setCategories, toAiReply, toCalendarMonth, toDetail, toGmailCandidate, toHome, toReceipt, toRecord, toSubscriptionBody, toSupportMessage } from '../src/api_services/adapters';
-import type { DetailDto, EventDto, HomeDto } from '../src/api_services/dto';
+import { fromReminder, setCategories, toAiReply, toCalendarMonth, toDetail, toGmailCandidate, toGmailScan, toHome, toInboxSlots, toReceipt, toRecord, toScanStatus, toSubscriptionBody, toSupportMessage } from '../src/api_services/adapters';
+import type { CandidateDto, DetailDto, EventDto, HomeDto, ScanJobDto } from '../src/api_services/dto';
 import { platform_logos } from '../src/assets/icons';
 
 jest.mock('../src/assets/icons', () => ({ platform_logos: { netflix: 'netflix-logo' } }));
@@ -148,4 +148,50 @@ test('an inbox import reads as an inbox record whether the backend stores gmail 
   const outlook = toRecord({ ...base, source: { type: 'outlook', email: 'a@outlook.com', connector: null } } as unknown as DetailDto);
   expect(outlook.source).toEqual({ kind: 'gmail', email: 'a@outlook.com', provider: 'outlook' });
   expect(toRecord({ ...base, source: { type: 'manual', email: '', connector: null } } as unknown as DetailDto).source.kind).toBe('manual');
+});
+
+test('a usage record has no price or annual equivalent; Detail keeps its currency and last bills', () => {
+  const usage = detail({
+    billing: 'usage', price: null, nextEvent: event({ type: 'usage_bill', date: '2026-12-02', expectedCharge: false, amount: null }),
+    spending: { totals: [], count: 2, annualEquivalent: null },
+    lastCharges: [{ date: '2026-10-02', amount: { currency: 'USD', amount: '41.20' } }, { date: '2026-11-02', amount: { currency: 'USD', amount: '57.80' } }],
+  });
+  expect(toRecord(usage)).toMatchObject({ billing: 'usage', price: '', currency: 'USD', next_date: '2026-12-02' });
+  const view = toDetail(usage, null, null);
+  expect(view.annual_estimate).toBeNull();
+  expect(view.last_charges).toEqual([{ date: '2026-10-02', amount: '41.20', currency: 'USD' }, { date: '2026-11-02', amount: '57.80', currency: 'USD' }]);
+  expect(toRecord(detail()).billing).toBe('fixed');
+  expect(toCalendarMonth({ month: '2026-12', events: [event({ type: 'usage_bill', amount: null })], expected: [] } as never).events[0]).toMatchObject({ kind: 'usage_bill', amount: '0.00' });
+});
+
+test('inbox slots come from the backend, else count the listed inboxes against 2', () => {
+  const box = { id: 'b1', email: 'a@gmail.com', status: 'connected' as const, lastSuccessfulSyncAt: null, nextSyncAt: null };
+  expect(toInboxSlots({ connectors: [box], limit: 2, remaining: 0, usedBefore: [{ email: 'old@gmail.com', provider: 'gmail' }] })).toEqual({ limit: 2, remaining: 0, used_before: [{ email: 'old@gmail.com', provider: 'gmail' }] });
+  expect(toInboxSlots({ connectors: [box] })).toEqual({ limit: 2, remaining: 1, used_before: [] });
+});
+
+test('a scan carries progress, live counts, its deep read and the rows needing attention', () => {
+  const c = (over: Partial<CandidateDto>): CandidateDto => ({ id: 'c1', classification: 'new', selected: false, name: 'AWS', plan: null, platformId: null, logoUrl: null, price: null, cycle: null, anchorDate: null, estimated: true, trial: null, targetSubscriptionId: null, changes: null, imported: false, needsDetails: true, revision: 1, ...over });
+  const job: ScanJobDto = {
+    id: 'j1', connectorId: 'b1', kind: 'initial', phase: 'quick', status: 'succeeded', stages: [], error: null, counts: { messages: 120, candidates: 3 },
+    progress: { total: 240, done: 240 }, live: { found: 300, read: 120, checked: 120, candidates: 3 },
+    deep: { jobId: 'j2', status: 'queued', progress: { total: 0, done: 0 } },
+    candidates: [
+      c({ id: 'u1', billing: 'usage', cycle: 'monthly', anchorDate: '2026-12-02', lastCharges: [{ date: '2026-11-02', amount: { currency: 'USD', amount: '57.80' } }] }),
+      c({ id: 'f1', name: 'Canva', paymentFailing: true, failedSince: '2026-09-14', failedCount: 3 }),
+    ],
+    needsMatch: [{ receiptId: 'r1', revision: 0, service: { name: 'Google One', platformId: null, logoUrl: null }, amount: { currency: 'PKR', amount: '650.00' }, paidDate: '2026-11-03', options: [
+      { subscriptionId: 's1', name: 'Google One', plan: '100 GB', price: { currency: 'PKR', amount: '650.00' }, cycle: 'monthly', nextRenewal: '2026-12-03' },
+      { subscriptionId: 's2', name: 'Google One', plan: '2 TB', price: { currency: 'PKR', amount: '650.00' }, cycle: 'yearly', nextRenewal: null },
+    ] }],
+  };
+  const scan = toGmailScan(job);
+  expect(scan).toMatchObject({ phase: 'quick', progress: { total: 240, done: 240 }, live: { found: 300 }, messages: 120, deep: { job_id: 'j2', status: 'running' } });
+  // A failing plan is a review row that starts unticked; without a price it can't be added.
+  expect(scan.candidates).toMatchObject([{ id: 'f1', kind: 'new', selected: false, failing: { since: '2026-09-14', count: 3, incomplete: true } }]);
+  expect(scan.attention.usage).toMatchObject([{ id: 'u1', cycle: 'Monthly', next_date: '2026-12-02', last_charges: [{ amount: '57.80', currency: 'USD' }] }]);
+  expect(toScanStatus(job).candidates.map(item => item.id)).toEqual(['f1']);
+  expect(scan.attention.needs_match[0]).toMatchObject({ receipt_id: 'r1', amount: '650.00', options: [{ subscription_id: 's1', cycle: 'Monthly' }, { subscription_id: 's2', cycle: 'Yearly' }] });
+  // An older job without the new fields still maps.
+  expect(toScanStatus({ ...job, phase: undefined, progress: undefined, live: undefined, deep: undefined })).toMatchObject({ phase: null, progress: { total: 0, done: 0 }, deep: null });
 });

@@ -35,11 +35,20 @@ export default function useProfile() {
   );
 
   const totals = overview?.payment_totals ?? [];
-  const inbox = overview?.inboxes[0] ?? null;
-  // Gmail and Outlook count together toward the free limit.
-  const inbox_count_label = `${overview?.inboxes.length ?? 0} of ${MAX_INBOXES}`;
+  const inboxes = overview?.inboxes ?? [];
+  const inbox = inboxes[0] ?? null;
+  // Gmail and Outlook count together toward the limit; the server counts disconnected inboxes too.
+  const slots = overview?.inbox_slots ?? { limit: MAX_INBOXES, remaining: 0, used_before: [] };
+  const can_connect = slots.remaining > 0;
+  // At the limit, a disconnected inbox that still holds a slot is named with Reconnect (the only way to use it).
+  const used_before = can_connect ? null : slots.used_before[0] ?? null;
+  const inbox_note = used_before
+    ? 'Disconnected inboxes keep their slot, so only this inbox can use it.'
+    : can_connect
+      ? `You can connect ${slots.remaining} more inbox.`
+      : `${slots.limit} of ${slots.limit} inboxes connected.`;
   // Never synced yet is not Synced.
-  const inbox_status = !inbox ? '' : inbox.status === 'reconnect' ? 'Reconnect needed' : inbox.status === 'paused' ? 'Updates paused' : inbox.lastSync ? 'Synced' : 'Not synced yet';
+  const inboxStatus = (row: ProfileInbox) => (row.status === 'reconnect' ? 'Reconnect needed' : row.status === 'paused' ? 'Updates paused' : row.lastSync ? 'Synced' : 'Not synced yet');
   // Hidden until the overview loads, so the No inbox state never flashes for a connected account.
   const inboxes_ready = !!overview;
   // Several currencies are never added together, so the row only says how many there are.
@@ -76,7 +85,7 @@ export default function useProfile() {
     if (provider === 'gmail') trackEvent('gmail_connect_tapped', { from: 'profile' });
     dispatch(connectInbox(provider, onInboxConnected, openInboxLimit));
   };
-  const openInbox = () => inbox && navigate('ConnectedInbox', { id: inbox.id });
+  const openInbox = (id: string) => navigate('ConnectedInbox', { id });
   const openHistory = () => navigate('History');
   const openPayments = () => navigate('Payments');
   const openReminders = () => navigate('ReminderSettings');
@@ -101,11 +110,14 @@ export default function useProfile() {
   return {
     user,
     inbox,
-    inbox_count_label,
+    inboxes,
+    inboxStatus,
+    can_connect,
+    used_before,
+    inbox_note,
     choose_open,
     closeChoose,
     pickProvider,
-    inbox_status,
     inboxes_ready,
     payment_text,
     dialog,

@@ -47,6 +47,8 @@ export type InboxState = {
 
 export type ProfileOverview = {
   inboxes: ProfileInbox[];
+  // Free inbox slots (a disconnected inbox still holds one) and the disconnected inboxes holding them.
+  inbox_slots: { limit: number; remaining: number; used_before: { email: string; provider: InboxProvider }[] };
   payment_totals: { currency: string; amount: string }[];
 };
 
@@ -73,6 +75,9 @@ export type Subscription = {
 
 // Exact decimal amount per currency; currencies are never converted or combined.
 export type MoneyTotal = { currency: string; amount: string };
+// usage: the amount changes every bill (ads, cloud); no price, left out of totals.
+export type Billing = 'fixed' | 'usage';
+export type DatedAmount = { date: string; amount: string; currency: string };
 
 // One renewal or trial ending on a local calendar date, with the owning subscription's stable ID.
 export type HomeEvent = {
@@ -82,7 +87,8 @@ export type HomeEvent = {
   name: string;
   plan: string | null;
   date: string;
-  kind: 'renewal' | 'trial_end';
+  // usage_bill: a usage record's expected bill; amount is empty.
+  kind: 'renewal' | 'trial_end' | 'usage_bill';
   amount: string;
   currency: string;
   cycle: ScanCycle;
@@ -144,6 +150,10 @@ export type HomeSnapshot = {
   trials: HomeTrial[];
   // Six months from the current one, scheduled charges per currency.
   forecast: { currency: string; months: { month: string; amount: string }[] }[];
+  // Home · still checking / more found; null when there is nothing to show.
+  background_scan: { status: 'running' | 'done'; new_count: number; connector_id: string; job_id: string } | null;
+  // Currency switcher order and counts: live records and this month's inbox receipts per currency.
+  by_currency: { currency: string; subscription_count: number; paid_count: number }[];
 };
 
 export type TrackingStatus = 'active' | 'cancelled' | 'expired';
@@ -185,6 +195,8 @@ export type SubscriptionRecord = {
   name: string;
   plan: string | null;
   category: string;
+  billing: Billing;
+  // Empty for a usage record (and currency too, outside Detail).
   price: string;
   currency: string;
   cycle: ScanCycle;
@@ -216,7 +228,10 @@ export type SubscriptionDetail = {
   receipts: { totals: MoneyTotal[]; count: number };
   // Billing emails kept for this subscription (Receipts screen): how many and the newest one's date.
   receipt_emails: { count: number; latest: string | null };
-  annual_estimate: string;
+  // null for a usage record.
+  annual_estimate: string | null;
+  // Usage record: its last confirmed payments, oldest first (up to 3).
+  last_charges: DatedAmount[];
   related_count: number;
   // Account default reminder days (Reminder settings), shown and used by "Account default".
   account_reminder_days: number[];
@@ -323,9 +338,25 @@ export type GmailCandidate = {
   revision: number;
   // Preselected by the server (complete, confident and not lapsed).
   selected: boolean;
+  failing?: ScanFailing;
 };
 
-export type GmailScanStatus = { status: 'running' | 'completed' | 'failed'; stage: number; candidates: GmailCandidate[]; error: string };
+// Review rows that need their own state: usage bills and payments that fit two tracked plans.
+export type ScanAttention = {
+  usage: { id: string; platform_id: string; name: string; plan: string | null; cycle: ScanCycle | null; next_date: string | null; last_charges: DatedAmount[]; revision: number; selected: boolean; saved: boolean }[];
+  needs_match: {
+    receipt_id: string;
+    revision: number;
+    platform_id: string;
+    name: string;
+    amount: string;
+    currency: string;
+    paid_date: string;
+    options: { subscription_id: string; name: string; plan: string | null; price: string; currency: string; cycle: ScanCycle; next_date: string | null }[];
+  }[];
+};
+
+export type GmailScanStatus = { status: 'running' | 'completed' | 'failed'; stage: number; candidates: GmailCandidate[]; attention: ScanAttention; error: string } & ScanMeter;
 
 // What the user keeps for one selected candidate (edited fields for new plans; date choice for updates).
 export type GmailSelection = { id: string; price: string; next_date: string | null; start_date: string | null; trial: { days: number; end_date: string; auto_renew: boolean } | null; replace_date: boolean };
@@ -459,6 +490,8 @@ export type OnboardingState = {
   connector_id: string;
   scan_job_id: string;
   scan_stages: number;
+  // Progress, live counts and the background read of the running (or last) scan job.
+  scan_meter: ScanMeter | null;
   scan_status: 'idle' | 'running' | 'completed' | 'failed';
   scan_failure: ScanFailure | '';
   candidates: ScanCandidate[];
@@ -487,6 +520,8 @@ export type OnboardingStep =
   | 'welcome'
   | 'connectInbox'
   | 'discovering'
+  // Discovering · first results: the quick check is done while older mail is still read.
+  | 'firstResults'
   | 'yourSubscriptions'
   | 'readyToGo'
   | 'scanNoResults'
@@ -498,6 +533,9 @@ export type ScanCandidate = {
   id: string;
   platform_id: string;
   name: string;
+  plan?: string | null;
+  // Only failed payments were found (PAYMENTS FAILING): never preselected.
+  failing?: ScanFailing;
   // Exact decimal string; for an active trial this is the price after the trial.
   price: string;
   currency: string;
@@ -514,9 +552,21 @@ export type ScanCandidate = {
 };
 
 export type ScanFailure = 'network' | 'access';
+// "Last n payments failed · since <day month>". incomplete: the server gave no price or cycle, so it can't be added.
+export type ScanFailing = { since: string | null; count: number; incomplete: boolean };
 
-export type ScanStatus = {
+// Scan progress shared by Discovering and Gmail · scanning. progress: two steps per mail, total 0 = still listing.
+// phase quick = a Gmail first scan, whose deep job reads the rest of the year in the background.
+export type ScanMeter = {
   job_id: string;
+  phase: 'quick' | 'deep' | null;
+  progress: { total: number; done: number };
+  live: { found: number; read: number; checked: number; candidates: number };
+  messages: number;
+  deep: { job_id: string; status: 'running' | 'completed' | 'failed'; progress: { total: number; done: number } } | null;
+};
+
+export type ScanStatus = ScanMeter & {
   completed_stages: number;
   status: 'running' | 'completed' | 'failed';
   failure?: ScanFailure;
@@ -576,7 +626,8 @@ export type AppStackParamList = {
   ConnectedInbox: { id: string };
   // Authenticated Gmail scan and review; without an inbox the first connected one is used.
   // connect: the Add sheet's provider tile; that provider's inbox is scanned, or connected first.
-  GmailScan: { inbox_id?: string; connect?: InboxProvider } | undefined;
+  // job_id: open that finished scan's review (Home · more found) instead of starting a scan.
+  GmailScan: { inbox_id?: string; connect?: InboxProvider; job_id?: string } | undefined;
   AiChat: undefined;
   InboxSubscriptions: { id: string };
   // Calendar date with several events; date is YYYY-MM-DD.
