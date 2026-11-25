@@ -33,3 +33,10 @@ test('upcoming covers today through today + 6 and skips charges for lapsing tria
   expect(nextEvent(items, today)?.id).toBe('netflix');
   expect(dateLabel('2026-10-27')).toBe('27 Oct 2026');
 });
+
+test('a usage bill never counts in the monthly total, the week or the next event', () => {
+  const usage = { id: 'u1', platform_id: 'aws', name: 'AWS', usage: { last_charges: [] }, price: '', currency: 'USD', cycle: 'Monthly' as const, next_date: '2026-11-03', estimated: true, revision: 1, selected: false };
+  expect(paidMonthlyTotals([usage])).toEqual({});
+  expect(upcomingWeek([usage], '2026-11-01')).toEqual({ count: 0, totals: {} });
+  expect(nextEvent([usage], '2026-11-01')).toBeUndefined();
+});

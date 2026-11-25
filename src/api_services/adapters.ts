@@ -397,6 +397,7 @@ export function toInboxSlots(dto: ConnectorsDto): ProfileOverview['inbox_slots']
 // shortcut: finds the backend marks needsDetails are left out, until the review panel has a state for them.
 export function toScanCandidate(dto: CandidateDto): ScanCandidate | null {
   if (dto.paymentFailing) return failingRow(dto);
+  if (dto.billing === 'usage') return usageCandidate(dto);
   // The price/cycle checks only narrow the types; needsDetails already covers them.
   if (dto.classification !== 'new' || dto.needsDetails || !dto.price || !dto.cycle || !CYCLES.has(dto.cycle)) return null;
   return {
@@ -443,6 +444,26 @@ function failingRow(dto: CandidateDto): ScanCandidate | null {
     price: dto.price?.amount ?? '',
     currency: dto.price?.currency ?? '',
     cycle: cycle ? toCycle(cycle) : 'Monthly',
+    next_date: dto.anchorDate,
+    estimated: dto.estimated,
+    revision: dto.revision,
+    selected: false,
+  };
+}
+
+// Onboarding's USAGE BILLS (approved 25 Nov 2026): a new usage bill with its last bills; its currency is the last bill's.
+function usageCandidate(dto: CandidateDto): ScanCandidate | null {
+  if (dto.classification !== 'new' || dto.imported) return null;
+  const last_charges = (dto.lastCharges ?? []).map(toDated);
+  return {
+    id: dto.id,
+    platform_id: logoKey(dto.name, dto.platformId ?? dto.id, dto.logoUrl),
+    name: dto.name,
+    plan: dto.plan,
+    usage: { last_charges },
+    price: '',
+    currency: last_charges[last_charges.length - 1]?.currency ?? '',
+    cycle: dto.cycle && CYCLES.has(dto.cycle) ? toCycle(dto.cycle) : 'Monthly',
     next_date: dto.anchorDate,
     estimated: dto.estimated,
     revision: dto.revision,

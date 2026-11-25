@@ -68,3 +68,13 @@ Same phone. The account was deleted and its scanned-inbox row removed again, so 
 | Continue without saving after the whole year | PASS | The background scan was stored as dismissed, and Home showed no MORE FOUND card (the empty Home, because nothing was saved). |
 
 9. **Design gap.** Your subscriptions in onboarding has no USAGE BILLS section, so the usage bills a first scan finds are never shown there. After the full-year review the background card is dismissed, so they stay hidden until the next sync. Needs a decision: add the section to onboarding, or keep the card when usage bills exist.
+
+## Fourth pass (usage bills in onboarding)
+
+| Case | Result | Notes |
+|---|---|---|
+| First results lists usage bills | PASS | FOUND SO FAR showed Meta ads and WhatsApp Business as "Usage-based · Monthly". |
+| Your subscriptions · usage bills | PASS | Two USAGE BILLS rows (Meta ads, last bill €74.49; WhatsApp Business, €0.97), unticked, with no pencil, and the note. Save showed 3 until they were ticked. |
+| Saving usage bills from onboarding | PASS | Ready to go: "5 subscriptions saved", 3 currencies (USD, EUR, PKR). The next renewal was Claude, not a usage bill. |
+| Home currency tabs | FAIL → fixed | EUR, which holds only usage bills, was the first and selected tab, so Top spending was empty. Currencies with spending now come first (USD, PKR, EUR). |
+| List and Detail · usage | PASS | "Usage-based" and "Bill around 3 Dec / 4 Dec"; Meta ads Detail showed its last bill and "Expected around 4 Dec". |

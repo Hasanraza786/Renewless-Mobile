@@ -11,7 +11,10 @@ export function currencyOrder(home: HomeSnapshot | null, present: string[]) {
     for (const item of home?.spending ?? []) counts.set(item.currency, (counts.get(item.currency) ?? 0) + item.all_platforms.reduce((sum, platform) => sum + platform.subscription_count, 0));
     for (const trial of home?.trials ?? []) counts.set(trial.currency, (counts.get(trial.currency) ?? 0) + 1);
   }
-  return [...new Set(present)].sort((a, b) => (counts.get(b) ?? 0) - (counts.get(a) ?? 0) || a.localeCompare(b));
+  // A currency with spending or a trial comes before one that only holds usage bills (no monthly cost to show).
+  const spends = new Set([...(home?.spending ?? []).map(item => item.currency), ...(home?.trials ?? []).map(trial => trial.currency)]);
+  const rank = (code: string) => (spends.has(code) ? 1 : 0);
+  return [...new Set(present)].sort((a, b) => rank(b) - rank(a) || (counts.get(b) ?? 0) - (counts.get(a) ?? 0) || a.localeCompare(b));
 }
 
 // One app-wide selected currency; with fewer than two currencies there is nothing to switch.

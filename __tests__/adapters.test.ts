@@ -190,7 +190,9 @@ test('a scan carries progress, live counts, its deep read and the rows needing a
   // A failing plan is a review row that starts unticked; without a price it can't be added.
   expect(scan.candidates).toMatchObject([{ id: 'f1', kind: 'new', selected: false, failing: { since: '2026-09-14', count: 3, incomplete: true } }]);
   expect(scan.attention.usage).toMatchObject([{ id: 'u1', cycle: 'Monthly', next_date: '2026-12-02', last_charges: [{ amount: '57.80', currency: 'USD' }] }]);
-  expect(toScanStatus(job).candidates.map(item => item.id)).toEqual(['f1']);
+  // Onboarding shows the failing plan and the usage bill (unticked, priced by its last bill's currency, no price).
+  expect(toScanStatus(job).candidates.map(item => item.id)).toEqual(['u1', 'f1']);
+  expect(toScanStatus(job).candidates[0]).toMatchObject({ usage: { last_charges: [{ amount: '57.80', currency: 'USD' }] }, price: '', currency: 'USD', selected: false });
   expect(scan.attention.needs_match[0]).toMatchObject({ receipt_id: 'r1', amount: '650.00', options: [{ subscription_id: 's1', cycle: 'Monthly' }, { subscription_id: 's2', cycle: 'Yearly' }] });
   // An older job without the new fields still maps.
   expect(toScanStatus({ ...job, phase: undefined, progress: undefined, live: undefined, deep: undefined })).toMatchObject({ phase: null, progress: { total: 0, done: 0 }, deep: null });

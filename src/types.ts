@@ -536,6 +536,8 @@ export type ScanCandidate = {
   plan?: string | null;
   // Only failed payments were found (PAYMENTS FAILING): never preselected.
   failing?: ScanFailing;
+  // USAGE BILLS: the amount changes every bill, so there is no price; never preselected, never in a monthly total.
+  usage?: { last_charges: DatedAmount[] };
   // Exact decimal string; for an active trial this is the price after the trial.
   price: string;
   currency: string;

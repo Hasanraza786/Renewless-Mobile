@@ -15,7 +15,7 @@ import { COLORS, FONTS, SIZES } from '../../../constants/theme';
 import type { GmailCandidate } from '../../../types';
 import { common_styles } from '../../../utils/common_styles';
 import { money } from '../../../utils/money';
-import { FAILING_NOTE, dateLabel, failingLine } from '../../../utils/scan';
+import { FAILING_NOTE, USAGE_NOTE, dateLabel, failingLine } from '../../../utils/scan';
 import { ScanRadar, ScanStages, ScanStatusLine } from '../../Onboarding/components/Discovering';
 import { RecoveryArt } from '../../Onboarding/components/ScanRecovery';
 import { styles as recovery_styles } from '../../Onboarding/components/ScanRecovery/styles';
@@ -264,7 +264,7 @@ export function ReviewView({ gmail }: Props) {
               <UsageRow key={item.id} gmail={gmail} item={item} last={index === gmail.usage.length - 1} />
             ))}
           </View>
-          <SectionNote text="These bills change every month, so we don’t add them to your monthly total." />
+          <SectionNote text={USAGE_NOTE} />
         </>
       ) : null}
       {gmail.duplicates.length ? (

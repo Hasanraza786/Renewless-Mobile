@@ -19,6 +19,7 @@ export const moneyLabel = (item: ScanCandidate) => money(item.currency, item.pri
 
 // PAYMENTS FAILING (Needs-attention states, locked 23 Nov 2026): "Last n payments failed · since 22 Jan".
 export const FAILING_NOTE = 'We only found failed payments. Add one only if you still use it.';
+export const USAGE_NOTE = 'These bills change every month, so we don’t add them to your monthly total.';
 export function failingLine({ count, since }: { count: number; since: string | null }) {
   const [year, month, day] = (since ?? '').split('-').map(Number);
   const day_month = since ? new Date(year, month - 1, day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : '';
@@ -39,7 +40,8 @@ export function formatTotals(totals: Totals) {
 export function paidMonthlyTotals(items: ScanCandidate[]) {
   const totals: Totals = {};
   for (const item of items) {
-    if (item.trial || !(cents(item) >= 0)) continue;
+    // A usage bill has no price: never part of a monthly total.
+    if (item.usage || item.trial || !(cents(item) >= 0)) continue;
     totals[item.currency] = (totals[item.currency] ?? 0) + cents(item) * MONTHLY_FACTOR[item.cycle];
   }
   if (!Object.keys(totals).length) for (const item of items) if (item.trial) totals[item.currency] = 0;
@@ -50,7 +52,7 @@ export function paidMonthlyTotals(items: ScanCandidate[]) {
 // add a charge only when the trial auto-renews.
 export function upcomingWeek(items: ScanCandidate[], today: string) {
   const last = addDays(today, 6);
-  const upcoming = items.filter(item => item.next_date && item.next_date >= today && item.next_date <= last);
+  const upcoming = items.filter(item => !item.usage && item.next_date && item.next_date >= today && item.next_date <= last);
   const totals: Totals = {};
   for (const item of upcoming) {
     if (item.trial && !item.trial.auto_renew) continue;
@@ -61,6 +63,6 @@ export function upcomingWeek(items: ScanCandidate[], today: string) {
 
 export function nextEvent(items: ScanCandidate[], today: string) {
   return items
-    .filter(item => item.next_date && item.next_date >= today)
+    .filter(item => !item.usage && item.next_date && item.next_date >= today)
     .sort((a, b) => a.next_date!.localeCompare(b.next_date!) || a.id.localeCompare(b.id))[0];
 }

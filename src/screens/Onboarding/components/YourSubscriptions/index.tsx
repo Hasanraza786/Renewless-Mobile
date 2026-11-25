@@ -20,7 +20,7 @@ import SizedBox from '../../../../components/SizedBox';
 import { COLORS, FONTS, SIZES } from '../../../../constants/theme';
 import type { ScanCandidate, ScanCycle } from '../../../../types';
 import { localToday } from '../../../../utils/dates';
-import { FAILING_NOTE, dateLabel, failingLine, formatTotals, moneyLabel, paidMonthlyTotals, upcomingWeek } from '../../../../utils/scan';
+import { FAILING_NOTE, USAGE_NOTE, dateLabel, failingLine, formatTotals, moneyLabel, paidMonthlyTotals, upcomingWeek } from '../../../../utils/scan';
 import type { OnboardingController } from '../../index.function';
 import { RING, RING_WIDTH, styles } from './styles';
 import { CURRENCIES, CURRENCY_NAMES, CURRENCY_SEARCH, formatAmount, amountKeyboard, amountPlaceholder, money } from '../../../../utils/money';
@@ -122,10 +122,15 @@ function EditSheet({ onboarding }: Props) {
 function ResultRow({ onboarding, item, last }: Props & { item: ScanCandidate; last: boolean }) {
   const checked = onboarding.selected_ids.includes(item.id);
   const blocked = onboarding.save_loading || !!item.failing?.incomplete;
-  const date = item.failing
-    ? failingLine(item.failing)
-    : `${item.trial ? 'Trial ends' : 'Renews'} ${item.next_date ? dateLabel(item.next_date) : 'Date not set'}${item.estimated ? ' · estimated' : ''}`;
-  const price = item.failing?.incomplete ? '' : `${item.trial ? 'Then ' : ''}${moneyLabel(item)} · ${item.cycle}`;
+  const bill = item.usage?.last_charges[item.usage.last_charges.length - 1];
+  const date = item.usage
+    ? bill
+      ? `Usage-based · last bill ${money(bill.currency, bill.amount)}`
+      : 'Usage-based'
+    : item.failing
+      ? failingLine(item.failing)
+      : `${item.trial ? 'Trial ends' : 'Renews'} ${item.next_date ? dateLabel(item.next_date) : 'Date not set'}${item.estimated ? ' · estimated' : ''}`;
+  const price = item.usage ? 'Amount changes with your usage' : item.failing?.incomplete ? '' : `${item.trial ? 'Then ' : ''}${moneyLabel(item)} · ${item.cycle}`;
   return (
     <RowView gap={0} style={!last && styles.row_divider}>
       <RowView
@@ -146,7 +151,7 @@ function ResultRow({ onboarding, item, last }: Props & { item: ScanCandidate; la
           {price ? <CustomText mt={SIZES.padding / 4} text={price} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
         </View>
       </RowView>
-      {item.failing ? null : (
+      {item.failing || item.usage ? null : (
         <Pressable accessibilityRole="button" accessibilityLabel={`Edit ${item.name}`} disabled={onboarding.save_loading} onPress={() => onboarding.openEdit(item.id)} style={styles.edit}>
           <Icons name={edit_icon} />
         </Pressable>
@@ -157,8 +162,10 @@ function ResultRow({ onboarding, item, last }: Props & { item: ScanCandidate; la
 
 export function YourSubscriptionsBody({ onboarding }: Props) {
   const { candidates: all, selected_ids } = onboarding;
-  const candidates = all.filter(item => !item.failing);
+  const candidates = all.filter(item => !item.failing && !item.usage);
   const failing = all.filter(item => item.failing);
+  // USAGE BILLS (approved 25 Nov 2026): counted in the ring and Save, never in Estimated monthly cost.
+  const usage = all.filter(item => item.usage);
   const selected = all.filter(item => selected_ids.includes(item.id));
   // Several currencies (24 Nov 2026): the card and the week line show one currency at a time; never added together.
   const currencies = orderByCount(candidates.map(item => item.currency));
@@ -178,7 +185,7 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
         eyebrow="YOUR FIRST LOOK"
         title="Your subscriptions,"
         emphasis="in one place."
-        copy={`We found ${candidates.length} possible subscriptions. Choose the ones you want to track.`}
+        copy={`We found ${candidates.length} possible subscriptions${usage.length ? ` and ${usage.length} usage ${usage.length === 1 ? 'bill' : 'bills'}` : ''}. Choose the ones you want to track.`}
         title_spacing={-0.5}
       />
 
@@ -240,6 +247,21 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
             ))}
           </View>
           <CustomText mt={SIZES.padding * 0.4} text={FAILING_NOTE} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} style={styles.note} />
+        </>
+      ) : null}
+
+      {usage.length ? (
+        <>
+          <RowView align_items="stretch" justify_content="space-between" gap={0} style={styles.caption}>
+            <CustomText text="USAGE BILLS" weight={FONTS.regular} color={COLORS.primary} size={SIZES.sm} letter_spacing={0.5} />
+            <CustomText text={String(usage.length)} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          </RowView>
+          <View style={styles.results}>
+            {usage.map((item, index) => (
+              <ResultRow key={item.id} onboarding={onboarding} item={item} last={index === usage.length - 1} />
+            ))}
+          </View>
+          <CustomText mt={SIZES.padding * 0.4} text={USAGE_NOTE} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} style={styles.note} />
         </>
       ) : null}
 

@@ -73,7 +73,7 @@ export function FirstResultsBody({ onboarding }: Props) {
       </RowView>
       <View style={result_styles.results} accessibilityLabel="Subscriptions found so far">
         {found.slice(0, SHOWN).map((item, index) => {
-          const line = item.failing?.incomplete ? item.cycle : `${item.plan ? `${item.plan} · ` : ''}${moneyLabel(item)} · ${item.cycle}`;
+          const line = item.usage ? `Usage-based · ${item.cycle}` : item.failing?.incomplete ? item.cycle : `${item.plan ? `${item.plan} · ` : ''}${moneyLabel(item)} · ${item.cycle}`;
           return (
             <RowView key={item.id} gap={SIZES.padding * 0.45} style={[styles.row, index < Math.min(found.length, SHOWN) - 1 && result_styles.row_divider]} accessibilityLabel={`${item.name}, ${line}`}>
               <View style={result_styles.logo_tile}>

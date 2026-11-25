@@ -1,17 +1,17 @@
 # Graph Report - Renewless-mobile  (2026-11-25)
 
 ## Corpus Check
-- 392 files · ~159,835 words
+- 392 files · ~160,490 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 55 file(s) not represented in the graph (top: .ttf 15, .xml 14, (none) 5)
 
 ## Summary
-- 2410 nodes · 8809 edges · 111 communities (92 shown, 19 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 157 edges (avg confidence: 0.85)
+- 2413 nodes · 8818 edges · 104 communities (83 shown, 21 thin omitted)
+- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 158 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `9f256bc5`
+- Built from commit: `a6877ec2`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -21,7 +21,7 @@
 - Container
 - Home/index.tsx
 - AiChat/index.function.ts
-- auth-action.ts
+- useIsTablet
 - Receipts/index.function.ts
 - alerts-action.ts
 - VoiceRecorder.tsx
@@ -32,15 +32,15 @@
 - iOS Widget Models
 - Container (2)
 - detail-action.ts
-- gmail-action.ts
+- Onboarding/index.function.ts
 - navigate
 - Dev Dependencies
 - Tabs.tsx
 - service.ts
-- FirstResults/index.tsx
-- navigate
 - YourSubscriptions/index.tsx
-- alerts-slice.ts
+- CustomButton
+- money.ts
+- VoiceRecorder.tsx
 - SubscriptionDetail/index.function.ts
 - types.ts
 - Settings/index.tsx
@@ -49,22 +49,22 @@
 - icons/index.ts
 - DetailSheets.tsx
 - Payments/index.tsx
-- Onboarding/index.function.ts
 - requestHandler
+- gmail-action.ts
 - useAppSelector
 - Release Blockers & Gaps
-- inbox-action.ts
-- endSession.ts
-- SIZES
+- AddOptions/index.tsx
+- @react-native-community/datetimepicker
+- AuthLayout/index.tsx
 - types.ts (4)
 - Profile/index.tsx
 - App.tsx
 - Community 68
-- Payments/index.tsx
+- HelpSupport/index.tsx
 - store.ts
-- MessageRow/index.tsx
+- glyph_icons.ts
 - ContactUs/index.function.ts
-- App.tsx
+- loop_parts.ts
 - Icons/index.tsx (2)
 - list.ts
 - RowView
@@ -75,47 +75,40 @@
 - Runtime Dependencies (2)
 - react-native
 - ListDialogs.tsx (3)
-- Calendar/index.tsx
+- Payments/index.tsx
 - http-provider.ts
 - theme.ts
 - history.ts
 - fonts
 - ReminderSettings/index.function.ts
-- Auth.test.tsx
+- react-native-device-info
 - platform_logos.ts
 - calendar.ts
-- outlook-login.test.ts
+- Auth.test.tsx
 - Home/index.function.ts
 - ConnectInbox/index.tsx
-- @reduxjs/toolkit
+- @react-native-documents/picker
 - types.ts (5)
 - Metro Config
 - status_colors.ts
 - goBack
-- react-native
+- History/index.tsx
 - AddOptions/index.tsx
 - SubscriptionDetail/index.tsx
 - QA run 2026-11-25: long scans, needs attention, usage bills, inbox slots
-- ai-consent.test.ts
+- @react-native-firebase/analytics
 - Community 78
-- SubscriptionDetail/index.tsx
 - types.ts (6)
-- ScanRecovery/index.tsx
-- constant-slice.ts
-- SubscriptionDetail/index.function.ts
-- GmailViews.tsx
+- Mascot
+- Splash.test.tsx
+- CustomText
 - widget_icons.ts
-- ReminderSettings/index.function.ts
 - logo_mark.ts
-- outlook-connect.test.ts
 - Canonical Doc Owners
 - payments-action.ts
 - WidgetBridge ObjC
 - receipt-file.ts
-- calendar-slice.ts
-- ai-draft.ts
 - Runtime Dependencies (4)
-- @react-native-firebase/app@26.4.0
 
 ## God Nodes (most connected - your core abstractions)
 1. `react-native` - 200 edges
@@ -130,10 +123,10 @@
 10. `CustomButton()` - 83 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `F26: Payments ignore refunded field [Fixed]` --references--> `statusLabel()`  [INFERRED]
-  qa/runs/2026-11-17-final-release-audit.md → src/utils/payments.ts
 - `F52: Keychain write failure silent at sign-in [Fixed]` --references--> `saveSessionToken()`  [INFERRED]
   qa/runs/2026-11-17-final-release-audit.md → src/utils/session-token.ts
+- `F26: Payments ignore refunded field [Fixed]` --references--> `statusLabel()`  [INFERRED]
+  qa/runs/2026-11-17-final-release-audit.md → src/utils/payments.ts
 - `F37: Onboarding connect path lacks disabled-account delete [Fixed]` --references--> `DisabledAccountDialog()`  [INFERRED]
   qa/runs/2026-11-17-final-release-audit.md → src/components/DisabledAccountDialog/index.tsx
 - `F78: Disabled-account flow shipped while Pending reapproval [Fixed/locked]` --references--> `DisabledAccountDialog()`  [EXTRACTED]
@@ -149,59 +142,59 @@
 - **Disabled-account deletion path** — qa_runs_2026_11_17_final_release_audit_f1, qa_runs_2026_11_17_final_release_audit_f5, qa_runs_2026_11_17_final_release_audit_f33, qa_runs_2026_11_17_final_release_audit_f36, qa_runs_2026_11_17_final_release_audit_f37, qa_runs_2026_11_17_final_release_audit_f55, qa_runs_2026_11_17_final_release_audit_f73, qa_runs_2026_11_17_final_release_audit_f78 [INFERRED 0.85]
 - **Store privacy disclosure consistency** — qa_runs_2026_11_17_final_release_audit_f2, qa_runs_2026_11_17_final_release_audit_f28, qa_runs_2026_11_17_final_release_audit_f29, qa_runs_2026_11_17_final_release_audit_f30, qa_runs_2026_11_17_final_release_audit_f31, qa_runs_2026_11_17_final_release_audit_f64 [INFERRED 0.85]
 
-## Communities (111 total, 19 thin omitted)
+## Communities (104 total, 21 thin omitted)
 
 ### Community 0 - "CustomText/index.tsx"
-Cohesion: 0.08
-Nodes (27): react, chevron_down_icon, option_check_icon, Props, styles, MAX_FONT_SCALE, Props, styles (+19 more)
+Cohesion: 0.07
+Nodes (28): react, react-native-safe-area-context, benefit_check_icon, Props, styles, MAX_FONT_SCALE, Props, styles (+20 more)
 
 ### Community 1 - "adapters.ts"
 Cohesion: 0.05
-Nodes (60): categories, CYCLES, dayLabel(), EVENT_TYPES, FORM_TO_BACKEND, fromReminder(), logo_urls, platformBySubscription (+52 more)
+Nodes (58): categories, CYCLES, dayLabel(), EVENT_TYPES, FORM_TO_BACKEND, fromCycle(), fromScanCandidate(), logo_urls (+50 more)
 
 ### Community 2 - "Container"
 Cohesion: 0.11
-Nodes (39): Container(), CurrencyTabs(), Header(), AnimatedPath, Face(), Mascot(), StateView(), SubscriptionCard() (+31 more)
+Nodes (46): Container(), Header(), AnimatedPath, Icons(), ImagePreview(), MenuGroup(), PriceChange(), StateView() (+38 more)
 
 ### Community 3 - "Home/index.tsx"
 Cohesion: 0.05
 Nodes (12): MainApplication, RenewlessWidgetModule, RenewlessWidgetPackage, RenewlessWidgetProvider, scripts, android, ios, lint (+4 more)
 
 ### Community 4 - "AiChat/index.function.ts"
-Cohesion: 0.14
-Nodes (23): focusedTab(), addAiDraft(), changeAiConsent(), consentBody(), sendAiMessage(), sendTurn(), startAiChat(), Attachment (+15 more)
+Cohesion: 0.11
+Nodes (23): focusedTab(), changeAiConsent(), consentBody(), sendAiMessage(), sendTurn(), startAiChat(), Attachment, ChatMessage (+15 more)
 
-### Community 5 - "auth-action.ts"
-Cohesion: 0.08
-Nodes (34): @invertase/react-native-apple-authentication@^2.5.1, @invertase/react-native-apple-authentication, ChallengeDto, SessionDto, DeleteProof, DisabledAccountDialog(), styles, changePassword() (+26 more)
+### Community 5 - "useIsTablet"
+Cohesion: 0.18
+Nodes (14): UndoToast(), styles, resendCode(), verifyCode(), restoreSubscription(), HistoryController, useHistory(), clock() (+6 more)
 
 ### Community 6 - "Receipts/index.function.ts"
-Cohesion: 0.29
-Nodes (9): toReceipt(), ReceiptDto, getAllReceipts(), getReceipts(), openFile(), openReceiptFile(), ReceiptFile, ReceiptItem (+1 more)
+Cohesion: 0.27
+Nodes (9): receiptDate(), toReceipt(), ReceiptDto, getAllReceipts(), getReceipts(), openFile(), ReceiptFile, ReceiptItem (+1 more)
 
 ### Community 7 - "alerts-action.ts"
-Cohesion: 0.14
-Nodes (13): fromReminderSettings(), knownEventType(), toAlert(), toReminderSettings(), AlertDto, flag(), getAlerts(), getAllAlerts() (+5 more)
+Cohesion: 0.13
+Nodes (20): react-native-permissions, fromReminderSettings(), toReminderSettings(), flag(), getAlerts(), getApplyCount(), getReminderSettings(), saveReminderSettings() (+12 more)
 
 ### Community 8 - "VoiceRecorder.tsx"
-Cohesion: 0.07
-Nodes (23): bin_danger_icon, bin_icon, chevron_up_icon, clock_accent_icon, clock_icon, close_small_icon, device_bell_icon, gear_accent_icon (+15 more)
+Cohesion: 0.12
+Nodes (15): clock_accent_icon, clock_icon, close_small_icon, device_bell_icon, gear_accent_icon, image_icon, mic_active_icon, mic_icon (+7 more)
 
 ### Community 9 - "CustomText/index.tsx"
-Cohesion: 0.12
-Nodes (16): benefit_check_icon, styles, Props, styles, Props, WAVE, Props, ROWS (+8 more)
+Cohesion: 0.14
+Nodes (14): external_icon, Props, Props, styles, styles, Props, WAVE, Props (+6 more)
 
 ### Community 10 - "SubscriptionFields/index.tsx"
-Cohesion: 0.15
-Nodes (28): Props, styles, SubscriptionFormRoute, useSubscriptionForm(), PlatformSuggestion, AMOUNT_ERROR, CATEGORIES, CYCLES (+20 more)
+Cohesion: 0.13
+Nodes (31): switch_off_icon, switch_on_icon, Props, styles, searchPlatforms(), SubscriptionFormRoute, useSubscriptionForm(), PlatformSuggestion (+23 more)
 
 ### Community 11 - "MainNavigator.tsx"
-Cohesion: 0.07
-Nodes (9): busyMessage(), LoaderModal(), UndoToast(), stack_options, AppStack, MainNavigator(), theme, navigationRef (+1 more)
+Cohesion: 0.06
+Nodes (12): bundledLogoKey(), busyMessage(), LoaderModal(), stack_options, AppStack, MainNavigator(), theme, trackScreen() (+4 more)
 
 ### Community 12 - "trackEvent"
-Cohesion: 0.09
-Nodes (20): openLegal(), logoutUser(), changeProductUpdates(), deleteAccount(), getProfileData(), getProfileOverview(), sendSupportMessage(), endSession() (+12 more)
+Cohesion: 0.20
+Nodes (12): changePassword(), logoutUser(), selectUser(), Fields, passwordErrors(), useChangePassword(), initials(), ProfileController (+4 more)
 
 ### Community 13 - "iOS Widget Models"
 Cohesion: 0.09
@@ -209,15 +202,15 @@ Nodes (20): Brand, .body, Color, dayString(), EventCopy, parseDay(), Provider, Q
 
 ### Community 14 - "Container (2)"
 Cohesion: 0.05
-Nodes (42): dependencies, axios@^1.21.1, @notifee/react-native@^9.1.8, react@19.2.3, react-native@0.87.1, react-native-app-auth@9.0.0, react-native-calendars@^1.1314.0, @react-native-community/datetimepicker@^9.2.2 (+34 more)
+Nodes (37): dependencies, @invertase/react-native-apple-authentication@^2.5.1, @notifee/react-native@^9.1.8, react@19.2.3, react-native@0.87.1, react-native-app-auth@9.0.0, react-native-calendars@^1.1314.0, react-native-config@^1.7.2 (+29 more)
 
 ### Community 15 - "detail-action.ts"
-Cohesion: 0.14
-Nodes (16): categoryId(), fromCycle(), hasCategories(), toSubscriptionBody(), createFromForm(), findPlatforms(), getDetailData(), getPlatformId() (+8 more)
+Cohesion: 0.09
+Nodes (34): categoryId(), fromReminder(), hasCategories(), toSubscriptionBody(), cancelSubscription(), createFromForm(), current(), deleteSubscription() (+26 more)
 
-### Community 16 - "gmail-action.ts"
+### Community 16 - "Onboarding/index.function.ts"
 Cohesion: 0.11
-Nodes (27): failedGmailScan(), fromGmailSelection(), Props, day(), getGmailInboxes(), getGmailScan(), MAX_INBOXES, saveReview() (+19 more)
+Nodes (19): openLegal(), PRIVACY_URL, TERMS_URL, DEEP_POLL_MS, DEEP_WAIT_MS, ONBOARDING_STEPS, PANEL_MOTION, Route (+11 more)
 
 ### Community 17 - "navigate"
 Cohesion: 0.07
@@ -232,120 +225,120 @@ Cohesion: 0.20
 Nodes (9): @react-navigation/bottom-tabs@^7.20.0, @react-navigation/bottom-tabs, ICONS, RAIL_ICONS, RailStack, styles, tab_icon(), Tabs() (+1 more)
 
 ### Community 20 - "service.ts"
-Cohesion: 0.17
-Nodes (21): @react-navigation/native-stack, goBack(), NavigateArgs, popTo(), RootParamList, TAB_NAMES, socialLogin(), useAppDispatch() (+13 more)
+Cohesion: 0.14
+Nodes (23): @react-navigation/native-stack, NavigateArgs, navigationRef, popTo(), RootParamList, TAB_NAMES, forgotPassword(), resetPassword() (+15 more)
 
-### Community 21 - "FirstResults/index.tsx"
-Cohesion: 0.08
-Nodes (19): Props, DiscoveringFooter(), Props, RiderBar(), StageRider(), STAGES, useTrickle(), RADAR_SIZE (+11 more)
+### Community 21 - "YourSubscriptions/index.tsx"
+Cohesion: 0.05
+Nodes (48): react-native-svg, Props, Props, Props, Props, ScanningFooter(), STAGES, styles (+40 more)
 
-### Community 22 - "navigate"
-Cohesion: 0.18
-Nodes (15): navigate(), getSupportMessages(), markSupportRead(), useHelpSupport(), useSupportMessage(), openMessage(), styles, ADMIN_SCREENS (+7 more)
+### Community 22 - "CustomButton"
+Cohesion: 0.15
+Nodes (29): AddChoiceLinks(), AddOptions(), AddSheet(), AppUpdate(), ChooseInboxSheet(), ConfirmDialog(), CustomButton(), DisabledAccountDialog() (+21 more)
 
-### Community 23 - "YourSubscriptions/index.tsx"
-Cohesion: 0.07
-Nodes (57): react-native-svg, TrialRows(), SubscriptionFields(), CandidateSheet(), CONFETTI_COLORS, PIECES, Props, ReadyConfetti() (+49 more)
+### Community 23 - "money.ts"
+Cohesion: 0.13
+Nodes (18): ScanCandidate, ScanCycle, CURRENCIES, CURRENCY_SEARCH, NO_DECIMALS, SIGN_PATTERN, SIGNS, SYMBOLS (+10 more)
 
-### Community 24 - "alerts-slice.ts"
-Cohesion: 0.40
-Nodes (4): alertsSlice, initial_state, Key, AlertsState
+### Community 24 - "VoiceRecorder.tsx"
+Cohesion: 0.12
+Nodes (13): bin_danger_icon, bin_icon, chevron_up_icon, lock_icon, record_mic_icon, record_pause_icon, send_icon, BlinkingMic() (+5 more)
 
 ### Community 25 - "SubscriptionDetail/index.function.ts"
-Cohesion: 0.37
-Nodes (12): detailView(), amountLabel(), daysBetween(), eventAmount(), eventCaption(), eventCardProps(), eventStatus(), eventTiming() (+4 more)
+Cohesion: 0.30
+Nodes (14): detailView(), relative(), amountLabel(), daysBetween(), eventAmount(), eventCaption(), eventCardProps(), eventStatus() (+6 more)
 
 ### Community 26 - "types.ts"
-Cohesion: 0.06
-Nodes (32): status_colors, initial_state, onboardingSlice, AuthIntent, AuthResponse, Billing, Cycle, DatedAmount (+24 more)
+Cohesion: 0.03
+Nodes (77): @reduxjs/toolkit, status_colors, alertsSlice, initial_state, Key, authSlice, initial_state, requests (+69 more)
 
 ### Community 27 - "Settings/index.tsx"
-Cohesion: 0.08
-Nodes (18): delete_tile_icon, eye_icon, eye_off_icon, help_icon, history_icon, logout_icon, mail_icon, payments_icon (+10 more)
+Cohesion: 0.12
+Nodes (14): delete_tile_icon, eye_icon, eye_off_icon, help_icon, history_icon, logout_icon, payments_icon, privacy_icon (+6 more)
 
 ### Community 28 - "InputField"
-Cohesion: 0.18
-Nodes (19): AuthDivider(), AuthFooterLink(), AuthLayout(), SocialButtons(), InputField(), Stack, ForgotPasswordScreen(), styles (+11 more)
+Cohesion: 0.21
+Nodes (17): AuthDivider(), AuthFooterLink(), AuthLayout(), SocialButtons(), InputField(), Stack, ForgotPasswordScreen(), styles (+9 more)
 
 ### Community 29 - "api_services/request-handler.ts"
 Cohesion: 0.07
-Nodes (61): get(), patch(), post(), applyReminderDefault(), cancelSubscription(), changePassword(), completeOnboarding(), createFromDraft() (+53 more)
+Nodes (62): get(), post(), put(), applyReminderDefault(), cancelSubscription(), changePassword(), completeOnboarding(), createFromDraft() (+54 more)
 
 ### Community 30 - "icons/index.ts"
-Cohesion: 0.11
-Nodes (25): arrow_right_icon, more_icon, plus_glyph_icon, LOOP_FACES, LOOP_OUTLINE, LOOP_OUTLINE_LENGTH, apple_icon, arrow_icon (+17 more)
+Cohesion: 0.12
+Nodes (25): apple_icon, arrow_icon, calendar_icon, check_dark_icon, check_icon, chevron_down_icon, close_icon, edit_icon (+17 more)
 
 ### Community 31 - "DetailSheets.tsx"
-Cohesion: 0.27
-Nodes (16): AppSheet(), DateField(), toDate(), toIso(), Dropdown(), PhoneInputField(), EditProfileScreen(), CancelSheet() (+8 more)
+Cohesion: 0.15
+Nodes (33): AppSheet(), DateField(), toDate(), toIso(), Dropdown(), PhoneInputField(), FieldError(), SubscriptionFields() (+25 more)
 
 ### Community 32 - "Payments/index.tsx"
-Cohesion: 0.27
-Nodes (16): getPayments(), EMPTY, usePayments(), PaymentRecord, alignedMonth(), cents(), defaultYear(), inPeriod() (+8 more)
+Cohesion: 0.21
+Nodes (20): getPayments(), EMPTY, PaymentsController, PaymentsRoute, usePayments(), MoneyTotal, PaymentRecord, alignedMonth() (+12 more)
 
-### Community 33 - "Onboarding/index.function.ts"
+### Community 33 - "requestHandler"
+Cohesion: 0.04
+Nodes (74): toInbox(), toProfile(), ChallengeDto, OutlookConnectDto, OutlookLoginDto, SessionDto, DeleteProof, resetRoot() (+66 more)
+
+### Community 34 - "gmail-action.ts"
 Cohesion: 0.07
-Nodes (41): fromScanCandidate(), isAuthExpired(), toInbox(), toProfile(), toScanStatus(), PRIVACY_URL, TERMS_URL, resetRoot() (+33 more)
-
-### Community 34 - "requestHandler"
-Cohesion: 0.08
-Nodes (29): toRecord(), getDashboard(), getHomeData(), createSubscription(), deleteSubscription(), flag(), getPlatformSubscriptions(), restoreSubscription() (+21 more)
+Nodes (37): failedGmailScan(), fromGmailSelection(), toRecord(), Props, addAiDraft(), getDashboard(), getHomeData(), createSubscription() (+29 more)
 
 ### Community 35 - "useAppSelector"
-Cohesion: 0.12
-Nodes (25): @react-navigation/native, AuthStack(), getCalendarMonth(), useAppSelector, CalendarController, CalendarRoute, EMPTY, PickerAnchor (+17 more)
+Cohesion: 0.09
+Nodes (38): @react-navigation/native, AuthStack(), navigate(), getPlatformSubscriptions(), openReceiptFile(), getSupportMessages(), useAppDispatch(), useAppSelector (+30 more)
 
 ### Community 36 - "Release Blockers & Gaps"
 Cohesion: 0.10
 Nodes (22): AGENTS.md working rules, API integration pattern (requestHandler, onDone), Attachment and document rules, Boxed icon rule, External reference project anonymity rule, Hook return rule, Letter spacing rule, Code naming conventions (+14 more)
 
-### Community 37 - "inbox-action.ts"
-Cohesion: 0.24
-Nodes (7): ConnectedInboxController, ConnectedInboxRoute, STATUS, useConnectedInbox(), formatDate(), isIsoDate(), syncLabel()
+### Community 37 - "AddOptions/index.tsx"
+Cohesion: 0.20
+Nodes (7): OPTIONS, Props, styles, Props, Props, PROVIDERS, styles
 
-### Community 38 - "endSession.ts"
-Cohesion: 0.09
-Nodes (7): dashboardSlice, initial_state, DashboardState, HomeSnapshot, clearWidgetSnapshot(), listenForWidgetUrls(), openWidgetUrl()
+### Community 38 - "@react-native-community/datetimepicker"
+Cohesion: 0.14
+Nodes (8): @react-native-community/datetimepicker@^9.2.2, react-native-confirmation-code-field@^9.0.0, react-native-nitro-modules@^0.36.5, engines, node, @react-native-community/datetimepicker, react-native-confirmation-code-field, react-native-nitro-modules
 
-### Community 39 - "SIZES"
-Cohesion: 0.09
-Nodes (17): react-native-safe-area-context, OUTLOOK_SOCIAL_ICON, Props, styles, Props, styles, styles, behavior (+9 more)
+### Community 39 - "AuthLayout/index.tsx"
+Cohesion: 0.22
+Nodes (5): OUTLOOK_SOCIAL_ICON, Props, styles, Props, styles
 
 ### Community 40 - "types.ts (4)"
 Cohesion: 0.11
 Nodes (20): B1 Play App Signing SHA-1 not registered, B2 Android RECORD_AUDIO permission, B3 decimal-comma amounts rejected, B4 Sign in with Apple token revoke on delete, B7 Microsoft client env on VM, M11 refunds never reverse payments, M14 500-subscription cap bypass, M16 Outlook sender verification (+12 more)
 
 ### Community 41 - "Profile/index.tsx"
-Cohesion: 0.13
-Nodes (6): MenuItem, Props, styles, PROVIDER_LABEL, syncDate(), styles
+Cohesion: 0.08
+Nodes (7): MenuItem, Props, styles, PROVIDER_LABEL, syncDate(), styles, styles
 
 ### Community 42 - "App.tsx"
-Cohesion: 0.19
-Nodes (11): @react-native-firebase/crashlytics@26.4.0, react-native-keychain@^11.0.0, react-native-mmkv@^4.3.2, @react-native-firebase/crashlytics, react-native-keychain, react-native-mmkv, app_storage, clearSessionToken() (+3 more)
+Cohesion: 0.09
+Nodes (17): App(), displayName, name, react-native-keychain@^11.0.0, react-native-mmkv@^4.3.2, react-redux@^9.3.0, react-native-keychain, react-native-mmkv (+9 more)
 
 ### Community 43 - "Community 68"
 Cohesion: 0.11
 Nodes (19): Checklist: AI chat 14 MB PDF slow connection, Checklist: Android permissions push/receipts, Checklist: comma decimals and Arabic digits, Checklist: demo account Gmail connector, Checklist: largest accessibility text size, Checklist: Play closed-test rule (not applicable), Checklist: Profile footer version, Checklist: tablet and Galaxy Fold (+11 more)
 
-### Community 44 - "Payments/index.tsx"
-Cohesion: 0.13
-Nodes (13): external_icon, Props, styles, NOTES, styles, EMPTY_COPY, EmptyKind, PaymentsController (+5 more)
+### Community 44 - "HelpSupport/index.tsx"
+Cohesion: 0.47
+Nodes (3): mail_icon, SUPPORT_QUESTIONS, styles
 
 ### Community 45 - "store.ts"
 Cohesion: 0.10
 Nodes (8): redux-persist@^6.0.0, redux-persist, mmkv, redux_storage, AppDispatch, constant_reducer, persisted_reducer, root_reducer
 
-### Community 46 - "MessageRow/index.tsx"
-Cohesion: 0.31
-Nodes (5): Props, styles, Props, styles, SUPPORT_STATUS_LABELS
+### Community 46 - "glyph_icons.ts"
+Cohesion: 0.50
+Nodes (3): arrow_right_icon, more_icon, plus_glyph_icon
 
 ### Community 47 - "ContactUs/index.function.ts"
-Cohesion: 0.31
-Nodes (7): TOPIC_OPTIONS, topicOf(), useContactUs(), SupportTopic, SUPPORT_MESSAGE_MAX, SUPPORT_MESSAGE_MIN, SUPPORT_TOPIC_LABELS
+Cohesion: 0.16
+Nodes (10): markSupportRead(), sendSupportMessage(), TOPIC_OPTIONS, topicOf(), useContactUs(), SupportInput, SupportTopic, SUPPORT_MESSAGE_MAX (+2 more)
 
-### Community 48 - "App.tsx"
-Cohesion: 0.19
-Nodes (9): App(), displayName, name, react-redux@^9.3.0, react-test-renderer@19.2.3, react-redux, react-test-renderer, persistor (+1 more)
+### Community 48 - "loop_parts.ts"
+Cohesion: 0.50
+Nodes (3): LOOP_FACES, LOOP_OUTLINE, LOOP_OUTLINE_LENGTH
 
 ### Community 49 - "Icons/index.tsx (2)"
 Cohesion: 0.18
@@ -356,20 +349,20 @@ Cohesion: 0.23
 Nodes (15): ListRoute, useList(), byName(), byNextEvent(), filterRecords(), groupCounts(), LIST_GROUPS, LIST_SORTS (+7 more)
 
 ### Community 51 - "RowView"
-Cohesion: 0.07
-Nodes (98): AddChoiceLinks(), AddOptions(), AddSheet(), AppUpdate(), ChooseInboxSheet(), ConfirmDialog(), CustomButton(), CustomText() (+90 more)
+Cohesion: 0.10
+Nodes (35): DialogCard(), LinkText(), RowView(), clock(), FileBubble(), LoopAuthor(), MessageItem(), ThinkingDots() (+27 more)
 
 ### Community 52 - "Calendar/index.function.ts"
 Cohesion: 0.15
 Nodes (20): Architecture and scaling risks: single e2-small VM, F11: No process-wide upload in-flight cap (memory) [Open], F12: No backend error tracking, uptime, budget alerts, backups [Open], F13: Deploy has no rollback on failed health [Open], F14: Home opens duplicate renewal scans (Gemini cost) [Open], F15: No global Gemini cap, short 429 backoff, no heartbeat [Open], F16: Sender domain from first @ allows forged authenticated mail [Open], F17: Outlook sign-in silently reconnects disconnected inbox [Open] (+12 more)
 
 ### Community 53 - "app-update-hook.test.tsx"
-Cohesion: 0.15
-Nodes (15): react-native-device-info@^15.0.2, react-native-device-info, toAppConfig(), useAppUpdate(), getAppConfig(), AppConfig, AppUpdate, appUpdateFor() (+7 more)
+Cohesion: 0.18
+Nodes (11): useAppUpdate(), AppConfig, AppUpdate, appUpdateFor(), compareVersions(), mockDispatch, mockGetAppConfig, openURL (+3 more)
 
 ### Community 54 - "logoKey"
-Cohesion: 0.17
-Nodes (20): categoryName(), failingRow(), jobStatus(), logoKey(), platformOf(), toAiReply(), toAttention(), toCalendarMonth() (+12 more)
+Cohesion: 0.13
+Nodes (27): categoryName(), failingRow(), jobStatus(), knownEventType(), logoKey(), platformOf(), toAlert(), toAttention() (+19 more)
 
 ### Community 56 - "Runtime Dependencies (2)"
 Cohesion: 0.15
@@ -379,57 +372,49 @@ Nodes (14): Apple store and compliance readiness, Device matrix (iOS and Android
 Cohesion: 0.15
 Nodes (3): Foundation, WidgetBridge, WidgetKit
 
-### Community 59 - "Calendar/index.tsx"
-Cohesion: 0.14
-Nodes (10): nav_next_icon, nav_prev_icon, Props, Props, styles, LEGEND, styles, Props (+2 more)
+### Community 59 - "Payments/index.tsx"
+Cohesion: 0.10
+Nodes (16): Props, styles, Props, styles, LEGEND, styles, Props, styles (+8 more)
 
 ### Community 60 - "http-provider.ts"
-Cohesion: 0.12
-Nodes (18): client, del(), newKey(), pending_keys, postLong(), put(), request(), upload() (+10 more)
+Cohesion: 0.10
+Nodes (21): axios@^1.21.1, axios, client, del(), newKey(), patch(), pending_keys, postLong() (+13 more)
 
 ### Community 61 - "theme.ts"
 Cohesion: 0.06
-Nodes (30): Props, styles, Props, styles, Props, styles, Props, styles (+22 more)
+Nodes (47): react-native, styles, styles, Props, styles, Props, styles, Props (+39 more)
 
 ### Community 62 - "history.ts"
-Cohesion: 0.16
-Nodes (10): SubscriptionRecord, filterHistory(), HISTORY_FILTERS, historyCardProps(), historyRecords(), HistoryStatus, lifecycleDate(), base (+2 more)
+Cohesion: 0.27
+Nodes (8): SubscriptionRecord, HISTORY_FILTERS, historyCardProps(), historyRecords(), HistoryStatus, lifecycleDate(), base, records
 
 ### Community 63 - "fonts"
-Cohesion: 0.09
-Nodes (24): chevron_right_icon, Props, styles, OPTIONS, Props, styles, Props, Props (+16 more)
+Cohesion: 0.08
+Nodes (27): chevron_right_icon, Props, styles, Props, styles, Props, Props, Props (+19 more)
 
 ### Community 64 - "ReminderSettings/index.function.ts"
 Cohesion: 0.18
-Nodes (20): SentAlert, ACCOUNT_REMINDER_ITEMS, accountDisplay(), accountValues(), alertMessage(), groupAlerts(), localDate(), nextAccountValues() (+12 more)
-
-### Community 65 - "Auth.test.tsx"
-Cohesion: 0.12
-Nodes (8): authSlice, initial_state, requests, AuthRequest, AuthState, DisabledAccount, mockBackend, Tree
+Nodes (18): SentAlert, ACCOUNT_REMINDER_ITEMS, accountValues(), alertMessage(), groupAlerts(), localDate(), nextAccountValues(), sentLabel() (+10 more)
 
 ### Community 66 - "platform_logos.ts"
-Cohesion: 0.17
-Nodes (11): bundledLogoKey(), duolingo_logo, figma_logo, gmail_logo, icloud_logo, netflix_logo, notion_logo, outlook_logo (+3 more)
+Cohesion: 0.18
+Nodes (10): duolingo_logo, figma_logo, gmail_logo, icloud_logo, netflix_logo, notion_logo, outlook_logo, platform_logos (+2 more)
 
 ### Community 67 - "calendar.ts"
-Cohesion: 0.23
-Nodes (9): HomeEvent, SubscriptionDetail, dayMarker(), monthTitle(), nearestEvent(), shiftMonth(), WEEKDAYS, record (+1 more)
+Cohesion: 0.20
+Nodes (11): Props, styles, THEME, HomeEvent, dayMarker(), monthTitle(), nearestEvent(), shiftMonth() (+3 more)
 
-### Community 68 - "outlook-login.test.ts"
-Cohesion: 0.10
-Nodes (17): ApiError, apiServices, busy(), grant, mockPost, actions, connector, grant (+9 more)
+### Community 68 - "Auth.test.tsx"
+Cohesion: 0.05
+Nodes (27): @react-native-firebase/crashlytics@26.4.0, @react-native-firebase/crashlytics, isAuthExpired(), toAppConfig(), ApiError, apiServices, getAppConfig(), getCalendarMonth() (+19 more)
 
 ### Community 69 - "Home/index.function.ts"
-Cohesion: 0.14
-Nodes (19): syncAiConsent(), registerPush(), savePushToken(), syncAccount(), connectInbox(), dismissBackgroundScan(), getDeepStatus(), getSyncLockedInbox() (+11 more)
+Cohesion: 0.11
+Nodes (24): syncAiConsent(), registerPush(), savePushToken(), dismissBackgroundScan(), getDeepStatus(), getSyncLockedInbox(), MAX_INBOXES, BACKGROUND_PROGRESS_MS (+16 more)
 
 ### Community 70 - "ConnectInbox/index.tsx"
-Cohesion: 0.12
-Nodes (9): Frame, Props, styles, PILL, styles, CONNECT_LABELS, Props, TRUST_ROWS (+1 more)
-
-### Community 71 - "@reduxjs/toolkit"
-Cohesion: 0.09
-Nodes (21): @reduxjs/toolkit@^2.13.0, @reduxjs/toolkit, detailSlice, initial_state, Key, inboxSlice, initial_state, Key (+13 more)
+Cohesion: 0.15
+Nodes (7): Frame, Props, styles, CONNECT_LABELS, Props, TRUST_ROWS, styles
 
 ### Community 72 - "types.ts (5)"
 Cohesion: 0.22
@@ -440,24 +425,20 @@ Cohesion: 0.25
 Nodes (9): Checklist: Payments refunds display, F10: M11 partly fixed: refunds for scan-imported services not applied [Open], F26: Payments ignore refunded field [Fixed], F27: Debug key trusted by production OAuth client (M32) [Not doing], F35: M5 partly fixed: forgot-code lockout renewable by one IP [Open], F42: Undo false SUBSCRIPTION_LIMIT, no retry/idempotency [Open], F6: REGRESSION of M14: 500 cap race under concurrency [Open], F9: M2 partly fixed: monthly 30-day reminders lost [Open] (+1 more)
 
 ### Community 75 - "goBack"
-Cohesion: 0.13
-Nodes (16): COUNTRIES, Country, countryFlag(), PREFERRED_FOR_DIAL, selectUser(), Fields, passwordErrors(), useChangePassword() (+8 more)
+Cohesion: 0.18
+Nodes (12): COUNTRIES, Country, countryFlag(), PREFERRED_FOR_DIAL, GENDER_OPTIONS, GENDER_VALUE, GenderOption, genderOption() (+4 more)
 
-### Community 76 - "react-native"
-Cohesion: 0.09
-Nodes (18): react-native, check_dark_icon, close_icon, Props, styles, Props, styles, styles (+10 more)
+### Community 76 - "History/index.tsx"
+Cohesion: 0.18
+Nodes (5): Props, styles, styles, ListController, styles
 
 ### Community 77 - "AddOptions/index.tsx"
 Cohesion: 0.29
 Nodes (6): FirebaseCore, React, react_native_app_auth, React_RCTAppDelegate, ReactAppDependencyProvider, UIKit
 
 ### Community 79 - "QA run 2026-11-25: long scans, needs attention, usage bills, inbox slots"
-Cohesion: 0.33
-Nodes (5): Backend bugs from the second pass, Bugs and gaps, QA run 2026-11-25: long scans, needs attention, usage bills, inbox slots, Second pass (same day, after the design revisions), Third pass (auto-advance and dismiss)
-
-### Community 80 - "ai-consent.test.ts"
 Cohesion: 0.29
-Nodes (4): getMe(), saveAiConsent(), mockGetMe, mockSaveAiConsent
+Nodes (6): Backend bugs from the second pass, Bugs and gaps, Fourth pass (usage bills in onboarding), QA run 2026-11-25: long scans, needs attention, usage bills, inbox slots, Second pass (same day, after the design revisions), Third pass (auto-advance and dismiss)
 
 ### Community 81 - "Community 78"
 Cohesion: 0.29
@@ -467,37 +448,25 @@ Nodes (5): config, defaults, { getDefaultConfig, mergeConfig }, @react-native/me
 Cohesion: 0.29
 Nodes (7): AI chat consent (App Store 5.1.2(i)), Cross-cutting checks (layout, a11y, network, security), Golden dataset of seeded receipts, AI chat suite, Auth and session suite, Widgets suite, Test suites (section 6)
 
-### Community 84 - "ScanRecovery/index.tsx"
-Cohesion: 0.15
-Nodes (14): accessCopy(), COPY, Kind, Props, RecoveryArt(), RecoveryBody(), RecoveryFooter(), ScanInterruptedArt() (+6 more)
+### Community 84 - "Mascot"
+Cohesion: 0.14
+Nodes (19): AnimatedPath, Face(), Mascot(), ScanningView(), ScanCard(), Empty(), DiscoveringBody(), RiderBar() (+11 more)
 
-### Community 85 - "constant-slice.ts"
-Cohesion: 0.16
-Nodes (9): replace(), constantSlice, initial_state, BRAND_MOTION, useSplash(), useSplashReveal(), ConstantState, mock_dispatch (+1 more)
+### Community 85 - "Splash.test.tsx"
+Cohesion: 0.39
+Nodes (6): replace(), BRAND_MOTION, useSplash(), useSplashReveal(), mock_dispatch, mock_replace
 
-### Community 86 - "SubscriptionDetail/index.function.ts"
-Cohesion: 0.20
-Nodes (14): cancelSubscription(), current(), resumeSubscription(), updateNotes(), updateReminder(), DetailController, DetailView, relative() (+6 more)
-
-### Community 87 - "GmailViews.tsx"
+### Community 87 - "CustomText"
 Cohesion: 0.10
-Nodes (38): PlatformLogo(), SizedBox(), ChangesSheet(), Field(), GmailSheets(), MatchSheet(), shortDay(), CandidateRow() (+30 more)
-
-### Community 89 - "ReminderSettings/index.function.ts"
-Cohesion: 0.29
-Nodes (10): react-native-permissions, getApplyCount(), getReminderSettings(), AlertsController, useAlerts(), useNotificationPermission(), Draft, ReminderSettingsController (+2 more)
-
-### Community 91 - "outlook-connect.test.ts"
-Cohesion: 0.20
-Nodes (9): INBOX_LIMIT_NOTICE, actions, connect(), connector, dispatch(), grant, mockOutlookConnect, mockOutlookSignIn (+1 more)
+Nodes (51): CurrencyTabs(), CustomText(), InfoTooltip(), OnboardingTitle(), PlatformLogo(), SpendRow(), SpendRows(), TrialRows() (+43 more)
 
 ### Community 92 - "Canonical Doc Owners"
 Cohesion: 0.40
 Nodes (4): exclude, extends, include, @react-native/typescript-config
 
 ### Community 94 - "payments-action.ts"
-Cohesion: 0.25
-Nodes (5): inboxSource(), toPayment(), toPriceChanges(), PaymentDto, getAllPayments()
+Cohesion: 0.29
+Nodes (4): inboxSource(), toPayment(), PaymentDto, getAllPayments()
 
 ### Community 95 - "WidgetBridge ObjC"
 Cohesion: 0.50
@@ -507,37 +476,25 @@ Nodes (4): README - Renewless mobile index and setup, Firebase Hosting site rene
 Cohesion: 0.29
 Nodes (6): react-native-blob-util@^1.1.1, @react-native-documents/viewer@^4.0.2, react-native-blob-util, @react-native-documents/viewer, cached, clearReceiptFiles()
 
-### Community 97 - "calendar-slice.ts"
-Cohesion: 0.40
-Nodes (4): calendarSlice, initial_state, CalendarMonth, CalendarState
-
-### Community 98 - "ai-draft.ts"
-Cohesion: 0.60
-Nodes (3): AiDraft, missingQuestion(), draft
-
-### Community 101 - "@react-native-firebase/app@26.4.0"
-Cohesion: 0.33
-Nodes (4): @react-native-firebase/app@26.4.0, react-native-screens@^4.29.0, @react-native-firebase/app, react-native-screens
-
 ## Knowledge Gaps
 - **61 isolated node(s):** `.stateKey`, `SwiftUI`, `Foundation`, `FirebaseCore`, `react_native_app_auth` (+56 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 629 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 630 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **21 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `react-native` connect `react-native` to `CustomText/index.tsx`, `AiChat/index.function.ts`, `auth-action.ts`, `VoiceRecorder.tsx`, `CustomText/index.tsx`, `SubscriptionFields/index.tsx`, `trackEvent`, `Container (2)`, `gmail-action.ts`, `navigate`, `Tabs.tsx`, `service.ts`, `FirstResults/index.tsx`, `navigate`, `YourSubscriptions/index.tsx`, `Settings/index.tsx`, `InputField`, `api_services/request-handler.ts`, `DetailSheets.tsx`, `Onboarding/index.function.ts`, `useAppSelector`, `endSession.ts`, `SIZES`, `Profile/index.tsx`, `Payments/index.tsx`, `MessageRow/index.tsx`, `App.tsx`, `app-update-hook.test.tsx`, `Calendar/index.tsx`, `theme.ts`, `fonts`, `Auth.test.tsx`, `outlook-login.test.ts`, `Home/index.function.ts`, `ConnectInbox/index.tsx`, `SubscriptionDetail/index.tsx`, `ScanRecovery/index.tsx`, `constant-slice.ts`, `SubscriptionDetail/index.function.ts`, `GmailViews.tsx`, `ReminderSettings/index.function.ts`?**
-  _High betweenness centrality (0.140) - this node is a cross-community bridge._
+- **Why does `react-native` connect `theme.ts` to `CustomText/index.tsx`, `AiChat/index.function.ts`, `useIsTablet`, `alerts-action.ts`, `CustomText/index.tsx`, `SubscriptionFields/index.tsx`, `MainNavigator.tsx`, `Container (2)`, `detail-action.ts`, `Onboarding/index.function.ts`, `navigate`, `Tabs.tsx`, `service.ts`, `YourSubscriptions/index.tsx`, `VoiceRecorder.tsx`, `InputField`, `DetailSheets.tsx`, `requestHandler`, `gmail-action.ts`, `useAppSelector`, `AddOptions/index.tsx`, `AuthLayout/index.tsx`, `Profile/index.tsx`, `App.tsx`, `HelpSupport/index.tsx`, `ContactUs/index.function.ts`, `app-update-hook.test.tsx`, `Payments/index.tsx`, `fonts`, `react-native-device-info`, `calendar.ts`, `Auth.test.tsx`, `Home/index.function.ts`, `ConnectInbox/index.tsx`, `History/index.tsx`, `Splash.test.tsx`?**
+  _High betweenness centrality (0.134) - this node is a cross-community bridge._
 - **What connects `.stateKey`, `SwiftUI`, `Foundation` to the rest of the system?**
   _61 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `CustomText/index.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.07624113475177305 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.06938775510204082 - nodes in this community are weakly interconnected._
 - **Why does `scripts` connect `Home/index.tsx` to `navigate`?**
-  _High betweenness centrality (0.137) - this node is a cross-community bridge._
+  _High betweenness centrality (0.118) - this node is a cross-community bridge._
 - **Should `adapters.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.052083333333333336 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.053939714436805924 - nodes in this community are weakly interconnected._
 - **Should `Container` be split into smaller, more focused modules?**
-  _Cohesion score 0.11470985155195682 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10531400966183575 - nodes in this community are weakly interconnected._
 - **Should `Home/index.tsx` be split into smaller, more focused modules?**
   _Cohesion score 0.05446853516657853 - nodes in this community are weakly interconnected._
