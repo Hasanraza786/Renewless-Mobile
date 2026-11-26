@@ -159,7 +159,7 @@ function ResumeSheet({ view, detail }: Props) {
 
   const save = () => {
     const next: typeof errors = {};
-    if (!isValidAmount(price, record.currency)) next.price = amountError(record.currency);
+    if (!isValidAmount(price, record.currency)) next.price = amountError(record.currency, price);
     if (!next_date) next.date = 'Choose the next renewal date.';
     setErrors(next);
     if (next.price || next.date) return;

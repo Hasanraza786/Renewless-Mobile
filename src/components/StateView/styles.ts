@@ -11,4 +11,15 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 0,
   },
+  // Home's error, centred in the visible space; the screen runs under the floating tab bar, so the bottom padding
+  // lifts the block clear of it.
+  failed: {
+    alignItems: 'center',
+    flex: 1,
+    justifyContent: 'center',
+    paddingBottom: SIZES.padding * 5,
+  },
+  retry: {
+    marginTop: SIZES.padding * 1.1,
+  },
 });

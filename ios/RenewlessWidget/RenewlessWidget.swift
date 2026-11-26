@@ -12,6 +12,8 @@ struct WidgetEvent: Codable {
   let currency: String
   let expected_charge: Bool
   let estimated: Bool
+  // The amount line formatted by the app's money formatter ("$1,200.00", "Auto-renew off"); nil in snapshots from older app versions.
+  var amount_text: String? = nil
 }
 
 struct WidgetSnapshot: Codable {
@@ -37,7 +39,7 @@ struct RenewlessEntry: TimelineEntry {
 }
 
 struct Provider: TimelineProvider {
-  static let sample = WidgetEvent(subscription_id: "", platform_id: "netflix", name: "Netflix", date: dayString(Date()), kind: "renewal", amount: "15.99", currency: "USD", expected_charge: true, estimated: false)
+  static let sample = WidgetEvent(subscription_id: "", platform_id: "netflix", name: "Netflix", date: dayString(Date()), kind: "renewal", amount: "15.99", currency: "USD", expected_charge: true, estimated: false, amount_text: "$15.99")
 
   func placeholder(in context: Context) -> RenewlessEntry { RenewlessEntry(date: Date(), event: Provider.sample) }
 
@@ -115,7 +117,7 @@ struct EventCopy {
     eyebrow = trial ? "TRIAL ENDING" : days == 0 ? "DUE TODAY" : "NEXT RENEWAL"
     accent = trial ? .trialBlue : days == 0 ? .coral : .mint
     let price = Double(event.amount)
-    amount = !event.expected_charge ? "Auto-renew off" : price.map { "\(event.currency) \(String(format: "%.2f", $0))" } ?? "Amount not set"
+    amount = event.amount_text ?? (!event.expected_charge ? "Auto-renew off" : price.map { "\(event.currency) \(String(format: "%.2f", $0))" } ?? "Amount not set")
     let when = days == 0 ? "Today" : days == 1 ? "Tomorrow" : "In \(days) days"
     let full = DateFormatter()
     full.locale = Locale(identifier: "en_GB")

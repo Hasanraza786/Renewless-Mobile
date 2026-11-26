@@ -108,7 +108,7 @@ export function detailView({ record, today, receipts, receipt_emails, annual_est
     receipt_emails: receipt_emails.count && receipt_emails.latest ? { title: `Receipts · ${receipt_emails.count}`, caption: `Latest ${dateLabel(receipt_emails.latest)} · from your inbox` } : { title: 'Receipts', caption: 'No receipts yet' },
     source: record.source.kind === 'gmail'
       ? { title: 'Scanned inbox', badge: `Found in ${INBOX_BRAND[record.source.provider].name}`, caption: record.inbox?.disconnected ? 'The inbox this subscription was found in. It is now disconnected.' : 'The connected inbox this subscription was found in.' }
-      : { title: 'Added under', badge: 'Added manually', caption: 'Your Renewless account when this subscription was added.' },
+      : { title: 'Added under', badge: record.source.kind === 'ai' ? 'Added with AI' : 'Added manually', caption: 'Your Renewless account when this subscription was added.' },
     related: related_count ? `${related_count} other subscription${related_count === 1 ? '' : 's'}` : null,
     related_count,
     account_reminder_days,

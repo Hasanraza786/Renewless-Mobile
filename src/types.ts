@@ -209,8 +209,8 @@ export type SubscriptionRecord = {
   cancelled_on: string | null;
   access_until: string | null;
   start_date: string | null;
-  // kind gmail = imported from a connected inbox; provider names that inbox's mail service.
-  source: { kind: 'manual' | 'gmail'; email: string; provider: InboxProvider };
+  // kind gmail = imported from a connected inbox; provider names that inbox's mail service. ai = saved from an AI chat draft.
+  source: { kind: 'manual' | 'ai' | 'gmail'; email: string; provider: InboxProvider };
   // disconnected: the inbox was disconnected; the source still names it (Profile contract).
   inbox: { email: string; last_sync: string; disconnected?: boolean } | null;
   reminder: ReminderPreference;

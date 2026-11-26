@@ -148,6 +148,7 @@ test('an inbox import reads as an inbox record whether the backend stores gmail 
   const outlook = toRecord({ ...base, source: { type: 'outlook', email: 'a@outlook.com', connector: null } } as unknown as DetailDto);
   expect(outlook.source).toEqual({ kind: 'gmail', email: 'a@outlook.com', provider: 'outlook' });
   expect(toRecord({ ...base, source: { type: 'manual', email: '', connector: null } } as unknown as DetailDto).source.kind).toBe('manual');
+  expect(toRecord({ ...base, source: { type: 'ai', email: 'a@b.com', connector: null } } as unknown as DetailDto).source.kind).toBe('ai');
 });
 
 test('a usage record has no price or annual equivalent; Detail keeps its currency and last bills', () => {

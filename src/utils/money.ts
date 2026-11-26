@@ -18,10 +18,13 @@ export const formatAmount = (currency: string, amount: string | number) => Numbe
 export const amountKeyboard = (currency: string) => (minorDigits(currency) === 0 ? 'number-pad' : 'decimal-pad');
 export const amountPlaceholder = (currency: string) => formatAmount(currency, 0);
 
-// "$17.99", "Rs 1500", "<riyal> 49.00", "<dirham> 49.00": the amount in the currency's decimals. Text that isn't a
-// number is shown as given.
+// "1200.00" → "1,200.00": thousands separators on the whole part, display only (formatAmount stays plain for inputs and requests).
+const grouped = (text: string) => text.replace(/^-?\d+/, whole => whole.replace(/\B(?=(\d{3})+$)/g, ','));
+
+// The one money formatter for the app and the widgets: "$1,200.00", "Rs 1,550", "<riyal> 49.00", "<dirham> 49.00", in
+// the currency's decimals. Text that isn't a number is shown as given.
 export function money(currency: string, amount: string | number) {
-  const value = amount === '' || !Number.isFinite(Number(amount)) ? amount : formatAmount(currency, amount);
+  const value = amount === '' || !Number.isFinite(Number(amount)) ? amount : grouped(formatAmount(currency, amount));
   return `${SYMBOLS[currency] ?? `${currency} `}${value}`;
 }
 

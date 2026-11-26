@@ -93,7 +93,7 @@ function EditSheet({ onboarding }: Props) {
                 value={price_text}
                 onChangeText={setPriceText}
                 keyboardType={amountKeyboard(draft.currency)}
-                error={draft && price_text && !isValidAmount(price_text, draft.currency) ? amountError(draft.currency) : onboarding.edit_error || undefined}
+                error={draft && price_text && !isValidAmount(price_text, draft.currency) ? amountError(draft.currency, price_text) : onboarding.edit_error || undefined}
               />
             </View>
             <View style={styles.currency}>

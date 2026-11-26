@@ -57,6 +57,11 @@ const onboardingSlice = createSlice({
         state.selected_ids = action.payload.candidates.filter(item => item.selected).map(item => item.id);
       }
     },
+    // Try again: Discovering must not see the old failure while the new start request is still out.
+    restartScan(state) {
+      state.scan_status = 'running';
+      state.scan_failure = '';
+    },
     setScanFailed(state, action: PayloadAction<ScanFailure>) {
       state.scan_status = 'failed';
       state.scan_failure = action.payload;
@@ -92,6 +97,7 @@ export const {
   setScanJob,
   setScanStatus,
   setScanFailed,
+  restartScan,
   toggleCandidate,
   updateCandidate,
   addSaved,

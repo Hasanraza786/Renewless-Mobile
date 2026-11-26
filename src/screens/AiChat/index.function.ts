@@ -8,6 +8,7 @@ import { PERMISSIONS, RESULTS, request } from 'react-native-permissions';
 import { focusedTab, goBack, navigate } from '../../navigation/service';
 import { PRIVACY_URL, openLegal } from '../../config/legal';
 import { addAiDraft, changeAiConsent, sendAiMessage, startAiChat } from '../../redux/actions/ai-action';
+import { getSubscriptions } from '../../redux/actions/list-action';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AiInput, AiReply, AiUsage, ChatDraft } from '../../types';
 import { missingQuestion } from '../../utils/ai-draft';
@@ -48,6 +49,7 @@ export default function useAiChat() {
   const dispatch = useAppDispatch();
   // Nothing is sent to Google Gemini until the user agrees (App Store 5.1.2(i)); Settings can withdraw it.
   const ai_consent = useAppSelector(state => state.constant.ai_consent);
+  const list_records = useAppSelector(state => state.list.records);
   const [messages, setMessages] = useState<ChatMessage[]>([{ id: messageId(), role: 'loop', input: null, text: OPENING, failed: false }]);
   const [conversation_id, setConversationId] = useState('');
   const [draft, setDraft] = useState<ChatDraft | null>(null);
@@ -105,7 +107,11 @@ export default function useAiChat() {
   const can_send = !!conversation_id && !busy && !has_failed && !limit_reached && (text.trim().length > 0 || !!attachment);
   // The server decides when every required field is known; the question names the first gap it can see.
   const missing = draft && !draft.ready ? missingQuestion(draft) : null;
-  const draft_status = added_id ? 'Added to your subscriptions' : saving ? 'Adding…' : thinking ? 'Updating details…' : !draft?.ready ? 'A few details to finish' : 'Ready to add';
+  // The added record as saved now, so the card follows later edits, a cancel or a removal; undefined while List isn't loaded.
+  const saved = added_id && list_records ? (list_records.find(item => item.id === added_id) ?? null) : undefined;
+  const saved_record = saved ?? null;
+  const removed = saved === null;
+  const draft_status = removed ? 'Removed from your subscriptions' : saved_record?.status === 'cancelled' ? 'Cancelled' : added_id ? 'Added to your subscriptions' : saving ? 'Adding…' : thinking ? 'Updating details…' : !draft?.ready ? 'A few details to finish' : 'Ready to add';
   const can_add = !!draft?.ready && !busy && !has_failed && !added_id;
   const show_draft = !!draft?.name;
   const added = !!added_id;
@@ -161,6 +167,8 @@ export default function useAiChat() {
   const onAdded = (id: string) => {
     if (!mounted.current) return;
     setAddedId(id);
+    // The card reads the saved record from List; a list never loaded is read once.
+    if (!list_records) dispatch(getSubscriptions());
     navigate('SubscriptionDetail', { id });
   };
 
@@ -408,6 +416,8 @@ export default function useAiChat() {
     draft_status,
     missing,
     added,
+    saved_record,
+    removed,
     text,
     thinking,
     saving,

@@ -8,13 +8,12 @@ import AddSheet from '../../components/AddSheet';
 import ChooseInboxSheet from '../../components/ChooseInboxSheet';
 import InboxProviders from '../../components/InboxProviders';
 import Container from '../../components/Container';
-import CustomButton from '../../components/CustomButton';
 import CustomText from '../../components/CustomText';
 import Header from '../../components/Header';
 import Icons from '../../components/Icons';
-import Mascot from '../../components/Mascot';
 import RowView from '../../components/RowView';
 import SizedBox from '../../components/SizedBox';
+import StateView from '../../components/StateView';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import AddWidget from './components/AddWidget';
 import Forecast from './components/Forecast';
@@ -39,11 +38,7 @@ export default function HomeScreen({ route }: { route: HomeRoute }) {
           <HomeSkeleton reduce_motion={home.reduce_motion} />
         </ScrollView>
       ) : status === 'failed' ? (
-        <View style={styles.failed}>
-          <Mascot expression="sad" size={SIZES.padding * 5.75} label="Loop" draw={!home.reduce_motion} />
-          <CustomText text={home.error} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
-          <CustomButton variant="primary" text="Try again" onPress={home.retry} style={styles.empty_primary} />
-        </View>
+        <StateView status="failed" centered message={home.error} onRetry={home.retry} />
       ) : data && !data.has_subscriptions ? (
         // Inbox hero (Outlook inboxes, locked 16 Nov 2026): Continue with Gmail / Outlook lead in the onboarding style, then
         // Add with AI · Add manually. When the connected inbox can't sync yet: the sync date and the add options.

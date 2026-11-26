@@ -175,7 +175,7 @@ export function toRecord(item: SummaryDto | DetailDto): SubscriptionRecord {
     cancelled_on: item.cancelledAt,
     access_until: item.accessUntil ?? item.expiredAt,
     start_date: start,
-    source: { kind: inboxSource(detail?.source.type) ? 'gmail' : 'manual', email: detail?.source.email ?? '', provider: detail?.source.connector?.provider ?? (detail?.source.type === 'outlook' ? 'outlook' : 'gmail') },
+    source: { kind: inboxSource(detail?.source.type) ? 'gmail' : detail?.source.type === 'ai' ? 'ai' : 'manual', email: detail?.source.email ?? '', provider: detail?.source.connector?.provider ?? (detail?.source.type === 'outlook' ? 'outlook' : 'gmail') },
     inbox: connector ? { email: connector.email, last_sync: connector.lastSuccessfulSyncAt ?? '', disconnected: connector.status === 'disconnected' } : null,
     reminder: detail ? toReminder(detail.reminder) : { mode: 'default' },
     notes: detail?.note ?? null,

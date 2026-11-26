@@ -3,7 +3,7 @@ import { amountError, isValidAmount } from '../src/utils/subscription-form';
 
 test('UI shows symbols, unknown currencies keep their code', () => {
   expect(money('USD', '17.99')).toBe('$17.99');
-  expect(money('PKR', '1500')).toBe('Rs 1500');
+  expect(money('PKR', '1500')).toBe('Rs 1,500');
   expect(money('SAR', '49.00')).toBe('\uE900 49.00');
   expect(money('AED', '49.00')).toBe('\uE901 49.00');
   expect(money('CHF', '9.00')).toBe('CHF 9.00');
@@ -22,11 +22,20 @@ test('the currency picker lists the common seven first', () => {
 
 test('amounts use the decimals of their currency, like the backend: USD 2, PKR and JPY 0, KWD 3', () => {
   expect(money('USD', 11.5)).toBe('$11.50');
-  expect(money('PKR', '1500.00')).toBe('Rs 1500');
+  expect(money('PKR', '1500.00')).toBe('Rs 1,500');
   expect(money('JPY', 980)).toBe('JPY 980');
   expect(formatAmount('KWD', '4.5')).toBe('4.500');
   // Text that isn't a number is shown as given.
   expect(money('USD', '')).toBe('$');
+});
+
+test('money groups thousands; formatAmount (inputs and requests) stays plain', () => {
+  expect(money('USD', 1200)).toBe('$1,200.00');
+  expect(money('PKR', '1550')).toBe('Rs 1,550');
+  expect(money('USD', '999.99')).toBe('$999.99');
+  expect(money('USD', 1234567.5)).toBe('$1,234,567.50');
+  expect(money('KWD', 12345.6)).toBe('KWD 12,345.600');
+  expect(formatAmount('USD', 1200)).toBe('1200.00');
 });
 
 test('the amount rule follows the currency and never rounds', () => {
@@ -38,6 +47,9 @@ test('the amount rule follows the currency and never rounds', () => {
   expect(amountError('PKR')).toBe('PKR amounts have no decimals. Enter a whole amount.');
   expect(isValidAmount('4.125', 'KWD')).toBe(true);
   expect(isValidAmount('0', 'USD')).toBe(false);
+  expect(isValidAmount('999999999.99', 'USD')).toBe(true);
+  expect(isValidAmount('1000000000', 'USD')).toBe(false);
+  expect(amountError('USD', '1000000000')).toBe('Enter an amount up to 999,999,999.');
 });
 
 test('whole-number currencies get a keyboard without a decimal point', () => {

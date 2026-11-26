@@ -17,17 +17,23 @@ export function widgetEvent(home: HomeSnapshot): { event: HomeEvent | null; more
   return { event, more: event ? Math.max(0, same_day.length - 1) : 0 };
 }
 
+// The widget's amount line in the app's money format ("$1,200.00"); the native widgets show it as given.
+// The riyal and dirham signs are spelled as codes: the widgets have no symbol font.
+export function widgetAmount(event: HomeEvent) {
+  const price = Number(event.amount);
+  return !event.expected_charge ? 'Auto-renew off' : event.amount !== '' && Number.isFinite(price) ? spokenMoney(money(event.currency, price)) : 'Amount not set';
+}
+
 // Small widget wording, shared with the native widget (ios/RenewlessWidget).
 export function widgetCopy(event: HomeEvent, today: string) {
   const days = Math.round((Date.parse(`${event.date}T00:00:00Z`) - Date.parse(`${today}T00:00:00Z`)) / 86400000);
   const trial = event.kind === 'trial_end';
-  const price = Number(event.amount);
   const [year, month, day] = event.date.split('-').map(Number);
   const short_date = new Date(year, month - 1, day).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
   return {
     tone: trial ? ('trial' as const) : days === 0 ? ('today' as const) : ('renewal' as const),
     eyebrow: trial ? 'TRIAL ENDING' : days === 0 ? 'DUE TODAY' : 'NEXT RENEWAL',
-    amount: !event.expected_charge ? 'Auto-renew off' : event.amount !== '' && Number.isFinite(price) ? spokenMoney(money(event.currency, price)) : 'Amount not set',
+    amount: widgetAmount(event),
     line: `${days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `In ${days} days`} · ${short_date}`,
   };
 }
@@ -43,6 +49,7 @@ export function saveWidgetSnapshot(home: HomeSnapshot) {
     kind: next.kind,
     amount: next.amount,
     currency: next.currency,
+    amount_text: widgetAmount(next),
     expected_charge: next.expected_charge,
     estimated: next.estimated,
   };

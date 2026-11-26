@@ -79,7 +79,8 @@ export default function PaymentChart({ currency, year, months, inspect, page_sta
               <View style={[styles.track, active && styles.track_active]}>
                 <View style={[styles.fill, { height }, active && styles.fill_active]} />
               </View>
-              <CustomText text={MONTH_NAMES[index].slice(0, 3)} weight={FONTS.regular} color={active ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} />
+              {/* The label spans the column, so a short Android measure or a large text size can't cut "Jul" to "Ju"; it shrinks instead. */}
+              <CustomText text={MONTH_NAMES[index].slice(0, 3)} weight={FONTS.regular} color={active ? COLORS.primary : COLORS.text_secondary} size={SIZES.sm} align="center" number_of_lines={1} fit_width style={styles.month} />
             </Pressable>
           );
         })}
@@ -122,6 +123,9 @@ const styles = StyleSheet.create({
   column_active: {
     backgroundColor: COLORS.accent_glow,
     borderColor: COLORS.accent_ring,
+  },
+  month: {
+    alignSelf: 'stretch',
   },
   track: {
     alignItems: 'center',

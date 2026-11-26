@@ -196,7 +196,9 @@ function Cell({ label, value, full }: { label: string; value: string; full?: boo
 
 // The one current draft: identity and status, amount, the populated fields, and Add subscription.
 export function DraftCard({ chat, draft }: Props & { draft: AiDraft }) {
-  const status_color = chat.added || !chat.missing ? COLORS.primary : COLORS.renewing_soon;
+  const status_color = chat.removed ? COLORS.text_secondary : chat.added || !chat.missing ? COLORS.primary : COLORS.renewing_soon;
+  // Once added, the amount follows the saved record (edited later in Detail, for example).
+  const price = chat.saved_record ? { amount: chat.saved_record.price, currency: chat.saved_record.currency, cycle: chat.saved_record.cycle } : { amount: draft.price, currency: draft.currency, cycle: draft.cycle };
   const cells: { label: string; value: string; full?: boolean }[] = [];
   if (draft.trial) cells.push({ label: 'Trial ends', value: draft.trial.end_date ? dateLabel(draft.trial.end_date) : 'Needs confirmation' });
   else cells.push({ label: 'Next renewal', value: draft.next_date ? dateLabel(draft.next_date) : 'Needs confirmation' });
@@ -214,8 +216,8 @@ export function DraftCard({ chat, draft }: Props & { draft: AiDraft }) {
           <CustomText mt={SIZES.padding / 4} text={chat.draft_status} weight={FONTS.regular} color={status_color} size={SIZES.sm} />
         </View>
         <View style={styles.draft_price}>
-          <CustomText text={draft.price && draft.currency ? money(draft.currency, draft.price) : 'Amount needed'} weight={FONTS.medium} size={SIZES.lg} letter_spacing={-0.5} />
-          <CustomText mt={SIZES.padding / 4} text={`${draft.trial ? 'After trial · ' : ''}${draft.cycle ?? 'Cycle needed'}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+          <CustomText text={price.amount && price.currency ? money(price.currency, price.amount) : 'Amount needed'} weight={FONTS.medium} size={SIZES.lg} letter_spacing={-0.5} />
+          <CustomText mt={SIZES.padding / 4} text={`${draft.trial ? 'After trial · ' : ''}${price.cycle ?? 'Cycle needed'}`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </View>
       </RowView>
       <View style={styles.draft_grid}>
@@ -223,7 +225,7 @@ export function DraftCard({ chat, draft }: Props & { draft: AiDraft }) {
           <Cell key={cell.label} {...cell} />
         ))}
       </View>
-      {chat.added ? (
+      {chat.removed ? null : chat.added ? (
         <CustomButton variant="secondary" text="View subscription" onPress={chat.viewAdded} style={styles.draft_button} />
       ) : (
         <CustomButton variant="primary" text={chat.saving ? 'Adding…' : 'Add subscription'} busy={chat.saving} disabled={!chat.can_add} onPress={chat.add} style={styles.draft_button} />

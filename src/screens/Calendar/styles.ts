@@ -5,7 +5,9 @@ export const styles = StyleSheet.create({
   main_view: {
     paddingHorizontal: SIZES.padding,
   },
+  // flexGrow: a failed load centres the error in the space under the month row.
   content: {
+    flexGrow: 1,
     paddingBottom: SIZES.padding,
   },
   nav: {

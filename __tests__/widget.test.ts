@@ -1,5 +1,6 @@
 import { navigate } from '../src/navigation/service';
-import { openWidgetUrl } from '../src/utils/widget';
+import type { HomeEvent } from '../src/types';
+import { openWidgetUrl, widgetAmount } from '../src/utils/widget';
 
 jest.mock('../src/navigation/service', () => ({ navigate: jest.fn() }));
 
@@ -21,4 +22,12 @@ describe('widget links', () => {
     openWidgetUrl(null, true);
     expect(navigate).not.toHaveBeenCalled();
   });
+});
+
+test('the widget gets the amount in the app money format', () => {
+  const event = { amount: '1200', currency: 'USD', expected_charge: true } as HomeEvent;
+  expect(widgetAmount(event)).toBe('$1,200.00');
+  expect(widgetAmount({ ...event, currency: 'SAR' })).toBe('SAR 1,200.00');
+  expect(widgetAmount({ ...event, expected_charge: false })).toBe('Auto-renew off');
+  expect(widgetAmount({ ...event, amount: '' })).toBe('Amount not set');
 });

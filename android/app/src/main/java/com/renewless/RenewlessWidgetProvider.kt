@@ -101,7 +101,9 @@ class RenewlessWidgetProvider : AppWidgetProvider() {
       val trial = event.optString("kind") == "trial_end"
       val accent = if (trial) TRIAL_BLUE else if (days == 0L) CORAL else MINT
       val price = event.optString("amount").toDoubleOrNull()
+      // The app sends the amount already formatted ("$1,200.00"); snapshots from older app versions have none.
       val amount = when {
+        event.optString("amount_text").isNotEmpty() -> event.optString("amount_text")
         !event.optBoolean("expected_charge", true) -> "Auto-renew off"
         price != null -> "${event.optString("currency")} ${String.format(Locale.US, "%.2f", price)}"
         else -> "Amount not set"

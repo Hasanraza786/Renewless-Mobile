@@ -30,16 +30,17 @@ export type SubscriptionDraft = {
 // Edit keeps an exact trial end (from Gmail/AI) until the start or duration changes.
 export type TrialOrigin = { start_date: string; days: number; end_date: string } | null;
 
-// One amount rule for every form and review sheet, the server's: up to 12 whole digits, above zero, and no more
+// One amount rule for every form and review sheet, the server's: up to 9 whole digits (999,999,999), above zero, and no more
 // decimals than the currency uses (USD 2, PKR 0, KWD 3; trailing zeros are fine). "1e3" or "12.345" are refused, never
 // converted or rounded.
 export const AMOUNT_ERROR = 'Enter a valid amount greater than 0 (up to 2 decimals).';
 export function isValidAmount(text: string, currency = 'USD') {
-  const match = /^(\d{1,12})(?:\.(\d+))?$/.exec(text.trim());
+  const match = /^(\d{1,9})(?:\.(\d+))?$/.exec(text.trim());
   return !!match && (match[2] ?? '').replace(/0+$/, '').length <= minorDigits(currency) && Number(text) > 0;
 }
 // The message for a refused amount; a whole-number currency says so, in the server's words.
-export function amountError(currency: string) {
+export function amountError(currency: string, text = '') {
+  if (/^\d{10,}(\.\d*)?$/.test(text.trim())) return 'Enter an amount up to 999,999,999.';
   const digits = minorDigits(currency);
   return digits === 0 ? `${currency} amounts have no decimals. Enter a whole amount.` : digits === 3 ? 'Enter a valid amount greater than 0 (up to 3 decimals).' : AMOUNT_ERROR;
 }
@@ -102,7 +103,7 @@ export function validateDraft(draft: SubscriptionDraft, record: SubscriptionReco
   if (!draft.name.trim()) errors.name = 'Enter a platform or service name.';
   else if (draft.name.trim().length > 100) errors.name = 'Use 100 characters or fewer.';
   if (!draft.price.trim()) errors.price = 'Enter the subscription amount.';
-  else if (!isValidAmount(draft.price, draft.currency)) errors.price = amountError(draft.currency);
+  else if (!isValidAmount(draft.price, draft.currency)) errors.price = amountError(draft.currency, draft.price);
   if (draft.trial === 'Custom') {
     if (!draft.custom_days.trim()) errors.custom_days = 'Enter your trial duration.';
     else if (Number.isNaN(trialDays(draft))) errors.custom_days = 'Enter a whole number from 1 to 365.';

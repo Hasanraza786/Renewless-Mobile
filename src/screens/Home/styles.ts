@@ -100,21 +100,10 @@ export const styles = StyleSheet.create({
     marginTop: SIZES.padding / 2,
     paddingTop: SIZES.padding / 2,
   },
-  // Error: sad Loop, message and retry centred in the visible space; the screen runs under the floating
-  // tab bar, so the bottom padding lifts the block clear of it.
-  failed: {
-    alignItems: 'center',
-    flex: 1,
-    justifyContent: 'center',
-    paddingBottom: SIZES.padding * 5,
-  },
   // Empty
   empty: {
     paddingBottom: SIZES.padding * 5,
     paddingTop: SIZES.padding * 1.1,
-  },
-  empty_primary: {
-    marginTop: SIZES.padding * 1.1,
   },
   empty_providers: {
     alignSelf: 'stretch',

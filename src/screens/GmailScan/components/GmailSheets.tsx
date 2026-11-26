@@ -46,7 +46,7 @@ function CandidateSheet({ gmail, item }: Props & { item: GmailCandidate }) {
 
   const keep = () => {
     const next = {
-      price: isValidAmount(price, item.currency) ? undefined : amountError(item.currency),
+      price: isValidAmount(price, item.currency) ? undefined : amountError(item.currency, price),
       date: (value.trial ? start_date : next_date) ? undefined : 'Choose a valid date.',
     };
     setErrors(next);

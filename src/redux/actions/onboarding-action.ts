@@ -7,6 +7,7 @@ import { trackEvent } from '../../utils/analytics';
 import { requestHandler, type AppThunk } from '../request-handler';
 import {
   addSaved,
+  restartScan,
   setConnectLoading,
   setConnectMessage,
   setInboxConnector,
@@ -225,6 +226,7 @@ export function retryOnboardingScan(connector_id: string, job_id: string, onSync
       dispatch(setScanJob(job_id));
       return;
     }
+    dispatch(restartScan());
     await dispatch(startOnboardingScan(connector_id, onSyncLimit));
   };
 }
