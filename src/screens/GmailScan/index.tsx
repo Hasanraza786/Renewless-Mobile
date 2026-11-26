@@ -30,7 +30,7 @@ export default function GmailScanScreen({ route }: { route: GmailScanRoute }) {
       <ScrollView key={gmail.phase} showsVerticalScrollIndicator={false} style={split && onboarding_styles.split_scroll} contentContainerStyle={[onboarding_styles.scroll, fitted && onboarding_styles.scroll_fitted]}>
         {gmail.phase === 'scanning' ? <ScanningView gmail={gmail} /> : gmail.phase === 'review' ? <ReviewView gmail={gmail} /> : <RecoveryView gmail={gmail} />}
       </ScrollView>
-      <View style={!fitted && onboarding_styles.footer_divider}>
+      <View style={!fitted && !split && onboarding_styles.footer_divider}>
         <View style={gmail.is_tablet && !fitted && styles.footer_readable}>
           {gmail.phase === 'scanning' ? <ScanningFooter gmail={gmail} /> : gmail.phase === 'review' ? <ReviewFooter gmail={gmail} /> : <RecoveryFooter gmail={gmail} />}
         </View>

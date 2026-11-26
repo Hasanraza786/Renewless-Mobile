@@ -1,17 +1,17 @@
 # Graph Report - Renewless-mobile  (2026-11-26)
 
 ## Corpus Check
-- 395 files · ~163,097 words
+- 395 files · ~163,101 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 55 file(s) not represented in the graph (top: .ttf 15, .xml 14, (none) 5)
 
 ## Summary
-- 2382 nodes · 9026 edges · 95 communities (73 shown, 22 thin omitted)
+- 2382 nodes · 9025 edges · 95 communities (73 shown, 22 thin omitted)
 - Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 162 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4daa70b1`
+- Built from commit: `841083d9`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -435,16 +435,16 @@ Nodes (6): react-native-blob-util@^1.1.1, @react-native-documents/viewer@^4.0.2,
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `react-native` connect `theme.ts` to `Dropdown/index.tsx`, `Container`, `AiChat/index.function.ts`, `requestHandler`, `useAppSelector`, `RowView/index.tsx`, `SubscriptionFields/index.tsx`, `App.tsx`, `Container (2)`, `navigate`, `Calendar/index.tsx`, `requestHandler`, `Onboarding/index.tsx`, `icons/index.ts`, `Auth.test.tsx`, `api_services/request-handler.ts`, `Tabs.tsx`, `YourSubscriptions/index.tsx`, `Payments/index.tsx`, `requestHandler`, `redux/request-handler.ts`, `Profile/index.tsx`, `app-update-hook.test.tsx`, `CustomText/index.tsx`, `http-provider.ts`, `SubscriptionDetail/index.function.ts`, `push.ts`, `widget.ts`, `ChatParts.tsx`, `profile-action.ts`, `List/index.tsx`, `GmailViews.tsx`?**
-  _High betweenness centrality (0.139) - this node is a cross-community bridge._
+  _High betweenness centrality (0.140) - this node is a cross-community bridge._
 - **What connects `.stateKey`, `SwiftUI`, `Foundation` to the rest of the system?**
   _61 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `adapters.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.049019607843137254 - nodes in this community are weakly interconnected._
 - **Why does `scripts` connect `scripts` to `navigate`?**
-  _High betweenness centrality (0.127) - this node is a cross-community bridge._
+  _High betweenness centrality (0.119) - this node is a cross-community bridge._
 - **Should `Container` be split into smaller, more focused modules?**
   _Cohesion score 0.14102564102564102 - nodes in this community are weakly interconnected._
 - **Why does `android` connect `scripts` to `RenewlessWidgetProvider.kt`?**
-  _High betweenness centrality (0.116) - this node is a cross-community bridge._
+  _High betweenness centrality (0.117) - this node is a cross-community bridge._
 - **Should `AiChat/index.function.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.11746031746031746 - nodes in this community are weakly interconnected._

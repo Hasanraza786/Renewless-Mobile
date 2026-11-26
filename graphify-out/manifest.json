@@ -1338,9 +1338,9 @@
     "semantic_hash": ""
   },
   "src/screens/GmailScan/index.tsx": {
-    "mtime": 1795690414.4716864,
-    "seen": 1795691676.5586429,
-    "ast_hash": "3ab6ec3e7d0f85de6a9e8b916d7fd4d2",
+    "mtime": 1795691927.853735,
+    "seen": 1795692273.507766,
+    "ast_hash": "23c5f902a2a9c0e03bf7990950553381",
     "semantic_hash": ""
   },
   "src/screens/GmailScan/styles.ts": {
@@ -1626,9 +1626,9 @@
     "semantic_hash": ""
   },
   "src/screens/Onboarding/index.tsx": {
-    "mtime": 1795690414.4708014,
-    "seen": 1795691676.558677,
-    "ast_hash": "2f6f5fa91d5d02fb84c74f9f18c60e82",
+    "mtime": 1795691927.853498,
+    "seen": 1795692273.507807,
+    "ast_hash": "cf0e9028ad29e2029b6a1781ddf90331",
     "semantic_hash": ""
   },
   "src/screens/Onboarding/styles.ts": {
