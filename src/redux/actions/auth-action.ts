@@ -337,7 +337,7 @@ export function resendCode(challenge_id: string, onSent: (challenge_id: string) 
   };
 }
 
-// A successful reset returns to Login; the user signs in with the new password.
+// A successful reset returns to Login with a notice; the user signs in with the new password.
 export function resetPassword(reset_token: string, password: string): AppThunk {
   return async dispatch => {
     await dispatch(
@@ -350,6 +350,7 @@ export function resetPassword(reset_token: string, password: string): AppThunk {
         onDone: () => {
           trackEvent('password_reset');
           popTo('Login');
+          dispatch(setNotice('Password updated. Log in with your new password.'));
         },
       }),
     );

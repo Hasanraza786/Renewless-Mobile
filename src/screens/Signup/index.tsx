@@ -23,11 +23,11 @@ export default function SignupScreen({ route }: Props) {
 
       <SizedBox height={SIZES.padding3 * 2} />
 
-      <InputField variant="auth" label="Password" placeholder="At least 8 characters" onSubmitEditing={form.focusField('confirm')} submitBehavior="submit" secureTextEntry autoComplete="new-password" textContentType="newPassword" returnKeyType="next" {...form.fieldProps('password')} />
+      <InputField variant="auth" label="Password" placeholder="At least 8 characters" onSubmitEditing={form.focusField('confirm')} submitBehavior="submit" secureTextEntry reveal autoComplete="new-password" textContentType="newPassword" returnKeyType="next" {...form.fieldProps('password')} />
 
       <SizedBox height={SIZES.padding3 * 2} />
 
-      <InputField variant="auth" label="Confirm password" placeholder="Re-enter your password" secureTextEntry autoComplete="new-password" textContentType="newPassword" returnKeyType="go" onSubmitEditing={onSubmit} {...form.fieldProps('confirm')} />
+      <InputField variant="auth" label="Confirm password" placeholder="Re-enter your password" secureTextEntry reveal autoComplete="new-password" textContentType="newPassword" returnKeyType="go" onSubmitEditing={onSubmit} {...form.fieldProps('confirm')} />
 
       <CustomButton variant="primary" text="Create account" disabled={loading} busy={loading} onPress={onSubmit} style={styles.submit} />
 

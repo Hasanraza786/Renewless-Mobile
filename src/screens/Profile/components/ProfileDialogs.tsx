@@ -37,6 +37,7 @@ function DeleteDialog({ profile }: { profile: ProfileController }) {
             value={profile.delete_password}
             onChangeText={profile.setDeletePassword}
             secureTextEntry
+            reveal
             autoCapitalize="none"
             autoCorrect={false}
             autoComplete="current-password"

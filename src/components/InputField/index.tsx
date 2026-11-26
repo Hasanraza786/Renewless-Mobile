@@ -22,7 +22,7 @@ type Props = TextInputProps & {
   // 'sheet' is the compact field used inside bottom sheets; 'auth' is the approved auth form field;
   // 'form' is the account form field (Edit profile, Change password).
   variant?: 'sheet' | 'auth' | 'form';
-  // With secureTextEntry: a trailing Show/Hide toggle (the caller's style leaves room for it).
+  // With secureTextEntry: a trailing Show/Hide toggle; the text stops short of it.
   reveal?: boolean;
   ref?: Ref<ComponentRef<typeof TextInput>>;
 };
@@ -71,7 +71,7 @@ export default function InputField({
           accessibilityLabel={label}
           accessibilityHint={error || undefined}
           // A caller's style extends the variant (e.g. a taller multiline field); it never replaces it.
-          style={[variant ? styles[`${variant}_input`] : styles.input, variant === 'auth' && is_tablet && styles.auth_input_tablet, style, focused && styles.input_focused, !!error && styles.input_error]}
+          style={[variant ? styles[`${variant}_input`] : styles.input, variant === 'auth' && is_tablet && styles.auth_input_tablet, reveal && styles.reveal_room, style, focused && styles.input_focused, !!error && styles.input_error]}
           onFocus={event => {
             setFocused(true);
             onFocus?.(event);
@@ -88,6 +88,7 @@ export default function InputField({
             accessibilityRole="button"
             accessibilityLabel={`${shown ? 'Hide' : 'Show'} ${label.toLowerCase()}`}
             onPress={() => setShown(current => !current)}
+            hitSlop={SIZES.padding / 4}
             style={[common_styles.absolute, styles.reveal]}>
             <Icons name={shown ? eye_off_icon : eye_icon} />
           </Pressable>

@@ -20,7 +20,7 @@ export default function LoginScreen({ route }: Props) {
 
       <SizedBox height={SIZES.padding * 0.9} />
 
-      <InputField variant="auth" label="Password" placeholder="Enter your password" secureTextEntry autoComplete="current-password" textContentType="password" returnKeyType="go" onSubmitEditing={onSubmit} {...form.fieldProps('password')} />
+      <InputField variant="auth" label="Password" placeholder="Enter your password" secureTextEntry reveal autoComplete="current-password" textContentType="password" returnKeyType="go" onSubmitEditing={onSubmit} {...form.fieldProps('password')} />
 
       <View style={styles.forgot}>
         <CustomButton variant="link" text="Forgot password?" onPress={openForgot} style={styles.forgot_link} />

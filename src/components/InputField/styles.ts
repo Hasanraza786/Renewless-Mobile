@@ -62,13 +62,17 @@ export const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding2,
     paddingVertical: 0,
   },
+  // Spans the field's height so the eye stays centred on every variant.
   reveal: {
     alignItems: 'center',
-    height: SIZES.padding * 2.2,
+    bottom: 0,
     justifyContent: 'center',
     right: 0,
     top: 0,
     width: SIZES.padding * 2.2,
+  },
+  reveal_room: {
+    paddingRight: SIZES.padding * 2.3,
   },
   input_focused: {
     borderColor: COLORS.primary,

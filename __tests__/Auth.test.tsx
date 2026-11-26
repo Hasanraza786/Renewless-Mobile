@@ -94,6 +94,28 @@ beforeEach(() => {
   mockBackend.password = 'sample123';
 });
 
+test('every auth password field has a Show/Hide toggle that switches secureTextEntry', async () => {
+  const store = makeStore();
+  const { navigation } = navigationMock();
+  const secure = (tree: Tree, label: string) => tree.root.find(node => node.props.accessibilityLabel === label && typeof node.props.onChangeText === 'function').props.secureTextEntry;
+  const cases: [React.ComponentType<any>, string[], object?][] = [
+    [LoginScreen, ['Password']],
+    [SignupScreen, ['Password', 'Confirm password']],
+    [ResetPasswordScreen, ['New password', 'Confirm password'], { reset_token: 't' }],
+  ];
+  for (const [Screen, labels, params] of cases) {
+    const tree = await render(Screen, store, navigation, params);
+    for (const label of labels) {
+      expect(secure(tree, label)).toBe(true);
+      await act(async () => { press(tree, `Show ${label.toLowerCase()}`); });
+      expect(secure(tree, label)).toBe(false);
+      await act(async () => { press(tree, `Hide ${label.toLowerCase()}`); });
+      expect(secure(tree, label)).toBe(true);
+    }
+    await act(async () => { tree.unmount(); });
+  }
+});
+
 test('login validates, keeps credential errors generic, and enters Home on success', async () => {
   const store = makeStore();
   const { root, navigation } = navigationMock();
@@ -175,6 +197,7 @@ test('password reset verifies a code, sets the new password and returns to Login
   await act(async () => { type(reset, 'New password', 'newpass1'); type(reset, 'Confirm password', 'newpass1'); });
   await act(async () => { press(reset, 'Reset password'); });
   expect(navigation.popTo).toHaveBeenCalledWith('Login');
+  expect(store.getState().profile.notice).toBe('Password updated. Log in with your new password.');
   await act(async () => { reset.unmount(); });
 
   const login = await render(LoginScreen, store, navigationMock().navigation);
