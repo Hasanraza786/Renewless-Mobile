@@ -80,6 +80,7 @@ export default function ChangePasswordScreen() {
         <View style={styles.footer}>
           <CustomButton variant="primary" text={form.updating ? 'Updating…' : 'Update password'} busy={form.updating} onPress={form.onSubmit} />
           <CustomText mt={SIZES.padding / 2} text="Your tracked subscriptions stay unchanged." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
+          <SizedBox />
         </View>
       </KeyboardAvoidingView>
     </Container>

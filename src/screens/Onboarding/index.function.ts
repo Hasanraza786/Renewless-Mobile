@@ -15,8 +15,9 @@ import {
 } from '../../redux/actions/onboarding-action';
 import { setConnectMessage, setScanJob, toggleCandidate } from '../../redux/slices/onboarding-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
-import type { AuthStackParamList, InboxProvider, OnboardingStep, ScanCandidate } from '../../types';
+import type { AuthIntent, AuthStackParamList, InboxProvider, OnboardingStep, ScanCandidate } from '../../types';
 import { navigate, resetRoot } from '../../navigation/service';
+import { enterApp } from '../../utils/auth-form';
 import { PRIVACY_URL, TERMS_URL, openLegal } from '../../config/legal';
 import { useIsTablet } from '../../utils/tablet';
 import { scanProgress, type DeepView } from '../../utils/scan-progress';
@@ -67,6 +68,8 @@ export default function useOnboarding(route: Route) {
   const [notify_open, setNotifyOpen] = useState(false);
   const [notify_busy, setNotifyBusy] = useState(false);
   const [deep_wait_over, setDeepWaitOver] = useState(false);
+  // Save what Loop found?: the add path chosen on the review while plans are still ticked.
+  const [leave_intent, setLeaveIntent] = useState<AuthIntent | null>(null);
   const panel_x = useRef(new Animated.Value(0)).current;
   const panel_opacity = useRef(new Animated.Value(1)).current;
   // Built once per width, not on every render, so a running slide keeps its node.
@@ -259,9 +262,28 @@ export default function useOnboarding(route: Route) {
     dispatch(editOnboardingCandidate(scan_job_id, item, closeEdit, setEditError));
   };
   const openLogin = () => navigate('Login');
-  // Manual entry: the Add form when signed in, otherwise sign up first and continue to it.
-  const openManual = () => (signed_in ? navigate('AddSubscription') : navigate('Signup', { intent: 'add_manual' }));
-  const openAi = () => (signed_in ? navigate('AiChat') : navigate('Signup', { intent: 'add_ai' }));
+  // Signed in, onboarding ends and the add path opens above Home (like a sign-in with an intent), so Back never
+  // returns to onboarding. A first scan's review has been seen, as in skipSave.
+  const leaveTo = (intent: AuthIntent) => dispatch(finishOnboarding(() => enterApp(intent)));
+  // Add with AI or Add manually. Signed out: sign up first and continue there. With plans still ticked on the review,
+  // ask first (Your subscriptions · leave without saving, 26 Nov 2026).
+  const openAdd = (intent: AuthIntent) => {
+    if (!signed_in) return navigate('Signup', { intent });
+    if (step === 'yourSubscriptions' && selected_ids.length) return setLeaveIntent(intent);
+    leaveTo(intent);
+  };
+  const openManual = () => openAdd('add_manual');
+  const openAi = () => openAdd('add_ai');
+  const closeLeave = () => !onboarding_state.save_loading && setLeaveIntent(null);
+  const discardAndLeave = () => {
+    if (!leave_intent) return;
+    if (scan_meter?.phase === 'deep') dispatch(dismissBackgroundScan(scan_job_id));
+    leaveTo(leave_intent);
+  };
+  // A failed save keeps the question open with the review's error message.
+  const saveAndLeave = () => {
+    if (leave_intent) dispatch(saveOnboardingFinds(scan_job_id, selected_ids, () => leaveTo(leave_intent)));
+  };
   const openTerms = () => openLegal(TERMS_URL);
   const openPrivacy = () => openLegal(PRIVACY_URL);
 
@@ -298,6 +320,10 @@ export default function useOnboarding(route: Route) {
     openLogin,
     openManual,
     openAi,
+    leave_intent,
+    closeLeave,
+    discardAndLeave,
+    saveAndLeave,
     openTerms,
     openPrivacy,
     openDashboard,

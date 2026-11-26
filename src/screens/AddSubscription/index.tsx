@@ -1,5 +1,6 @@
 import { useEffect, useRef, type ComponentRef } from 'react';
 import { KeyboardAvoidingView, ScrollView, View, type TextInput } from 'react-native';
+import SizedBox from '../../components/SizedBox';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Container from '../../components/Container';
 import CustomButton from '../../components/CustomButton';
@@ -63,6 +64,7 @@ export default function AddSubscriptionScreen({ route }: { route: SubscriptionFo
             {form.request_error ? <CustomText mb={SIZES.padding3} text={form.request_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} align="center" accessibility_role="alert" /> : null}
             <CustomButton variant="primary" text={form.action} busy={form.saving} onPress={form.onSubmit} />
             <CustomText mt={SIZES.padding3} text="You can edit these details anytime." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.xs} align="center" />
+            <SizedBox />
           </View>
         </KeyboardAvoidingView>
       )}

@@ -36,9 +36,6 @@ export const styles = StyleSheet.create({
   split_scroll: {
     flexShrink: 1,
   },
-  footer: {
-    paddingBottom: SIZES.padding3 / 2,
-  },
   footer_divider: {
     borderTopColor: COLORS.line_quiet,
     borderTopWidth: 1,

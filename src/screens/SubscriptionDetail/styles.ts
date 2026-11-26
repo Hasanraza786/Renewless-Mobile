@@ -101,7 +101,6 @@ export const styles = StyleSheet.create({
     borderTopColor: COLORS.line_faint,
     borderTopWidth: 1,
     marginHorizontal: -SIZES.padding,
-    paddingBottom: SIZES.padding2,
     paddingHorizontal: SIZES.padding,
     paddingTop: SIZES.padding2,
   },

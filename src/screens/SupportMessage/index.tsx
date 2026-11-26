@@ -1,4 +1,5 @@
 import { ScrollView, View } from 'react-native';
+import SizedBox from '../../components/SizedBox';
 import type { RouteProp } from '@react-navigation/native';
 import Container from '../../components/Container';
 import CustomButton from '../../components/CustomButton';
@@ -65,6 +66,7 @@ export default function SupportMessageScreen({ route }: { route: RouteProp<AppSt
       </ScrollView>
       <View style={styles.footer}>
         <CustomButton variant="secondary" text="Send another message" onPress={thread.sendAnother} />
+        <SizedBox />
       </View>
     </Container>
   );

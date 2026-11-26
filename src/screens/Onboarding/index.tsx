@@ -59,8 +59,10 @@ export default function Onboarding({ route }: Props) {
           <Body onboarding={onboarding} />
         </ScrollView>
       </Animated.View>
-      <Animated.View pointerEvents={onboarding.animating ? 'none' : 'auto'} style={[styles.footer, !fitted && styles.footer_divider, onboarding.footer_style]}>
+      <Animated.View pointerEvents={onboarding.animating ? 'none' : 'auto'} style={[!fitted && styles.footer_divider, onboarding.footer_style]}>
         <Footer onboarding={onboarding} />
+        {/* Room between the last pinned button or link and the system bar (user, 26 Nov 2026). */}
+        <SizedBox />
       </Animated.View>
     </Fragment>
   );

@@ -201,16 +201,19 @@ export default function SubscriptionDetailScreen({ route }: Props) {
       ) : (
         <>
           <Body view={view} detail={detail} />
-          <RowView gap={SIZES.padding2} style={styles.actions}>
-            {view.cancelled ? (
-              <CustomButton variant="primary" text="Track again" onPress={() => detail.setSheet('resume')} style={styles.action} />
-            ) : (
-              <>
-                <CustomButton variant="primary" text="Edit" onPress={detail.openEdit} style={styles.action} />
-                <CustomButton variant="secondary" text="Mark as cancelled" onPress={() => detail.setSheet('cancel')} style={styles.action} />
-              </>
-            )}
-          </RowView>
+          <View style={styles.actions}>
+            <RowView gap={SIZES.padding2}>
+              {view.cancelled ? (
+                <CustomButton variant="primary" text="Track again" onPress={() => detail.setSheet('resume')} style={styles.action} />
+              ) : (
+                <>
+                  <CustomButton variant="primary" text="Edit" onPress={detail.openEdit} style={styles.action} />
+                  <CustomButton variant="secondary" text="Mark as cancelled" onPress={() => detail.setSheet('cancel')} style={styles.action} />
+                </>
+              )}
+            </RowView>
+            <SizedBox />
+          </View>
           <DetailSheets view={view} detail={detail} />
         </>
       )}

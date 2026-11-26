@@ -1122,16 +1122,16 @@
     "semantic_hash": "5fd0d65a59baec4cd7592d6752786996"
   },
   "src/screens/AddSubscription/index.tsx": {
-    "mtime": 1794686509.4747736,
-    "seen": 1794832885.976585,
-    "ast_hash": "93a96dcf0220a04864855c9981567841",
-    "semantic_hash": "93a96dcf0220a04864855c9981567841"
+    "mtime": 1795677907.0823655,
+    "seen": 1795678580.665714,
+    "ast_hash": "c9d3ee4a64e32d1c83197ad9e8274376",
+    "semantic_hash": ""
   },
   "src/screens/AddSubscription/styles.ts": {
-    "mtime": 1794223994.4554703,
-    "seen": 1794832885.9765859,
-    "ast_hash": "bcb519b5afd30ea82008da65a2d89ecf",
-    "semantic_hash": "bcb519b5afd30ea82008da65a2d89ecf"
+    "mtime": 1795677901.5506585,
+    "seen": 1795678580.665715,
+    "ast_hash": "b2cdaef322cf79cc206eb52a2b0b3b15",
+    "semantic_hash": ""
   },
   "src/screens/AiChat/components/ChatParts.tsx": {
     "mtime": 1795438179.9257784,
@@ -1236,16 +1236,16 @@
     "semantic_hash": "79614ce538710e03908e618d9b10a20d"
   },
   "src/screens/ChangePassword/index.tsx": {
-    "mtime": 1794686509.525241,
-    "seen": 1794832885.9765959,
-    "ast_hash": "4d818060db0fbd1409aece6149aac469",
-    "semantic_hash": "4d818060db0fbd1409aece6149aac469"
+    "mtime": 1795677901.5509825,
+    "seen": 1795678580.665725,
+    "ast_hash": "5c7a54da9000eb38a5dbcc9ba78ba4ed",
+    "semantic_hash": ""
   },
   "src/screens/ChangePassword/styles.ts": {
-    "mtime": 1794223994.4594896,
-    "seen": 1794832885.9765959,
-    "ast_hash": "a0aee6192227f4782fc58399c08cdaa7",
-    "semantic_hash": "a0aee6192227f4782fc58399c08cdaa7"
+    "mtime": 1795677901.551042,
+    "seen": 1795678580.665726,
+    "ast_hash": "6c46f0ba2c1e0fe2686571247c7d23f7",
+    "semantic_hash": ""
   },
   "src/screens/ConnectedInbox/index.function.ts": {
     "mtime": 1794836659.6383805,
@@ -1338,10 +1338,10 @@
     "semantic_hash": ""
   },
   "src/screens/GmailScan/index.tsx": {
-    "mtime": 1794775928.1617224,
-    "seen": 1794832885.976604,
-    "ast_hash": "168e7705a2a55c2118424bac77dfb959",
-    "semantic_hash": "168e7705a2a55c2118424bac77dfb959"
+    "mtime": 1795677901.550061,
+    "seen": 1795678580.665736,
+    "ast_hash": "525f200296ef592c32ec8f3f1db3471f",
+    "semantic_hash": ""
   },
   "src/screens/GmailScan/styles.ts": {
     "mtime": 1795594391.300322,
@@ -1608,9 +1608,9 @@
     "semantic_hash": "0b10d0c5930070286b58789aeaa26c9e"
   },
   "src/screens/Onboarding/components/YourSubscriptions/index.tsx": {
-    "mtime": 1795612343.0008752,
-    "seen": 1795614500.978671,
-    "ast_hash": "92c063d112c99e301f413985f3fa7a69",
+    "mtime": 1795676763.5649626,
+    "seen": 1795678580.6657689,
+    "ast_hash": "fe0e1f3e4310a0e1b6adb0d0f5c11955",
     "semantic_hash": ""
   },
   "src/screens/Onboarding/components/YourSubscriptions/styles.ts": {
@@ -1620,22 +1620,22 @@
     "semantic_hash": ""
   },
   "src/screens/Onboarding/index.function.ts": {
-    "mtime": 1795610217.398933,
-    "seen": 1795610240.953761,
-    "ast_hash": "e34616a89b1006eeff16ef2eca3a509c",
+    "mtime": 1795676743.2282906,
+    "seen": 1795678580.66577,
+    "ast_hash": "01e9df1b7a55b57b650ac4ceb3bcea7c",
     "semantic_hash": ""
   },
   "src/screens/Onboarding/index.tsx": {
-    "mtime": 1795594234.300276,
-    "seen": 1795605164.937531,
-    "ast_hash": "fc08bf59fc932bd88c2cd8c4ea3ff3dd",
+    "mtime": 1795677901.5496056,
+    "seen": 1795678580.665771,
+    "ast_hash": "77cfe95ba2b7d943e28bf6e79cbe97c0",
     "semantic_hash": ""
   },
   "src/screens/Onboarding/styles.ts": {
-    "mtime": 1794686749.9649959,
-    "seen": 1794832885.976628,
-    "ast_hash": "7db372daadeab1e7474b4ab60342f18b",
-    "semantic_hash": "7db372daadeab1e7474b4ab60342f18b"
+    "mtime": 1795677901.549697,
+    "seen": 1795678580.665771,
+    "ast_hash": "44a82974cb4bb3d2bbb5c1eb9393347b",
+    "semantic_hash": ""
   },
   "src/screens/Otp/index.function.ts": {
     "mtime": 1794913030.9573517,
@@ -1764,16 +1764,16 @@
     "semantic_hash": "84305a9c26d84266e47c35f524c2be83"
   },
   "src/screens/ReminderSettings/index.tsx": {
-    "mtime": 1795438179.9250383,
-    "seen": 1795440094.417998,
-    "ast_hash": "00ddfec630a10865d46edab3e97495d7",
+    "mtime": 1795677901.5513654,
+    "seen": 1795678580.665785,
+    "ast_hash": "396a1c935643282751a03026f6bd13a8",
     "semantic_hash": ""
   },
   "src/screens/ReminderSettings/styles.ts": {
-    "mtime": 1794223994.4717917,
-    "seen": 1794832885.97664,
-    "ast_hash": "18af91fdd956b387167265cd31460b13",
-    "semantic_hash": "18af91fdd956b387167265cd31460b13"
+    "mtime": 1795677901.5515184,
+    "seen": 1795678580.665786,
+    "ast_hash": "d41647c83b4c23489b57302846c3babe",
+    "semantic_hash": ""
   },
   "src/screens/ResetPassword/index.function.ts": {
     "mtime": 1794253190.394988,
@@ -1878,15 +1878,15 @@
     "semantic_hash": ""
   },
   "src/screens/SubscriptionDetail/index.tsx": {
-    "mtime": 1795594094.2728148,
-    "seen": 1795605164.9375548,
-    "ast_hash": "8c4803d2b3d0999d3d38985a90c62cf2",
+    "mtime": 1795677921.2171865,
+    "seen": 1795678580.6657972,
+    "ast_hash": "48ff638ebe103f524ccfd31f4b389267",
     "semantic_hash": ""
   },
   "src/screens/SubscriptionDetail/styles.ts": {
-    "mtime": 1795594105.6951404,
-    "seen": 1795605164.937556,
-    "ast_hash": "f9aef06565054955be3d0ad551497fa7",
+    "mtime": 1795677901.5529556,
+    "seen": 1795678580.665798,
+    "ast_hash": "310fa40d4078e1a8602c10f5a7fdb6a9",
     "semantic_hash": ""
   },
   "src/screens/SupportMessage/index.function.ts": {
@@ -1896,16 +1896,16 @@
     "semantic_hash": "9501d4c202d382632d9658e73b390385"
   },
   "src/screens/SupportMessage/index.tsx": {
-    "mtime": 1794916759.6679025,
-    "seen": 1794917724.036431,
-    "ast_hash": "a2576540d93ce86406aa2a15733a14b1",
-    "semantic_hash": "a2576540d93ce86406aa2a15733a14b1"
+    "mtime": 1795677907.0827892,
+    "seen": 1795678580.665799,
+    "ast_hash": "7d4453af38a12a16248438d583db5036",
+    "semantic_hash": ""
   },
   "src/screens/SupportMessage/styles.ts": {
-    "mtime": 1794743033.4413078,
-    "seen": 1794832885.976651,
-    "ast_hash": "a579a37e7d3507385d99104d1b3dd34b",
-    "semantic_hash": "a579a37e7d3507385d99104d1b3dd34b"
+    "mtime": 1795677901.5520866,
+    "seen": 1795678580.6657999,
+    "ast_hash": "5c3be8a74ac69f921c7215624a16e8f1",
+    "semantic_hash": ""
   },
   "src/screens/SupportMessages/index.tsx": {
     "mtime": 1794742992.9268103,
@@ -2865,6 +2865,18 @@
     "mtime": 1795614383.2154555,
     "seen": 1795614500.97874,
     "ast_hash": "6f0fa0823cb3974a7f63640cf9304c96",
+    "semantic_hash": ""
+  },
+  "__tests__/onboarding-leave.test.tsx": {
+    "mtime": 1795677508.3057535,
+    "seen": 1795678580.6656,
+    "ast_hash": "6cf980385fb954f31792d5b0c0803e27",
+    "semantic_hash": ""
+  },
+  "src/screens/Onboarding/components/YourSubscriptions/LeaveDialog.tsx": {
+    "mtime": 1795676995.1089277,
+    "seen": 1795678580.665768,
+    "ast_hash": "ce87d3a992021d326db8632b5e416ccb",
     "semantic_hash": ""
   },
   "yarn.lock": {

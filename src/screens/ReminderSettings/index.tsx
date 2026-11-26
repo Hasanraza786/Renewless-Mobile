@@ -140,6 +140,7 @@ export default function ReminderSettingsScreen() {
             {settings.save_error && !settings.confirm ? <CustomText mb={SIZES.padding3} text={settings.save_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} align="center" accessibility_role="alert" /> : null}
             <CustomButton variant="primary" text="Save settings" busy={settings.saving && !settings.confirm} onPress={settings.onSave} />
             <CustomText mt={SIZES.padding3} text="Applies to future reminders. Your history stays." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} align="center" />
+            <SizedBox />
           </View>
         </KeyboardAvoidingView>
       )}

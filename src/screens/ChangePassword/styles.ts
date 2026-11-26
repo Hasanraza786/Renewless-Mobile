@@ -42,7 +42,6 @@ export const styles = StyleSheet.create({
     borderTopWidth: 1,
     marginHorizontal: -SIZES.padding,
     paddingHorizontal: SIZES.padding,
-    paddingBottom: SIZES.padding3,
     paddingTop: SIZES.padding * 0.65,
   },
   provider: {

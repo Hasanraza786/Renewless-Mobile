@@ -14,7 +14,6 @@ export const styles = StyleSheet.create({
     borderTopColor: COLORS.line_quiet,
     borderTopWidth: 1,
     marginHorizontal: -SIZES.padding,
-    paddingBottom: SIZES.padding3,
     paddingHorizontal: SIZES.padding,
     paddingTop: SIZES.padding2,
   },

@@ -23,6 +23,7 @@ import { localToday } from '../../../../utils/dates';
 import { FAILING_NOTE, USAGE_NOTE, dateLabel, failingLine, formatTotals, moneyLabel, paidMonthlyTotals, upcomingWeek } from '../../../../utils/scan';
 import type { OnboardingController } from '../../index.function';
 import { RING, RING_WIDTH, styles } from './styles';
+import LeaveDialog from './LeaveDialog';
 import { CURRENCIES, CURRENCY_NAMES, CURRENCY_SEARCH, formatAmount, amountKeyboard, amountPlaceholder, money } from '../../../../utils/money';
 import { orderByCount } from '../../../../utils/currency-switch';
 import { amountError, isValidAmount } from '../../../../utils/subscription-form';
@@ -275,6 +276,7 @@ export function YourSubscriptionsBody({ onboarding }: Props) {
         ]}
       />
       <EditSheet onboarding={onboarding} />
+      <LeaveDialog onboarding={onboarding} />
     </Fragment>
   );
 }
