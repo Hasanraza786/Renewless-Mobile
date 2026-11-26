@@ -46,8 +46,11 @@
             <data android:scheme="renewless" />
         </intent-filter>
       </activity>
-      <!-- Push small icon (reminders and support replies); the colour is set in firebase.json. -->
+      <!-- Push small icon and its accent (reminders and support replies). The colour is set here, not in
+           firebase.json: RNFB would put it in its library manifest, where @color/notification_accent does not
+           exist, and its release resource check fails. -->
       <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/ic_notification" />
+      <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/notification_accent" tools:replace="android:resource" />
       <receiver android:name=".RenewlessWidgetProvider" android:exported="false" android:label="Renewless">
         <intent-filter>
             <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

@@ -13,7 +13,6 @@
       "sound",
       "list",
       "banner"
-    ],
-    "messaging_android_notification_color": "@color/notification_accent"
+    ]
   }
 }
