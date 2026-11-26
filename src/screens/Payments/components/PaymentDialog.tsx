@@ -16,6 +16,7 @@ import { money } from '../../../utils/money';
 
 const NOTES: Record<PaymentRecord['source'], string> = {
   gmail: 'Matched to a successful-payment receipt from your connected inbox.',
+  outlook: 'Matched to a successful-payment receipt from your connected inbox.',
   reviewed: 'Previously reviewed and confirmed by you.',
   manual: 'Previously marked as paid by you.',
 };

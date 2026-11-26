@@ -58,7 +58,7 @@ export default function AiChatScreen() {
           ListHeaderComponent={
             <>
               {chat.show_draft && chat.draft ? <DraftCard chat={chat} draft={chat.draft} /> : null}
-              {chat.thinking ? <ThinkingDots label="Loop is thinking" /> : null}
+              {chat.thinking ? <ThinkingDots label={chat.thinking_label} /> : null}
             </>
           }
           keyboardDismissMode="interactive"

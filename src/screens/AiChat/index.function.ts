@@ -56,6 +56,8 @@ export default function useAiChat() {
   const [added_id, setAddedId] = useState<string | null>(null);
   const [text, setText] = useState('');
   const [thinking, setThinking] = useState(false);
+  // Visible beside the dots: Reading image / Reading PDF while a file is read, otherwise Thinking.
+  const [thinking_label, setThinkingLabel] = useState('Thinking');
   const [saving, setSaving] = useState(false);
   const [attachment, setAttachment] = useState<Attachment | null>(null);
   const [attach_open, setAttachOpen] = useState(false);
@@ -120,6 +122,7 @@ export default function useAiChat() {
 
   const run = (message: ChatMessage) => {
     if (!message.input || !conversation_id) return;
+    setThinkingLabel(message.input.kind === 'file' ? (message.input.file_kind === 'pdf' ? 'Reading PDF' : 'Reading image') : 'Thinking');
     setThinking(true);
     const onReply = (result: AiReply) => {
       if (!mounted.current) return;
@@ -383,6 +386,12 @@ export default function useAiChat() {
   const openDocument = (uri: string, name: string) =>
     viewDocument({ uri, mimeType: 'application/pdf', headerTitle: name, grantPermissions: 'read' }).catch(() => setAttachError('Unable to open this PDF. Please try again.'));
 
+  const previewAttachment = () => {
+    if (!attachment) return;
+    if (attachment.file_kind === 'image') openPreview(attachment.uri);
+    else openDocument(attachment.uri, attachment.name);
+  };
+
   const agreeConsent = () => {
     trackEvent('ai_consent_changed', { enabled: 'true' });
     dispatch(changeAiConsent(true));
@@ -420,6 +429,7 @@ export default function useAiChat() {
     removed,
     text,
     thinking,
+    thinking_label,
     saving,
     can_send,
     can_add,
@@ -457,6 +467,7 @@ export default function useAiChat() {
     openPreview,
     closePreview,
     openDocument,
+    previewAttachment,
   };
 }
 

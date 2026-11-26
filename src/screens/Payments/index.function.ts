@@ -14,7 +14,7 @@ export type PaymentsRoute = RouteProp<TabParamList, 'Payments'> | RouteProp<AppS
 
 const EMPTY: PaymentRecord[] = [];
 
-export const sourceLabel = (source: PaymentRecord['source']) => ({ gmail: 'Inbox receipt', reviewed: 'Receipt confirmed', manual: 'Marked by you' })[source];
+export const sourceLabel = (source: PaymentRecord['source']) => ({ gmail: 'Gmail receipt', outlook: 'Outlook receipt', reviewed: 'Receipt confirmed', manual: 'Marked by you' })[source];
 
 // One screen for the account Payments tab and Detail's scoped SubscriptionPayments route.
 export default function usePayments(route: PaymentsRoute) {

@@ -3,7 +3,7 @@ export const SUPPORT_QUESTIONS: { title: string; items: { question: string; answ
   {
     title: 'Questions',
     items: [
-      { question: 'Is Renewless free?', answer: 'Yes. Every feature in this version is free, including inbox scans, reminders and the widget. AI chat with Loop includes 50 free messages a month.' },
+      { question: 'Is Renewless free?', answer: 'Yes. Every feature in this version is free, including inbox scans, reminders and the widget. AI chat with Loop includes 30 free messages a month.' },
       { question: 'Do I have to connect my inbox?', answer: 'It’s your choice. Connect Gmail or Outlook and Renewless finds your subscriptions for you, or add them yourself, by hand or by telling Loop with text, voice, a photo or a PDF. You can use both, and connect your inbox later from your Profile.' },
       { question: 'Is my email data safe?', answer: 'Access is read-only. Renewless looks only for billing emails and keeps their receipt details and attachments, not the full email. You can disconnect an inbox at any time.' },
       { question: 'Can Renewless cancel a subscription for me?', answer: 'No. It opens the service’s own manage page. After you cancel there, mark it as cancelled in Renewless.' },

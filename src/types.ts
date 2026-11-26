@@ -180,7 +180,8 @@ export type PaymentRecord = Receipt & {
   name: string;
   platform_id: string;
   billing_date: string;
-  source: 'gmail' | 'reviewed' | 'manual';
+  // gmail / outlook: a receipt found in that connected inbox.
+  source: 'gmail' | 'outlook' | 'reviewed' | 'manual';
   inbox_email: string | null;
   subscription_available: boolean;
 };

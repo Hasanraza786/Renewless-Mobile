@@ -4,6 +4,11 @@ import { changePassword } from '../../redux/actions/auth-action';
 import { setAuthError } from '../../redux/slices/auth-slice';
 import { selectUser } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
+import type { Profile } from '../../types';
+import { PROVIDER_LABEL } from '../Profile/index.function';
+
+// The sign-in provider a social-only account uses (Outlook accounts say Outlook, as in Settings).
+export const signInProvider = (provider?: Profile['provider']) => PROVIDER_LABEL[provider ?? 'google'];
 
 type Fields = { current_password: string; new_password: string; confirm_password: string };
 
@@ -45,7 +50,7 @@ export default function useChangePassword() {
 
   // Social-only accounts get provider guidance instead of password inputs.
   const has_password = user?.hasPassword !== false;
-  const provider = user?.provider === 'apple' ? 'Apple' : 'Google';
+  const provider = signInProvider(user?.provider);
 
   return {
     has_password,

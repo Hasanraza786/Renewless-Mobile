@@ -42,7 +42,7 @@ export default function UpcomingScreen() {
               </Fragment>
             ))
           ) : (
-            <CustomText mt={SIZES.padding} text={`No renewals or trials ending through ${dateLabel(data.upcoming_until)}.`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+            <CustomText mt={SIZES.padding} text="No renewals or trials ending in this period." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           )}
         </ScrollView>
       )}

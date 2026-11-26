@@ -12,7 +12,7 @@ import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import { goBack } from '../../navigation/service';
 import { styles as onboarding_styles } from '../Onboarding/styles';
 import GmailSheets from './components/GmailSheets';
-import { GmailRecoveryArt, RecoveryFooter, RecoveryView, ReviewFooter, ReviewView, ScanningFooter, ScanningView } from './components/GmailViews';
+import { GmailRecoveryArt, RecoveryFooter, RecoveryView, ReviewFooter, ReviewView, ScanningArt, ScanningFooter, ScanningView } from './components/GmailViews';
 import TabletSplit from '../Onboarding/components/TabletSplit';
 import { styles } from './styles';
 import useGmailScan, { type GmailScanRoute } from './index.function';
@@ -22,8 +22,8 @@ import useGmailScan, { type GmailScanRoute } from './index.function';
 export default function GmailScanScreen({ route }: { route: GmailScanRoute }) {
   const gmail = useGmailScan(route);
   const fitted = gmail.phase === 'nothing' || gmail.phase === 'interrupted';
-  // Tablets: recovery art beside the text; the review footer keeps the 680pt readable width.
-  const split = gmail.is_tablet && fitted;
+  // Tablets: the scan radar and the recovery art sit beside the text; the review footer keeps the 680pt readable width.
+  const split = gmail.is_tablet && (fitted || gmail.phase === 'scanning');
   const panel = (
     <Fragment>
       {/* Keyed by phase so each state (e.g. the review after scanning) opens at the top. */}
@@ -56,7 +56,7 @@ export default function GmailScanScreen({ route }: { route: GmailScanRoute }) {
           <StateView status="loading" message="Getting your inbox ready." />
         ) : (
           split ? (
-            <TabletSplit art={<GmailRecoveryArt gmail={gmail} />}>{panel}</TabletSplit>
+            <TabletSplit art={gmail.phase === 'scanning' ? <ScanningArt gmail={gmail} /> : <GmailRecoveryArt gmail={gmail} />}>{panel}</TabletSplit>
           ) : (
             panel
           )

@@ -45,10 +45,15 @@ function InboxLine({ gmail, prefix }: Props & { prefix: string }) {
 }
 
 // Onboarding's Discovering, with the Gmail stages; the review opens by itself when the scan ends.
+// Tablets draw the scan radar beside the text, as the Studio does.
+export function ScanningArt({ gmail }: Props) {
+  return <ScanRadar complete={gmail.scan_done} reduce_motion={gmail.reduce_motion} />;
+}
+
 export function ScanningView({ gmail }: Props) {
   return (
     <Fragment>
-      <ScanRadar complete={gmail.scan_done} reduce_motion={gmail.reduce_motion} />
+      {gmail.is_tablet ? null : <ScanningArt gmail={gmail} />}
       <OnboardingTitle eyebrow="YOUR INBOX, ORGANIZED" title="Finding what’s new." copy="Checking receipts for new subscriptions and changes to the ones you track." />
       <InboxLine gmail={gmail} prefix="Checking" />
       <ScanStages labels={STAGES} done_count={gmail.stage} running={!gmail.scan_done} progress={gmail.scan_progress} reduce_motion={gmail.reduce_motion} />

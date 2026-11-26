@@ -217,10 +217,15 @@ export function ScanStatusLine({ text }: { text: string }) {
   );
 }
 
+// Tablets draw the radar beside the text (DiscoveringArt) as the Studio does; phones keep it above.
+export function DiscoveringArt({ onboarding }: Props) {
+  return <ScanRadar complete={onboarding.scan_status === 'completed'} reduce_motion={onboarding.reduce_motion} />;
+}
+
 export function DiscoveringBody({ onboarding }: Props) {
   return (
     <Fragment>
-      <ScanRadar complete={onboarding.scan_status === 'completed'} reduce_motion={onboarding.reduce_motion} />
+      {onboarding.is_tablet ? null : <DiscoveringArt onboarding={onboarding} />}
 
       <OnboardingTitle
         eyebrow="A LITTLE CLARITY IS ON ITS WAY"

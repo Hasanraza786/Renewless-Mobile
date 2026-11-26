@@ -80,8 +80,8 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
         <RowView gap={SIZES.padding / 2}>
           <View style={styles.avatar}><PlatformLogo platform_id={record.platform_id} name={record.name} letter_size={SIZES.lg} /></View>
           <View style={common_styles.flex_1}>
-            <CustomText text={record.plan ? `${record.name} · ${record.plan}` : record.name} size={SIZES.lg} />
-            <CustomText mt={SIZES.padding * 0.35} text={record.category} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
+            <CustomText text={record.name} size={SIZES.lg} />
+            <CustomText mt={SIZES.padding * 0.35} text={record.plan ? `${record.category} · ${record.plan}` : record.category} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           </View>
           <Badge text={view.status.label} color={view.status.color} fill={view.status.fill} />
         </RowView>
@@ -113,7 +113,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
         <Field label="Auto-renew tracking" value={view.auto_renew} />
         <Field label="Reminder" value={view.reminder.text} onPress={view.reminder.actionable ? () => detail.setSheet('reminder') : undefined} />
         {view.reminder.note ? <CustomText mt={SIZES.padding3} text={view.reminder.note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
-        {view.estimated_note ? <CustomText mt={SIZES.padding3} text="Estimated date. You can update it in Edit." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
+        {view.estimated_note ? <CustomText mt={SIZES.padding3} text={view.estimated_note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
         {view.usage ? <CustomText mt={SIZES.padding3} text="The amount changes with your usage, so reminders tell you when, not how much." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
         <CustomText mt={SIZES.padding3} text="Tracking doesn’t confirm a charge or change your service settings." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
       </View>

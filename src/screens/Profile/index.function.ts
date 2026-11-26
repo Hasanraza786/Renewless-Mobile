@@ -23,6 +23,8 @@ export default function useProfile() {
   const logging_out = useAppSelector(state => state.auth.loading.logout);
   const [dialog, setDialog] = useState<'logout' | 'delete' | 'inbox_limit' | null>(null);
   const [choose_open, setChooseOpen] = useState(false);
+  // The provider whose connect is running: its inline button says Connecting… and both are disabled.
+  const [connecting, setConnecting] = useState<InboxProvider | null>(null);
   const [delete_text, setDeleteText] = useState('');
   // Email accounts confirm deletion with their password; Google/Apple verify in the provider sheet.
   const [delete_password, setDeletePassword] = useState('');
@@ -81,9 +83,20 @@ export default function useProfile() {
   };
   const closeChoose = () => setChooseOpen(false);
   // Gmail's funnel event counts a Gmail pick only; Outlook's is sent by its connect action.
+  const onConnected = (connected: ProfileInbox) => {
+    setConnecting(null);
+    onInboxConnected(connected);
+  };
+  const onConnectLimit = () => {
+    setConnecting(null);
+    openInboxLimit();
+  };
+  const onNotConnected = () => setConnecting(null);
   const pickProvider = (provider: InboxProvider) => {
+    if (connecting) return;
     if (provider === 'gmail') trackEvent('gmail_connect_tapped', { from: 'profile' });
-    dispatch(connectInbox(provider, onInboxConnected, openInboxLimit));
+    setConnecting(provider);
+    dispatch(connectInbox(provider, onConnected, onConnectLimit, onNotConnected));
   };
   const openInbox = (id: string) => navigate('ConnectedInbox', { id });
   const openHistory = () => navigate('History');
@@ -118,6 +131,7 @@ export default function useProfile() {
     choose_open,
     closeChoose,
     pickProvider,
+    connecting,
     inboxes_ready,
     payment_text,
     dialog,

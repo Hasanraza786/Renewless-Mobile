@@ -14,6 +14,7 @@ import {
   saveOnboardingFinds,
 } from '../../redux/actions/onboarding-action';
 import { setConnectMessage, setScanJob, toggleCandidate } from '../../redux/slices/onboarding-slice';
+import { setNotice } from '../../redux/slices/profile-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AuthIntent, AuthStackParamList, InboxProvider, OnboardingStep, ScanCandidate } from '../../types';
 import { navigate, resetRoot } from '../../navigation/service';
@@ -281,8 +282,13 @@ export default function useOnboarding(route: Route) {
     leaveTo(leave_intent);
   };
   // A failed save keeps the question open with the review's error message.
+  // Saved: a short "N subscriptions saved." notice, as in the Studio.
+  const onLeaveSaved = (intent: AuthIntent) => () => {
+    dispatch(setNotice(`${selected_ids.length} ${selected_ids.length === 1 ? 'subscription' : 'subscriptions'} saved.`));
+    leaveTo(intent);
+  };
   const saveAndLeave = () => {
-    if (leave_intent) dispatch(saveOnboardingFinds(scan_job_id, selected_ids, () => leaveTo(leave_intent)));
+    if (leave_intent) dispatch(saveOnboardingFinds(scan_job_id, selected_ids, onLeaveSaved(leave_intent)));
   };
   const openTerms = () => openLegal(TERMS_URL);
   const openPrivacy = () => openLegal(PRIVACY_URL);

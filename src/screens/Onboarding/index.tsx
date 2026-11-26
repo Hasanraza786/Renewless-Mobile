@@ -8,8 +8,8 @@ import Icons from '../../components/Icons';
 import { COLORS, FONTS, SIZES } from '../../constants/theme';
 import type { AuthStackParamList, OnboardingStep } from '../../types';
 import { ConnectArt, ConnectInboxBody, ConnectInboxFooter } from './components/ConnectInbox';
-import { DiscoveringBody, DiscoveringFooter } from './components/Discovering';
-import { FirstResultsBody, FirstResultsFooter } from './components/FirstResults';
+import { DiscoveringArt, DiscoveringBody, DiscoveringFooter } from './components/Discovering';
+import { FirstResultsArt, FirstResultsBody, FirstResultsFooter } from './components/FirstResults';
 import { ReadyArt, ReadyConfetti, ReadyToGoBody, ReadyToGoFooter } from './components/ReadyToGo';
 import { ScanInterruptedArt, ScanInterruptedBody, ScanInterruptedFooter, ScanNoResultsArt, ScanNoResultsBody, ScanNoResultsFooter } from './components/ScanRecovery';
 import TabletSplit from './components/TabletSplit';
@@ -34,8 +34,8 @@ type Panel = {
 const PANELS: Record<OnboardingStep, Panel> = {
   welcome: { Body: WelcomeBody, Footer: WelcomeFooter, Art: WelcomeArt },
   connectInbox: { Body: ConnectInboxBody, Footer: ConnectInboxFooter, Art: ConnectArt },
-  discovering: { Body: DiscoveringBody, Footer: DiscoveringFooter },
-  firstResults: { Body: FirstResultsBody, Footer: FirstResultsFooter },
+  discovering: { Body: DiscoveringBody, Footer: DiscoveringFooter, Art: DiscoveringArt },
+  firstResults: { Body: FirstResultsBody, Footer: FirstResultsFooter, Art: FirstResultsArt },
   yourSubscriptions: { Body: YourSubscriptionsBody, Footer: YourSubscriptionsFooter },
   readyToGo: { Body: ReadyToGoBody, Footer: ReadyToGoFooter, fitted: true, Art: ReadyArt },
   scanNoResults: { Body: ScanNoResultsBody, Footer: ScanNoResultsFooter, fitted: true, Art: ScanNoResultsArt },

@@ -331,7 +331,7 @@ export function toPayment(payment: PaymentDto): PaymentRecord {
     name: payment.name,
     platform_id: platformOf(payment.subscriptionId, payment.name, payment.logoUrl),
     billing_date: payment.billingDate,
-    source: inboxSource(payment.source) ? 'gmail' : payment.source === 'manual' ? 'manual' : 'reviewed',
+    source: payment.source === 'gmail' || payment.source === 'outlook' ? payment.source : payment.source === 'manual' ? 'manual' : 'reviewed',
     inbox_email: payment.inboxEmail,
     subscription_available: payment.subscriptionAvailable,
   };

@@ -46,5 +46,17 @@ test('Detail · usage: last bill, last 3 bills, next bill and the typical bill',
   expect(view.event).toEqual({ label: 'Next bill', value: 'Expected around 10 Nov · check your usage' });
   expect(view.annual_label).toBe('Typical bill · last 3');
   expect(view.annual_value).toBe('$8.00 average');
-  expect(view.estimated_note).toBe(false);
+  expect(view.estimated_note).toBeNull();
+});
+
+test('Detail estimated-date note: receipt wording for inbox records, Track again wording when cancelled', () => {
+  const base: SubscriptionDetail = {
+    record: { ...record, billing: 'fixed', price: '9.99' } as SubscriptionRecord, today: '2026-10-27', receipts: { totals: [], count: 0 }, receipt_emails: { count: 0, latest: null },
+    annual_estimate: null, related_count: 0, account_reminder_days: [3], last_charges: [],
+  };
+  expect(detailView(base).estimated_note).toBe('Date estimated from a receipt. You can update it in Edit.');
+  const manual = { ...base, record: { ...base.record, source: { ...base.record.source, kind: 'manual' as const } } };
+  expect(detailView(manual).estimated_note).toBe('Estimated date. You can update it in Edit.');
+  const cancelled = { ...manual, record: { ...manual.record, status: 'cancelled' as const, access_until: '2026-11-10' } };
+  expect(detailView(cancelled).estimated_note).toBe('Estimated date. Review your next date when you track again.');
 });

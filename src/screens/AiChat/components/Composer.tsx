@@ -104,11 +104,13 @@ export default function Composer({ chat }: Props) {
       {chat.attach_error ? <CustomText mb={SIZES.padding3} text={chat.attach_error} weight={FONTS.regular} color={COLORS.expired} size={SIZES.sm} accessibility_role="alert" /> : null}
       {chat.attachment && !recording ? (
         <RowView gap={SIZES.padding / 2} style={styles.chip}>
-          {chat.attachment.file_kind === 'image' ? <Image source={{ uri: chat.attachment.uri }} style={styles.chip_image} /> : <View style={styles.file_tile}><Icons name={pdf_icon} /></View>}
-          <View style={common_styles.flex_1}>
-            <CustomText text={chat.attachment.file_kind === 'image' ? 'Image attached' : 'PDF attached'} weight={FONTS.medium} size={SIZES.sm} />
-            <CustomText text={chat.attachment.name} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} number_of_lines={1} />
-          </View>
+          <RowView gap={SIZES.padding / 2} accessibilityRole="button" accessibilityLabel={`Preview ${chat.attachment.file_kind === 'image' ? 'image' : 'PDF'} ${chat.attachment.name}`} onPress={chat.previewAttachment} style={common_styles.flex_1}>
+            {chat.attachment.file_kind === 'image' ? <Image source={{ uri: chat.attachment.uri }} style={styles.chip_image} /> : <View style={styles.file_tile}><Icons name={pdf_icon} /></View>}
+            <View style={common_styles.flex_1}>
+              <CustomText text={chat.attachment.file_kind === 'image' ? 'Image attached' : 'PDF attached'} weight={FONTS.medium} size={SIZES.sm} />
+              <CustomText text={chat.attachment.name} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} number_of_lines={1} />
+            </View>
+          </RowView>
           <RowView justify_content="center" accessibilityRole="button" accessibilityLabel="Remove attachment" onPress={chat.removeAttachment} style={styles.icon_button}>
             <Icons name={close_small_icon} />
           </RowView>
@@ -125,7 +127,7 @@ export default function Composer({ chat }: Props) {
               maxFontSizeMultiplier={MAX_FONT_SCALE}
               value={chat.limit_reached ? '' : chat.text}
               onChangeText={chat.changeText}
-              placeholder={chat.limit_reached ? `Free messages renew on ${chat.resets_label}` : 'Message Loop…'}
+              placeholder={chat.limit_reached ? `Free messages renew on ${chat.resets_label}` : chat.attachment ? 'Add a note…' : 'Message Loop…'}
               editable={!chat.limit_reached}
               placeholderTextColor={COLORS.text_secondary}
               multiline

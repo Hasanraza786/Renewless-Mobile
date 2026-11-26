@@ -1,4 +1,4 @@
-import { passwordErrors } from '../src/screens/ChangePassword/index.function';
+import { passwordErrors, signInProvider } from '../src/screens/ChangePassword/index.function';
 import { initials } from '../src/screens/Profile/index.function';
 
 jest.mock('../src/config/api', () => ({ API_BASE_URL: '', USE_MOCK_API: true }));
@@ -22,4 +22,10 @@ test('initials use the first two words', () => {
   expect(initials('Alex Morgan')).toBe('AM');
   expect(initials('  cher ')).toBe('C');
   expect(initials('')).toBe('R');
+});
+
+test('change password names the account sign-in provider', () => {
+  expect(signInProvider('microsoft')).toBe('Outlook');
+  expect(signInProvider('apple')).toBe('Apple');
+  expect(signInProvider('google')).toBe('Google');
 });

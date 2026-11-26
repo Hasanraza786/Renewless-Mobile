@@ -96,7 +96,7 @@ export default function ProfileScreen() {
                   </View>
                 </RowView>
                 <View style={styles.add_buttons}>
-                  <InboxProviders variant="inline" onPick={profile.pickProvider} />
+                  <InboxProviders variant="inline" onPick={profile.pickProvider} busy={profile.connecting} />
                 </View>
               </View>
             ) : null}
@@ -120,6 +120,7 @@ export default function ProfileScreen() {
                     providers={[profile.used_before.provider]}
                     labels={{ gmail: 'Reconnect Gmail', outlook: 'Reconnect Outlook' }}
                     onPick={profile.pickProvider}
+                    busy={profile.connecting}
                   />
                 </View>
               </View>

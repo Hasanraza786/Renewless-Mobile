@@ -25,6 +25,11 @@ type Props = { onboarding: OnboardingController };
 // the server, so the user can review what was found or leave. Never a time estimate.
 const SHOWN = 4;
 
+// Tablets draw the compact radar beside the text, as the Studio does.
+export function FirstResultsArt({ onboarding }: Props) {
+  return <ScanRadar compact complete={!onboarding.older_running} reduce_motion={onboarding.reduce_motion} />;
+}
+
 export function FirstResultsBody({ onboarding }: Props) {
   const found = onboarding.candidates;
   const deep = onboarding.deep_view;
@@ -39,7 +44,7 @@ export function FirstResultsBody({ onboarding }: Props) {
 
   return (
     <Fragment>
-      <ScanRadar compact complete={!onboarding.older_running} reduce_motion={onboarding.reduce_motion} />
+      {onboarding.is_tablet ? null : <FirstResultsArt onboarding={onboarding} />}
 
       <OnboardingTitle eyebrow="FOUND SO FAR" title="Loop is still looking." title_spacing={-0.6} />
 

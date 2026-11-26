@@ -169,10 +169,11 @@ export function ThinkingDots({ label }: { label: string }) {
     return () => loop?.stop();
   }, [values]);
   return (
-    <View style={[styles.wrap, styles.wrap_loop]} accessibilityLabel={label} accessibilityLiveRegion="polite">
+    <View style={[styles.wrap, styles.wrap_loop]} accessibilityLabel={label === 'Thinking' ? 'Loop is thinking' : label} accessibilityLiveRegion="polite">
       <LoopAuthor />
       <View style={[styles.bubble, styles.bubble_loop, styles.bubble_thinking]}>
         <RowView style={styles.dots}>
+          <CustomText text={label} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
           {values.map((value, index) => (
             <Animated.View
               key={index}
@@ -200,10 +201,11 @@ export function DraftCard({ chat, draft }: Props & { draft: AiDraft }) {
   // Once added, the amount follows the saved record (edited later in Detail, for example).
   const price = chat.saved_record ? { amount: chat.saved_record.price, currency: chat.saved_record.currency, cycle: chat.saved_record.cycle } : { amount: draft.price, currency: draft.currency, cycle: draft.cycle };
   const cells: { label: string; value: string; full?: boolean }[] = [];
-  if (draft.trial) cells.push({ label: 'Trial ends', value: draft.trial.end_date ? dateLabel(draft.trial.end_date) : 'Needs confirmation' });
-  else cells.push({ label: 'Next renewal', value: draft.next_date ? dateLabel(draft.next_date) : 'Needs confirmation' });
+  if (draft.trial) cells.push({ label: 'Trial ends', value: draft.trial.end_date ? dateLabel(draft.trial.end_date) : 'Date needed' });
+  else cells.push({ label: 'Next renewal', value: draft.next_date ? dateLabel(draft.next_date) : 'Date needed' });
   if (draft.category) cells.push({ label: 'Category', value: draft.category });
-  if (draft.start_date) cells.push({ label: draft.trial ? 'Trial started' : 'Start date', value: dateLabel(draft.start_date) });
+  // A trial always shows its start date, as Date needed until it is known.
+  if (draft.start_date || draft.trial) cells.push({ label: 'Start date', value: draft.start_date ? dateLabel(draft.start_date) : 'Date needed' });
   if (draft.trial?.days) cells.push({ label: 'Trial duration', value: `${draft.trial.days} days` });
   if (draft.trial) cells.push({ label: 'Auto-renew tracking', value: draft.trial.auto_renew ? 'On' : 'Off' });
   if (draft.notes) cells.push({ label: 'Notes', value: draft.notes, full: true });

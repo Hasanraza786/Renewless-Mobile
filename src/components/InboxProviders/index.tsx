@@ -18,7 +18,7 @@ type Props = {
   onPick: (provider: InboxProvider) => void;
   // Button labels when they differ from Continue with Gmail / Outlook (onboarding signs in too).
   labels?: Record<InboxProvider, string>;
-  // The provider whose connect is running: its button says Connecting… and both are disabled.
+  // The provider whose connect is running: its button says Connecting… and both are disabled (buttons and inline).
   busy?: InboxProvider | null;
   // inline only: offer just these (Profile's Reconnect names one provider).
   providers?: InboxProvider[];
@@ -60,11 +60,13 @@ export default function InboxProviders({ variant, onPick, labels, busy = null, p
             justify_content="center"
             gap={SIZES.padding * 0.35}
             accessibilityRole="button"
-            accessibilityLabel={labels?.[provider] ?? `Connect ${INBOX_BRAND[provider].name}`}
+            accessibilityLabel={busy === provider ? 'Connecting…' : labels?.[provider] ?? `Connect ${INBOX_BRAND[provider].name}`}
+            accessibilityState={{ disabled: !!busy, busy: busy === provider }}
+            disabled={!!busy}
             onPress={() => onPick(provider)}
             style={styles.inline_button}>
             <Icons name={INBOX_BRAND[provider].logo} icon_height={SIZES.padding * 0.9} icon_width={SIZES.padding * 0.9} />
-            <CustomText text={labels?.[provider] ?? INBOX_BRAND[provider].name} weight={FONTS.regular} size={SIZES.sm} />
+            <CustomText text={busy === provider ? 'Connecting…' : labels?.[provider] ?? INBOX_BRAND[provider].name} weight={FONTS.regular} size={SIZES.sm} />
           </RowView>
         ))}
       </RowView>

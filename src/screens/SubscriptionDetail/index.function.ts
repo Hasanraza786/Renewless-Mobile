@@ -91,7 +91,10 @@ export function detailView({ record, today, receipts, receipt_emails, annual_est
     reminder,
     remaining,
     event_date,
-    estimated_note: record.estimated && !cancelled && !!record.next_date && !usage,
+    // Estimated-date note (Studio Detail): inbox records say where the date came from; inactive records point to Track again.
+    estimated_note: record.estimated && !usage && (cancelled ? !!record.access_until : !!event_date)
+      ? `${record.source.kind === 'gmail' ? 'Date estimated from a receipt.' : 'Estimated date.'} ${cancelled ? 'Review your next date when you track again.' : 'You can update it in Edit.'}`
+      : null,
     cancelled,
     receipts: {
       total: receipts.totals.length ? receipts.totals.map(item => money(item.currency, item.amount)).join('\n') : 'No receipts yet',

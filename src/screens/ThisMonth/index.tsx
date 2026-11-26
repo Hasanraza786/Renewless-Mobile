@@ -78,7 +78,7 @@ export default function ThisMonthScreen() {
             <CustomText mt={SIZES.padding * 0.7} text="Still upcoming" weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
             <CustomText mt={SIZES.padding / 5} text={totalsText(currency.only(data.month.upcoming))} size={SIZES.lg} />
           </View>
-          <Group title="Upcoming" items={data.month.events.filter(item => item.date >= data.today)} today={data.today} empty="No upcoming renewals in this month." />
+          <Group title="Upcoming" items={data.month.events.filter(item => item.date >= data.today)} today={data.today} empty="No more renewals scheduled this month." />
           <Group title="Earlier this month" items={data.month.events.filter(item => item.date < data.today)} today={data.today} empty="No earlier charges scheduled." />
           <CustomText mt={SIZES.padding2} text="Scheduled charges are estimates, not confirmed payments. Subscriptions without a renewal date are excluded." weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />
         </ScrollView>
