@@ -180,10 +180,10 @@
     "semantic_hash": "b31c909faa895f68f84776d5f720c167"
   },
   "android/app/build.gradle": {
-    "mtime": 1795008557.6771638,
-    "seen": 1795008674.049162,
-    "ast_hash": "fb45954b6b4f0819be17195194e36fdb",
-    "semantic_hash": "fb45954b6b4f0819be17195194e36fdb"
+    "mtime": 1795673058.6259294,
+    "seen": 1795673806.457859,
+    "ast_hash": "7913a9349cac594eea0c2e81ec3367f6",
+    "semantic_hash": ""
   },
   "android/app/google-services.json": {
     "mtime": 1794832410.5372703,
