@@ -250,7 +250,9 @@ export function toEvent(event: EventDto): HomeEvent {
 }
 
 const toSpend = (item: PlatformSpendDto): HomePlatformSpend => ({
-  platform_id: logoKey(item.name, item.platformId, item.logoUrl),
+  // A custom service has no platform: its one subscription gives the letter logo and is opened directly.
+  platform_id: logoKey(item.name, item.platformId ?? item.subscriptionId ?? item.name, item.logoUrl),
+  subscription_id: item.platformId ? null : item.subscriptionId,
   name: item.name,
   amount: item.monthly.amount,
   percent: item.percent,

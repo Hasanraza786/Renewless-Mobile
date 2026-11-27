@@ -6,7 +6,7 @@ import { setDetailError } from '../../redux/slices/detail-slice';
 import { useAppDispatch, useAppSelector } from '../../redux/store';
 import type { AppStackParamList, PlatformSuggestion } from '../../types';
 import { localToday } from '../../utils/dates';
-import { draftFromRecord, draftServerErrors, draftToInput, emptyDraft, firstInvalid, priceChanged, validateDraft, type DraftErrors, type DraftField, type SubscriptionDraft, type TrialOrigin } from '../../utils/subscription-form';
+import { changeDraft, draftFromRecord, draftServerErrors, draftToInput, emptyDraft, firstInvalid, priceChanged, validateDraft, type DraftErrors, type DraftField, type SubscriptionDraft, type TrialOrigin } from '../../utils/subscription-form';
 
 export type SubscriptionFormRoute = RouteProp<AppStackParamList, 'AddSubscription'> | RouteProp<AppStackParamList, 'EditSubscription'>;
 
@@ -67,7 +67,7 @@ export default function useSubscriptionForm(route: SubscriptionFormRoute) {
   const action = edit_id ? 'Save changes' : 'Add subscription';
 
   const update = <Key extends keyof SubscriptionDraft>(key: Key, value: SubscriptionDraft[Key]) => {
-    setDraft(current => (current ? { ...current, [key]: value } : current));
+    setDraft(current => (current ? changeDraft(current, key, value, today) : current));
     setServerErrors(current => (key in current ? { ...current, [key]: undefined } : current));
     if (request_error) dispatch(setDetailError({ key: 'mutation', value: '' }));
   };

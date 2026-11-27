@@ -87,7 +87,8 @@ export function detailView({ record, today, receipts, receipt_emails, annual_est
     billing_title: in_trial ? 'Trial & billing' : 'Renewal & billing',
     trial_end: record.trial ? dateLabel(record.trial.end_date) : null,
     // Inactive records (cancelled, expired, trial ended) no longer renew.
-    auto_renew: cancelled || trial_ended ? 'Off' : record.auto_renew === null ? 'Not set' : record.auto_renew ? 'On' : 'Off',
+    // Auto-renew tracking is a trial setting: a plain plan has none, so the row is left out rather than "Not set".
+    auto_renew: cancelled || trial_ended ? 'Off' : record.auto_renew === null ? null : record.auto_renew ? 'On' : 'Off',
     reminder,
     remaining,
     event_date,

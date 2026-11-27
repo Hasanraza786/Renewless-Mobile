@@ -99,6 +99,8 @@ export type HomeEvent = {
 
 export type HomePlatformSpend = {
   platform_id: string;
+  // Set for a custom service (no catalog platform): the row is that one subscription.
+  subscription_id: string | null;
   name: string;
   amount: string;
   percent: number;

@@ -83,7 +83,7 @@ export type DetailDto = SummaryDto & {
 
 export type SubscriptionListDto = { items: SummaryDto[]; total: number; nextCursor: string | null };
 
-export type PlatformSpendDto = { platformId: string; name: string; logoUrl: string | null; monthly: MoneyDto; percent: number; subscriptionCount: number };
+export type PlatformSpendDto = { platformId: string | null; subscriptionId: string | null; name: string; logoUrl: string | null; monthly: MoneyDto; percent: number; subscriptionCount: number };
 export type TrialDto = { subscriptionId: string; name: string; logoUrl: string | null; endDate: string; autoRenew: boolean; after: MoneyDto; cycle: CycleDto };
 
 export type HomeDto = {

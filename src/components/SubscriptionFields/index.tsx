@@ -119,7 +119,7 @@ export default function SubscriptionFields({ draft, errors, onChange, onPickServ
       ) : null}
       <SizedBox height={GAP} />
       <View {...at('start_date')}>
-        <DateField variant="form" label={`Start date  ${on_trial ? 'Required for trial' : 'Optional'}`} value={draft.start_date} onChange={value => onChange('start_date', value)} error={errors.start_date} />
+        <DateField variant="form" label="Start date" value={draft.start_date} onChange={value => onChange('start_date', value)} error={errors.start_date} />
       </View>
       {on_trial ? (
         <>
@@ -148,6 +148,8 @@ export default function SubscriptionFields({ draft, errors, onChange, onPickServ
           <View {...at('next_date')}>
             <DateField variant="form" label="Next renewal" value={draft.next_date} onChange={value => onChange('next_date', value)} error={errors.next_date} />
           </View>
+          {!draft.next_picked && !errors.next_date ? <CustomText mt={SIZES.padding / 2} text={draft.start_date ? 'Calculated from your start date and billing cycle. You can change it.' : 'Add a start date to calculate this, or choose it yourself. One of the two is required.'} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
+
         </>
       )}
       <SizedBox height={GAP} />

@@ -12,6 +12,7 @@ import LinkText from '../LinkText';
 import { styles } from './styles';
 import RowView from '../RowView';
 import { money } from '../../utils/money';
+import { navigate } from '../../navigation/service';
 
 type Row = { key: string; name: string; platform_id?: string; amount: string; percent: number; meta: string; onPress: () => void };
 
@@ -56,7 +57,7 @@ export function SpendRows({ spending, all, onPlatform, onOthers }: Props) {
           amount: item.amount,
           percent: item.percent,
           meta: `${item.subscription_count} subscription${item.subscription_count === 1 ? '' : 's'}`,
-          onPress: () => onPlatform(item.platform_id, item.name),
+          onPress: () => (item.subscription_id ? navigate('SubscriptionDetail', { id: item.subscription_id }) : onPlatform(item.platform_id, item.name)),
         }));
         if (!all && group.others && onOthers) rows.push({ key: 'others', name: 'Others', amount: group.others.amount, percent: group.others.percent, meta: `${group.others.platform_count} platforms`, onPress: onOthers });
         return (

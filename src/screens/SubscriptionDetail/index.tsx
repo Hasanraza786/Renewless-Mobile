@@ -110,7 +110,7 @@ function Body({ view, detail }: { view: DetailView; detail: ReturnType<typeof us
         <CustomText text={view.billing_title} color={COLORS.text_secondary} size={SIZES.lg} mb={SIZES.padding / 4} />
         <Field label="Billing cycle" value={record.cycle} />
         {view.trial_end ? <Field label="Trial ends" value={view.trial_end} /> : null}
-        <Field label="Auto-renew tracking" value={view.auto_renew} />
+        {view.auto_renew ? <Field label="Auto-renew tracking" value={view.auto_renew} /> : null}
         <Field label="Reminder" value={view.reminder.text} onPress={view.reminder.actionable ? () => detail.setSheet('reminder') : undefined} />
         {view.reminder.note ? <CustomText mt={SIZES.padding3} text={view.reminder.note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}
         {view.estimated_note ? <CustomText mt={SIZES.padding3} text={view.estimated_note} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} /> : null}

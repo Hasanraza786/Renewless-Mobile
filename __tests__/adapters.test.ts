@@ -62,7 +62,7 @@ test('Home merges the snapshot, Upcoming, this month and spending', () => {
     asOf: '2026-11-09T19:31:29.240Z', today: '2026-11-10', timezone: 'Asia/Karachi', hasSubscriptions: true,
     nearest: { date: '2026-11-14', events: [event()], upcomingCount: 2 },
     month: { label: '2026-11', paid: [], paidCount: 0, upcoming: [{ currency: 'USD', amount: '35.49' }] },
-    topSpending: [{ currency: 'USD', total: { currency: 'USD', amount: '15.49' }, items: [{ platformId: NETFLIX_ID, name: 'Netflix', logoUrl: null, monthly: { currency: 'USD', amount: '15.49' }, percent: 100, subscriptionCount: 1 }], others: null }],
+    topSpending: [{ currency: 'USD', total: { currency: 'USD', amount: '15.49' }, items: [{ platformId: NETFLIX_ID, subscriptionId: null, name: 'Netflix', logoUrl: null, monthly: { currency: 'USD', amount: '15.49' }, percent: 100, subscriptionCount: 1 }], others: null }],
     trials: [{ subscriptionId: 'sub-2', name: 'Cursor', logoUrl: null, endDate: '2026-11-19', autoRenew: true, after: { currency: 'USD', amount: '20.00' }, cycle: 'monthly' }],
     forecast: [{ month: '2026-11', totals: [{ currency: 'USD', amount: '35.49' }] }, { month: '2026-12', totals: [] }],
   };
@@ -71,8 +71,10 @@ test('Home merges the snapshot, Upcoming, this month and spending', () => {
     home,
     { through: '2027-01-31', events: [event(), trial_end] },
     { month: '2026-11', expected: [{ currency: 'USD', amount: '35.49' }], stillUpcoming: [], eventCount: 2, events: [event(), trial_end] },
-    { byCurrency: [{ currency: 'USD', total: { currency: 'USD', amount: '15.49' }, platforms: home.topSpending[0].items }], trials: [] },
+    { byCurrency: [{ currency: 'USD', total: { currency: 'USD', amount: '15.49' }, platforms: [...home.topSpending[0].items, { platformId: null, subscriptionId: 'sub-9', name: 'Gym', logoUrl: null, monthly: { currency: 'USD', amount: '0.00' }, percent: 0, subscriptionCount: 1 }] }], trials: [] },
   );
+  // A catalog platform opens its list; a custom service opens its one subscription (never an unfiltered list).
+  expect(snapshot.spending[0].all_platforms.map(row => row.subscription_id)).toEqual([null, 'sub-9']);
   expect(snapshot.nearest_events.map(item => item.subscription_id)).toEqual(['sub-1']);
   expect(snapshot.upcoming_count).toBe(2);
   expect(snapshot.month).toMatchObject({ month: '2026-11', charge_count: 2, upcoming: [{ currency: 'USD', amount: '35.49' }] });
