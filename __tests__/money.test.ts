@@ -1,4 +1,4 @@
-import { CURRENCIES, CURRENCY_NAMES, amountKeyboard, amountPlaceholder, formatAmount, money, spokenMoney } from '../src/utils/money';
+import { CURRENCIES, CURRENCY_NAMES, amountKeyboard, amountPlaceholder, formatAmount, groupedAmount, money, spokenMoney } from '../src/utils/money';
 import { amountError, isValidAmount } from '../src/utils/subscription-form';
 
 test('UI shows symbols, unknown currencies keep their code', () => {
@@ -58,4 +58,9 @@ test('whole-number currencies get a keyboard without a decimal point', () => {
   expect(amountKeyboard('USD')).toBe('decimal-pad');
   expect(amountPlaceholder('PKR')).toBe('0');
   expect(amountPlaceholder('USD')).toBe('0.00');
+});
+
+test('chart labels group the amount without the symbol', () => {
+  expect(groupedAmount('USD', '2140.98')).toBe('2,140.98');
+  expect(groupedAmount('PKR', '1549')).toBe('1,549');
 });

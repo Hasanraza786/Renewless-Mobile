@@ -23,8 +23,11 @@ const grouped = (text: string) => text.replace(/^-?\d+/, whole => whole.replace(
 
 // The one money formatter for the app and the widgets: "$1,200.00", "Rs 1,550", "<riyal> 49.00", "<dirham> 49.00", in
 // the currency's decimals. Text that isn't a number is shown as given.
+// The amount alone, grouped, for places that show the currency elsewhere (chart bars): "2,140.98", "1,549".
+export const groupedAmount = (currency: string, amount: string | number) => grouped(formatAmount(currency, amount));
+
 export function money(currency: string, amount: string | number) {
-  const value = amount === '' || !Number.isFinite(Number(amount)) ? amount : grouped(formatAmount(currency, amount));
+  const value = amount === '' || !Number.isFinite(Number(amount)) ? amount : groupedAmount(currency, amount);
   return `${SYMBOLS[currency] ?? `${currency} `}${value}`;
 }
 

@@ -59,7 +59,7 @@ export function SpendRows({ spending, all, onPlatform, onOthers }: Props) {
           meta: `${item.subscription_count} subscription${item.subscription_count === 1 ? '' : 's'}`,
           onPress: () => (item.subscription_id ? navigate('SubscriptionDetail', { id: item.subscription_id }) : onPlatform(item.platform_id, item.name)),
         }));
-        if (!all && group.others && onOthers) rows.push({ key: 'others', name: 'Others', amount: group.others.amount, percent: group.others.percent, meta: `${group.others.platform_count} platforms`, onPress: onOthers });
+        if (!all && group.others && onOthers) rows.push({ key: 'others', name: 'Others', amount: group.others.amount, percent: group.others.percent, meta: `${group.others.platform_count} platform${group.others.platform_count === 1 ? '' : 's'}`, onPress: onOthers });
         return (
           <Fragment key={group.currency}>
             <CustomText mt={SIZES.padding2} text={`${money(group.currency, group.total)} estimated/month`} weight={FONTS.regular} color={COLORS.text_secondary} size={SIZES.sm} />

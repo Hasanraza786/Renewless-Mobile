@@ -102,9 +102,9 @@
     "semantic_hash": ""
   },
   "__tests__/money.test.ts": {
-    "mtime": 1795683360.5244873,
-    "seen": 1795685399.956306,
-    "ast_hash": "d895b944dfca6629835c3a2575eaa339",
+    "mtime": 1795785285.4313076,
+    "seen": 1795785749.563429,
+    "ast_hash": "218de806dacbc9c487d90c7846e71d07",
     "semantic_hash": ""
   },
   "__tests__/outlook-connect.test.ts": {
@@ -810,9 +810,9 @@
     "semantic_hash": "6f4da314ef10fcdfdc13492e162a3313"
   },
   "src/components/SpendRows/index.tsx": {
-    "mtime": 1795772935.3274124,
-    "seen": 1795775128.660794,
-    "ast_hash": "bbd79ac5d264ac1327e737ca08b7b60a",
+    "mtime": 1795785254.1976364,
+    "seen": 1795785749.563513,
+    "ast_hash": "5a55d08fd7a2ddddc38a70c25858ca00",
     "semantic_hash": ""
   },
   "src/components/SpendRows/styles.ts": {
@@ -1434,10 +1434,10 @@
     "semantic_hash": ""
   },
   "src/screens/Home/components/Forecast.tsx": {
-    "mtime": 1794840964.1389341,
-    "seen": 1794903585.2859468,
-    "ast_hash": "87f20e302f4aeae083aaddec5afc7518",
-    "semantic_hash": "87f20e302f4aeae083aaddec5afc7518"
+    "mtime": 1795785254.1971939,
+    "seen": 1795785749.5635772,
+    "ast_hash": "a7b9e0d32c7820c955d980e51bb5ba49",
+    "semantic_hash": ""
   },
   "src/screens/Home/components/HomeSkeleton.tsx": {
     "mtime": 1794223994.4623985,
@@ -2046,9 +2046,9 @@
     "semantic_hash": "a2c7749c42ed4ecd7249a84c7b5bf438"
   },
   "src/utils/money.ts": {
-    "mtime": 1795683205.0175374,
-    "seen": 1795685399.9565382,
-    "ast_hash": "8de252fd2ebb31ce0e1fc9bb283ce25a",
+    "mtime": 1795785254.196584,
+    "seen": 1795785749.563647,
+    "ast_hash": "5b1821b7abc985929ec82b1ed282d6b0",
     "semantic_hash": ""
   },
   "src/utils/payments.ts": {
